@@ -23,4 +23,15 @@ if ($argv[1] == "server") {
         npm install
         composer install
         ');
+}elseif ($argv[1] == "git") {
+    if ($argv[2] == "pushall")
+        echo "\nYour Repository (Like 'origin master'): ";
+        $repos = readline();
+        echo "\nCommit message: ";
+        $commit = str_replace('"', '\"',readline());
+        system('
+        git add .
+        git commit -m "'.$commit.'"
+        git push origin '.$repos.'
+        ');
 }
