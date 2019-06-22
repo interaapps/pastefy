@@ -1,0 +1,12 @@
+{
+    "name": "interaapps/ulole-framework",
+    "description": "Ulole-Framework is a php framework!",
+    "type": "framework",
+    "authors": [
+        {
+            "name": "JulianFun123",
+            "email": "julianfun123@yahoo.com"
+        }
+    ],
+    "require": {}
+}

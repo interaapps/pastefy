@@ -1,0 +1,1 @@
+compile is an simple javascript and css bundler for non NodeJS and WebPack user

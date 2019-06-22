@@ -1,0 +1,26 @@
+#!/usr/bin/env php
+<?php
+
+if ($argv[1] == "server") {
+    echo "\nULOLE-TEST SERVER!\n";
+    file_put_contents("public/testserver.php", 
+    "<!--You can delete this file, but not in usage of the testserver!!-->\n\n\n".'<script>console.log("ULOLE TESTSERVER! DONT USE IT ON A PUBLIC SERVER");</script><?php if (preg_match("/\.(?:png|jpg|jpeg|gif|js|css|html)$/", $_SERVER["REQUEST_URI"])) {return false;}?>'.file_get_contents("public/index.php"));
+    system('
+    cd public
+    php -S 0.0.0.0:8000 -t ./ testserver.php');
+    unlink("public/testserver.php");
+} elseif ($argv[1] == "compile") {
+    require "uloleframework/CLI/Compile.php";
+    uloleframework\CLI\Compile::compileDir('resources/compile/css/compile.json', "resources/compile/css");
+    uloleframework\CLI\Compile::compileDir('resources/compile/js/compile.json', "resources/compile/js");   
+} elseif ($argv[1] == "install") {
+    if ($argv[2]=="composer") 
+        system('composer install');
+    elseif ($argv[2]=="npm")
+        system('npm install');
+    elseif ($argv[2]=="all")
+        system('
+        npm install
+        composer install
+        ');
+}
