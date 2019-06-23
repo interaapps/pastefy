@@ -16,7 +16,7 @@ class MySQL {
             $db_database  =  $database;
             $db_host      =  $host;
         }
-        $this->con = new mysqli($db_host, $db_username, $db_password, $db_database, $port);
+        $this->con = new \mysqli($db_host, $db_username, $db_password, $db_database, $port);
     }
 
     function query($str) {
