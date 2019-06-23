@@ -1,6 +1,6 @@
 <?php
 loadModule('ORM');
-loadModule('ORM');
+
 use uloleframework\ulole_modules\ORM\Table;
 class TestTable extends Table {
 

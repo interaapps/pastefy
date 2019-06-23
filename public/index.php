@@ -1,13 +1,9 @@
 <?php
 
-//*               DEVERM-ROUTER 2.0
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);// */
 chdir('..');
-
-// INIT ROUTE
-require "app/route.php";
 
 
 // IMPORTING STANDARD LIBS
@@ -20,6 +16,8 @@ if (isset($config->settings->autoload))
         Router::autoload($import);
 
 // Initializing routings
-$router = new Router($views_dir, $templates_dir);
+$router = new Router();
+require "app/route.php";
+$router->setDirectories($views_dir, $templates_dir);
 $router->set($route);
 $router->route();

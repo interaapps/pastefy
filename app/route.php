@@ -6,6 +6,8 @@
 
 (Do not use duplicated keys!)
 
+You can use also this syntax for adding pages
+$router->get("/test1", "homepage");
 */
 
 // Directory for the views

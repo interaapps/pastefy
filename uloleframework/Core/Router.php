@@ -5,7 +5,7 @@ class Router {
 
   public $route;
   public $views_dir;
-  public $templates;
+  public $template;
   public $GetOrPost;
 
   public static function autoload($dir) {
@@ -19,10 +19,10 @@ class Router {
             }
   }
 
+
   function setRequestMethods($arr) {
     foreach ($arr as $k1=>$v1) {
       $this->GetOrPost[$k1] = $v1;
-      echo $GetOrPost[$k1];
     }
   }
   
@@ -38,15 +38,21 @@ class Router {
     }
   }
 
-  function __construct($views_dir, $template="../templates") {
+  function __construct() {
     $route=[];
     $this->route     =  $route;
+  }
+
+  function setDirectories($views_dir, $template="../templates") {
+    global $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa;
+    $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa = $template;
+    $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa2 = $views_dir;
     $this->template  =  $template;
     $this->views_dir =  $views_dir;
   }
 
   function set($array) {
-    $this->route = $array;
+    $this->route = array_merge($this->route, $array);
   }
 
   function route() {
@@ -62,29 +68,33 @@ class Router {
     $method = $_SERVER['REQUEST_METHOD'];
 
     foreach($route as $url=>$view) {
-
+  
       if(preg_match_all('#^' . $url . '$#', $request, $matches)) {
         foreach ($matches as $key=>$val)
             $_ROUTEVAR[$key] = $val[0];
-        //if ($url == $request) {
+        
+          
             if($method==='POST' && isset($this->GetOrPost[$request]["post"]))
-              Router::load($view ,$views_dir.$this->GetOrPost[$request]["post"]);
+              Router::load($this->GetOrPost[$request]["post"] ,$views_dir.$this->GetOrPost[$request]["post"], $this);
             elseif($method==='DELETE' && isset($this->GetOrPost[$request]["delete"]))
-              Router::load($view,  $views_dir.$this->GetOrPost[$request]["delete"]);
+              Router::load($this->GetOrPost[$request]["delete"],  $views_dir.$this->GetOrPost[$request]["delete"], $this);
             elseif($method==='PUT' && isset($this->GetOrPost[$request]["put"]))
-              Router::load($view,  $views_dir.$this->GetOrPost[$request]["put"]);
+              Router::load($this->GetOrPost[$request]["put"],  $views_dir.$this->GetOrPost[$request]["put"], $this);
             elseif($method==='CONNECT' && isset($this->GetOrPost[$request]["connect"]))
-              Router::load($view,  $views_dir.$this->GetOrPost[$request]["connect"]);
+              Router::load($this->GetOrPost[$request]["connect"],  $views_dir.$this->GetOrPost[$request]["connect"], $this);
             elseif($method==='TRACE' && isset($this->GetOrPost[$request]["trace"]))
-              Router::load($view,  $views_dir.$this->GetOrPost[$request]["trace"]);
+              Router::load($this->GetOrPost[$request]["trace"],  $views_dir.$this->GetOrPost[$request]["trace"], $this);
             elseif($method==='OPTIONS' && isset($this->GetOrPost[$request]["options"]))
-              Router::load($view, $views_dir.$this->GetOrPost[$request]["options"]);
-            else
-              Router::load($view, $views_dir.((!is_callable($view)) ? $view : ""));
+              Router::load($this->GetOrPost[$request]["options"], $views_dir.$this->GetOrPost[$request]["options"], $this);
+            else {
+              Router::load($view, $views_dir.((!is_callable($view)) ? $view : ""), $this);
+            }
+            
           return 0;
-        //}
+        
 
       }
+    
     }
     
     
@@ -113,25 +123,77 @@ class Router {
    
 
 
-    public static function load($view, $require) {
+    public static function load($view, $require, $parent=false) {
       global $_ROUTEVAR;
-      if (is_callable($view))
-            $view();
-        else
-          if (strpos($view, "!") !== false) {
-            if (strpos($view, "@") !== false)
-              echo call_user_func(Router::get_string_between($view, "!", "@").'::'.Router::get_string_between($view, "@", ""));
-            else
-              echo call_user_func(Router::get_string_between($view, "!", ""));
-          } else {
-             require $require;
+      if ($require !== $parent->views_dir."@") {
+        if (is_callable($view))
+              echo $view();
+          else
+            if (strpos($view, "!") !== false) {
+              if (strpos($view, "@") !== false)
+                echo call_user_func(Router::get_string_between($view, "!", "@").'::'.Router::get_string_between($view, "@", ""));
+              else
+                echo call_user_func(Router::get_string_between($view, "!", ""));
+            } else {
+              require $require;
+            }
+        } else {
+          if ($parent !== false) {
+            header('HTTP/1.1 404 Not Found');
+            include $parent->views_dir.$parent->route["@__404__@"];
           }
+        }
     }
 
 
+    function post($route, $func) {
+      if (!isset($this->GetOrPost[$route])) $this->GetOrPost[$route] = [];
+      if (!isset($this->route[$route]))
+        $this->route[$route] = "@";
+        $this->GetOrPost[$route]["post"] = $func;
+    }
+  
+    function get($route, $func) {
+      if (!isset($this->GetOrPost[$route])) $this->GetOrPost[$route] = [];
+      $this->route[$route] = $func;
+      $this->GetOrPost[$route]["get"] = $func;
+    }
+  
+    function delete($route, $func) {
+      if (!isset($this->GetOrPost[$route])) $this->GetOrPost[$route] = [];
+      if (!isset($this->route[$route]))
+        $this->route[$route] = "@";
+        $this->GetOrPost[$route]["delete"] = $func;
+    }
+  
+    function put($route, $func) {
+      if (!isset($this->route[$route]))
+        $this->route[$route] = "@";
+      $this->GetOrPost[$route] = ["put"=>$func];
+    }
+  
+    function trace($route, $func) {
+      if (!isset($this->route[$route]))
+        $this->route[$route] = "@";
+      $this->GetOrPost[$route] = ["trace"=>$func];
+    }
+
+    function connect($route, $func) {
+      if (!isset($this->route[$route]))
+        $this->route[$route] = "@";
+      $this->GetOrPost[$route] = ["connect"=>$func];
+    }
+
 }
 
+$routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa = "";
+$routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa2 = "";
 function tmpl($template_name) {
-  global $templates_dir;
-  include $templates_dir.$template_name.".php";
+  global $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa;
+  include $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa.$template_name.".php";
+}
+
+function view($template_name) {
+  global $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa2;
+  include $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa2.".php";
 }
