@@ -3,6 +3,8 @@
 namespace uloleframework\ulole_modules\ORM;
 
 class Table {
+public $_table_name_;
+
     function save() {
         global $MYSQL_DATABASE_CONNECTION;
         $con = $MYSQL_DATABASE_CONNECTION->getObject();
@@ -11,10 +13,10 @@ class Table {
         foreach ($this as $a=>$b) {
             if ($a !== "_table_name_")
                 if ($query_values=="") {
-                    $query_values .= "'".$b."'";
+                    $query_values .= "'".$con->real_escape_string($b)."'";
                     $query_keys .= "`".$a."`";
                 } else {
-                    $query_values .= ", '".$b."'";
+                    $query_values .= ", '".$con->real_escape_string($b)."'";
                     $query_keys .= ", `".$a."`";
                 }
         }
@@ -22,6 +24,7 @@ class Table {
         $con->query($query);
     }
 
+    
     function select($select = "*") {
         global $MYSQL_DATABASE_CONNECTION;
         $con = $MYSQL_DATABASE_CONNECTION->getObject();

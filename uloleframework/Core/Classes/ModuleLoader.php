@@ -11,7 +11,7 @@ class ModuleLoader {
     }
     function load() {
         foreach ($this->manifest->load as $load) {
-            require $this->dir.$this->name."/".$load;
+            require_once $this->dir.$this->name."/".$load;
         }
     }
 }
