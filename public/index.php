@@ -17,6 +17,7 @@ require "uloleframework/autoloader.php";
 // Autoloads the controllers
 Router::autoload("app/controller");
 
+// Initializing routings
 $router = new Router($views_dir, $templates_dir);
 $router->set($route);
 $router->route();
