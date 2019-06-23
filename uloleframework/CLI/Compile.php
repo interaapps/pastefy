@@ -19,7 +19,23 @@ class Compile {
     public static function compileViews($dir, $enddir) {
         $replaceArray = [
             "{{"=>'<?php echo (',
-            "}}"=>') ?>'
+            "}}"=>'); ?>',
+            
+            // STARTS
+            "@if(("=>'<?php if(',
+            "@foreach(("=>'<?php foreach(',
+            "@while(("=>'<?php while(',
+            
+            "))#"=>"):?>",
+            '@else'=>"<?php else: ?>",
+            
+            // ENDS
+            '@endif'=>"<?php endif; ?>",
+            '@endforeach'=>"<?php endforeach; ?>",
+            '@endforeach'=>"<?php endwhile; ?>",
+            
+            '<?#'=>'<?php',
+            '#?>'=>'?>'
         ];
 
         $files = scandir($dir);
@@ -28,7 +44,7 @@ class Compile {
                 if (is_dir($dir."/".$file))
                     Router::autoload($dir."/".$file, $enddir);
                 else
-                    \file_put_contents($enddir."/".$file, Replace::replaceAsArray($replaceArray, \file_get_contents($dir."/".$file)));
+                    \file_put_contents($enddir."/".str_replace(".view.php", ".php", $file), \uloleframework\Core\Classes\Replace::replaceByArray($replaceArray, \file_get_contents($dir."/".$file)));
                 }
     } 
 }

@@ -7,6 +7,19 @@
     <title>{{ "HELLO WORLD!" }}</title>
 </head>
 <body>
-    
+    <?#
+        echo "Hello world!";
+        $a = ["a","b"];
+    #?>
+
+    @if((false))#
+        hi
+    @else
+        hallool
+    @endif
+
+    @foreach(($a as $v))#
+        {{ $v }}
+    @endforeach
 </body>
 </html>

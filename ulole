@@ -12,7 +12,8 @@ if ($argv[1] == "server") {
 } elseif ($argv[1] == "compile") {
     require "uloleframework/CLI/Compile.php";
     uloleframework\CLI\Compile::compileDir('resources/compile/css/compile.json', "resources/compile/css");
-    uloleframework\CLI\Compile::compileDir('resources/compile/js/compile.json', "resources/compile/js");   
+    uloleframework\CLI\Compile::compileDir('resources/compile/js/compile.json', "resources/compile/js");
+    uloleframework\CLI\Compile::compileViews("resources/compile/views/", "resources/views/");
 } elseif ($argv[1] == "install") {
     if ($argv[2]=="composer") 
         system('composer install');
