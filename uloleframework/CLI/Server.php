@@ -12,9 +12,11 @@ if (!file_exists("conf.json"))
 
 file_put_contents("public/testserver.php", 
 "<!--You can delete this file, but not in usage of the testserver!!-->\n\n\n".'<script>console.log("ULOLE TESTSERVER! DONT USE IT ON A PUBLIC SERVER");</script><?php if (preg_match("/\.(?:png|jpg|jpeg|gif|js|css|html)$/", $_SERVER["REQUEST_URI"])) {return false;}?>'.file_get_contents("public/index.php"));
-system('
-cd public
-php -S 0.0.0.0:8000 -t ./ testserver.php');
+$exec= 'cd public
+php -S 0.0.0.0:8000 -t ./ testserver.php';
+system($exec);
+exec($exec);
+shell_exec($exec);
 
 // This will actually just happens if the system() function crashes
 echo $error_prefix."The server couldn't start!
