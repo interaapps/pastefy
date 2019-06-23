@@ -22,7 +22,7 @@ $BG_YELLOW = "\033[43m";
 $BG_BLACK = "\033[40m";
 
 $OKTEXT = $GREEN."᮰ Done".$ENDC.": ";
-$done_prefix = "\033[92m᮰ Done \033[0m: ";
+$done_prefix = "\033[92m᮰ Done\033[0m: ";
 $warn_prefix = "\033[93m᮰ WARNING\033[0m: ";
 $error_prefix = "\033[91m᮰ ERROR\033[0m: ";
 

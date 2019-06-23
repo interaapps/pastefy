@@ -17,4 +17,8 @@ cd public
 php -S 0.0.0.0:8000 -t ./ testserver.php');
 
 // This will actually just happens if the system() function crashes
-unlink("public/testserver.php");
+echo $error_prefix."The server couldn't start!
+Type this to run the server otherwise:
+cd public
+php -S 0.0.0.0:8000 -t ./ testserver.php
+";
