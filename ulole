@@ -1,19 +1,44 @@
 #!/usr/bin/env php
 <?php
 
+$HEADER = "\033[95m";
+$OKBLUE = "\033[94m";
+$OKGREEN = "\033[92m";
+$WARNING = "\033[93m";
+$FAIL = "\033[91m";
+$ENDC = "\033[0m";
+$BOLD = "\033[1m";
+$UNDERLINE = "\033[4m";
+$RED = "\033[31m";
+$BLUE = "\033[34m";
+$YELLOW = "\033[33m";
+$TURQUIOUS = "\033[36m";
+$GREEN = "\033[32m";
+$BLINK = "\033[5m";
+$BG_RED = "\033[41m";
+$BG_BLUE = "\033[44m";
+$BG_GREEN = "\033[42m";
+$BG_YELLOW = "\033[43m";
+$BG_BLACK = "\033[40m";
+
+$OKTEXT = $GREEN."᮰ Done".$ENDC.": ";
+$done_prefix = "\033[92m᮰ Done \033[0m: ";
+$warn_prefix = "\033[93m᮰ WARNING\033[0m: ";
+$error_prefix = "\033[91m᮰ ERROR\033[0m: ";
+
+echo "\n\n    ".$BLUE."U".$GREEN."L".$TURQUIOUS."O".$RED."L".$YELLOW."E".$RED.$BOLD." CLI".$ENDC."\n\n";
+
 if ($argv[1] == "server") {
-    echo "\nULOLE-TEST SERVER!\nlocalhost:8000\n";
-    file_put_contents("public/testserver.php", 
-    "<!--You can delete this file, but not in usage of the testserver!!-->\n\n\n".'<script>console.log("ULOLE TESTSERVER! DONT USE IT ON A PUBLIC SERVER");</script><?php if (preg_match("/\.(?:png|jpg|jpeg|gif|js|css|html)$/", $_SERVER["REQUEST_URI"])) {return false;}?>'.file_get_contents("public/index.php"));
-    system('
-    cd public
-    php -S 0.0.0.0:8000 -t ./ testserver.php');
-    unlink("public/testserver.php");
+
+    require "uloleframework/CLI/Server.php";
 } elseif ($argv[1] == "compile") {
     require "uloleframework/CLI/Compile.php";
     uloleframework\CLI\Compile::compileDir('resources/compile/css/compile.json', "resources/compile/css");
+    echo "\n".$OKTEXT."Bundled all files from config file: resources/compile/css/compile.json";
     uloleframework\CLI\Compile::compileDir('resources/compile/js/compile.json', "resources/compile/js");
+    echo "\n".$OKTEXT."Bundled all files from config file: resources/compile/js/compile.json";
     uloleframework\CLI\Compile::compileViews("resources/compile/views/", "resources/views/");
+    echo "\n".$OKTEXT."Compiled all view.php files in directory resources/compile/views/\n";
 } elseif ($argv[1] == "install") {
     if ($argv[2]=="composer") 
         system('composer install');
@@ -35,4 +60,7 @@ if ($argv[1] == "server") {
         git commit -m "'.$commit.'"
         git push origin '.$repos.'
         ');
+} elseif ($argv[1] == "run") {
+    require "app/ulole/CustomCLI.php";
+    $CLI->run($argv[1], $argv);
 }

@@ -32,7 +32,7 @@ class Compile {
             // ENDS
             '@endif'=>"<?php endif; ?>",
             '@endforeach'=>"<?php endforeach; ?>",
-            '@endforeach'=>"<?php endwhile; ?>",
+            '@endwhile'=>"<?php endwhile; ?>",
             
             '<?#'=>'<?php',
             '#?>'=>'?>'
@@ -40,11 +40,15 @@ class Compile {
 
         $files = scandir($dir);
         foreach($files as $file) {
-            if ($file != ".." && $file != ".")
-                if (is_dir($dir."/".$file))
-                    Router::autoload($dir."/".$file, $enddir);
-                else
-                    \file_put_contents($enddir."/".str_replace(".view.php", ".php", $file), \uloleframework\Core\Classes\Replace::replaceByArray($replaceArray, \file_get_contents($dir."/".$file)));
+            if ($file != ".." && $file != ".") {
+                if (strpos($file, "view.php")) {
+                    if (is_dir($dir."/".$file))
+                        Router::autoload($dir."/".$file, $enddir);
+                    else
+                        \file_put_contents($enddir."/".str_replace(".view.php", ".php", $file), \uloleframework\Core\Classes\Replace::replaceByArray($replaceArray, \file_get_contents($dir."/".$file)));
+                        echo "\nview.php renderer: rendered: ".$enddir.$dir."/".$file." into ".$enddir."/".str_replace(".view.php", ".php", $file);
                 }
+            }        
+        }
     } 
 }

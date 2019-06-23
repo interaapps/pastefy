@@ -1,0 +1,10 @@
+{
+    "name":"MyApp",
+    "version": "1.0",
+    
+    "settings": {
+        "autoload": [
+            "app/controller"
+        ]
+    }
+}

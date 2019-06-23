@@ -13,9 +13,11 @@ require "app/route.php";
 // IMPORTING STANDARD LIBS
 require "uloleframework/autoloader.php";
 
-
+loadCore();
 // Autoloads the controllers
-Router::autoload("app/controller");
+if (isset($config->settings->autoload))
+    foreach ( $config->settings->autoload as $import )
+        Router::autoload($import);
 
 // Initializing routings
 $router = new Router($views_dir, $templates_dir);
