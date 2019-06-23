@@ -2,7 +2,7 @@
 <?php
 
 if ($argv[1] == "server") {
-    echo "\nULOLE-TEST SERVER!\n";
+    echo "\nULOLE-TEST SERVER!\nlocalhost:8000\n";
     file_put_contents("public/testserver.php", 
     "<!--You can delete this file, but not in usage of the testserver!!-->\n\n\n".'<script>console.log("ULOLE TESTSERVER! DONT USE IT ON A PUBLIC SERVER");</script><?php if (preg_match("/\.(?:png|jpg|jpeg|gif|js|css|html)$/", $_SERVER["REQUEST_URI"])) {return false;}?>'.file_get_contents("public/index.php"));
     system('
