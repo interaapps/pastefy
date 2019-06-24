@@ -1,7 +1,6 @@
 # Insert
 ```php
-loadDB("TestTable");
-$x = new TestTable;
+$x = new databases\TestTable;
 $x->username = "Moin";
 $x->password = "xD";
 $x->save();

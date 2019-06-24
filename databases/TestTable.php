@@ -1,7 +1,7 @@
 <?php
-// loadModule('ORM');
+namespace databases;
 
-use modules\ORM\Table;
+use ulole\modules\ORM\Table;
 class TestTable extends Table {
 
     public $username, 

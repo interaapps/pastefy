@@ -17,4 +17,3 @@ require "app/route.php";
 $router->setDirectories($views_dir, $templates_dir);
 $router->set($route);
 $router->route();
-var_dump(get_included_files());

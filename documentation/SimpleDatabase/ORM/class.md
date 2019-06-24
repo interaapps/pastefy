@@ -3,15 +3,14 @@
 The class have to be in the databases folder
 ```php
 <?php
-loadModule('ORM');
-use uloleframework\ulole_modules\ORM\Table;
-class TestTable extends Table /* You have to extend Table to use the ORM methods */ {
+namespace databases;
 
-    // Here you can insert the Table rows
+use ulole\modules\ORM\Table;
+class TestTable extends Table {
+
     public $username, 
            $password;
     
-    // Here you have to give the table name
     public function __construct() {
         $this->_table_name_ = "User";
     }

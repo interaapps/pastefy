@@ -15,7 +15,7 @@ if (file_exists("env.json")) {
 
     if (isset($config_env->MySQL->database)) {
         global $MYSQL_DATABASE_CONNECTION;
-        $MYSQL_DATABASE_CONNECTION= new modules\Database\MySQL(
+        $MYSQL_DATABASE_CONNECTION= new ulole\modules\Database\MySQL(
             $config_env->MySQL->username,
             $config_env->MySQL->password,
             $config_env->MySQL->database,

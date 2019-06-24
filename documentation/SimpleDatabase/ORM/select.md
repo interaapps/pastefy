@@ -1,6 +1,6 @@
 loadDB("TestTable");
 ```php
-$x = new TestTable;
+$x = new databases\TestTable;
 
 $qu = $x->select('*')->get();
 
