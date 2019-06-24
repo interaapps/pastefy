@@ -1,6 +1,6 @@
 <?php
 
-namespace uloleframework\ulole_modules\ORM;
+namespace ulole\modules\ORM;
 
 class Table {
 public $_table_name_;

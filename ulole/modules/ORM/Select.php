@@ -1,7 +1,6 @@
 <?php
 
-namespace uloleframework\ulole_modules\ORM;
-
+namespace ulole\modules\ORM;
 
 class Select {
     public $that,

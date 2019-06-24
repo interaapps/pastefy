@@ -14,9 +14,8 @@ if (file_exists("env.json")) {
     $config_env = json_decode(file_get_contents("env.json"));
 
     if (isset($config_env->MySQL->database)) {
-        loadModule("Database");
         global $MYSQL_DATABASE_CONNECTION;
-        $MYSQL_DATABASE_CONNECTION= new uloleframework\Core\Database\MySQL(
+        $MYSQL_DATABASE_CONNECTION= new modules\Database\MySQL(
             $config_env->MySQL->username,
             $config_env->MySQL->password,
             $config_env->MySQL->database,

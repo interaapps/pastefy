@@ -131,7 +131,7 @@ class Router {
           else
             if (strpos($view, "!") !== false) {
               if (strpos($view, "@") !== false)
-                echo call_user_func(Router::get_string_between($view, "!", "@").'::'.Router::get_string_between($view, "@", ""));
+                echo call_user_func(  "app\controller\\".Router::get_string_between($view, "!", "@").'::'.Router::get_string_between($view, "@", "") );
               else
                 echo call_user_func(Router::get_string_between($view, "!", ""));
             } else {

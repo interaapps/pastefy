@@ -1,8 +1,5 @@
 {
     "name": "Database Module",
     "author": "InteraApps",
-    "version": "1.0",
-    "load": [
-        "MySQL.php"
-    ]
+    "version": "1.0"
 }

@@ -1,9 +1,0 @@
-{
-    "name": "ORM Module",
-    "author": "InteraApps",
-    "version": "1.0",
-    "load": [
-        "Table.php",
-        "Select.php"
-    ]
-}

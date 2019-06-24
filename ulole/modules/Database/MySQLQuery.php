@@ -1,6 +1,6 @@
 <?php
 
-namespace uloleframework\Core\Database;
+namespace ulole\modules\Database;
 
 class MySQLQuery {
     public $query, $con;

@@ -30,9 +30,9 @@ echo "\n\n    ".$BLUE."U".$GREEN."L".$TURQUIOUS."O".$RED."L".$YELLOW."E".$RED.$B
 
 if ($argv[1] == "server") {
 
-    require "uloleframework/CLI/Server.php";
+    require "ulole/CLI/Server.php";
 } elseif ($argv[1] == "compile") {
-    require "uloleframework/CLI/Compile.php";
+    require "ulole/CLI/Compile.php";
     uloleframework\CLI\Compile::compileDir('resources/compile/css/compile.json', "resources/compile/css");
     echo "\n".$OKTEXT."Bundled all files from config file: resources/compile/css/compile.json";
     uloleframework\CLI\Compile::compileDir('resources/compile/js/compile.json', "resources/compile/js");
