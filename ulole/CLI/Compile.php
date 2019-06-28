@@ -1,6 +1,5 @@
 <?php
-namespace uloleframework\CLI;
-include "uloleframework/Core/Classes/Replace.php";
+namespace ulole\CLI;
 
 class Compile {
     
@@ -41,12 +40,13 @@ class Compile {
         $files = scandir($dir);
         foreach($files as $file) {
             if ($file != ".." && $file != ".") {
-                if (strpos($file, "view.php")) {
-                    if (is_dir($dir."/".$file))
-                        Router::autoload($dir."/".$file, $enddir);
-                    else
-                        \file_put_contents($enddir."/".str_replace(".view.php", ".php", $file), \uloleframework\Core\Classes\Replace::replaceByArray($replaceArray, \file_get_contents($dir."/".$file)));
-                        echo "\nview.php renderer: rendered: ".$enddir.$dir."/".$file." into ".$enddir."/".str_replace(".view.php", ".php", $file);
+                if (is_dir($dir."/".$file)){
+                    if(!\is_dir($enddir."/".$file))
+                        \mkdir($enddir."/".$file);
+                    self::compileViews($dir."/".$file, $enddir."/".$file);
+                } elseif (strpos($file, "view.php")) {
+                    \file_put_contents($enddir."/".str_replace(".view.php", ".php", $file), \ulole\Core\Classes\Replace::replaceByArray($replaceArray, \file_get_contents($dir."/".$file)));
+                    echo "\nview.php renderer: rendered: ".$enddir.$dir."/".$file." into ".$enddir."/".str_replace(".view.php", ".php", $file);
                 }
             }        
         }

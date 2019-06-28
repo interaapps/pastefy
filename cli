@@ -28,16 +28,21 @@ $error_prefix = "\033[91m᮰ ERROR\033[0m: ";
 
 echo "\n\n    ".$BLUE."U".$GREEN."L".$TURQUIOUS."O".$RED."L".$YELLOW."E".$RED.$BOLD." CLI".$ENDC."\n\n";
 
+spl_autoload_register(function($class) {
+    @include_once "./".str_replace("\\","/",$class).".php";
+});
+
+
 if ($argv[1] == "server") {
 
     require "ulole/CLI/Server.php";
 } elseif ($argv[1] == "compile") {
     require "ulole/CLI/Compile.php";
-    uloleframework\CLI\Compile::compileDir('resources/compile/css/compile.json', "resources/compile/css");
+    ulole\CLI\Compile::compileDir('resources/compile/css/compile.json', "resources/compile/css");
     echo "\n".$OKTEXT."Bundled all files from config file: resources/compile/css/compile.json";
-    uloleframework\CLI\Compile::compileDir('resources/compile/js/compile.json', "resources/compile/js");
+    ulole\CLI\Compile::compileDir('resources/compile/js/compile.json', "resources/compile/js");
     echo "\n".$OKTEXT."Bundled all files from config file: resources/compile/js/compile.json";
-    uloleframework\CLI\Compile::compileViews("resources/compile/views/", "resources/views/");
+    ulole\CLI\Compile::compileViews("resources/compile/views/", "resources/views/");
     echo "\n".$OKTEXT."Compiled all view.php files in directory resources/compile/views/\n";
 } elseif ($argv[1] == "install") {
     if ($argv[2]=="composer") 

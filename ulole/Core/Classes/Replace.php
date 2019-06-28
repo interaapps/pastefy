@@ -1,5 +1,5 @@
 <?php
-namespace uloleframework\Core\Classes;
+namespace ulole\Core\Classes;
 
 class Replace {
     
