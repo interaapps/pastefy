@@ -63,4 +63,6 @@ if ($argv[1] == "server") {
 } elseif ($argv[1] == "run") {
     require "app/ulole/CustomCLI.php";
     $CLI->run($argv[1], $argv);
+} elseif ($argv[1] == "transfer") {
+    
 }
