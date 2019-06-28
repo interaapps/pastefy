@@ -49,8 +49,8 @@ if ($argv[1] == "server") {
         npm install
         composer install
         ');
-}elseif ($argv[1] == "git") {
-    if ($argv[2] == "pushall")
+} elseif ($argv[1] == "git") {
+    if ($argv[2] == "pushall") {
         echo "\nYour Repository (Like 'origin master'): ";
         $repos = readline();
         echo "\nCommit message: ";
@@ -60,6 +60,7 @@ if ($argv[1] == "server") {
         git commit -m "'.$commit.'"
         git push origin '.$repos.'
         ');
+    }
 } elseif ($argv[1] == "run") {
     require "app/ulole/CustomCLI.php";
     $CLI->run($argv[1], $argv);

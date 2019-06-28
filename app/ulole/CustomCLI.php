@@ -1,5 +1,5 @@
 <?php
-require "uloleframework/CLI/Custom.php";
+require "ulole/CLI/Custom.php";
 /*
     Here you can register functions for the ULOLE CLI!
     Executing: php ulole run <myFunction> (Here are your arguments (Starting with 3))

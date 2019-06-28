@@ -14,19 +14,14 @@ spl_autoload_register(function($class) {
     @include_once "app/controller/".str_replace("\\","/",$class).".php";
 });
 
-//   Autoloading modules   //
-/*
-spl_autoload_register(function($class) {
-    if (strpos($class, 'modules\\') !== false)
-        @include_once "uloleframework/ulole_".str_replace("\\","/",$class).".php";
-    if (strpos($class, 'user_modules\\') !== false)
-        @include_once "uloleframework/".str_replace("\\","/",$class).".php";
-});*/
+
 
 function loadCore() {
     require "ulole/Core/Router.php";
     require "ulole/Core/Init.php";
 }
+
+
 
 /*
     Usage: loadModule( MODULENAME );
