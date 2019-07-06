@@ -5,7 +5,7 @@
     Inititializing configs and more
 */
 
-global $config;
+global $config, $config_env;
 
 $config = json_decode(file_get_contents("conf.json"));
 

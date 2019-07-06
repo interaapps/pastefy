@@ -44,7 +44,7 @@ class Router {
   }
 
   function setDirectories($views_dir, $template="../templates") {
-    global $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa;
+    global $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa, $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa2;
     $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa = $template;
     $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa2 = $views_dir;
     $this->template  =  $template;
@@ -72,23 +72,34 @@ class Router {
       if(preg_match_all('#^' . $url . '$#', $request, $matches)) {
         foreach ($matches as $key=>$val)
             $_ROUTEVAR[$key] = $val[0];
-        
+            if (strpos($request, "dele"))
+              echo json_encode($_ROUTEVAR);
           
-            if($method==='POST' && isset($this->GetOrPost[$request]["post"]))
-              Router::load($this->GetOrPost[$request]["post"] ,$views_dir.$this->GetOrPost[$request]["post"], $this);
-            elseif($method==='DELETE' && isset($this->GetOrPost[$request]["delete"]))
-              Router::load($this->GetOrPost[$request]["delete"],  $views_dir.$this->GetOrPost[$request]["delete"], $this);
-            elseif($method==='PUT' && isset($this->GetOrPost[$request]["put"]))
-              Router::load($this->GetOrPost[$request]["put"],  $views_dir.$this->GetOrPost[$request]["put"], $this);
-            elseif($method==='CONNECT' && isset($this->GetOrPost[$request]["connect"]))
-              Router::load($this->GetOrPost[$request]["connect"],  $views_dir.$this->GetOrPost[$request]["connect"], $this);
-            elseif($method==='TRACE' && isset($this->GetOrPost[$request]["trace"]))
-              Router::load($this->GetOrPost[$request]["trace"],  $views_dir.$this->GetOrPost[$request]["trace"], $this);
-            elseif($method==='OPTIONS' && isset($this->GetOrPost[$request]["options"]))
-              Router::load($this->GetOrPost[$request]["options"], $views_dir.$this->GetOrPost[$request]["options"], $this);
-            else {
-              Router::load($view, $views_dir.((!is_callable($view)) ? $view : ""), $this);
+            $methods = ["post", "delete", "put", "connect", "trace", "options"];
+            foreach($methods as $meth) {
+              if($method===strtoupper($meth) && isset($this->GetOrPost[$url][$meth])) {
+
+                Router::load($this->GetOrPost[$url][$meth] ,  $views_dir.((!is_callable($this->GetOrPost[$url][$meth])) ? $this->GetOrPost[$url][$meth] : ""), $this);
+                return 0;
+              }
             }
+            Router::load($view, $views_dir.((!is_callable($view)) ? $view : ""), $this);
+
+            // if($method==='POST' && isset($this->GetOrPost[$request]["post"]))
+            //   Router::load($this->GetOrPost[$request]["post"] ,  $views_dir.((!is_callable($this->GetOrPost[$request]["post"])) ? $this->GetOrPost[$request]["post"] : ""), $this);
+            // elseif($method==='DELETE' && isset($this->GetOrPost[$request]["delete"]))
+            //   Router::load($this->GetOrPost[$request]["delete"],  $views_dir.$this->GetOrPost[$request]["delete"], $this);
+            // elseif($method==='PUT' && isset($this->GetOrPost[$request]["put"]))
+            //   Router::load($this->GetOrPost[$request]["put"],  $views_dir.$this->GetOrPost[$request]["put"], $this);
+            // elseif($method==='CONNECT' && isset($this->GetOrPost[$request]["connect"]))
+            //   Router::load($this->GetOrPost[$request]["connect"],  $views_dir.$this->GetOrPost[$request]["connect"], $this);
+            // elseif($method==='TRACE' && isset($this->GetOrPost[$request]["trace"]))
+            //   Router::load($this->GetOrPost[$request]["trace"],  $views_dir.$this->GetOrPost[$request]["trace"], $this);
+            // elseif($method==='OPTIONS' && isset($this->GetOrPost[$request]["options"]))
+            //   Router::load($this->GetOrPost[$request]["options"], $views_dir.$this->GetOrPost[$request]["options"], $this);
+            // else {
+            //   Router::load($view, $views_dir.((!is_callable($view)) ? $view : ""), $this);
+            // }
             
           return 0;
         
@@ -125,6 +136,7 @@ class Router {
 
     public static function load($view, $require, $parent=false) {
       global $_ROUTEVAR;
+      //echo $require."--";
       if ($require !== $parent->views_dir."@") {
         if (is_callable($view))
               echo $view();
@@ -163,7 +175,7 @@ class Router {
       if (!isset($this->GetOrPost[$route])) $this->GetOrPost[$route] = [];
       if (!isset($this->route[$route]))
         $this->route[$route] = "@";
-        $this->GetOrPost[$route]["delete"] = $func;
+      $this->GetOrPost[$route]["delete"] = $func;
     }
   
     function put($route, $func) {
@@ -195,5 +207,5 @@ function tmpl($template_name) {
 
 function view($template_name) {
   global $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa2;
-  include $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa2.".php";
+  include $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa2."/".$template_name.".php";
 }
