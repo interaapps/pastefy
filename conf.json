@@ -8,6 +8,10 @@
         }
     ],
     "options": {
-        "use_mysql": true
+        "use_mysql": true,
+
+
+        "defaultlang": "en",
+        "detectlanguage": false
     }
 }

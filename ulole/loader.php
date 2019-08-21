@@ -20,4 +20,3 @@ function loadCore() {
     require "ulole/core/Router.php";
     require "ulole/core/Init.php";
 }
-

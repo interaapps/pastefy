@@ -9,6 +9,12 @@ global $config, $config_env;
 
 $config = json_decode(file_get_contents("conf.json"));
 
+\ulole\core\classes\Lang::setLang((isset($config->options->defaultlang)) ? $config->options->defaultlang : "en");
+
+if ((isset($config->options->detectlanguage) ? $config->options->detectlanguage : false)) {
+    if (\file_exists("resources/languages/".substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2).".json"))
+    \ulole\core\classes\Lang::setLang(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2));
+}
 
 $config_env = "";
 if (file_exists("env.json")) {

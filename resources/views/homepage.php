@@ -1,9 +1,4 @@
 <?php tmpl('header'); ?>
-<?php
-use ulole\core\classes\util\cookies\Session;
-$session = new Session();
-$session->set("mykey", "myvalue")->save();
-echo $session->get("mykey");
-?>
+<?php echo \ulole\core\classes\Lang::lang("hello_message", "sadf"); ?>
 WELCOME
 <?php tmpl('footer'); ?>

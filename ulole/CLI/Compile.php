@@ -22,9 +22,16 @@ class Compile {
             
             // STARTS
             "@if(("=>'<?php if(',
+            "@elseif(("=>'<?php elseif(',
             "@foreach(("=>'<?php foreach(',
+            "@for(("=>'<?php for(',
             "@while(("=>'<?php while(',
             
+            "@import"=>"<?php import((",
+            "@view"=>"<?php view((",
+            "@template"=>"<?php tmpl((",
+
+            "))!"=>"); ?>",
             "))#"=>"):?>",
             '@else'=>"<?php else: ?>",
             
