@@ -1,10 +1,13 @@
 {
     "name":"MyApp",
     "version": "1.0",
-    
-    "settings": {
-        "autoload": [
-            "app/controller"
-        ]
+    "authors": [
+        {
+            "name": "My Name",
+            "email": "my@mail.com"
+        }
+    ],
+    "options": {
+        "use_mysql": true
     }
 }

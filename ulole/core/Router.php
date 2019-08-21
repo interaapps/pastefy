@@ -1,12 +1,14 @@
 <?php
 
-
 class Router {
 
+
+  public static $lastViewsDirectory;
+  public static $lastTemplatesDirectory;
   public $route;
-  public $views_dir;
-  public $template;
-  public $GetOrPost;
+  public $viewsDirectory;
+  public $templatesDirectory;
+  public $requestMethod;
 
   public static function autoload($dir) {
     $files = scandir($dir);
@@ -22,7 +24,7 @@ class Router {
 
   function setRequestMethods($arr) {
     foreach ($arr as $k1=>$v1) {
-      $this->GetOrPost[$k1] = $v1;
+      $this->requestMethod[$k1] = $v1;
     }
   }
   
@@ -43,12 +45,12 @@ class Router {
     $this->route     =  $route;
   }
 
-  function setDirectories($views_dir, $template="../templates") {
-    global $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa, $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa2;
-    $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa = $template;
-    $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa2 = $views_dir;
-    $this->template  =  $template;
-    $this->views_dir =  $views_dir;
+  function setDirectories($viewsDirectory, $templatesDirectory="../templatesDirectorys") {
+    
+    self::$lastTemplatesDirectory = $templatesDirectory;
+    self::$lastViewsDirectory = $viewsDirectory;
+    $this->templatesDirectory  =  $templatesDirectory;
+    $this->viewsDirectory =  $viewsDirectory;
   }
 
   function set($array) {
@@ -58,8 +60,8 @@ class Router {
   function route() {
     global $_ROUTEVAR;
     $route     =  $this->route;
-    $template  =  $this->template;
-    $views_dir =  $this->views_dir;
+    $templatesDirectory  =  $this->templatesDirectory;
+    $viewsDirectory =  $this->viewsDirectory;
 
     $error404 = false;
     $request = str_replace("?".Router::get_string_between($_SERVER['REQUEST_URI'], "?", ""), "", $_SERVER['REQUEST_URI']);
@@ -77,28 +79,28 @@ class Router {
           
             $methods = ["post", "delete", "put", "connect", "trace", "options"];
             foreach($methods as $meth) {
-              if($method===strtoupper($meth) && isset($this->GetOrPost[$url][$meth])) {
+              if($method===strtoupper($meth) && isset($this->requestMethod[$url][$meth])) {
 
-                Router::load($this->GetOrPost[$url][$meth] ,  $views_dir.((!is_callable($this->GetOrPost[$url][$meth])) ? $this->GetOrPost[$url][$meth] : ""), $this);
+                Router::load($this->requestMethod[$url][$meth] ,  $viewsDirectory.((!is_callable($this->requestMethod[$url][$meth])) ? $this->requestMethod[$url][$meth] : ""), $this);
                 return 0;
               }
             }
-            Router::load($view, $views_dir.((!is_callable($view)) ? $view : ""), $this);
+            Router::load($view, $viewsDirectory.((!is_callable($view)) ? $view : ""), $this);
 
-            // if($method==='POST' && isset($this->GetOrPost[$request]["post"]))
-            //   Router::load($this->GetOrPost[$request]["post"] ,  $views_dir.((!is_callable($this->GetOrPost[$request]["post"])) ? $this->GetOrPost[$request]["post"] : ""), $this);
-            // elseif($method==='DELETE' && isset($this->GetOrPost[$request]["delete"]))
-            //   Router::load($this->GetOrPost[$request]["delete"],  $views_dir.$this->GetOrPost[$request]["delete"], $this);
-            // elseif($method==='PUT' && isset($this->GetOrPost[$request]["put"]))
-            //   Router::load($this->GetOrPost[$request]["put"],  $views_dir.$this->GetOrPost[$request]["put"], $this);
-            // elseif($method==='CONNECT' && isset($this->GetOrPost[$request]["connect"]))
-            //   Router::load($this->GetOrPost[$request]["connect"],  $views_dir.$this->GetOrPost[$request]["connect"], $this);
-            // elseif($method==='TRACE' && isset($this->GetOrPost[$request]["trace"]))
-            //   Router::load($this->GetOrPost[$request]["trace"],  $views_dir.$this->GetOrPost[$request]["trace"], $this);
-            // elseif($method==='OPTIONS' && isset($this->GetOrPost[$request]["options"]))
-            //   Router::load($this->GetOrPost[$request]["options"], $views_dir.$this->GetOrPost[$request]["options"], $this);
+            // if($method==='POST' && isset($this->requestMethod[$request]["post"]))
+            //   Router::load($this->requestMethod[$request]["post"] ,  $viewsDirectory.((!is_callable($this->requestMethod[$request]["post"])) ? $this->requestMethod[$request]["post"] : ""), $this);
+            // elseif($method==='DELETE' && isset($this->requestMethod[$request]["delete"]))
+            //   Router::load($this->requestMethod[$request]["delete"],  $viewsDirectory.$this->requestMethod[$request]["delete"], $this);
+            // elseif($method==='PUT' && isset($this->requestMethod[$request]["put"]))
+            //   Router::load($this->requestMethod[$request]["put"],  $viewsDirectory.$this->requestMethod[$request]["put"], $this);
+            // elseif($method==='CONNECT' && isset($this->requestMethod[$request]["connect"]))
+            //   Router::load($this->requestMethod[$request]["connect"],  $viewsDirectory.$this->requestMethod[$request]["connect"], $this);
+            // elseif($method==='TRACE' && isset($this->requestMethod[$request]["trace"]))
+            //   Router::load($this->requestMethod[$request]["trace"],  $viewsDirectory.$this->requestMethod[$request]["trace"], $this);
+            // elseif($method==='OPTIONS' && isset($this->requestMethod[$request]["options"]))
+            //   Router::load($this->requestMethod[$request]["options"], $viewsDirectory.$this->requestMethod[$request]["options"], $this);
             // else {
-            //   Router::load($view, $views_dir.((!is_callable($view)) ? $view : ""), $this);
+            //   Router::load($view, $viewsDirectory.((!is_callable($view)) ? $view : ""), $this);
             // }
             
           return 0;
@@ -113,7 +115,7 @@ class Router {
       $error404 = true;
     if($error404) {
       header('HTTP/1.1 404 Not Found');
-      include $views_dir.$route["@__404__@"];
+      include $viewsDirectory.$route["@__404__@"];
       return 404;
     }
   }
@@ -137,7 +139,7 @@ class Router {
     public static function load($view, $require, $parent=false) {
       global $_ROUTEVAR;
       //echo $require."--";
-      if ($require !== $parent->views_dir."@") {
+      if ($require !== $parent->viewsDirectory."@") {
         if (is_callable($view))
               echo $view();
           else
@@ -152,60 +154,68 @@ class Router {
         } else {
           if ($parent !== false) {
             header('HTTP/1.1 404 Not Found');
-            include $parent->views_dir.$parent->route["@__404__@"];
+            include $parent->viewsDirectory.$parent->route["@__404__@"];
           }
         }
     }
 
 
     function post($route, $func) {
-      if (!isset($this->GetOrPost[$route])) $this->GetOrPost[$route] = [];
+      if (!isset($this->requestMethod[$route])) $this->requestMethod[$route] = [];
       if (!isset($this->route[$route]))
         $this->route[$route] = "@";
-        $this->GetOrPost[$route]["post"] = $func;
+        $this->requestMethod[$route]["post"] = $func;
     }
   
     function get($route, $func) {
-      if (!isset($this->GetOrPost[$route])) $this->GetOrPost[$route] = [];
+      if (!isset($this->requestMethod[$route])) $this->requestMethod[$route] = [];
       $this->route[$route] = $func;
-      $this->GetOrPost[$route]["get"] = $func;
+      $this->requestMethod[$route]["get"] = $func;
     }
   
     function delete($route, $func) {
-      if (!isset($this->GetOrPost[$route])) $this->GetOrPost[$route] = [];
+      if (!isset($this->requestMethod[$route])) $this->requestMethod[$route] = [];
       if (!isset($this->route[$route]))
         $this->route[$route] = "@";
-      $this->GetOrPost[$route]["delete"] = $func;
+      $this->requestMethod[$route]["delete"] = $func;
     }
   
     function put($route, $func) {
       if (!isset($this->route[$route]))
         $this->route[$route] = "@";
-      $this->GetOrPost[$route] = ["put"=>$func];
+      $this->requestMethod[$route] = ["put"=>$func];
     }
   
     function trace($route, $func) {
       if (!isset($this->route[$route]))
         $this->route[$route] = "@";
-      $this->GetOrPost[$route] = ["trace"=>$func];
+      $this->requestMethod[$route] = ["trace"=>$func];
     }
 
     function connect($route, $func) {
       if (!isset($this->route[$route]))
         $this->route[$route] = "@";
-      $this->GetOrPost[$route] = ["connect"=>$func];
+      $this->requestMethod[$route] = ["connect"=>$func];
     }
 
 }
 
-$routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa = "";
-$routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa2 = "";
-function tmpl($template_name) {
-  global $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa;
-  include $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa.$template_name.".php";
+function tmpl($templatesDirectory_name, $vars=false) {
+  if ($vars !== false) {
+    foreach($vars as $key=>$val){
+      global ${$key};
+      ${$key} = $val;
+    }
+  }
+  include Router::$lastTemplatesDirectory.$templatesDirectory_name.".php";
 }
 
-function view($template_name) {
-  global $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa2;
-  include $routing_templates_dir23174916234weq59512543eqwtt6ireqwdfsa2."/".$template_name.".php";
+function view($templatesDirectory_name, $vars=false) {
+   if ($vars !== false) {
+    foreach($vars as $key=>$val){
+      global ${$key};
+      ${$key} = $val;
+    }
+  }
+  include Router::$lastViewsDirectory."/".$templatesDirectory_name.".php";
 }

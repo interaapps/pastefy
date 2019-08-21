@@ -1,6 +1,5 @@
 <?php
-
-namespace uloleframework\Core\Classes\Variables;
+namespace ulole\core\classes\util;
 
 class JSON {
 

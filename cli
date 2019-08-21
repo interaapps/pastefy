@@ -26,7 +26,7 @@ $done_prefix = "\033[92m᮰ Done\033[0m: ";
 $warn_prefix = "\033[93m᮰ WARNING\033[0m: ";
 $error_prefix = "\033[91m᮰ ERROR\033[0m: ";
 
-echo "\n\n    ".$BLUE."U".$GREEN."L".$TURQUIOUS."O".$RED."L".$YELLOW."E".$RED.$BOLD." CLI".$ENDC."\n\n";
+echo "\n\n    ".$BLUE."U".$GREEN."L".$TURQUIOUS."O".$RED."L".$YELLOW."E".$RED.$BOLD." CLI".$ENDC."\n\n\n";
 
 spl_autoload_register(function($class) {
     @include_once "./".str_replace("\\","/",$class).".php";
@@ -69,6 +69,16 @@ if ($argv[1] == "server") {
 } elseif ($argv[1] == "run") {
     require "app/ulole/CustomCLI.php";
     $CLI->run($argv[1], $argv);
-} elseif ($argv[1] == "transfer") {
-    
+} elseif ($argv[1] == "devtest") {
+    require "ulole/CLI/DevTests.php";
+    $CLI->run($argv[1], $argv);
+} elseif ($argv[1] == "generate") {
+    require "ulole/CLI/Generate.php";
+    $CLI->run($argv[1], $argv);
+}
+
+
+
+else {
+    echo "\033[91m᮰ ERROR\033[0m: Function \"".$argv[0]."\" not found!\n";
 }
