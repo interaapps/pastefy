@@ -1,6 +1,8 @@
-# Class
+# Database Class
 
 The class have to be in the databases folder
+You should use ```php cli generate database <Tablename>```
+
 ```php
 <?php
 namespace databases;

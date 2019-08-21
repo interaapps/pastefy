@@ -7,7 +7,7 @@ class Str {
     function __construct($string) {
         $this->string = $string;
     }
-    function replace($stringToReplace, $replaceWith=false) {
+    public function replace($stringToReplace, $replaceWith=false) {
         $out = $this->string;
 
         if (is_array($stringToReplace)) {
@@ -20,25 +20,35 @@ class Str {
         return $out;
     }
 
-    function append($string) {
+    public function append($string) {
         $this->string .= $string;
         return $this->string;
     }
 
-    function appendNewLine($string) {
+    public function appendNewLine($string) {
         $this->string .= "\n".$string;
         return $this->string;
     }
 
-    function clear() {
+    public function clear() {
         $this->string = "";
     }
 
-    function getString() {
+    public function getString() {
         return $this->string;
     }
 
-    function writeFile($path) {
+    public function writeFile($path) {
         return \file_put_contents($path, $this->string);
     }
+
+    public static function random($length = 10) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    } 
 }

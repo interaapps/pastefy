@@ -12,8 +12,7 @@ error_reporting(E_ALL);// */
 $CLI = new Custom();
 
 
-$CLI->register("migrate", function($args) {
-    $migration = new ulole\modules\ORM\migrate\MigrationHandler();
-    $migration->handle(new databases\migrate\TestTable());
+$CLI->register("a", function($args) {
+    echo ulole\core\classes\util\secure\AES::encrypt("hallo welt", "mein key");
     return "";
 });

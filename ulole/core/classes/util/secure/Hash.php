@@ -1,5 +1,5 @@
 <?php
-namespace ulole\core\classes\util;
+namespace ulole\core\classes\util\secure;
 
 class Hash {
 
