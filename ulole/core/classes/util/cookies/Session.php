@@ -66,6 +66,10 @@ class Session {
         return $this->sessionKeys->data->{$key};
     }
 
+    public function isset($key) {
+        return isset($this->sessionKeys->data->{$key});
+    }
+
     public function set($key, $value) {
         $this->sessionKeys->data->{$key} = $value;
         return $this;

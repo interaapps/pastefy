@@ -1,8 +1,32 @@
-# Ulole Framework (v -1 Development)
+<p align="center"><img src="/public/assets/images/logo.png" width="200"></p>
+
+
+
+#  Pastefy 4.0
+Pastefy is an Open Source self-hosted Pastebin/GithubGist alternative.
+
+
+# Updates
+
+## v4
+## 4
 ```
-This is just the development version. If we are ready soon there is a new version! :D
+Completly recoded and redesigned. 
 ```
-This is a simple framework to make your app cleaner.
-You don't need to use webpack, you can. 
-We have got a simple non NodeJS alternative named compile (More information in the documentation of it), 
-but both are build in
+
+## v3
+### 3.1
+```
+Added Folder System, List of own pastes. And more. 
+```
+
+### 3.0
+```
+Added encryption, added Password encryption, InteraApps Account support (Not for selfhoster). 
+```
+
+## v2
+### 2.1
+```
+Added more security for pastes, password-save, made System cleaner and better. Improved some design things!
+```

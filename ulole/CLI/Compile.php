@@ -27,9 +27,9 @@ class Compile {
             "@for(("=>'<?php for(',
             "@while(("=>'<?php while(',
             
-            "@import"=>"<?php import((",
-            "@view"=>"<?php view((",
-            "@template"=>"<?php tmpl((",
+            "@import(("=>"<?php import(",
+            "@view(("=>"<?php view(",
+            "@template(("=>"<?php tmpl(",
 
             "))!"=>"); ?>",
             "))#"=>"):?>",
@@ -52,7 +52,7 @@ class Compile {
                         \mkdir($enddir."/".$file);
                     self::compileViews($dir."/".$file, $enddir."/".$file);
                 } elseif (strpos($file, "view.php")) {
-                    \file_put_contents($enddir."/".str_replace(".view.php", ".php", $file), \ulole\Core\Classes\Replace::replaceByArray($replaceArray, \file_get_contents($dir."/".$file)));
+                    \file_put_contents($enddir."/".str_replace(".view.php", ".php", $file), \ulole\core\classes\Replace::replaceByArray($replaceArray, \file_get_contents($dir."/".$file)));
                     echo "\nview.php renderer: rendered: ".$enddir.$dir."/".$file." into ".$enddir."/".str_replace(".view.php", ".php", $file);
                 }
             }        

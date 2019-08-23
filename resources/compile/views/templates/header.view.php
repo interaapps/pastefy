@@ -26,19 +26,19 @@
     <script src="/assets/js/app.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
 
-    <title><?php echo ($title); ?> » Pastefy.ga</title>
+    <title>{{$title}} » Pastefy.ga</title>
 </head>
 <body>
 <div id="nav">
     <div id="logo"><a href="/"><img src="/assets/images/logo.png" /></a></div>
     <div id="nav_menu">
-        <?php if(\app\classes\User::usingIaAuth()):?>
-            <?php if(\app\classes\User::loggedIn()):?>
-                <a href="/pasteList" class="nav_link"><img style="border: solid <?php echo ( htmlspecialchars(\app\classes\User::getUserObject()->color) ); ?> 2px;" id="profilepicture" src="<?php echo ( htmlspecialchars(\app\classes\User::getUserObject()->profilepic) ); ?>" /></a>
-            <?php else: ?>
+        @if((\app\classes\User::usingIaAuth()))#
+            @if((\app\classes\User::loggedIn()))#
+                <a href="/pasteList" class="nav_link"><img style="border: solid {{ htmlspecialchars(\app\classes\User::getUserObject()->color) }} 2px;" id="profilepicture" src="{{ htmlspecialchars(\app\classes\User::getUserObject()->profilepic) }}" /></a>
+            @else
                 <a href="/pasteList" class="nav_link">Login</a>
-            <?php endif; ?>
-        <?php else: ?>
-        <?php endif; ?>
+            @endif
+        @else
+        @endif
     </div>
 </div>

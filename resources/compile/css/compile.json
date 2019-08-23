@@ -1,5 +1,6 @@
 {
-    "assets/css/output.css": [
-        "app.css"
+    "assets/css/app.css": [
+        "app.css",
+        "darkhighlight.css"
     ]
 }

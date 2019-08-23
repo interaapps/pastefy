@@ -1,5 +1,10 @@
 {
-    "assets/js/output.js": [
+    "assets/js/app.js": [
+        "jquery.js",
+        "cajax.js",
         "app.js"
+    ],
+    "assets/js/homepage.js": [
+        "homepage.js"
     ]
 }

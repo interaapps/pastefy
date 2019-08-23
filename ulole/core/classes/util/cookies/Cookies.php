@@ -13,6 +13,11 @@ class Cookies {
             return $_COOKIE[$key];
         return null;
     }
+
+    public static function isset($key) {
+        global $_COOKIE;
+        return isset($_COOKIE[$key]);
+    }
     /**
      * Example: Cookies::build("myKey")->value("myValue").time(CookieBuilder::HOUR*5);
      */

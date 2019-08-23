@@ -82,7 +82,7 @@ class CookieBuilder {
      * Does the same like build()
      */
     public function save() {
-        return $this->build;
+        return $this->build();
     }
 
 }
