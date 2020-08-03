@@ -1,0 +1,9 @@
+/modules
+uppm.locks.json
+
+/vendor
+composer.lock
+
+/.idea
+
+env.json

@@ -1,0 +1,26 @@
+{
+    "name":"Pastefy",
+    "version": "4.1",
+    "authors": [
+        {
+            "name": "JulianFun123"
+        }
+    ],
+    "debug": "justtestserver",
+    "options": {
+        "defaultlang": "en",
+        "detectlanguage": false
+    },
+
+    "footer_links": {
+        "Imprint": "https://interaapps.de/p/impressum",
+        "Privacy": "http://interaapps.de/p/informationen",
+        "Addons": "https://github.com/topics/pastefy-addon",
+        "API Docs": "/docs/v1",
+
+        "BREAK_1": "__br__",
+
+        "Pastefy V4 @ Github": "https://github.com/interaapps/pastefy"
+    }
+
+}

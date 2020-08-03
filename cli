@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+
+require "autoload.php";
+// Composer: require "vendor/autoload.php";
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);// */
+
+require "modules/ulole/cli/clibootstrap.php";
+// Composer: require "vendor/interaapps/ulole/cli/clibootstrap.php";

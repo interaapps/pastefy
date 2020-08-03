@@ -1,0 +1,16 @@
+{
+    "name": "interaapps/ulole-framework",
+    "type": "project",
+    "authors": [
+        {
+            "name": "JulianFun123",
+            "email": "julianfun123@yahoo.com"
+        }
+    ],
+    "require": {
+        "interaapps/helper": "^1.0",
+        "interaapps/ulole": "^2.0",
+        "interaapps/uloleorm": "^1.0",
+        "interaapps/deverm": "dev-master"
+    }
+}

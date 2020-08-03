@@ -1,0 +1,16 @@
+{
+    "name": "uloleframework",
+    "version": "2.0",
+    "description": "",
+    "author": "",
+    "keywords": [
+        ""
+    ],
+    "modules": {
+        "uloleorm": "1.0.1",
+        "deverm": "1.0.1",
+        "ulole-core": "2.0.5",
+        "helper": "1.0.2"
+    },
+    "namespaces": {}
+}

@@ -1,0 +1,91 @@
+.hljs {
+	display: block;
+	overflow-x: auto;
+	padding: 0.5em;
+  background: transparent;
+  font-family: 'Roboto Mono', "Space Mono", "Jost", monospace;
+}
+
+.hljs,
+.hljs-tag,
+.hljs-subst {
+	color: #f8f8f2;
+}
+
+.hljs-strong,
+.hljs-emphasis {
+	color: #a8a8a2;
+}
+
+.hljs-bullet,
+.hljs-quote,
+.hljs-number,
+.hljs-regexp,
+.hljs-literal,
+.hljs-link {
+  color: #e1fc69;
+  font-weight: 500;
+}
+
+.hljs-code,
+.hljs-title,
+.hljs-section,
+.hljs-selector-class {
+	color: #a6e22e;
+}
+
+.hljs-strong {
+	font-weight: normal;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-name {
+  color: #5a72dd;
+  font-weight: 600;
+}
+
+.hljs-keyword {
+	font-weight: normal;
+}
+
+.hljs-symbol,
+.hljs-attribute,
+.hljs-attr {
+	color: #66d9ef;
+}
+
+.hljs-params,
+.hljs-class .hljs-title {
+	color: #f8f8f2;
+}
+
+.hljs-type,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-selector-id,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-addition,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-deletion,
+.hljs-meta {
+  color: #ff5b49;
+  font-family: "Space Mono", "Jost", monospace;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.hljs-comment {
+	color: #5c6075;
+  font-family: "Jost", sans-serif;
+}
+
+.hljs-string {
+	color: #b5bd68;
+}
