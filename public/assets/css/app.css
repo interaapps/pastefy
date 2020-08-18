@@ -575,6 +575,7 @@ a:visited {
 
 .hljs-keyword {
 	font-weight: normal;
+	font-family: "Roboto Mono", "Jost", monospace;
 }
 
 .hljs-symbol,
