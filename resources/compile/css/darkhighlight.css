@@ -49,7 +49,9 @@
   font-weight: 600;
 }
 
-.hljs-keyword {
+.hljs-keyword,
+.hljs-selector-class,
+.hljs-selector-tag {
 	font-weight: normal;
 	font-family: "Roboto Mono", "Jost", monospace;
 }
