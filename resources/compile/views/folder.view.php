@@ -29,8 +29,8 @@
     @foreach(($pastes as $obj))#
     <?#
     if ($obj["encrypted"] == 1) {
-        $title = htmlspecialchars(\ulole\core\classes\util\secure\AES::decrypt($obj["title"], $obj["id"]));
-        $content = htmlspecialchars(($obj["password"] == "") ? \ulole\core\classes\util\secure\AES::decrypt($obj["content"], $obj["id"]) : "This paste cannot be previewed. This paste is encrypted with a password.");
+        $title = htmlspecialchars(\modules\helper\security\AES::decrypt($obj["title"], $obj["id"]));
+        $content = htmlspecialchars(($obj["password"] == "") ? \modules\helper\security\AES::decrypt($obj["content"], $obj["id"]) : "This paste cannot be previewed. This paste is encrypted with a password.");
     } else {
         $title = htmlspecialchars($obj["title"]);
         $content = htmlspecialchars($obj["content"]);
