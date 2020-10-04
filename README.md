@@ -15,6 +15,13 @@ To change something to the code you'll need:
 
 We are using ulole-framework compile. You need the modules `php uppm.php install` You have to type `php cli compile`  in a terminal to compile the resources in the `resource/compile` folder. To test your code you have to start the ulole-framework server `php cli server`. We do not support composer dependencies! Just [UPPM](https://github.com/interaapps/uppm) ones
 
+#### Deno CLI
+```bash
+deno run --allow-net --allow-read https://pastefy.ga/cli.js (filename)
+or
+deno run -A https://pastefy.ga/cli.js (filename)
+```
+
 # Updates
 
 ## v4
