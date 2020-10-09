@@ -71,7 +71,7 @@ class PasteController {
 
     public static function createPaste() {
         global $_POST;
-        if ($_POST["content"] != "") {
+        if (trim($_POST["content"]) != "") {
             $paste = new Paste;
             $paste->setContent($_POST["content"]);
 
@@ -84,8 +84,8 @@ class PasteController {
             if ( (\app\classes\User::usingIaAuth()) ? \app\classes\User::loggedIn() : false ){
                 $paste->setUser(User::getUserObject()->id);
             }
-            Response::redirect("/".$paste->save());
-        } else \view("error", ["message"=>"Please insert content!"]);
+            return ["success"=>true, "id"=>$paste->save()];
+        } else return ["success"=>false, "error_message"=>"Insert contents!"];
     }
 
     public static function pasteList() {

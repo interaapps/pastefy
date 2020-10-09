@@ -2,6 +2,7 @@
 namespace app\controller;
 
 use modules\deverm\Response;
+use \app\classes\User;
 
 class UserController {
 
@@ -16,6 +17,22 @@ class UserController {
                 Response::redirect('/');
             }
         }        
+    }
+
+    public static function getUser(){
+        $out = [
+            "loggedIn" => false
+        ];
+
+        if (User::loggedIn()) {
+            $out["loggedIn"] = true;
+            $information = User::getUserObject();
+            $out["name"] = $information->username;
+            $out["profilePicture"] = $information->profilepic;
+            $out["color"] = $information->color;
+        }
+
+        return $out;
     }
 
 }

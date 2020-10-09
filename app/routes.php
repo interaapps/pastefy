@@ -5,19 +5,23 @@ use app\controller\docs\DocsV1Controller;
 $viewsDirectory    = "resources/views/";
 $templateDirectory = "resources/views/templates/";
 
-$router->get("/", "homepage.php");
-
 $router->get("/folder/", "404.php");
 $router->get("/pasteList", "!PasteController@pasteList");
 
+
+$router->get("/user", "!UserController@getUser");
 $router->get("/user/login", "!UserController@login");
 
 $router->post("/create:folder", "!FolderController@createFolder");
 $router->post("/create:paste", "!PasteController@createPaste");
 
 $router->post("/get:folder", "!FolderController@getMyDirectories");
+$router->get("/user/folder", "!FolderController@getMyDirectories");
 
-$router->get("/([a-zA-Z0-9]*)", "!PasteController@openPaste");
+//$router->get("/([a-zA-Z0-9]*)", "!PasteController@openPaste");
+
+$router->get("/([a-zA-Z0-9]*)", "app.php");
+
 $router->get("/p/([a-zA-Z0-9]*)", "!PasteController@openPaste");
 
 $router->get("/folder/([a-zA-Z0-9]*)", "!FolderController@folder");
@@ -50,6 +54,8 @@ $router->get("/docs/v1", function() {
 
 // Language features
 $router->post("/api/v1/language/markdown", "!language\MarkdownLanguageController@markdown");
+
+$router->get("/(.*)", "app.php");
 
 $router->setPageNotFound("404.php");
 

@@ -1,0 +1,88 @@
+@import './highlightjs.scss';
+
+* {
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+    font-family: 'Space Mono', sans-serif;
+}
+
+html, body {
+    height: 100%;
+    min-height: 100%;
+}
+
+#app {
+    background: #1A1E27;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background: #212531;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #050813;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #14161d;
+}
+
+#snackbar {
+	background-color: #ffffff;
+	color: #17fc2e;
+	text-align: center;
+	border-radius: 3px;
+	padding: 16px 32px;
+	position: fixed;
+	bottom: 30px;
+	right: 30px;
+	transform: translate(0%, 100%);
+	transition: 0.3s;
+	opacity: 0;
+	z-index: 1000000;
+}
+
+#snackbar.show {
+	transform: translate(0%, 0%);
+	transition: 0.5s;
+	opacity: 1;
+}
+
+.input {
+	background: #262B39;
+	color: #FFF;
+	display: block;
+	border: none;
+	margin-bottom: 15px;
+	width: 100%;
+	padding: 10px;
+	border-radius: 7px;
+	&::placeholder {
+
+	}
+
+	&:focus,
+	&:hover {
+		border: none;
+		outline: none;
+	}
+}
+
+.button {
+	display: inline-block;
+	border-radius: 7px;
+	padding: 10px;
+	color: #FFF;
+	text-align: center;
+	cursor: pointer;
+	transition: 0.3s background;
+	background: #3469FF;
+	width: calc(100% - 54.8px);
+	margin-top: 10px;
+	&:hover {
+		background: #2c5de6;
+	}
+}
