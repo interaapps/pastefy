@@ -3,15 +3,18 @@
         <div v-if="$store.state.user.loggedIn">
             <h1>Welcome, {{$store.state.user.name}}</h1>
             <h2>Your pastes & folders</h2>
-            <h3 style="margin-top: 20px; margin-bottom: 40px;">Folder</h3>
             <div id="folders">
+                <a class="button" style="float: right; padding: 4px 16px">NEW</a>
+                <h3 style="margin-top: 20px; margin-bottom: 40px;">Folder</h3>
                 <router-link v-for="folder of folders" :to="'/folder/'+folder.id"  :key="folder" class="paste">
                     <span class="date">{{folder.crated}}</span>
                     <h3>{{folder.name}}</h3>
                 </router-link>
             </div>
-            <h3 style="margin-top: 20px; margin-bottom: 40px;">Pastes</h3>
             <div id="pastes">
+                <router-link to="/" class="button" style="float: right; padding: 4px 16px">NEW</router-link>
+                <h3 style="margin-top: 20px; margin-bottom: 40px;">Pastes</h3>
+
                 <router-link v-for="paste of pastes" :to="'/'+paste.id"  :key="paste" class="paste">
                     <span class="date">{{paste.created}}</span>
                     <h3>{{paste.title}}</h3>

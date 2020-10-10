@@ -152,10 +152,11 @@ html, body {
 	float: right;
 	cursor: default;
 	a,
+	a:link,
 	a:visited {
 		margin-left: 20px;
 		color: #FFF;
-		text-decoration: none;
+		text-decoration: none !important;
 		vertical-align: middle;
 		margin-top: 10px;
 		line-height: 45px;

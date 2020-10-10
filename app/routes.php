@@ -27,7 +27,6 @@ $router->get("/p/([a-zA-Z0-9]*)", "!PasteController@openPaste");
 
 $router->get("/api/v1/folder/([a-zA-Z0-9]*)", "!FolderController@folder");
 
-$router->get("/p/login/([a-zA-Z0-9]*)", "!PasteController@password");
 $router->get("/p/raw/([a-zA-Z0-9]*)", "!PasteController@rawPaste");
 $router->get("/raw/([a-zA-Z0-9]*)", "!PasteController@rawPaste");
 $router->get("/([a-zA-Z0-9]*)/raw", "!PasteController@rawPaste");

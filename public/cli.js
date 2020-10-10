@@ -14,6 +14,8 @@ Deno.readTextFile(Deno.args[0]).then(contents => {
         method: "POST",
         body: data
     }).then((res)=>{
-        console.log("Pasted at: "+res.url);
+        res.json().then(res=>{
+            console.log("Pasted at: https://pastefy.ga/"+res.id)
+        });
     })
 })
