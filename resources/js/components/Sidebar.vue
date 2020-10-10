@@ -12,8 +12,8 @@
                 <input autocomplete="off" v-model="$store.state.currentPaste.title" class="input" type="text" placeholder="Title" id="title-input">
                 <textarea v-model="$store.state.currentPaste.content" @keydown="editor" class="input" id="content-input" placeholder="Paste in here"></textarea>
                 <div id="options" :class="{'opened': optionsOpened}">
-                    <h5 class="label" autocomplete="new-password">Password</h5>
-                    <input v-model="$store.state.currentPaste.password" class="input" type="password" placeholder="Password (Optional)">
+                    <h5 class="label">Password</h5>
+                    <input autocomplete="new-password" v-model="$store.state.currentPaste.password" class="input" type="password" placeholder="Password (Optional)">
                     <h5 class="label">Folder</h5>
                     <select class="input" v-if="$store.state.user.loggedIn" v-model="$store.state.currentPaste.folder">
                         <option selected value="">none</option>
