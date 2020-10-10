@@ -1,12 +1,12 @@
 {
     "name":"Pastefy",
     "short_name":"pastefy",
-    "theme_color":"#212531"
-    ,"icons":[
+    "theme_color":"#212531",
+    "icons":[
         {
             "src":"/assets/icons/icon192x.png",
             "type":"image/png",
-            "sizes":"192x192"
+            "sizes":"196x196"
         },{
             "src":"/assets/icons/icon512x.png",
             "type":"image/png",
