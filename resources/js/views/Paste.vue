@@ -2,11 +2,18 @@
     <div v-if="!validPassword">
         <h4>Password:</h4><br><br>
         <input placeholder="Password" v-model="password" type="password" class="input">
-        <a class="button" @click="load($route.params.id)">ENTER PASTE</a>
+        <a class="button" style="width: 100%;" @click="load($route.params.id)">ENTER PASTE</a>
+    </div>
+    <div v-else-if="!found">
+        <div class="error">
+            404! Paste not found
+        </div>
     </div>
     <div v-else>
         
         <div id="action-buttons">
+            <a v-if="isPWA()" @click="copyURL">Copy URL</a>
+            <a v-if="$store.state.user.id == userid" @click="deletePaste">DELETE</a>
             <a @click="$store.state.currentPaste.content = rawContent; $store.state.currentPaste.title = title">FORK</a>
             <a :href="'/'+$route.params.id+'/raw'+(password===''?'':'?password='+password)">RAW</a>
             <a id="copy-contents" @click="copy">
@@ -31,7 +38,9 @@ export default {
         extraContent: "",
         password: "",
         passwordRequired: false,
-        validPassword: true
+        validPassword: true,
+        userid: -2,
+        found: true
     }),
     mounted(){
         this.load(this.$route.params.id)
@@ -54,6 +63,7 @@ export default {
                         this.title = paste.title
                         this.rawContent = paste.content
                         this.passwordRequired = paste.using_password
+                        this.userid = paste.userid
                         
                         this.validPassword = false
 
@@ -114,12 +124,31 @@ export default {
                         }
 
                         console.log(this.language)
-                    }
+                    } else 
+                        this.found = false
                 })
         },
         copy(){
             helper.copyStringToClipboard(this.rawContent)
             helper.showSnackBar("Copied")
+        },
+        copyURL(){
+            helper.copyStringToClipboard(window.location.href)
+            helper.showSnackBar("Copied")
+        },
+        deletePaste(){
+            helper.showSnackBar("Deleting...", "#ff9d34")
+            Prajax.delete("/api/v1/paste/"+this.$route.params.id)
+                .then(res=>{
+                    if (res.json().done) {
+                        helper.showSnackBar("Deleted")
+                        this.$router.push("/")
+                    } else
+                        helper.showSnackBar("Couldn't delete paste", "#EE4343")
+                })
+        },
+        isPWA(){
+            return window.matchMedia('(display-mode: standalone)').matches;
         }
     }
 }
@@ -143,25 +172,6 @@ export default {
 
     #preview {
         margin-top: 40px;
-    }
-
-    #action-buttons {
-        float: right;
-        cursor: default;
-        a,
-        a:visited {
-            margin-left: 20px;
-            color: #FFF;
-            text-decoration: none;
-            vertical-align: middle;
-            margin-top: 10px;
-            line-height: 45px;
-            font-size: 18px;
-            cursor: pointer;
-            i {
-                vertical-align: middle;
-            }
-        }
     }
 
     .language {

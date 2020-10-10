@@ -93,8 +93,7 @@ class PasteController {
         if (User::usingIaAuth()) {
             $user = User::getUserObject();
             if (!$user || !$user->valid) {
-                header("Location: ".$ULOLE_CONFIG_ENV->Auth->returnurl);
-                die("");
+                return ["done"=>false];
             }
 
             $offset = "";
@@ -107,20 +106,33 @@ class PasteController {
                     $offset = "";
             }
 
-            $folder = (new \databases\PasteFolderTable)->select("*")->where("userid", $user->id)->andwhere("parent", "")->order("created DESC")->get();
+            $folder = (new \databases\PasteFolderTable)->select("id, name, created")->where("userid", $user->id)->andwhere("parent", "")->order("created DESC")->get();
             
-            $pastes = (new PasteTable)->select("*")->where("userid", $user->id)->andwhere("folder","")->order("created DESC");
+            $pastes = (new PasteTable)->select("id, content, title, id, created, password, encrypted")->where("userid", $user->id)->andwhere("folder","")->order("created DESC");
             $pastes->query .= " LIMIT 10".$offset." ";
             $pastes = $pastes->get();
 
+            $pasteArray = [];
 
-            \view("pastelist", [
+            foreach ($pastes as $paste) {
+                array_push($pasteArray, [
+                    "id"=>$paste["id"],
+                    "content"=>substr($paste ["password"] == "" ? \modules\helper\security\AES::decrypt($paste["content"], $paste["id"]) : "", 0, 400),
+                    "title"=>\modules\helper\security\AES::decrypt($paste["title"], $paste["id"]),
+                    "encrypted"=>$paste["encrypted"],
+                    "using_password"=>$paste["password"] != "",
+                    "created"=>$paste["created"],
+                ]);
+            }
+
+            return [
+                "done"=>true,
                 "folder"=>$folder,
-                "pastes"=>$pastes
-            ]);
+                "pastes"=>$pasteArray
+            ];
 
         } else 
-            \view("404");
+            return ["done"=>false];
     }
 
 }

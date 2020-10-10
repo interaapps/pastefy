@@ -53,28 +53,24 @@ class Paste {
     
     public static function getPaste($paste, $password=null) {
         $pasteTable = new PasteTable;
-        $content = $pasteTable->select('id, content, title, created, password')->where("id",$paste)->first();
+        $content = $pasteTable->select('id, content, title, created, password, userid')->where("id",$paste)->first();
+    
+        if ($content != null) {
+            if ($password!=null)
+                $password = $content["id"].$password;
+            else
+                $password = $content["id"];
         
-        if ($password!=null)
-            $password = $content["id"].$password;
-        else
-            $password = $content["id"];
-        
-            if (Cookies::isset("\$_pastepw_".$paste)) 
-            $password = $content["id"].Cookies::get("\$_pastepw_".$paste);
-
-        
-
-
-        if ($content != null)
             return [
                 "exists"=>true,
                 "id"=>$content["id"],
                 "title"=>AES::decrypt($content["title"], $content["id"]),
                 "created"=>$content["created"],
                 "content"=>AES::decrypt($content["content"], $password),
-                "using_password"=>$content["password"] !== null && $content["password"] !== ""
+                "using_password"=>$content["password"] !== null && $content["password"] !== "",
+                "userid"=>$content["userid"]
             ];
+        } 
         return ["exists"=>false];
     }
 

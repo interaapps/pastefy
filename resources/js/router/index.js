@@ -2,6 +2,9 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Homepage from '../views/Homepage.vue';
 import Paste from '../views/Paste.vue';
+import Folder from '../views/Folder.vue';
+import NotFound from '../views/NotFound.vue';
+import Settings from '../views/Settings.vue';
 
 Vue.use(VueRouter)
 
@@ -17,9 +20,25 @@ const routes = [
         component: Homepage
     },
     {
+        path: "/settings",
+        name: "Settings",
+        component: Settings
+    },
+    {
         path: "/:id",
         name: "Paste",
         component: Paste
+    },
+    ,
+    {
+        path: "/folder/:id",
+        name: "Folder",
+        component: Folder
+    },
+    {
+        path: "/*",
+        name: "Page not Found",
+        component: NotFound
     }
 ]
 

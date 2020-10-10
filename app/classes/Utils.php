@@ -6,31 +6,33 @@ use \app\classes\User;
 class Utils {
 
     public static $user;
+    public static $loggedIn = null;
 
     public static function getFolder() {
-    	if (User::loggedIn()) {
-		$out = [];
+    	if (self::loggedIn()) {
+            $out = [];
 
-		$folder = (new \databases\PasteFolderTable)->select("*")
-		                ->where("userid", self::getCurrentUser()->id)->get();
+            $folder = (new \databases\PasteFolderTable)->select("*")
+                            ->where("userid", self::getCurrentUser()->id)->get();
 
-		foreach($folder as $obj) {
-		    $out[$obj["id"]] = self::getChildFolder($obj["name"], $obj["id"]);
-		}
+            foreach($folder as $obj) {
+                $out[self::getChildFolder($obj["name"], $obj["parent"])] = $obj["id"];
+            }
 
-		return $out;
+            ksort($out);
+            return $out;
         }
-        return "null";
+        return [];
     }
 
     public static function getChildFolder($parentName, $parentId) {
         $folder = (new \databases\PasteFolderTable)->select("*")
                     ->where("userid", self::getCurrentUser()->id)
-                    ->andwhere("parent", $parentId);
+                    ->andwhere("id", $parentId);
         
         if (count($folder->get()) > 0 && $parentId != "") {
             $folderObj = $folder->first();
-            return self::getChildFolder($parentName."/".$folderObj["name"], $folderObj["id"]);
+            return self::getChildFolder($folderObj["name"]."/".$parentName, $folderObj["parent"]);
         }
         return "/".$parentName;
     }
@@ -39,6 +41,12 @@ class Utils {
         if (self::$user === null)
             self::$user = User::getUserObject();
         return self::$user;
+    }
+
+    public static function loggedIn() {
+        if (self::$loggedIn === null)
+            self::$loggedIn = User::loggedIn();
+        return self::$loggedIn;
     }
 
 }

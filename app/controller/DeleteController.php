@@ -31,12 +31,11 @@ class DeleteController {
                     foreach ($deletePastesR->get() as $obj)
                         self::deletePaste($obj->id, false);
 
-                (new \databases\PasteFolderTable)->delete()->where("userid", $user->id)->andwhere("id", $id)->run();
-                Response::redirect("/pasteList");
-            } else { echo "a";
-                \view("404");}
-        } else { echo "b";
-            \view("404"); }
+                return ["done"=>(new \databases\PasteFolderTable)->delete()->where("userid", $user->id)->andwhere("id", $id)->run()];
+            } else {
+                return ["done"=>false];}
+        } else {
+            return ["done"=>false]; }
     }
 
     public static function deletePaste($id=null, $redirect=true) {
@@ -46,13 +45,12 @@ class DeleteController {
         if (User::usingIaAuth()) {
             $user = User::getUserObject();
             if (((new \databases\PasteTable)->select("id")->where("userid", $user->id)->andwhere("id", $id)->get()) > 0) {
-                (new \databases\PasteTable)->delete()->where("userid", $user->id)->andwhere("id", $id)->run();
-                if ($redirect)
-                    Response::redirect("/pasteList");
+                return ["done"=>(new \databases\PasteTable)->delete()->where("userid", $user->id)->andwhere("id", $id)->run()];
+
             } else
-                \view("404");
+                return ["done"=>false];
         } else 
-            \view("404");
+            return ["done"=>false];
     }
 
 

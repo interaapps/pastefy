@@ -7,6 +7,7 @@ $templateDirectory = "resources/views/templates/";
 
 $router->get("/folder/", "404.php");
 $router->get("/pasteList", "!PasteController@pasteList");
+$router->get("/user/pastes", "!PasteController@pasteList");
 
 
 $router->get("/user", "!UserController@getUser");
@@ -24,7 +25,7 @@ $router->get("/([a-zA-Z0-9]*)", "app.php");
 
 $router->get("/p/([a-zA-Z0-9]*)", "!PasteController@openPaste");
 
-$router->get("/folder/([a-zA-Z0-9]*)", "!FolderController@folder");
+$router->get("/api/v1/folder/([a-zA-Z0-9]*)", "!FolderController@folder");
 
 $router->get("/p/login/([a-zA-Z0-9]*)", "!PasteController@password");
 $router->get("/p/raw/([a-zA-Z0-9]*)", "!PasteController@rawPaste");
@@ -33,6 +34,10 @@ $router->get("/([a-zA-Z0-9]*)/raw", "!PasteController@rawPaste");
 
 $router->get("/delete:folder/([a-zA-Z0-9]*)", "!DeleteController@deleteFolder");
 $router->get("/delete:paste/([a-zA-Z0-9]*)", "!DeleteController@deletePaste");
+
+
+$router->delete("/api/v1/folder/([a-zA-Z0-9]*)", "!DeleteController@deleteFolder");
+$router->delete("/api/v1/paste/([a-zA-Z0-9]*)", "!DeleteController@deletePaste");
 
 /* API */
 

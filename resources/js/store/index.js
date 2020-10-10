@@ -3,10 +3,14 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+if (typeof localStorage.getItem('created_pastes') === 'undefined')
+    localStorage.setItem('created_pastes', JSON.stringify([]))
+
+let store = new Vuex.Store({
   state: {
     user: {
-        loggedIn: false
+        loggedIn: false,
+        id: -1
     },
     mobileVersion: window.innerWidth <= 720,
     currentPaste: {
@@ -17,7 +21,9 @@ export default new Vuex.Store({
     },
     app: {
         fullscreen: false,
-        sideNavTab: "paste"
+        sideNavTab: "paste",
+        fullscreenOnHomepage: localStorage.getItem('fullscreen_on_homepage') == 'true',
+        lastPastes: JSON.parse(localStorage['created_pastes'] || "[]").splice(0, 15)
     }
   },
   mutations: {
@@ -27,3 +33,5 @@ export default new Vuex.Store({
   modules: {
   }
 })
+
+export default store

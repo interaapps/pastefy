@@ -80,9 +80,89 @@ html, body {
 	cursor: pointer;
 	transition: 0.3s background;
 	background: #3469FF;
-	width: calc(100% - 54.8px);
 	margin-top: 10px;
 	&:hover {
 		background: #2c5de6;
+	}
+}
+
+.label {
+	font-size: 14px;
+	color: #FFFFFF;
+	margin-bottom: 10px;
+}
+
+.error {
+	color: #ffffff;
+    background: #ee0000;
+    width: 80%;
+    padding: 9px;
+    margin: 9px auto;
+	border-radius: 1px;
+	&::before {
+		font-family: "Material Icons";
+		content: "error_outline";
+		margin-right: 10px;
+		font-size: 15px;
+	}
+}
+
+#pastes,
+#folders {
+	max-width: 840px;
+	.paste,
+	.paste:visited {
+		display: block;
+		color: #FFF;
+		text-decoration: none;
+		background: #262B39;
+		border-radius: 7px;
+		padding: 10px;
+		overflow-x: auto;
+		transition: 0.3s background;
+		margin-bottom: 15px;
+		max-height: 200px;
+		display: block;
+		overflow: hidden;
+		.date {
+			float: right;
+		}
+		h3 {
+			font-size: 20px;
+		}
+		code {
+
+		}
+		&:hover {
+			background: #1d212c;
+		}
+
+	}
+}
+
+#preview pre {
+	background: #00000011;
+	padding: 14px;
+	border-radius: 7px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+#action-buttons {
+	float: right;
+	cursor: default;
+	a,
+	a:visited {
+		margin-left: 20px;
+		color: #FFF;
+		text-decoration: none;
+		vertical-align: middle;
+		margin-top: 10px;
+		line-height: 45px;
+		font-size: 18px;
+		cursor: pointer;
+		i {
+			vertical-align: middle;
+		}
 	}
 }

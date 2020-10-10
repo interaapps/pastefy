@@ -13,24 +13,45 @@ class FolderController {
     public static function folder() {
         if (User::usingIaAuth()) {
             global $_ROUTEVAR;
-            $folder = (new \databases\PasteFolderTable)->select("*")
-                            ->where("parent", $_ROUTEVAR[1])->get();
-            $pastes = (new PasteTable)->select("*")->where("folder", $_ROUTEVAR[1])->get();
+            
+            $folder = (new \databases\PasteFolderTable)->select("id, name, created, parent")->where("id", $_ROUTEVAR[1])->first();
             
             if (User::loggedIn())
                 $user = User::getUserObject();
+
             
-            if ( count((new \databases\PasteFolderTable)->select("*")->where("id", $_ROUTEVAR[1])->get()) > 0 ) 
-                \view("folder", [
-                    "folder"=>$folder,
-                    "pastes"=>$pastes,
-                    "id"=>$_ROUTEVAR[1],
+            if ( isset($folder["id"]) ) {
+                $folders = (new \databases\PasteFolderTable)->select("id, name, created")
+                            ->where("parent", $_ROUTEVAR[1])->get();
+
+                $pastes = (new PasteTable)->select("id, content, title, id, created, password, encrypted")->where("folder", $_ROUTEVAR[1])->get();
+
+                $pasteArray = [];
+
+                foreach ($pastes as $paste) {
+                    array_push($pasteArray, [
+                        "id"=>$paste["id"],
+                        "content"=>substr($paste ["password"] == "" ? \modules\helper\security\AES::decrypt($paste["content"], $paste["id"]) : "", 0, 400),
+                        "title"=>\modules\helper\security\AES::decrypt($paste["title"], $paste["id"]),
+                        "encrypted"=>$paste["encrypted"],
+                        "using_password"=>$paste["password"] != "",
+                        "created"=>$paste["created"],
+                    ]);
+                }
+
+                return [
+                    "done"=>true,
+                    "name"=>$folder["name"],
+                    "folder"=>$folders,
+                    "pastes"=>$pasteArray,
+                    "id"=>$folder["id"],
+                    "parent"=>$folder["parent"],
                     "myfolder"=>((new \databases\PasteFolderTable)->select("userid")->where("id", $_ROUTEVAR[1])->first()["userid"] == (User::loggedIn() ? $user->id : "NOPE" ) )
-                ]);
-            else
-                \view("404");
+                ];
+            } else
+                return ["done"=>false];
         } else
-            \view("404");
+            return ["done"=>false];
     }
 
     public static function getMyDirectories() {

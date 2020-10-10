@@ -16,9 +16,7 @@ class PasteController {
         
         $pasteContents = Paste::getPaste($_ROUTEVAR[1], $password);
 
-        if ($pasteContents["exists"])
-            Response::json($pasteContents);
-        else Response::json(["done"=>false]);
+        return $pasteContents;
     }
 
     /**

@@ -3,8 +3,8 @@
         <router-link to="/" id="logo" :class="{'mobile': $store.state.mobileVersion && this.$route.path !== '/'}">
             <img src="/assets/images/logo.png">
         </router-link>
-        <div id="sidebar" :class="{'fullscreen': $store.state.app.fullscreen || ($store.state.mobileVersion && this.$route.path === '/'), 'hidden': $store.state.mobileVersion && this.$route.path !== '/'}">
-            <svg v-if="!$store.state.mobileVersion" id="fullscreen-button" @click="$store.state.app.fullscreen = !$store.state.app.fullscreen" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+        <div id="sidebar" :class="{'fullscreen': $store.state.app.fullscreen || (($store.state.mobileVersion || $store.state.app.fullscreenOnHomepage) && this.$route.path === '/'), 'hidden': $store.state.mobileVersion && this.$route.path !== '/'}">
+            <svg v-if="!($store.state.mobileVersion || ($store.state.app.fullscreenOnHomepage && this.$route.path === '/'))" id="fullscreen-button" @click="$store.state.app.fullscreen = !$store.state.app.fullscreen" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
             <router-link id="profile-picture" to="/home" :style="{'margin-left': $store.state.mobileVersion ? '-15px' : '14px'}">
                 <img :src="$store.state.user.profilePicture" :style="{border: $store.state.user.color+' 2px solid'}" v-if="$store.state.user.loggedIn">
             </router-link>
@@ -12,11 +12,12 @@
                 <input v-model="$store.state.currentPaste.title" class="input" type="text" placeholder="Title" id="title-input">
                 <textarea v-model="$store.state.currentPaste.content" @keydown="editor" class="input" id="content-input" placeholder="Paste in here"></textarea>
                 <div id="options" :class="{'opened': optionsOpened}">
-                    <input v-model="$store.state.currentPaste.password" class="input" type="password (Optional)" placeholder="Password">
+                    <h5 class="label">Password</h5>
+                    <input v-model="$store.state.currentPaste.password" class="input" type="password" placeholder="Password (Optional)">
+                    <h5 class="label">Folder</h5>
                     <select class="input" v-if="$store.state.user.loggedIn" v-model="$store.state.currentPaste.folder">
-                        <h6>Options</h6>
                         <option selected value="">none</option>
-                        <option v-for="(name, id) of folders" :key="id" :value="id">{{name}}</option>
+                        <option v-for="(id, name) of folders" :key="id" :value="id">{{name}}</option>
                     </select>
                 </div>
                 <div id="buttons">
@@ -27,9 +28,10 @@
                 </div>
             </div>
         </div>
-        <div id="footer" v-if="!isPWA()">
-            <a href="https://interaapps.de/imprint">IMPRINT</a>
-            <a href="https://interaapps.de/privacy">PRIVACY</a>
+        <div id="footer">
+            <a v-if="!isPWA()" href="https://interaapps.de/imprint">IMPRINT</a>
+            <a v-if="!isPWA()" href="https://interaapps.de/privacy">PRIVACY</a>
+            <router-link to="/settings">SETTINGS</router-link>
         </div>
     </div>
 </template>
@@ -50,7 +52,9 @@ export default {
             }
         };
 
-        Prajax.get("/user/folder").then(res=>this.folders = res.json())
+        Prajax.get("/user/folder").then(res=>{
+            this.folders = res.json()
+        })
     },
     methods: {
         editor(event){
@@ -95,12 +99,24 @@ export default {
                 data.password = this.$store.state.currentPaste.password
             
             if (this.$store.state.currentPaste.folder !== "")
-                data.password = this.$store.state.currentPaste.folder
-
+                data.folder = this.$store.state.currentPaste.folder
+            helper.showSnackBar("Sending...")
+            
             Prajax.post("/create:paste", data)
                 .then(res=>{
                     const paste = res.json()
                     if (paste.success) {
+                        
+                        let date = new Date()
+                        this.$store.state.app.lastPastes.unshift({
+                            id: paste.id,
+                            title: data.title,
+                            content: data.content.substring(0, 50)+"...",
+                            date: date.getMonth()+"/"+date.getDay()+"/"+date.getFullYear()
+                        })
+                        console.log(this.$store.state.app.created_pastes)
+                        localStorage.setItem("created_pastes", JSON.stringify(this.$store.state.app.lastPastes))
+
                         this.$router.push("/"+paste.id)
                         this.$store.state.app.fullscreen = false
                         this.$store.state.currentPaste.content  = ""
@@ -108,8 +124,10 @@ export default {
                         this.$store.state.currentPaste.password = ""
                         helper.copyStringToClipboard(window.location.protocol+"//"+window.location.host+"/"+paste.id)
                         helper.showSnackBar("Copied "+window.location.protocol+"//"+window.location.host+"/"+paste.id+" to clipboard.")
-                    }
-                })
+                    } else 
+                        helper.showSnackBar("Error during posting the paste :(", "#EE4343")
+                }).catch(res=>
+                        helper.showSnackBar("Error during posting the paste :(", "#EE4343"))
         },
         isPWA(){
             return window.matchMedia('(display-mode: standalone)').matches;
@@ -163,6 +181,7 @@ export default {
             margin-top: 10px;
             cursor: pointer;
             padding: 4px;
+            transition: 0.5s;
             &:hover {
                 background: #00000033;
                 border-radius: 100px;
@@ -219,6 +238,10 @@ export default {
             max-height: 0px;
             overflow: hidden;
             transition: 0.3s;
+            .label {
+                font-size: 0px;
+                transition: 0.3s;
+            }
             input {
                 max-height: 0px;
                 overflow: hidden;
@@ -228,6 +251,10 @@ export default {
                 max-height: 1000px;
                 input {
                     max-height: 100px;
+                }
+
+                .label {
+                    font-size: 14px;
                 }
             }
         }
@@ -251,7 +278,7 @@ export default {
             }
 
             #content-input {
-                min-height: calc(100% - 300px);
+                height: 300px;
             }
         }
 
