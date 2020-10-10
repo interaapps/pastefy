@@ -13,7 +13,10 @@ html, body {
 }
 
 #app {
-    background: #1A1E27;
+	background: #1A1E27;
+	@media screen and (max-width: 720px) {
+		background: #212531;
+	}
 }
 
 ::-webkit-scrollbar {

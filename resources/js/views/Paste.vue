@@ -11,10 +11,10 @@
     </div>
     <div v-else>
         
-        <div id="action-buttons">
+        <div id="action-buttons" :class="{mobile: $store.state.mobileVersion}">
             <a v-if="isPWA()" @click="copyURL">Copy URL</a>
             <a v-if="$store.state.user.id == userid" @click="deletePaste">DELETE</a>
-            <a @click="$store.state.currentPaste.content = rawContent; $store.state.currentPaste.title = title">FORK</a>
+            <a @click="$store.state.currentPaste.content = rawContent; $store.state.currentPaste.title = title" v-if="!$store.state.mobileVersion">FORK</a>
             <a :href="'/'+$route.params.id+'/raw'+(password===''?'':'?password='+password)">RAW</a>
             <a id="copy-contents" @click="copy">
                 <i class="material-icons" >content_copy</i>
@@ -181,5 +181,30 @@ export default {
         user-select: none;
         display: inline-block;
         border-radius: 7px;
+    }
+
+    #action-buttons.mobile {
+        a {
+            background: #3469FF;
+            padding: 0px 26px;
+            border-radius: 100px;
+            position: fixed;
+            bottom: 20px;
+            display: inline-block;
+            right: 20px;
+        }
+
+        a+a { bottom: 72px; }
+        a+a+a { bottom: 124px; }
+        a+a+a+a { bottom: 176px; }
+        
+        #copy-contents {
+            padding: 13px;
+            margin-top: -3px;
+            position: static;
+            i {
+                display: block;
+            }
+        }
     }
 </style>

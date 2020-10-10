@@ -4,7 +4,7 @@
   "description": "Optional package.json",
   "main": "resources/js/index.js",
   "scripts": {
-    "build": "webpack --config webpack.js",
+    "build": "webpack --config webpack.js --prodocution",
     "watch": "nodemon -e js,scss,vue,php,html,css --ignore public/assets/js --ignore public/assets/css -x \"npm run build\""
   },
   "repository": {

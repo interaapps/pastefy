@@ -5,9 +5,10 @@
         </router-link>
         <div id="sidebar" :class="{'fullscreen': $store.state.app.fullscreen || (($store.state.mobileVersion || $store.state.app.fullscreenOnHomepage) && this.$route.path === '/'), 'hidden': $store.state.mobileVersion && this.$route.path !== '/'}">
             <svg v-if="!($store.state.mobileVersion || ($store.state.app.fullscreenOnHomepage && this.$route.path === '/'))" id="fullscreen-button" @click="$store.state.app.fullscreen = !$store.state.app.fullscreen" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
-            <router-link id="profile-picture" to="/home" :style="{'margin-left': $store.state.mobileVersion ? '-15px' : '14px'}">
-                <img :src="$store.state.user.profilePicture" :style="{border: $store.state.user.color+' 2px solid'}" v-if="$store.state.user.loggedIn">
+            <router-link v-if="$store.state.user.loggedIn" id="profile-picture" to="/home" :style="{'margin-left': $store.state.mobileVersion ? '-15px' : '14px'}">
+                <img :src="$store.state.user.profilePicture" :style="{border: $store.state.user.color+' 2px solid'}">
             </router-link>
+            <a href="/user/login" id="profile-picture" class="login" v-else>LOGIN</a>
             <div v-if="$store.state.app.sideNavTab === 'paste'">
                 <input autocomplete="off" v-model="$store.state.currentPaste.title" class="input" type="text" placeholder="Title" id="title-input">
                 <textarea v-model="$store.state.currentPaste.content" @keydown="editor" class="input" id="content-input" placeholder="Paste in here"></textarea>
@@ -20,7 +21,7 @@
                         <option v-for="(id, name) of folders" :key="id" :value="id">{{name}}</option>
                     </select>
                 </div>
-                <div id="buttons">
+                <div id="buttons" :class="{mobile: $store.state.mobileVersion}">
                     <a id="submit-button" @click="send">SUBMIT</a>
                     <a id="settings-button" @click="optionsOpened = !optionsOpened">
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-sliders" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z"/></svg>
@@ -141,6 +142,7 @@ export default {
         top: 16px;
         left: 27px;
         z-index: 1000;
+        transition: 0.3s;
         img {
             height: 46px;
         }
@@ -165,6 +167,14 @@ export default {
             border-radius: 50px;
         }
     }
+
+    #profile-picture.login {
+        color: #FFFFFF;
+        font-size: 17px;
+        margin-top: 10.3px;
+        text-decoration: none;
+    }
+
     #sidebar {
         background: #212531;
         position: fixed;
@@ -274,6 +284,16 @@ export default {
                 #submit-button {
                     width: 200px;
                     max-width: 100%;
+                }
+
+                &.mobile {
+                    width: 100%;
+                    float: none;
+                    margin-right: 0px;
+                    #submit-button {
+                        width: calc(100% - 54.8px);
+                    }
+
                 }
             }
 

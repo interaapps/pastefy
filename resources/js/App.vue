@@ -21,6 +21,7 @@ export default {
         &.mobile {
             padding: 20px;
             padding-top: 80px;
+            background: #212531;
         }
     }
 </style>
