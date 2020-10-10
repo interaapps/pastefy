@@ -4,15 +4,15 @@
     "theme_color":"#212531"
     ,"icons":[
         {
-            "src":"/assets/icons/192x192.png",
+            "src":"/assets/icons/icon192x.png",
             "type":"image/png",
             "sizes":"192x192"
         },{
-            "src":"/assets/icons/512x512.png",
+            "src":"/assets/icons/icon512x.png",
             "type":"image/png",
             "sizes":"512x512"
         },{
-            "src":"/assets/icons/152x152.png",
+            "src":"/assets/icons/icon152x.png",
             "type":"image/png",
             "sizes":"152x152"
         }
