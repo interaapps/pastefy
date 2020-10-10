@@ -23,7 +23,8 @@ let store = new Vuex.Store({
         fullscreen: false,
         sideNavTab: "paste",
         fullscreenOnHomepage: localStorage.getItem('fullscreen_on_homepage') == 'true',
-        lastPastes: JSON.parse(localStorage['created_pastes'] || "[]").splice(0, 15)
+        lastPastes: JSON.parse(localStorage['created_pastes'] || "[]").splice(0, 15),
+        loadingUser: false
     }
   },
   mutations: {

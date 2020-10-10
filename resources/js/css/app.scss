@@ -170,3 +170,21 @@ html, body {
 		}
 	}
 }
+
+
+#loading {
+	position: absolute;
+	background: #00000022;
+	width: 100%;
+	right: 0px;
+	top: 0px;
+	height: 100%;
+	cursor: default;
+	text-align: center;
+
+	svg {
+		transform: translateY(-50%);
+		top: 39%;
+		position: relative;
+	}
+}

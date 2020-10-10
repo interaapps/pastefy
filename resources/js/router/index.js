@@ -29,7 +29,6 @@ const routes = [
         name: "Paste",
         component: Paste
     },
-    ,
     {
         path: "/folder/:id",
         name: "Folder",

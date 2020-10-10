@@ -5,17 +5,20 @@
         </router-link>
         <div id="sidebar" :class="{'fullscreen': $store.state.app.fullscreen || (($store.state.mobileVersion || $store.state.app.fullscreenOnHomepage) && this.$route.path === '/'), 'hidden': $store.state.mobileVersion && this.$route.path !== '/'}">
             <svg v-if="!($store.state.mobileVersion || ($store.state.app.fullscreenOnHomepage && this.$route.path === '/'))" id="fullscreen-button" @click="$store.state.app.fullscreen = !$store.state.app.fullscreen" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
-            <router-link v-if="$store.state.user.loggedIn" id="profile-picture" to="/home" :style="{'margin-left': $store.state.mobileVersion ? '-15px' : '14px'}">
+            
+            <router-link v-if="$store.state.user.loggedIn" id="profile-picture" to="/home" :style="{'margin-right': $store.state.mobileVersion || ($store.state.app.fullscreenOnHomepage && this.$route.path === '/') ? '0px' : '14px'}">
                 <img :src="$store.state.user.profilePicture" :style="{border: $store.state.user.color+' 2px solid'}">
             </router-link>
+            <LoadingSpinner width="32px" height="32px" style="margin-top: 6.4px" id="profile-picture" v-else-if="$store.state.app.loadingUser" />
             <a href="/user/login" id="profile-picture" class="login" v-else>LOGIN</a>
-            <div v-if="$store.state.app.sideNavTab === 'paste'">
+            
+            <div v-if="$store.state.app.sideNavTab === 'paste'" style="height: 70%">
                 <input autocomplete="off" v-model="$store.state.currentPaste.title" class="input" type="text" placeholder="Title" id="title-input">
                 <textarea v-model="$store.state.currentPaste.content" @keydown="editor" class="input" id="content-input" placeholder="Paste in here"></textarea>
                 <div id="options" :class="{'opened': optionsOpened}">
                     <h5 class="label">Password</h5>
                     <input autocomplete="new-password" v-model="$store.state.currentPaste.password" class="input" type="password" placeholder="Password (Optional)">
-                    <h5 class="label">Folder</h5>
+                    <h5 v-if="$store.state.user.loggedIn" class="label">Folder</h5>
                     <select class="input" v-if="$store.state.user.loggedIn" v-model="$store.state.currentPaste.folder">
                         <option selected value="">none</option>
                         <option v-for="(id, name) of folders" :key="id" :value="id">{{name}}</option>
@@ -27,6 +30,7 @@
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-sliders" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z"/></svg>
                     </a>
                 </div>
+                <LoadingSpinner v-if="loading" width="50px" height="50px" id="loading" />
             </div>
         </div>
         <div id="footer">
@@ -39,11 +43,13 @@
 <script>
 import { Prajax } from "cajaxjs";
 import helper from "../helper.js";
+import LoadingSpinner from "./LoadingSpinner.vue";
 
 export default {
     data: ()=>({
         optionsOpened: false,
-        folders: {}
+        folders: {},
+        loading: false
     }),
     created(){
         document.onkeyup = (e) => {
@@ -56,6 +62,9 @@ export default {
         Prajax.get("/user/folder").then(res=>{
             this.folders = res.json()
         })
+    },
+    components: {
+        LoadingSpinner
     },
     methods: {
         editor(event){
@@ -102,7 +111,7 @@ export default {
             if (this.$store.state.currentPaste.folder !== "")
                 data.folder = this.$store.state.currentPaste.folder
             helper.showSnackBar("Sending...")
-            
+            this.loading = true
             Prajax.post("/create:paste", data)
                 .then(res=>{
                     const paste = res.json()
@@ -127,8 +136,11 @@ export default {
                         helper.showSnackBar("Copied "+window.location.protocol+"//"+window.location.host+"/"+paste.id+" to clipboard.")
                     } else 
                         helper.showSnackBar("Error during posting the paste :(", "#EE4343")
-                }).catch(res=>
-                        helper.showSnackBar("Error during posting the paste :(", "#EE4343"))
+                    this.loading = false
+                }).catch(res=>{
+                        helper.showSnackBar("Error during posting the paste :(", "#EE4343")
+                        this.loading = false
+                })
         },
         isPWA(){
             return window.matchMedia('(display-mode: standalone)').matches;
@@ -155,6 +167,7 @@ export default {
             }
         }
     }
+
     #profile-picture {
         float: right;
         margin-right: 14px;
@@ -183,6 +196,8 @@ export default {
         padding: 16px 27px;
         top: 0px;
         transition: 0.3s width ease-in-out;
+        overflow-x: hidden;
+        overflow-y: auto;
         #fullscreen-button {
             float: right;
             color: #ffffffce;
@@ -199,7 +214,7 @@ export default {
         }
 
         #content-input {
-            min-height: 160px;
+            height: 220px;
             font-size: 16px;
             white-space: pre;
             overflow-wrap: normal;
@@ -276,6 +291,10 @@ export default {
                 transform: rotate(180deg);
             }
 
+            #title-input {
+                margin-top: 100px;
+            }
+
             #buttons {
                 width: 300px;
                 max-width: 100%;
@@ -298,7 +317,7 @@ export default {
             }
 
             #content-input {
-                height: 300px;
+                height: 70%;
             }
         }
 

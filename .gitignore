@@ -8,4 +8,8 @@ composer.lock
 
 /.idea
 
+package-lock.json
+
 env.json
+_env.json
+.env

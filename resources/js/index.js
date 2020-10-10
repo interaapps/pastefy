@@ -14,8 +14,10 @@ const app = new Vue({
     el: '#app'
 });
 
+store.state.app.loadingUser = true
 Prajax.get("/user").then(res=>{
     store.state.user = res.json()
+    store.state.app.loadingUser = false
 })
 
 if (typeof navigator !== 'undefined') {
