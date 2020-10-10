@@ -2,7 +2,7 @@
 
 
 
-#  Pastefy 4.3
+#  Pastefy 5.0
 Pastefy is an Open Source self-hosted Pastebin/GithubGist alternative.
 
 # Contributing
@@ -23,6 +23,10 @@ deno run -A https://pastefy.ga/cli.js (filename)
 ```
 
 # Updates
+## v5
+```
+A new Vue-Frontend
+```
 
 ## v4
 
