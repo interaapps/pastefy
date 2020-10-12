@@ -1,0 +1,38 @@
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - modules/
+
+stages:
+  - package
+  - deploy
+
+build_image:
+  stage: package
+  image: docker:latest
+  services:
+  - docker:dind
+  variables:
+    DOCKER_DRIVER: overlay
+  only:
+    - master
+  script:
+    - export BRANCH_SLUG_SHORT=${CI_COMMIT_REF_SLUG::40}
+    - docker build -t ${CI_REGISTRY}/${CI_PROJECT_PATH}:${BRANCH_SLUG_SHORT}-${CI_COMMIT_SHORT_SHA} .
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:${BRANCH_SLUG_SHORT}-${CI_COMMIT_SHORT_SHA}
+
+deploy_prod:
+  image: google/cloud-sdk
+  stage: deploy
+  environment: pastefy-prod
+  only:
+    - master
+  before_script:
+    - apt-get install gettext -y
+  script:
+    - export BRANCH_SLUG_SHORT=${CI_COMMIT_REF_SLUG::40}
+    - kubectl delete secret docker-registry --ignore-not-found=true -n $KUBE_NAMESPACE
+    - kubectl create secret docker-registry docker-registry --docker-server=$CI_REGISTRY --docker-username=$REGISTRY_USER --docker-password=$REGISTRY_PASSWORD -n $KUBE_NAMESPACE
+    - (cat deployment/prod.yaml | envsubst) > deployment/deployment.env.yaml
+    - kubectl apply -n $KUBE_NAMESPACE -f deployment/deployment.env.yaml

@@ -1,4 +1,7 @@
 <?php
+if(file_exists("env.json")){
+    exit();
+}
 echo "IMPORTING .env FILE";
 $env = null;
 if (file_exists(".env")){
