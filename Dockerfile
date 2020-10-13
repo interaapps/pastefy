@@ -8,4 +8,6 @@ RUN php uppm.php install
 
 ENV WEB_DOCUMENT_ROOT=/app/public
 
-CMD php genenv.php && supervisord
+ENV WEB_DOCUMENT_INDEX=index.php
+
+CMD php deployment/genenv.php && supervisord
