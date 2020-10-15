@@ -53,6 +53,8 @@ class PasteController {
                     $paste->setFolder($_POST["folder"]);
                 if (isset($_POST["password"]))
                     $paste->setPassword($_POST["password"]);
+                if (isset($_POST["encryption"]))
+                    $paste->setEncryption($_POST["encryption"]);
 
                 $paste->setUser($api["userid"]);
                 $out["url"] = $paste->save();

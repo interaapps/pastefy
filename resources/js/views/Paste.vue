@@ -2,7 +2,8 @@
     <div v-if="!validPassword">
         <h4>Password:</h4><br><br>
         <input placeholder="Password" v-model="password" type="password" class="input">
-        <a class="button" style="width: 100%;" @click="load($route.params.id)">ENTER PASTE</a>
+        <a class="button" style="width: 100%;" @click="load($route.params.id)">ENTER PASTE</a><br>
+            <a v-if="$store.state.user.id == userid" @click="deletePaste">DELETE</a>
     </div>
     <div v-else-if="!found">
         <div class="error">
@@ -29,6 +30,7 @@
 import { Prajax } from "cajaxjs";
 import hljs from "highlight.js";
 import helper from "../helper.js";
+import CryptoJS from "crypto-js";
 export default {
     data: ()=>({
         title: "Title",
@@ -67,8 +69,26 @@ export default {
                         
                         this.validPassword = false
 
-                        if (paste.using_password) {
-                            if (paste.content === '') {
+                        if (paste.encryption == 2) {
+                            let key = this.password;
+                            if (window.location.hash != "") {
+                                key = window.location.hash.split("#")[1];
+                            }
+
+                            if (key == "") {
+                                this.passwordRequired = true
+                                return;
+                            }
+
+                            this.title = CryptoJS.AES.decrypt(paste.title, key).toString(CryptoJS.enc.Utf8);
+                            console.log(this.title)
+                            this.rawContent = CryptoJS.AES.decrypt(paste.content, key).toString(CryptoJS.enc.Utf8);
+                            if (this.rawContent === "")
+                                this.validPassword = false
+                            else
+                                this.validPassword = true
+                        } else if (paste.using_password) {
+                            if (this.rawContent === '') {
                                 if (this.password !== "" ) {
                                     helper.showSnackBar("Invalid Password", "#EE4343")
                                 }
@@ -102,9 +122,9 @@ export default {
                         }
 
                         if (this.language === null)
-                            this.content = hljs.highlightAuto(paste.content).value
+                            this.content = hljs.highlightAuto(this.rawContent).value
                         else {
-                            this.content = hljs.highlight(this.language, paste.content).value
+                            this.content = hljs.highlight(this.language, this.rawContent).value
 
                             if (this.language === "markdown") {
                                 const md = require('markdown-it')({
@@ -119,7 +139,7 @@ export default {
                                         return str;
                                     }
                                 });
-                                this.extraContent = md.render(paste.content)
+                                this.extraContent = md.render(this.rawContent)
                             }
                         }
 

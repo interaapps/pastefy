@@ -16,6 +16,7 @@ class Paste {
     private $content;
     private $password = "";
     private $user = "0";
+    private $encryption = 1;
 
     public function save() : string {
         $id = (function() {
@@ -36,13 +37,15 @@ class Paste {
                 $pasteTable->folder = $folder->first()["id"];
         }
 
-        $pasteTable->title =  AES::encrypt($this->title, $id);
-        if (isset($this->password) && $this->password != "")
+        $pasteTable->title = $this->encryption === 1 ? AES::encrypt($this->title, $id) : $this->title;
+
+
+        if ($this->encryption === 1 && isset($this->password) && $this->password != "")
             $pasteTable->password = Hash::sha512($this->password);
 
-        $pasteTable->content = AES::encrypt($this->content, $id.((isset($this->password)) ? $this->password : ""));
+        $pasteTable->content = $this->encryption === 1 ? AES::encrypt($this->content, $id.((isset($this->password)) ? $this->password : "")) : $this->content;
         $pasteTable->created = date("Y-m-d H:i:s");
-        $pasteTable->encrypted = "1";
+        $pasteTable->encrypted = $this->encryption;
         if ($this->user !== null){
             $pasteTable->userid = $this->user;
         }
@@ -53,7 +56,7 @@ class Paste {
     
     public static function getPaste($paste, $password=null) {
         $pasteTable = new PasteTable;
-        $content = $pasteTable->select('id, content, title, created, password, userid')->where("id",$paste)->first();
+        $content = $pasteTable->select('id, content, title, created, password, userid, encrypted')->where("id",$paste)->first();
     
         if ($content != null) {
             if ($password!=null)
@@ -64,9 +67,10 @@ class Paste {
             return [
                 "exists"=>true,
                 "id"=>$content["id"],
-                "title"=>AES::decrypt($content["title"], $content["id"]),
+                "title"=>$content["encrypted"] == 1 ? AES::decrypt($content["title"], $content["id"]) : $content["title"],
                 "created"=>$content["created"],
-                "content"=>AES::decrypt($content["content"], $password),
+                "encryption"=>$content["encrypted"],
+                "content"=>$content["encrypted"] == 1 ? AES::decrypt($content["content"], $password) : $content["content"],
                 "using_password"=>$content["password"] !== null && $content["password"] !== "",
                 "userid"=>$content["userid"]
             ];
@@ -120,5 +124,15 @@ class Paste {
         $this->user = $user;
 
         return $this;
+    }
+
+    public function setEncryption($encryption = 1){
+        if (\is_numeric($encryption) && ($encryption == 0 || $encryption == 1 || $encryption == 2))
+            $this->encryption = $encryption;
+        return $this;
+    }
+
+    public function getEncryption(){
+        return $this->encryption;
     }
 }

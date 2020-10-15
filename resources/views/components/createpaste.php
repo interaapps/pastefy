@@ -1,4 +1,7 @@
-<form method="POST" action="/create:paste">
+OUTDATED PASTING-METHOD. VISIT:<br><a href="/">Homepage</a>
+<?php /*
+<!--
+	<form method="POST" action="/create:paste">
 	<input autocomplete="off" class="titleinput" type="text" name="title" placeholder="Filename (title) (Optional)">
 	<textarea class="contentinput" name="content" id="<?php echo ($cp_id); ?>_input" placeholder="Content"></textarea><br>
 	<a id="<?php echo ($cp_id); ?>_open_optional_paste_options" style="cursor: pointer; color: #FFFFFF;">Optional Options</a><br><br>
@@ -92,3 +95,6 @@
 
 
 </script>
+-->
+*/
+?>

@@ -18,7 +18,7 @@
                 <router-link v-for="paste of pastes" :to="'/'+paste.id"  :key="paste" class="paste">
                     <span class="date">{{paste.created}}</span>
                     <h3>{{paste.title}}</h3>
-                    <pre><code v-html="highlight(paste.content)"></code></pre>
+                    <pre><code v-if="paste.encrypted==2">This paste can't be previewed. It's client-encrypted.</code><code v-else v-html="highlight(paste.content)"></code></pre>
                 </router-link>
                 <a @click="page -= 1; load()" class="button">PREVIOUS PAGE</a>
                 <a @click="page += 1; load()" style="float: right;" class="button">NEXT PAGE</a>
