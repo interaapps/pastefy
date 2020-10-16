@@ -18,13 +18,13 @@
                 <div id="options" :class="{'opened': optionsOpened}">
                     <h5 class="label">Password</h5>
                     <input autocomplete="new-password" v-model="$store.state.currentPaste.password" class="input" type="password" placeholder="Password (Optional)">
-                    <h5 v-if="$store.state.user.loggedIn" class="label">Folder</h5>
                     
                     <h5 class="label">CLIENT-ENCRYPTED</h5>
                     <label style="color: #FFF;" for="clientencrypted">Client-Encrypted</label>
                     <input type="checkbox" v-model="clientEncrypted" name="clientencrypted">
                     <br><span style="color: #FFFFFF88" v-if="clientEncrypted">Client-Encryption deactivates the RAW function and some more. You can't open an encrypted paste without the password (If you set one) or the link.</span><br>
 
+                    <h5 v-if="$store.state.user.loggedIn" class="label">Folder</h5>
                     <select class="input" v-if="$store.state.user.loggedIn" v-model="$store.state.currentPaste.folder">
                         <option selected value="">none</option>
                         <option v-for="(id, name) of folders" :key="id" :value="id">{{name}}</option>
