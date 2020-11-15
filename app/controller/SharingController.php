@@ -34,6 +34,12 @@ class SharingController {
                 $share->target_id = $user->id;
                 $share->paste = $paste["id"];
                 $res["done"] = $share->save();
+
+                $notification = new \databases\NotificationsTable;
+                $notification->user_id = $user->id;
+                $notification->message = User::getUserObject()->username." shared a paste to you! Click to open.";
+                $notification->url = "/".$paste["id"];
+                $notification->save();
             }
         }
 

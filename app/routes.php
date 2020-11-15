@@ -11,6 +11,10 @@ $router->get("/sharedPasteList", "!SharingController@getSharedPastes");
 $router->get("/user/pastes", "!PasteController@pasteList");
 
 
+$router->get("/notifications", "!NotificationsController@getAll");
+$router->post("/notifications/read", "!NotificationsController@read");
+
+
 $router->get("/user", "!UserController@getUser");
 $router->get("/user/login", "!UserController@login");
 

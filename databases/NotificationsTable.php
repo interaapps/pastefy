@@ -5,14 +5,15 @@ use modules\uloleorm\Table;
 class NotificationsTable extends Table {
 
     public $id,
+           $message,
            $user_id,
-           $target_id,
-           $paste,
+           $received,
+           $already_read,
+           $url,
            $created;
     
     public function database() {
         $this->_table_name_ = "pastefy_notifications";
         $this->__database__ = "main";
     }
-
 }

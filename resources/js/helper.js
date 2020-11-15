@@ -18,13 +18,23 @@ class Toast {
     this.element = null
     this.timer = null
     this.timeout = 2600
+    this.useHTML = false
+    this.element = document.createElement("span");
+    this.element.id = 'snackbar'
+    if (this.useHTML)
+      this.element.innerHTML   = this.text
+    else
+      this.element.textContent = this.text
+    
     this.onclose = ()=>{}
+    this.onopen = ()=>{}
   }
 
   open(){
-    this.element = document.createElement("span");
-    this.element.id = 'snackbar'
-    this.element.textContent = this.text
+    if (this.useHTML)
+      this.element.innerHTML   = this.text
+    else
+      this.element.textContent = this.text
     this.element.style.color = this.color
     this.element.style.backgroundColor = this.background
     this.element.classList.add('show');
@@ -34,6 +44,8 @@ class Toast {
       this.timer = null
       this.close()
     }, this.timeout)
+
+    this.onopen()
   }
 
   close(){
@@ -46,20 +58,22 @@ class Toast {
 }
 
 let bottomMargin = 24
-function showSnackBar(text="", color="#17fc2e", background="#222530") {
+function showSnackBar(text="", color="#17fc2e", background="#222530", open = true) {
   console.log(text);
   const snackbar = new Toast(text, color, background)
-  snackbar.open()
-  snackbar.element.style.bottom = bottomMargin+"px"
-  bottomMargin += snackbar.element.clientHeight + 8
-  console.log("LOGS:");
-  console.log(bottomMargin);
-  console.log(snackbar.element.style.bottom);
-  snackbar.onclose = ()=>{
-    bottomMargin -= snackbar.element.clientHeight + 8
+  if (open) {
+    snackbar.open()
+    bottomMargin += snackbar.element.clientHeight + 8
+    snackbar.onopen = ()=>{
+      snackbar.element.style.bottom = bottomMargin+"px"
+    }
+    snackbar.onclose = ()=>{
+      bottomMargin -= snackbar.element.clientHeight + 8
+    }
   }
+  
   return snackbar
 }
 
 
-export default {copyStringToClipboard, showSnackBar}
+export default {copyStringToClipboard, showSnackBar, Toast}

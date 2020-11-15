@@ -25,6 +25,7 @@
     "crypto-js": "^4.0.0",
     "css-loader": "^3.0.0",
     "highlight.js": "^10.2.1",
+    "jdomjs": "^1.1.2",
     "markdown-it": "^11.0.1",
     "mini-css-extract-plugin": "^0.11.0",
     "node-sass": "^4.14.1",
