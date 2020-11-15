@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/assets/css/app.compiled.css">
     <link rel="manifest" href="/manifest.json">
 
-    <link rel="shortcut icon" type="image/png" href="/assets/images/icon.png"> <meta name="theme-color" content="#333344" />
+    <link rel="shortcut icon" type="image/png" href="/assets/images/icon.png"> <meta name="theme-color" content="#212531" />
     <meta name="description" content="Pastefy is an Open Source self-hosted Pastebin/GithubGist alternative.">
     <meta property="og:site_name" content="Pastefy" />
     <meta property="og:locale" content="en_UK" />

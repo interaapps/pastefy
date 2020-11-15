@@ -21,7 +21,7 @@
                     
                     <h5 class="label">CLIENT-ENCRYPTED</h5>
                     <label style="color: #FFF;" for="clientencrypted">Client-Encrypted</label>
-                    <input type="checkbox" v-model="clientEncrypted" name="clientencrypted">
+                    <input type="checkbox" v-model="clientEncrypted" :readonly="$store.state.currentPaste.password != ''" name="clientencrypted">
                     <br><span style="color: #FFFFFF88" v-if="clientEncrypted">Client-Encryption deactivates the RAW function and some more. You can't open an encrypted paste without the password (If you set one) or the link.</span><br>
 
                     <h5 v-if="$store.state.user.loggedIn" class="label">Folder</h5>
@@ -31,7 +31,10 @@
                     </select>
 
                     <h5 v-if="$store.state.user.loggedIn" class="label">Share to friend</h5>
-                    <input v-if="$store.state.user.loggedIn" autocomplete="off" v-model="$store.state.currentPaste.friends" class="input" type="text" placeholder="Friends (By username)">
+                    <input v-if="$store.state.user.loggedIn" autocomplete="off" v-model="$store.state.currentPaste.friends" class="input" type="text" placeholder="Friends (By username, split with ,)">
+                    <div id="friend-list">
+                        <a v-for="friend of friendList" :key="friend" @click="addFriendToList(friend)" :class='{selected: $store.state.currentPaste.friends.includes(friend)}'>{{friend}}</a>
+                    </div>
                 </div>
                 <div id="buttons" :class="{mobile: $store.state.mobileVersion}">
                     <a id="submit-button" @click="send">SUBMIT</a>
@@ -60,7 +63,8 @@ export default {
         optionsOpened: false,
         folders: {},
         loading: false,
-        clientEncrypted: false
+        clientEncrypted: false,
+        friendList: []
     }),
     created(){
         document.onkeyup = (e) => {
@@ -73,6 +77,13 @@ export default {
         Prajax.get("/user/folder").then(res=>{
             this.folders = res.json()
         })
+
+        try {
+        if (localStorage["saved_contacts"] != null)
+            this.friendList = JSON.parse(localStorage["saved_contacts"])
+        } catch(e){
+            this.friendList = []
+        }
     },
     components: {
         LoadingSpinner
@@ -180,6 +191,11 @@ export default {
         isPWA(){
             return window.matchMedia('(display-mode: standalone)').matches;
         },
+        addFriendToList(name){
+            if (!this.$store.state.currentPaste.friends.includes(name)) {
+                this.$store.state.currentPaste.friends += name+", "
+            }
+        },
         async shareToFriends(paste, friends){
             for (let friend of friends) {
                 friend = friend.trim()
@@ -190,9 +206,13 @@ export default {
                         user: friend
                     }).then(res=>res.json())
                     toast.close()
-                    if (res.done)
+                    if (res.done) {
                         helper.showSnackBar("Added friend ("+friend+") to paste!")
-                    else
+                        if (!this.friendList.includes(friend)) {
+                            this.friendList.push(friend)
+                            localStorage["saved_contacts"] = JSON.stringify(this.friendList)
+                        }
+                    } else
                         helper.showSnackBar("Couldn't add friend ("+friend+") to paste!", "#FF3232")
                 }
             }
@@ -335,6 +355,27 @@ export default {
 
                 .label {
                     font-size: 14px;
+                }
+            }
+
+            #friend-list {
+                background: #262B39;
+                border-radius: 7px;
+                padding: 2px;
+                max-height: 150px;
+                overflow: auto;
+                a {
+                    display: block;
+                    padding: 4px 7px;
+                    color: #FFF;
+                    border-radius: 5px;
+                    &:hover {
+                        background: #FFFFFF44;
+                    }
+                    cursor: pointer;
+                    &.selected {
+                        color: #FFFC;
+                    }
                 }
             }
         }

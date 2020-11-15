@@ -66,7 +66,6 @@ function showSnackBar(text="", color="#17fc2e", background="#222530", open = tru
     bottomMargin += snackbar.element.clientHeight + 8
     snackbar.onopen = ()=>{
       snackbar.element.style.bottom = bottomMargin+"px"
-      console.log("ADDING");
     }
     snackbar.onclose = ()=>{
       bottomMargin -= snackbar.element.clientHeight + 8
