@@ -303,6 +303,7 @@ export default {
             margin-top: 65px;
         }
         #buttons {
+            margin-bottom: 31px;
             a {
                 display: inline-block;
                 border-radius: 7px;
