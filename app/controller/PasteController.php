@@ -138,4 +138,14 @@ class PasteController {
             return ["done"=>false];
     }
 
+    public static function addFriend(){
+        if (isset($_POST["user"]) && isset($_POST["paste"]) && \app\classes\User::loggedIn()) {
+            if (\app\classes\User::isFriend($_POST["user"])) {
+                
+                return ["done"=>true];
+            }
+        }
+        return ["done"=>false];
+    }
+
 }

@@ -17,7 +17,8 @@ let store = new Vuex.Store({
         title: "",
         content: "",
         password: "",
-        folder: ""
+        folder: "",
+        friends: ""
     },
     app: {
         fullscreen: false,

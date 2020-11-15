@@ -157,14 +157,17 @@ export default {
             helper.showSnackBar("Copied")
         },
         deletePaste(){
-            helper.showSnackBar("Deleting...", "#ff9d34")
+            const toast = helper.showSnackBar("Deleting...", "#ff9d34")
             Prajax.delete("/api/v1/paste/"+this.$route.params.id)
                 .then(res=>{
                     if (res.json().done) {
+                        toast.close()
                         helper.showSnackBar("Deleted")
                         this.$router.push("/")
-                    } else
+                    } else {
+                        toast.close()
                         helper.showSnackBar("Couldn't delete paste", "#EE4343")
+                    }
                 })
         },
         isPWA(){
@@ -178,6 +181,7 @@ export default {
         color: #FFF;
         font-size: 30px;
         margin-bottom: 30px;
+        min-height: 30px;
     }
 
     #paste-contents,

@@ -29,6 +29,9 @@
                         <option selected value="">none</option>
                         <option v-for="(id, name) of folders" :key="id" :value="id">{{name}}</option>
                     </select>
+
+                    <h5 v-if="$store.state.user.loggedIn" class="label">Share to friend</h5>
+                    <input v-if="$store.state.user.loggedIn" autocomplete="off" v-model="$store.state.currentPaste.friends" class="input" type="text" placeholder="Friends (By username)">
                 </div>
                 <div id="buttons" :class="{mobile: $store.state.mobileVersion}">
                     <a id="submit-button" @click="send">SUBMIT</a>
@@ -129,13 +132,12 @@ export default {
                 data.encryption = 2;
             }
 
-            helper.showSnackBar("Sending...")
+            const toast = helper.showSnackBar("Sending...")
             this.loading = true
             Prajax.post("/create:paste", data)
                 .then(res=>{
                     const paste = res.json()
                     if (paste.success) {
-                        
                         let date = new Date()
                         this.$store.state.app.lastPastes.unshift({
                             id: paste.id,
@@ -156,12 +158,20 @@ export default {
                         this.$store.state.currentPaste.content  = ""
                         this.$store.state.currentPaste.title    = ""
                         this.$store.state.currentPaste.password = ""
+                        
                         helper.copyStringToClipboard(window.location.protocol+"//"+window.location.host+"/"+paste.id+hash)
+                        toast.close()
                         helper.showSnackBar("Copied "+window.location.protocol+"//"+window.location.host+"/"+paste.id+hash+" to clipboard.")
-                    } else 
+
+                        this.shareToFriends(paste.id, this.$store.state.currentPaste.friends.split(","))
+                        this.$store.state.currentPaste.friends = ""
+                    } else  {
+                        toast.close()
                         helper.showSnackBar("Error during posting the paste :(", "#EE4343")
+                    }
                     this.loading = false
                 }).catch(res=>{
+                        toast.close()
                         helper.showSnackBar("Error during posting the paste :(", "#EE4343")
                         console.log(res)
                         this.loading = false
@@ -169,6 +179,23 @@ export default {
         },
         isPWA(){
             return window.matchMedia('(display-mode: standalone)').matches;
+        },
+        async shareToFriends(paste, friends){
+            for (let friend of friends) {
+                friend = friend.trim()
+                if (friend.length > 3) {
+                    const toast = helper.showSnackBar("Adding friend ("+friend+") to paste...")
+                    let res = await Prajax.post("/paste/addfriend", {
+                        paste,
+                        user: friend
+                    }).then(res=>res.json())
+                    toast.close()
+                    if (res.done)
+                        helper.showSnackBar("Added friend ("+friend+") to paste!")
+                    else
+                        helper.showSnackBar("Couldn't add friend ("+friend+") to paste!", "#FF3232")
+                }
+            }
         }
     }
 }

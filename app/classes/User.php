@@ -17,6 +17,8 @@ class User {
            $userdata,
            $session;
 
+    private static $cachedUsers = [];
+
     public function __construct($key, $id="") {
         $userData = self::getUserInformation($key);
         $this->key = str_replace('"', '\"', $key);
@@ -35,16 +37,23 @@ class User {
     }
     
     public function getUserData() {
-        return getUserInformation($this->key);
+        return self::getUserInformation($this->key);
     }
 
 
-    public static function findUser($query) {
+    public static function findUser($query, $limit = false) {
         global $ULOLE_CONFIG_ENV;
-        $postdata = http_build_query(
-            ['key' => $ULOLE_CONFIG_ENV->Auth->key,
-                "query"=>$query
-            ]);
+        $postdata = 
+            [
+                'key' => $ULOLE_CONFIG_ENV->Auth->key,
+                "query"=>json_encode($query)
+            ];
+
+        if ($limit !== false)
+            $postdata["limit"] = $limit;
+
+
+        $postdata = http_build_query($postdata);
     
         $opts = ['http' =>[
                 'method'  => 'POST',
@@ -54,14 +63,14 @@ class User {
         $context  = stream_context_create($opts);
         $result = file_get_contents('https://accounts.interaapps.de/oauth_api/finduser', false, $context);
         $resultJson = json_decode($result);
-    
-        if ($resultJson->valid)
-            return json_decode($result);
-        else return false;
+        return json_decode($result);
     }
 
-    public static function getUserInformation($user) {
+    public static function getUserInformation($user, $t = false) {
         global $ULOLE_CONFIG_ENV;
+
+        if (isset(self::$cachedUsers[$user]))
+            return self::$cachedUsers[$user];
         $postdata = http_build_query(
             ['key' => $ULOLE_CONFIG_ENV->Auth->key,
                 'userkey' => $user
@@ -73,11 +82,16 @@ class User {
                 'content' => $postdata
             ]]);
         $result = file_get_contents('https://accounts.interaapps.de/oauth_api/getuserinformation', false, $context);
+
         $resultJson = json_decode($result);
-    
-        if ($resultJson->valid)
-            return json_decode($result);
-        else return false;
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return false;
+        }
+        if ($resultJson->valid) {
+            self::$cachedUsers[$user] = $resultJson;
+            return $resultJson;
+        } else 
+            return false;
     }
     
     public static function loggedIn() {
@@ -88,7 +102,32 @@ class User {
                         ->select('*')
                         ->where("session_id", $_COOKIE["InteraApps_auth"])
                         ->first();   
-        return $loggedIn["id"] !== null;
+        return isset($loggedIn["id"]);
+    }
+
+    public static function isFriend($username){
+        global $ULOLE_CONFIG_ENV;
+        $postdata = http_build_query(
+            [
+                'key' => $ULOLE_CONFIG_ENV->Auth->key,
+                'userkey' => (new PastefySessionsTable)
+                    ->select('*')
+                    ->where("session_id", $_COOKIE["InteraApps_auth"])
+                    ->first()["user_key"],
+                "name" => $username
+            ]);
+    
+        $context = stream_context_create(['http' =>[
+                'method'  => 'POST',
+                'header'  => 'Content-Type: application/x-www-form-urlencoded',
+                'content' => $postdata
+            ]]);
+        $result = file_get_contents('https://accounts.interaapps.de/iaauth/api/friends/isfriend', false, $context);
+        $resultJson = json_decode($result);
+    
+        if ($resultJson->valid)
+            return $resultJson->is_friend;
+        else return false;
     }
     
     

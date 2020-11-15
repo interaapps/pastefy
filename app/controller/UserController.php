@@ -13,7 +13,7 @@ class UserController {
                 $key = \app\classes\User::getUserInformation($_GET["userkey"])->userkey;
                 $newUser = new \app\classes\User($key);
                 $newUser->login();
-                \setcookie("InteraApps_auth", $newUser->session, time()+1593600, "/");
+                \setcookie("InteraApps_auth", $newUser->session, time()+10593600, "/");
                 
                 Response::redirect('/');
             }

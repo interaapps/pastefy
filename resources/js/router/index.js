@@ -5,6 +5,7 @@ import Paste from '../views/Paste.vue';
 import Folder from '../views/Folder.vue';
 import NotFound from '../views/NotFound.vue';
 import Settings from '../views/Settings.vue';
+import SharedPastes from '../views/SharedPastes.vue';
 
 Vue.use(VueRouter)
 
@@ -18,6 +19,11 @@ const routes = [
         path: "/home",
         name: "Homepage",
         component: Homepage
+    },
+    {
+        path: "/shared",
+        name: "SharedPastes",
+        component: SharedPastes
     },
     {
         path: "/settings",

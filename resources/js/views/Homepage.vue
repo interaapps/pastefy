@@ -2,7 +2,7 @@
     <div>
         <div v-if="$store.state.user.loggedIn">
             <h1>Welcome, {{$store.state.user.name}}</h1>
-            <h2>Your pastes & folders</h2>
+            <h2>Your pastes & folders. <router-link to="/shared">Shared pastes</router-link></h2>
             <div id="folders">
                 <a class="button" style="float: right; padding: 4px 16px">NEW</a>
                 <h3 style="margin-top: 20px; margin-bottom: 40px;">Folder</h3>

@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import hljs from 'highlight.js'
 import { Prajax } from "cajaxjs";
+require("babel-polyfill");
 require("./css/app.scss")
 
 Vue.component('App', require('./App.vue').default);

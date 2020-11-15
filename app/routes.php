@@ -7,6 +7,7 @@ $templateDirectory = "resources/views/templates/";
 
 $router->get("/folder/", "404.php");
 $router->get("/pasteList", "!PasteController@pasteList");
+$router->get("/sharedPasteList", "!SharingController@getSharedPastes");
 $router->get("/user/pastes", "!PasteController@pasteList");
 
 
@@ -15,6 +16,7 @@ $router->get("/user/login", "!UserController@login");
 
 $router->post("/create:folder", "!FolderController@createFolder");
 $router->post("/create:paste", "!PasteController@createPaste");
+$router->post("/paste/addfriend", "!SharingController@share");
 
 $router->post("/get:folder", "!FolderController@getMyDirectories");
 $router->get("/user/folder", "!FolderController@getMyDirectories");
@@ -54,7 +56,6 @@ $router->get("/docs/v1/(.*)", "!docs\DocsV1Controller@page");
 $router->get("/docs/v1", function() {
     $page = (new Parsedown)->text(file_get_contents(DocsV1Controller::PAGES[""]));
     return view("docs/v1", ["doc"=>$page, "pages"=>DocsV1Controller::PAGES_LINKS]); });
-
 
 // Language features
 $router->post("/api/v1/language/markdown", "!language\MarkdownLanguageController@markdown");
