@@ -10,6 +10,8 @@
                     <pre><code v-html="highlight(paste.content)"></code></pre>
                 </router-link>
             </div>
+            <a @click="page -= 1; load()" class="button">PREVIOUS PAGE</a>
+            <a @click="page += 1; load()" style="float: right;" class="button">NEXT PAGE</a>
         </div>
     </div>
 </template>
@@ -21,7 +23,8 @@ import helper from "../helper";
 export default {
     data: ()=>({
         pastes: [],
-        loading: false
+        loading: false,
+        page: 1
     }),
     mounted(){
         this.load()
@@ -29,7 +32,9 @@ export default {
     methods:{
         load(){
             this.loading = true
-            Prajax.get("/sharedPasteList")
+            Prajax.get("/sharedPasteList", {
+                page: this.page
+            })
                 .then(res=>res.json())
                 .then(res=>{
                     console.log(res);
