@@ -102,7 +102,7 @@ class User {
                         ->select('*')
                         ->where("session_id", $_COOKIE["InteraApps_auth"])
                         ->first();   
-        return isset($loggedIn["id"]);
+        return isset($loggedIn["id"]) && User::getUserInformation($loggedIn["user_key"]) !== false;
     }
 
     public static function isFriend($username){
