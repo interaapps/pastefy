@@ -1,3 +1,8 @@
+self.importScripts("/assets/js/cajax.js")
+
+let user
+let storage = {}
+
 self.addEventListener('install', function(e) {
     e.waitUntil(
         caches.open('airhorner').then(function(cache) {

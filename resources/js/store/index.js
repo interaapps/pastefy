@@ -24,6 +24,7 @@ let store = new Vuex.Store({
         fullscreen: false,
         sideNavTab: "paste",
         fullscreenOnHomepage: localStorage.getItem('fullscreen_on_homepage') == 'true',
+        browserNotifications: localStorage.getItem('browser_notifications') == 'true',
         lastPastes: JSON.parse(localStorage['created_pastes'] || "[]").splice(0, 15),
         loadingUser: false
     }

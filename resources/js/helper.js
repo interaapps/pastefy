@@ -40,12 +40,13 @@ class Toast {
     this.element.classList.add('show');
 
     document.body.appendChild(this.element)
+    
+    this.onopen()
+    
     this.timer = setTimeout(()=>{
       this.timer = null
       this.close()
     }, this.timeout)
-
-    this.onopen()
   }
 
   close(){
@@ -59,14 +60,16 @@ class Toast {
 
 let bottomMargin = 24
 function showSnackBar(text="", color="#17fc2e", background="#222530", open = true) {
-  console.log(text);
   const snackbar = new Toast(text, color, background)
+
   if (open) {
-    snackbar.open()
-    bottomMargin += snackbar.element.clientHeight + 8
     snackbar.onopen = ()=>{
-      snackbar.element.style.bottom = bottomMargin+"px"
+        snackbar.element.style.bottom = bottomMargin+"px"
+        bottomMargin += snackbar.element.clientHeight + 8
     }
+
+    snackbar.open()
+    
     snackbar.onclose = ()=>{
       bottomMargin -= snackbar.element.clientHeight + 8
     }
