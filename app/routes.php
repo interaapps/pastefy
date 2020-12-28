@@ -1,9 +1,15 @@
 <?php
 use app\classes\Parsedown;
 use app\controller\docs\DocsV1Controller;
+use modules\helper\security\AES;
 
 $viewsDirectory    = "resources/views/";
 $templateDirectory = "resources/views/templates/";
+
+$router->get("/a",  function(){
+    echo AES::decrypt("6IvHHIRetP9sr+71yIOJ5GZyNm3AuqPmzwoNFw6hyG0=", "JoxtBIcv");
+    echo "Hey";
+});
 
 $router->get("/folder/", "404.php");
 $router->get("/pasteList", "!PasteController@pasteList");

@@ -11,6 +11,6 @@
         "interaapps/helper": "^1.0",
         "interaapps/ulole": "^2.0",
         "interaapps/uloleorm": "^1.0",
-        "interaapps/deverm": "dev-master"
+        "interaapps/deverm": "1.0.2"
     }
 }
