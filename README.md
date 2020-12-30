@@ -65,3 +65,11 @@ Added encryption, added Password encryption, InteraApps Account support (Not for
 ```
 Added more security for pastes, password-save, made System cleaner and better. Improved some design things!
 ```
+
+# Pastefy related stuff
+- Pastefy-Cli (Command-Line-Interface)
+  - [Installation](https://github.com/interaapps/pastefy-cli/blob/master/README.md#installation)
+  - [Source Code](https://github.com/interaapps/pastefy-cli)
+- Pastefy Visual Studio Code Extension
+  - [VS-Code Markedplace](https://marketplace.visualstudio.com/items?itemName=InteraApps.pastefy)
+  - [Source Code](https://github.com/interaapps/pastefy-vscode)
