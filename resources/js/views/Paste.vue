@@ -22,7 +22,7 @@
             </a>
         </div>
         <h1>{{title}}<span class="language" v-if="language !== null">{{language}}</span></h1>
-        <code id="paste-contents"><pre v-html="content"></pre></code>
+        <code id="paste-contents"><pre v-html="content" :style="{'white-space': this.language == 'text' ? 'break-spaces' : 'pre'}"></pre></code>
         <div id="preview" v-if="extraContent !== ''" v-html="extraContent"></div>
     </div>
 </template>
@@ -111,20 +111,27 @@ export default {
                             "coffee": "coffeescript",
                             "c++": "cpp",
                             "kotlin": "java",
-                            "kt": "java"
+                            "kt": "java",
+                            "txt": "text",
                         }
 
                         for (let replace  in replacements)
                             ending = ending.replace(replace, replacements[replace]);
                         
-                        if (hljs.listLanguages().includes(ending)) {
+                        let languages = hljs.listLanguages();
+                        languages.push("text")
+
+                        if (languages.includes(ending)) {
                             this.language = ending;
                         }
 
                         if (this.language === null)
                             this.content = hljs.highlightAuto(this.rawContent).value
                         else {
-                            this.content = hljs.highlight(this.language, this.rawContent).value
+                            if (this.language == 'text')
+                                this.content = this.escapeHtml(this.rawContent)
+                            else
+                                this.content = hljs.highlight(this.language, this.rawContent).value
 
                             if (this.language === "markdown") {
                                 const md = require('markdown-it')({
@@ -169,6 +176,14 @@ export default {
                         helper.showSnackBar("Couldn't delete paste", "#EE4343")
                     }
                 })
+        },
+        escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         },
         isPWA(){
             return window.matchMedia('(display-mode: standalone)').matches;
