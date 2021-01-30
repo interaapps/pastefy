@@ -100,23 +100,24 @@ export default {
                         
                         const pasteTitleComponents = this.title.split(".");
                         let ending = pasteTitleComponents[pasteTitleComponents.length-1];
-                        const replacements = {
+                        /*const replacements = {
                             "js": "javascript",
                             "md": "markdown",
                             "sh": "shell",
                             "html": "xml",
                             "htaccess": "apache",
                             "c": "objectivec",
+                            "c": "c",
                             "hack": "php",
                             "coffee": "coffeescript",
                             "c++": "cpp",
                             "kotlin": "java",
                             "kt": "java",
                             "txt": "text",
-                        }
+                        }*/
 
-                        for (let replace  in replacements)
-                            ending = ending.replace(replace, replacements[replace]);
+                        //for (let replace  in replacements)
+                        //    ending = ending.replace(replace, replacements[replace]);
                         
                         let languages = hljs.listLanguages();
                         languages.push("text")
