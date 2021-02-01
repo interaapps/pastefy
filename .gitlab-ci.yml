@@ -1,6 +1,7 @@
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
+    frontend/node_modules
 
 stages:
   - package
