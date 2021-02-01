@@ -18,7 +18,7 @@ RUN mvn -f /home/app/pom.xml clean package
 
 FROM openjdk:8-jre-slim
 COPY --from=build /home/app/target/backend.jar /usr/local/lib/backend.jar
-COPY .env .env
+# COPY .env .env
 
 EXPOSE 1337
 ENTRYPOINT ["java","-jar","/usr/local/lib/backend.jar", "start"]
