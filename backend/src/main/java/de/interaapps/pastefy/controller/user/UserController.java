@@ -48,9 +48,16 @@ public class UserController extends HttpController {
 
     @Get("/folders")
     @With("auth")
-    public List<FolderResponse> getFolder(@Attrib("user") User user){
+    public List<FolderResponse> getFolder(Exchange exchange, @Attrib("user") User user){
         List<FolderResponse> folders = new ArrayList<>();
-        folders = user.getFolders().stream().map(FolderResponse::new).collect(Collectors.toList());
+        boolean showChildren = true;
+
+        if (exchange.rawRequest().getParameter("show_children") != null && exchange.rawRequest().getParameter("show_children").equalsIgnoreCase("false")) {
+            showChildren = false;
+        }
+
+        boolean finalShowChildren = showChildren;
+        folders = user.getFolders().stream().map(folder -> new FolderResponse(folder, finalShowChildren)).collect(Collectors.toList());
         return folders;
     }
 

@@ -78,7 +78,7 @@ export default {
             }
         };
 
-        this.pastefyAPI.get("/api/v2/user/folders").then(res=>{
+        this.pastefyAPI.get("/api/v2/user/folders", {show_children: false}).then(res=>{
             const folders = res.json()
             for (let folder of folders) {
                 this.folders[folder.name] = folder.id
