@@ -1,15 +1,1 @@
-/modules
-uppm.locks.json
-
-node_modules
-
-/vendor
-composer.lock
-
-/.idea
-
-package-lock.json
-
-env.json
-_env.json
 .env

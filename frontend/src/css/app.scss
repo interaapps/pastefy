@@ -1,0 +1,196 @@
+@import './highlightjs.scss';
+
+* {
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+    font-family: 'Space Mono', sans-serif;
+}
+
+html, body {
+    height: 100%;
+    min-height: 100%;
+	background: #1A1E27;
+}
+
+#app {
+	background: #1A1E27;
+	@media screen and (max-width: 720px) {
+		background: #212531;
+	}
+}
+
+a:link,
+a:visited {
+	color: #FFF;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background: #212531;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #050813;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #14161d;
+}
+
+#snackbar {
+	background-color: #ffffff;
+	color: #17fc2e;
+	text-align: center;
+	border-radius: 3px;
+	padding: 16px 32px;
+	position: fixed;
+	bottom: 30px;
+	right: 30px;
+	transform: translate(0%, 100%);
+	transition: 0.3s;
+	opacity: 0;
+	z-index: 1000000;
+}
+
+#snackbar.show {
+	transform: translate(0%, 0%);
+	transition: 0.5s;
+	opacity: 1;
+}
+
+.input {
+	background: #262B39;
+	color: #FFF;
+	display: block;
+	border: none;
+	margin-bottom: 15px;
+	width: 100%;
+	padding: 10px;
+	border-radius: 7px;
+	&::placeholder {
+
+	}
+
+	&:focus,
+	&:hover {
+		border: none;
+		outline: none;
+	}
+}
+
+.button {
+	display: inline-block;
+	border-radius: 7px;
+	padding: 10px;
+	color: #FFF;
+	text-align: center;
+	cursor: pointer;
+	transition: 0.3s background;
+	background: #3469FF;
+	margin-top: 10px;
+	&:hover {
+		background: #2c5de6;
+	}
+}
+
+.label {
+	font-size: 14px;
+	color: #FFFFFF;
+	margin-bottom: 10px;
+}
+
+.error {
+	color: #ffffff;
+    background: #ee0000;
+    width: 80%;
+    padding: 9px;
+    margin: 9px auto;
+	border-radius: 1px;
+	&::before {
+		font-family: "Material Icons";
+		content: "error_outline";
+		margin-right: 10px;
+		font-size: 15px;
+	}
+}
+
+#pastes,
+#folders {
+	max-width: 840px;
+	.paste,
+	.paste:visited {
+		display: block;
+		color: #FFF;
+		text-decoration: none;
+		background: #262B39;
+		border-radius: 7px;
+		padding: 10px;
+		overflow-x: auto;
+		transition: 0.3s background;
+		margin-bottom: 15px;
+		max-height: 200px;
+		display: block;
+		overflow: hidden;
+		.date {
+			float: right;
+		}
+		h3 {
+			font-size: 20px;
+		}
+		code {
+
+		}
+		&:hover {
+			background: #1d212c;
+		}
+
+	}
+}
+
+#preview pre {
+	background: #00000011;
+	padding: 14px;
+	border-radius: 7px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+#action-buttons {
+	float: right;
+	cursor: default;
+	a,
+	a:link,
+	a:visited {
+		margin-left: 20px;
+		color: #FFF;
+		text-decoration: none !important;
+		vertical-align: middle;
+		margin-top: 10px;
+		line-height: 45px;
+		font-size: 18px;
+		cursor: pointer;
+		i {
+			vertical-align: middle;
+		}
+	}
+}
+
+
+#loading {
+	position: absolute;
+	background: #00000022;
+	width: 100%;
+	right: 0px;
+	top: 0px;
+	height: 100%;
+	cursor: default;
+	text-align: center;
+
+	svg {
+		transform: translateY(-50%);
+		top: 39%;
+		position: relative;
+	}
+}

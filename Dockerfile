@@ -1,12 +1,25 @@
-FROM webdevops/php-nginx:7.3
-
-
-COPY --chown=application . /app
+FROM node:lts-alpine as build-stage
 WORKDIR /app
+COPY frontend/package*.json ./
 
-RUN php uppm.php install
+RUN npm install
+COPY frontend .
+RUN npm run build --prod
 
-ENV WEB_DOCUMENT_ROOT=/app/public
-ENV WEB_DOCUMENT_INDEX=index.php
 
-CMD php deployment/genenv.php && supervisord
+FROM maven:3.6.0-jdk-8-slim AS build
+
+WORKDIR /
+
+COPY backend/src /home/app/src
+COPY backend/pom.xml /home/app
+
+RUN mvn -f /home/app/pom.xml clean package
+
+FROM openjdk:8-jre-slim
+COPY --from=build /home/app/target/backend.jar /usr/local/lib/backend.jar
+COPY .env .env
+
+EXPOSE 1337
+ENTRYPOINT ["java","-jar","/usr/local/lib/backend.jar", "start"]
+

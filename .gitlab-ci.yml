@@ -1,7 +1,6 @@
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - modules/
 
 stages:
   - package
@@ -11,7 +10,7 @@ build_image:
   stage: package
   image: docker:latest
   services:
-  - docker:dind
+    - docker:dind
   variables:
     DOCKER_DRIVER: overlay
   only:
@@ -25,7 +24,7 @@ build_image:
 deploy_prod:
   image: google/cloud-sdk
   stage: deploy
-  environment: pastefy-prod
+  environment: passwords-prod
   only:
     - master
   before_script:

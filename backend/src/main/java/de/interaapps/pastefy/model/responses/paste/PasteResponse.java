@@ -1,0 +1,30 @@
+package de.interaapps.pastefy.model.responses.paste;
+
+import de.interaapps.pastefy.model.database.Paste;
+
+public class PasteResponse {
+    public boolean exists = false;
+    public String id;
+    public String content;
+    public String title;
+    public boolean encrypted = false;
+    public String folder;
+    public int userId;
+    public String rawURL;
+    public String created = "0000-00-00 00:00:00";
+
+    public PasteResponse(Paste paste){
+        if (paste == null) {
+            return;
+        }
+        id      = paste.getKey();
+        title   = paste.getTitle();
+        content = paste.getContent();
+        created = paste.createdAt.toString();
+        encrypted = paste.isEncrypted();
+        userId  = paste.getUserId();
+        if (paste.getFolder() != null)
+            folder = paste.getFolder().getKey();
+        exists = true;
+    }
+}

@@ -1,0 +1,23 @@
+version: '3.3'
+
+services:
+   db:
+     image: mariadb:latest
+     environment:
+       MYSQL_ROOT_PASSWORD: test
+       MYSQL_DATABASE: test
+       MYSQL_USER: test
+       MYSQL_PASSWORD: test
+
+   pastefy:
+     depends_on:
+       - db
+     build: .
+     ports:
+       - "9999:1337"
+       
+     environment:
+       DATABASE_PASSWORD: test
+       DATABASE_NAME: test
+       DATABASE_USER: test
+       DATABASE_PASSWORD: test
