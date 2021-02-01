@@ -90,8 +90,13 @@ a:visited {
 	transition: 0.3s background;
 	background: #3469FF;
 	margin-top: 10px;
+	text-decoration: none;
 	&:hover {
 		background: #2c5de6;
+	}
+
+	&.gray {
+		background: #FFFFFF09;
 	}
 }
 

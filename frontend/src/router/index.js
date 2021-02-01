@@ -6,6 +6,7 @@ import Folder from '../views/Folder.vue';
 import NotFound from '../views/NotFound.vue';
 import Settings from '../views/Settings.vue';
 import SharedPastes from '../views/SharedPastes.vue';
+import ApiKeys from '../views/ApiKeys.vue';
 import LoginViaAPI from "../views/auth/LoginViaAPI";
 
 Vue.use(VueRouter)
@@ -35,6 +36,11 @@ const routes = [
         path: "/auth",
         name: "Authentication",
         component: LoginViaAPI
+    },
+    {
+        path: "/apikeys",
+        name: "API-Keys",
+        component: ApiKeys
     },
     {
         path: "/:id",

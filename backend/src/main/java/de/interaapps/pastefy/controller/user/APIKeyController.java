@@ -4,6 +4,7 @@ import de.interaapps.pastefy.model.auth.User;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.responses.ActionResponse;
 import de.interaapps.pastefy.model.responses.user.keys.CreateAuthKeyResponse;
+import org.javawebstack.framework.HttpController;
 import org.javawebstack.httpserver.router.annotation.*;
 import org.javawebstack.orm.Repo;
 
@@ -11,20 +12,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @PathPrefix("/api/v2/user/keys")
-public class APIKeyController {
+public class APIKeyController extends HttpController {
     @Post
     @With("auth")
     public CreateAuthKeyResponse addKey(@Attrib("user") User user){
         CreateAuthKeyResponse response = new CreateAuthKeyResponse();
         AuthKey authKey = new AuthKey();
         AuthKey userAuthKey = Repo.get(AuthKey.class).where("userId", user.getId()).order("createdAt", true).get();
-        authKey.type = AuthKey.Type.API;
-        authKey.userId = userAuthKey.id;
-        authKey.apiKey = userAuthKey.apiKey;
-        authKey.save();
+        if (userAuthKey != null) {
+            authKey.type = AuthKey.Type.API;
+            authKey.userId = userAuthKey.userId;
+            authKey.apiKey = userAuthKey.apiKey;
+            authKey.save();
 
-        response.success = true;
-        response.key     = authKey.getKey();
+            response.success = true;
+            response.key = authKey.getKey();
+        }
         return response;
     }
 

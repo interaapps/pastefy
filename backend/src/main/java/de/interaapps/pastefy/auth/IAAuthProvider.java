@@ -37,7 +37,7 @@ public class IAAuthProvider implements AuthenticationProvider {
         authKey.apiKey = key;
         authKey.type = AuthKey.Type.USER;
         IAAuthUser iaAuthUser = (IAAuthUser) getUser(authKey);
-
+        authKey.userId = iaAuthUser.id;
         if (iaAuthUser.valid) {
             authKey.save();
             authKey.userId = iaAuthUser.id;

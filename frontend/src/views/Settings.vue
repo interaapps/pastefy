@@ -3,7 +3,11 @@
         <h1>Settings</h1>
         
         Fullscreen-Paste on Homepage: <input v-model="$store.state.app.fullscreenOnHomepage" type="checkbox"><br>
-        Browser-notifications: <input v-model="$store.state.app.browserNotifications" type="checkbox">
+        Browser-notifications: <input v-model="$store.state.app.browserNotifications" type="checkbox"><br>
+
+        <div v-if="$store.state.user.logged_in">
+            <router-link to="/apikeys" class="button gray">Api-Keys</router-link><br>
+        </div>
     </div>
 </template>
 <script>
