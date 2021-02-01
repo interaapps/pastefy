@@ -24,7 +24,7 @@ build_image:
 deploy_prod:
   image: google/cloud-sdk
   stage: deploy
-  environment: passwords-prod
+  environment: pastefy-prod
   only:
     - master
   before_script:
