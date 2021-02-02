@@ -9,8 +9,10 @@ import org.javawebstack.httpserver.router.annotation.*;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.query.Query;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @PathPrefix("/api/v2/user/notification")
 public class NotificationController extends HttpController {
@@ -21,6 +23,12 @@ public class NotificationController extends HttpController {
     @With("auth")
     public ActionResponse add(@Attrib("user") User user){
         ActionResponse response = new ActionResponse();
+        //Notification notification = new Notification();
+        //notification.setMessage();
+        //user.sendNotification(notification);
+
+        List<String> list = new ArrayList<>();
+
 
         return response;
     }

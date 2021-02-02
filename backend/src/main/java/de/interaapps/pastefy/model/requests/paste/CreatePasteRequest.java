@@ -4,7 +4,7 @@ import org.javawebstack.validator.Rule;
 
 public class CreatePasteRequest {
     @Rule("string")
-    public String title;
+    public String title = "";
     @Rule("required|string")
     public String content;
     @Rule("boolean")
