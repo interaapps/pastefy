@@ -323,6 +323,7 @@ export default {
                 background: #3469FF;
                 width: calc(100% - 54.8px);
                 margin-top: 10px;
+                margin-bottom: 60px;
                 &:hover {
                     background: #2c5de6;
                 }
