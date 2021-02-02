@@ -23,8 +23,8 @@ public class PasteResponse {
         created = paste.createdAt.toString();
         encrypted = paste.isEncrypted();
         userId  = paste.getUserId();
-        if (paste.getFolder() != null)
-            folder = paste.getFolder().getKey();
+        if (paste.getFolderId() != null)
+            folder = paste.getFolderId();
         exists = true;
     }
 }

@@ -63,7 +63,7 @@ export default {
             return hljs.highlightAuto(content).value
         },
         load(){
-            this.pastefyAPI.get("/api/v2/user/overview", {page: this.page})
+            this.pastefyAPI.get("/api/v2/user/overview", {page: this.page, hide_children: true})
                 .then(res=>res.json())
                 .then(res=>{
                     this.pastes = res.pastes

@@ -35,8 +35,8 @@ public class FolderController extends HttpController {
     }
 
     @Get("/{id}")
-    public FolderResponse getFolder(Exchange exchange, @Path("id") String id, @Attrib("user") User user){ ;
-        return new FolderResponse(Repo.get(Folder.class).where("key", id).get());
+    public FolderResponse getFolder(Exchange exchange, @Path("id") String id, @Attrib("user") User user){
+        return new FolderResponse(Repo.get(Folder.class).where("key", id).get(), exchange.rawRequest().getParameter("hide_children") != null);
     }
 
     @Delete("/{id}")

@@ -17,7 +17,6 @@ public class IAAuthProvider implements AuthenticationProvider {
         this.apiKey = apiKey;
         iaAuthClient =  new HTTPClient()
                 .setBaseUrl("https://accounts.interaapps.de/iaauth/api");
-
     }
 
     public User getUser(AuthKey authKey) {
