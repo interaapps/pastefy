@@ -47,7 +47,7 @@ export default {
     },
     methods: {
         load(id){
-            this.pastefyAPI.get("/api/v2/folder/"+id)
+            this.pastefyAPI.get("/api/v2/folder/"+id, {hide_children: true})
                 .then(res=>res.json())
                 .then(res=>{
                     if (res.exists) {

@@ -40,7 +40,7 @@ public class UserController extends HttpController {
         if (exchange.rawRequest().getParameter("page") != null)
             page = Integer.parseInt(exchange.rawRequest().getParameter("page"))-1;
 
-        response.pastes = Repo.get(Paste.class).where("userId", user.getId()).isNull("folder").order("updated_at", true).limit(10).offset(page*10).all().stream().map(PasteResponse::new).collect(Collectors.toList());
+        response.pastes = Repo.get(Paste.class).where("userId", user.getId()).isNull("folder").order("updated_at", true).limit(10).offset(page*10).all().stream().map(paste -> new PasteResponse(paste).shortenContent()).collect(Collectors.toList());
         response.folder = Repo.get(Folder.class).where("userId", user.getId()).isNull("parent").order("updated_at", true).all().stream().map(folder -> new FolderResponse(folder, exchange.rawRequest().getParameter("hide_children") == null)).collect(Collectors.toList());
 
         return response;
@@ -49,11 +49,7 @@ public class UserController extends HttpController {
     @Get("/folders")
     @With("auth")
     public List<FolderResponse> getFolder(Exchange exchange, @Attrib("user") User user){
-        List<FolderResponse> folders = new ArrayList<>();
-        boolean showChildren = !(exchange.rawRequest().getParameter("show_children") != null && exchange.rawRequest().getParameter("show_children").equalsIgnoreCase("false"));
-
-        folders = user.getFolders().stream().map(folder -> new FolderResponse(folder, showChildren)).collect(Collectors.toList());
-        return folders;
+        return user.getFolderTree(exchange.rawRequest().getParameter("hide_children") == null);
     }
 
     @Get("/pastes")

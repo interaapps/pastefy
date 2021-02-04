@@ -1,6 +1,7 @@
 package de.interaapps.pastefy.model.responses.paste;
 
 import de.interaapps.pastefy.model.database.Paste;
+import sun.java2d.xr.XRRenderer;
 
 public class PasteResponse {
     public boolean exists = false;
@@ -26,5 +27,11 @@ public class PasteResponse {
         if (paste.getFolderId() != null)
             folder = paste.getFolderId();
         exists = true;
+    }
+
+    public PasteResponse shortenContent(){
+        if (content.length() > 250)
+            content = content.substring(0, 250);
+        return this;
     }
 }
