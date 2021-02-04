@@ -1,7 +1,6 @@
 package de.interaapps.pastefy.model.responses.paste;
 
 import de.interaapps.pastefy.model.database.Paste;
-import sun.java2d.xr.XRRenderer;
 
 public class PasteResponse {
     public boolean exists = false;
