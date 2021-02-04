@@ -20,7 +20,7 @@ public class Folder extends Model {
     private String key;
 
     @Column
-    private String name;
+    private String name = "";
 
     @Column
     private int userId;
