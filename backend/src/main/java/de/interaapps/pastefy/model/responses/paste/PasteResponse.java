@@ -29,8 +29,8 @@ public class PasteResponse {
     }
 
     public PasteResponse shortenContent(){
-        if (content.length() > 250)
-            content = content.substring(0, 250);
+        if (content.length() > 450)
+            content = content.substring(0, 450);
         return this;
     }
 }
