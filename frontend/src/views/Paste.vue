@@ -14,6 +14,7 @@
         
         <div id="action-buttons" :class="{mobile: $store.state.mobileVersion}">
             <a v-if="isPWA()" @click="copyURL">Copy URL</a>
+            <a href="#preview" v-if="extraContent !== ''">PREVIEW</a>
             <a v-if="$store.state.user.id == userid" @click="deletePaste">DELETE</a>
             <a @click="$store.state.currentPaste.content = rawContent; $store.state.currentPaste.title = title" v-if="!$store.state.mobileVersion">FORK</a>
             <a :href="'/'+$route.params.id+'/raw'+(password===''?'':'?password='+password)">RAW</a>
@@ -98,24 +99,12 @@ export default {
                         
                         const pasteTitleComponents = this.title.split(".");
                         let ending = pasteTitleComponents[pasteTitleComponents.length-1];
-                        /*const replacements = {
-                            "js": "javascript",
-                            "md": "markdown",
-                            "sh": "shell",
-                            "html": "xml",
-                            "htaccess": "apache",
-                            "c": "objectivec",
-                            "c": "c",
-                            "hack": "php",
-                            "coffee": "coffeescript",
-                            "c++": "cpp",
-                            "kotlin": "java",
-                            "kt": "java",
-                            "txt": "text",
-                        }*/
+                        const replacements = {
+                            "md": "markdown"
+                        }
 
-                        //for (let replace  in replacements)
-                        //    ending = ending.replace(replace, replacements[replace]);
+                        for (let replace  in replacements)
+                            ending = ending.replace(replace, replacements[replace]);
                         
                         let languages = hljs.listLanguages();
                         languages.push("text")
@@ -245,6 +234,34 @@ export default {
             i {
                 display: block;
             }
+        }
+    }
+</style>
+<style lang="scss">
+    #preview {
+        img {
+            max-width: 100%;
+            border-radius: 7px;
+            margin: 10px 0px;
+        }
+
+        blockquote {
+            padding-left: 10px;
+            border-left: 4px #00000077 solid;
+            background: #FFFFFF09;
+            margin: 20px 0px;
+        }
+
+        code {
+            background: #FFFFFF11;
+            padding: 0px 6px;
+            border-radius: 5px;
+        }
+
+        pre code {
+            background: none;
+            padding: 0px;
+            border-radius: 0px;
         }
     }
 </style>

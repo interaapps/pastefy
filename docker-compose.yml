@@ -16,6 +16,7 @@ services:
      depends_on:
        - db
      build: .
+     image: interaapps/pastefy
      ports:
        - "9999:1337"
        
