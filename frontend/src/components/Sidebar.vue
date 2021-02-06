@@ -12,8 +12,12 @@
             <LoadingSpinner width="32px" height="32px" style="margin-top: 6.4px" id="profile-picture" v-else-if="$store.state.app.loadingUser" />
             <a :href="loginURL" id="profile-picture" class="login" v-else>LOGIN</a>
             
-            <div v-if="$store.state.app.sideNavTab === 'paste'" style="height: 70%">
+            <div v-if="$store.state.app.sideNavTab === 'paste'" id="create-paste" :class="{'input-fullscreen': inputFullscreen}" style="height: 70%">
                 <input autocomplete="off" v-model="$store.state.currentPaste.title" class="input" type="text" placeholder="Title" id="title-input">
+                
+                <svg id="input-fullscreen-button" @click="inputFullscreen = false" v-if="inputFullscreen && !$store.state.mobileVersion" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fullscreen-exit" viewBox="0 0 16 16"><path d="M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5zM0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zm10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4z"/></svg>
+                <svg id="input-fullscreen-button" @click="inputFullscreen = true" v-else-if="!$store.state.mobileVersion" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg>
+
                 <textarea v-model="$store.state.currentPaste.content" @keydown="editor" class="input" id="content-input" placeholder="Paste in here"></textarea>
                 <div id="options" :class="{'opened': optionsOpened}">
                     <h5 class="label">Password</h5>
@@ -68,7 +72,8 @@ export default {
             IMPRINT: process.env.VUE_APP_API_IMPRINT_URL,
             PRIVACY: process.env.VUE_APP_API_PRIVACY_URL,
         },
-        loginURL: process.env.VUE_APP_API_BASE + "/api/authentication/login"
+        loginURL: process.env.VUE_APP_API_BASE + "/api/authentication/login",
+        inputFullscreen: false
     }),
     created(){
         document.onkeyup = (e) => {
@@ -173,6 +178,7 @@ export default {
 
                         this.$router.push("/"+paste.id+hash)
                         this.$store.state.app.fullscreen = false
+                        this.inputFullscreen = false
                         this.$store.state.currentPaste.content  = ""
                         this.$store.state.currentPaste.title    = ""
                         this.$store.state.currentPaste.password = ""
@@ -294,97 +300,143 @@ export default {
             }
         }
 
-        #content-input {
-            height: 220px;
-            font-size: 16px;
-            white-space: pre;
-            overflow-wrap: normal;
-            overflow-x: scroll;
-            font-family: "Roboto Sans", monospace;
-            resize: vertical;
-        }
+        #create-paste {
+            position: relative;
 
-        #title-input {
-            font-size: 17px;
-            margin-top: 65px;
-        }
-        #buttons {
-            margin-bottom: 31px;
-            a {
-                display: inline-block;
-                border-radius: 7px;
-                padding: 10px;
-                color: #FFF;
-                text-align: center;
+            #content-input {
+                height: 220px;
+                font-size: 16px;
+                white-space: pre;
+                overflow-wrap: normal;
+                overflow-x: scroll;
+                font-family: "Roboto Sans", monospace;
+                resize: vertical;
+            }
+
+            #title-input {
+                font-size: 17px;
+                margin-top: 65px;
+            }
+            
+            #input-fullscreen-button {
+                color: #FFFFFF53;
+                width:  18px;
+                height: 18px;
+                position: absolute;
+                right: 10px;
+                top: 70px;
                 cursor: pointer;
-                transition: 0.3s background;
-            }
-            #submit-button {
-                background: #3469FF;
-                width: calc(100% - 54.8px);
-                margin-top: 10px;
-                margin-bottom: 60px;
+                transition: 0.3s color;
                 &:hover {
-                    background: #2c5de6;
+                    color: #FFFFFFBB;    
                 }
             }
 
-            #settings-button {
-                margin-left: 9.6px;
-                width: 45px;
-                background: #262B39;
-                svg {
-                    vertical-align: middle;
-                    margin-top: -4.2px;
+            #buttons {
+                margin-bottom: 31px;
+                a {
+                    display: inline-block;
+                    border-radius: 7px;
+                    padding: 10px;
+                    color: #FFF;
+                    text-align: center;
+                    cursor: pointer;
+                    transition: 0.3s background;
                 }
-                &:hover {
-                    background: #1c202b;
+                #submit-button {
+                    background: #3469FF;
+                    width: calc(100% - 54.8px);
+                    margin-top: 10px;
+                    margin-bottom: 60px;
+                    &:hover {
+                        background: #2c5de6;
+                    }
                 }
-            }
-        }
 
-        #options {
-            max-height: 0px;
-            overflow: hidden;
-            transition: 0.3s;
-            .label {
-                font-size: 0px;
-                transition: 0.3s;
+                #settings-button {
+                    margin-left: 9.6px;
+                    width: 45px;
+                    background: #262B39;
+                    svg {
+                        vertical-align: middle;
+                        margin-top: -4.2px;
+                    }
+                    &:hover {
+                        background: #1c202b;
+                    }
+                }
             }
-            input {
+
+            #options {
                 max-height: 0px;
                 overflow: hidden;
                 transition: 0.3s;
-            }
-            &.opened {
-                max-height: 1000px;
-                input {
-                    max-height: 100px;
-                }
-
                 .label {
-                    font-size: 14px;
+                    font-size: 0px;
+                    transition: 0.3s;
+                }
+                input {
+                    max-height: 0px;
+                    overflow: hidden;
+                    transition: 0.3s;
+                }
+                &.opened {
+                    max-height: 1000px;
+                    input {
+                        max-height: 100px;
+                    }
+
+                    .label {
+                        font-size: 14px;
+                    }
+                }
+
+                #friend-list {
+                    background: #262B39;
+                    border-radius: 7px;
+                    padding: 2px;
+                    max-height: 150px;
+                    overflow: auto;
+                    a {
+                        display: block;
+                        padding: 4px 7px;
+                        color: #FFF;
+                        border-radius: 5px;
+                        &:hover {
+                            background: #FFFFFF44;
+                        }
+                        cursor: pointer;
+                        &.selected {
+                            color: #FFFC;
+                        }
+                    }
                 }
             }
 
-            #friend-list {
-                background: #262B39;
-                border-radius: 7px;
-                padding: 2px;
-                max-height: 150px;
-                overflow: auto;
-                a {
-                    display: block;
-                    padding: 4px 7px;
-                    color: #FFF;
-                    border-radius: 5px;
-                    &:hover {
-                        background: #FFFFFF44;
-                    }
-                    cursor: pointer;
-                    &.selected {
-                        color: #FFFC;
-                    }
+            &.input-fullscreen {
+                #content-input {
+                    position: fixed;
+                    left: 0px;
+                    top: 0px;
+                    height: 100%;
+                    width: 100%;
+                    padding-top: 75px;
+                    padding-left: 26px;
+                }
+                #buttons #submit-button {
+                    position: fixed;
+                    bottom: 60px;
+                    right: 60px;
+                    margin-bottom: 0px;
+                    width: 200px;
+                }
+                #input-fullscreen-button {
+                    position: fixed;
+                    right: 30px;
+                    top: 30px;
+                    z-index: 1000;
+                    width:  23px;
+                    height: 23px;
                 }
             }
         }
@@ -396,33 +448,41 @@ export default {
                 transform: rotate(180deg);
             }
 
-            #title-input {
-                margin-top: 100px;
-            }
-
-            #buttons {
-                width: 300px;
-                max-width: 100%;
-                float: right;
-                margin-right: -45px;
-                #submit-button {
-                    width: 200px;
-                    max-width: 100%;
+            #create-paste {
+                #title-input {
+                    margin-top: 100px;
                 }
 
-                &.mobile {
-                    width: 100%;
-                    float: none;
-                    margin-right: 0px;
+                #buttons {
+                    width: 300px;
+                    max-width: 100%;
+                    float: right;
+                    margin-right: -45px;
                     #submit-button {
-                        width: calc(100% - 54.8px);
+                        width: 200px;
+                        max-width: 100%;
                     }
 
-                }
-            }
+                    &.mobile {
+                        width: 100%;
+                        float: none;
+                        margin-right: 0px;
+                        #submit-button {
+                            width: calc(100% - 54.8px);
+                        }
 
-            #content-input {
-                height: 70%;
+                    }
+                }
+
+                #content-input {
+                    height: 70%;
+                }
+
+                &.input-fullscreen {
+                    #content-input {
+                        height: 100%;
+                    }
+                }
             }
         }
 

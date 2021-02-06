@@ -3,7 +3,7 @@
         <h4>Password:</h4><br><br>
         <input placeholder="Password" v-model="password" type="password" class="input">
         <a class="button" style="width: 100%;" @click="load($route.params.id)">ENTER PASTE</a><br>
-            <a v-if="$store.state.user.id == userid" @click="deletePaste">DELETE</a>
+        <a v-if="$store.state.user.id == userid" @click="deletePaste">DELETE</a>
     </div>
     <div v-else-if="!found">
         <div class="error">
@@ -31,6 +31,7 @@
 import hljs from "highlight.js";
 import helper from "../helper.js";
 import CryptoJS from "crypto-js";
+
 export default {
     data: ()=>({
         title: "Title",
