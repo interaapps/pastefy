@@ -11,7 +11,7 @@ public class RawController extends HttpController {
 
     @Get("/{id}/raw")
     public String getPasteRaw(Exchange exchange, @Path("id") String id){
-        Paste paste = Repo.get(Paste.class).where("key", id).get();
+        Paste paste = Repo.get(Paste.class).where("key", id).first();
         if (paste == null) {
             exchange.status(404);
             return "404 - Paste not found";

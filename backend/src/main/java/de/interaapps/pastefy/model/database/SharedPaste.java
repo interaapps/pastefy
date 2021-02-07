@@ -55,7 +55,7 @@ public class SharedPaste extends Model {
     }
 
     public Paste getPaste() {
-        return Repo.get(Paste.class).where("key", paste).get();
+        return Repo.get(Paste.class).where("key", paste).first();
     }
 
     public void setPaste(String paste) {

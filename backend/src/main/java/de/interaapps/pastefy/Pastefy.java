@@ -82,7 +82,7 @@ public class Pastefy extends WebApplication {
             exchange.attrib("loggedIn", false);
             exchange.attrib("user", null);
             if (exchange.header("x-auth-key") != null) {
-                AuthKey authKey = Repo.get(AuthKey.class).where("key", exchange.header("x-auth-key")).get();
+                AuthKey authKey = Repo.get(AuthKey.class).where("key", exchange.header("x-auth-key")).first();
                 if (authenticationProvider != null && authKey != null) {
                     User user = authenticationProvider.getUser(authKey);
 

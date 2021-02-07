@@ -74,7 +74,7 @@ public class Folder extends Model {
     }
 
     public Folder getParent() {
-        return Repo.get(getClass()).where("key", parent).get();
+        return Repo.get(getClass()).where("key", parent).first();
     }
 
     public void setParent(String parent) {

@@ -18,7 +18,7 @@ public class APIKeyController extends HttpController {
     public CreateAuthKeyResponse addKey(@Attrib("user") User user){
         CreateAuthKeyResponse response = new CreateAuthKeyResponse();
         AuthKey authKey = new AuthKey();
-        AuthKey userAuthKey = Repo.get(AuthKey.class).where("userId", user.getId()).order("createdAt", true).get();
+        AuthKey userAuthKey = Repo.get(AuthKey.class).where("userId", user.getId()).order("createdAt", true).first();
         if (userAuthKey != null) {
             authKey.type = AuthKey.Type.API;
             authKey.userId = userAuthKey.userId;

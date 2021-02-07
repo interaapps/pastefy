@@ -32,7 +32,7 @@ public class PasteController extends HttpController {
         paste.setContent(request.content);
         paste.setEncrypted(request.encrypted);
 
-        Folder folder = Repo.get(Folder.class).where("key", request.folder).get();
+        Folder folder = Repo.get(Folder.class).where("key", request.folder).first();
 
         if (user != null) {
             paste.setUserId(user.getId());
@@ -50,7 +50,7 @@ public class PasteController extends HttpController {
 
     @Get("/{id}")
     public PasteResponse getPaste(Exchange exchange, @Path("id") String id){
-        Paste paste = Repo.get(Paste.class).where("key", id).get();
+        Paste paste = Repo.get(Paste.class).where("key", id).first();
         return new PasteResponse(paste);
     }
 
@@ -58,7 +58,7 @@ public class PasteController extends HttpController {
     @With("auth")
     public ActionResponse getPaste(Exchange exchange, @Path("id") String id, @Attrib("user") User user){
         ActionResponse response = new ActionResponse();
-        Paste paste = Repo.get(Paste.class).where("key", id).get();
+        Paste paste = Repo.get(Paste.class).where("key", id).first();
 
         if (paste != null){
             if (paste.getUserId() == user.getId()) {
@@ -74,7 +74,7 @@ public class PasteController extends HttpController {
     @With("auth")
     public ActionResponse addFriend(Exchange exchange, @Body AddFriendToPasteRequest request, @Path("id") String id, @Attrib("user") User user){
         ActionResponse response = new ActionResponse();
-        Paste paste = Repo.get(Paste.class).where("key", id).get();
+        Paste paste = Repo.get(Paste.class).where("key", id).first();
         if (paste != null && paste.getUserId() == user.getId()) {
             if (authenticationProvider.isFriend(user, request.friend)) {
                 User friend = authenticationProvider.getUserByName(request.friend);

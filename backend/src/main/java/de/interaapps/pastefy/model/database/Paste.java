@@ -88,7 +88,7 @@ public class Paste extends Model {
     }
 
     public Folder getFolder() {
-        return Repo.get(Folder.class).where("key", folder).get();
+        return Repo.get(Folder.class).where("key", folder).first();
     }
 
     public String getFolderId(){

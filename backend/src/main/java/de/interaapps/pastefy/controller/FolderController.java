@@ -22,7 +22,7 @@ public class FolderController extends HttpController {
         folder.setUserId(user.getId());
         folder.setName(request.name);
 
-        Folder parent = Repo.get(Folder.class).where("key", request.parent).get();
+        Folder parent = Repo.get(Folder.class).where("key", request.parent).first();
 
         if (parent != null && parent.getUserId() == user.getId())
             folder.setParent(parent);
@@ -36,14 +36,14 @@ public class FolderController extends HttpController {
 
     @Get("/{id}")
     public FolderResponse getFolder(Exchange exchange, @Path("id") String id, @Attrib("user") User user){
-        return new FolderResponse(Repo.get(Folder.class).where("key", id).get(), true, exchange.rawRequest().getParameter("hide_children") == null);
+        return new FolderResponse(Repo.get(Folder.class).where("key", id).first(), true, exchange.rawRequest().getParameter("hide_children") == null);
     }
 
     @Delete("/{id}")
     @With("auth")
     public ActionResponse delete(Exchange exchange, @Path("id") String id, @Attrib("user") User user){
         ActionResponse response = new ActionResponse();
-        Folder folder = Repo.get(Folder.class).where("key", id).get();
+        Folder folder = Repo.get(Folder.class).where("key", id).first();
 
         if (folder != null){
             if (folder.getUserId() == user.getId()) {
