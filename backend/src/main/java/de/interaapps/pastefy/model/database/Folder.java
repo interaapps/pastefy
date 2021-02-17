@@ -35,7 +35,7 @@ public class Folder extends Model {
     @Column
     public Timestamp updatedAt;
 
-    public Folder(){
+    public Folder() {
         key = RandomStringUtils.random(8, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890");
     }
 
@@ -59,15 +59,15 @@ public class Folder extends Model {
         return key;
     }
 
-    public List<Paste> getPastes(){
+    public List<Paste> getPastes() {
         return Repo.get(Paste.class).where("folder", key).order("updated_at", true).all();
     }
 
-    public List<Folder> getFolders(){
+    public List<Folder> getFolders() {
         return Repo.get(Folder.class).where("parent", key).order("updated_at", true).all();
     }
 
-    public void delete(){
+    public void delete() {
         getPastes().forEach(paste -> paste.delete());
         getFolders().forEach(folder -> folder.delete());
         super.delete();

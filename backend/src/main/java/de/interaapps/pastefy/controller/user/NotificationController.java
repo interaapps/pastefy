@@ -12,7 +12,6 @@ import org.javawebstack.orm.query.Query;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @PathPrefix("/api/v2/user/notification")
 public class NotificationController extends HttpController {
@@ -21,7 +20,7 @@ public class NotificationController extends HttpController {
      */
     @Post
     @With("auth")
-    public ActionResponse add(@Attrib("user") User user){
+    public ActionResponse add(@Attrib("user") User user) {
         ActionResponse response = new ActionResponse();
         //Notification notification = new Notification();
         //notification.setMessage();
@@ -35,7 +34,7 @@ public class NotificationController extends HttpController {
 
     @Get
     @With("auth")
-    public List<Notification> getNotifications(Exchange exchange, @Attrib("user") User user){
+    public List<Notification> getNotifications(Exchange exchange, @Attrib("user") User user) {
         Query<Notification> query = Repo.get(Notification.class).where("userId", user.getId());
 
         if (exchange.rawRequest().getParameter("not_received") != null)
@@ -47,7 +46,7 @@ public class NotificationController extends HttpController {
 
         List<Notification> notifications = query.all();
         if (notifications.size() > 0)
-            query.update(new HashMap(){{
+            query.update(new HashMap() {{
                 put("received", true);
             }});
 
@@ -56,8 +55,8 @@ public class NotificationController extends HttpController {
 
     @Get("/readall")
     @With("auth")
-    public ActionResponse readAll(@Attrib("user") User user){
-        Repo.get(Notification.class).query().where("userId", user.getId()).update(new HashMap(){{
+    public ActionResponse readAll(@Attrib("user") User user) {
+        Repo.get(Notification.class).query().where("userId", user.getId()).update(new HashMap() {{
             put("received", true);
             put("already_read", true);
         }});

@@ -11,23 +11,26 @@ import java.util.stream.Collectors;
 
 public interface User {
     int getId();
+
     String getProfilePicture();
+
     String getFavouriteColor();
+
     String getName();
 
-    default List<Paste> getPastes(){
+    default List<Paste> getPastes() {
         return Repo.get(Paste.class).where("userId", getId()).all();
     }
 
-    default List<Folder> getFolders(){
+    default List<Folder> getFolders() {
         return Repo.get(Folder.class).where("userId", getId()).all();
     }
 
-    default List<FolderResponse> getFolderTree(boolean showChildren){
+    default List<FolderResponse> getFolderTree(boolean showChildren) {
         return Repo.get(Folder.class).where("userId", getId()).isNull("parent").all().stream().map(folder -> new FolderResponse(folder, showChildren)).collect(Collectors.toList());
     }
 
-    default void sendNotification(Notification notification){
+    default void sendNotification(Notification notification) {
         notification.userId = getId();
         notification.save();
     }

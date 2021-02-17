@@ -3,11 +3,11 @@ package de.interaapps.pastefy.exceptions;
 public class AuthenticationException extends RuntimeException {
     private String message;
 
-    public AuthenticationException(String message){
+    public AuthenticationException(String message) {
         this.message = message;
     }
 
-    public AuthenticationException(){
+    public AuthenticationException() {
         this.message = "Not authenticated";
     }
 

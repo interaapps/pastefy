@@ -13,22 +13,22 @@ public class PasteResponse {
     public String rawURL;
     public String created = "0000-00-00 00:00:00";
 
-    public PasteResponse(Paste paste){
+    public PasteResponse(Paste paste) {
         if (paste == null) {
             return;
         }
-        id      = paste.getKey();
-        title   = paste.getTitle();
+        id = paste.getKey();
+        title = paste.getTitle();
         content = paste.getContent();
         created = paste.createdAt.toString();
         encrypted = paste.isEncrypted();
-        userId  = paste.getUserId();
+        userId = paste.getUserId();
         if (paste.getFolderId() != null)
             folder = paste.getFolderId();
         exists = true;
     }
 
-    public PasteResponse shortenContent(){
+    public PasteResponse shortenContent() {
         if (content.length() > 450)
             content = content.substring(0, 450);
         return this;

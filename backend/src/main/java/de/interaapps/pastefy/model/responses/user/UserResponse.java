@@ -10,7 +10,7 @@ public class UserResponse {
     public String color;
     public String profilePicture;
 
-    public UserResponse(User user){
+    public UserResponse(User user) {
         if (user == null)
             return;
 

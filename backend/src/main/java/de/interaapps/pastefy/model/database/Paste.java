@@ -39,7 +39,7 @@ public class Paste extends Model {
     @Column
     public Timestamp updatedAt;
 
-    public Paste(){
+    public Paste() {
         key = RandomStringUtils.random(8, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890");
     }
 
@@ -91,7 +91,7 @@ public class Paste extends Model {
         return Repo.get(Folder.class).where("key", folder).first();
     }
 
-    public String getFolderId(){
+    public String getFolderId() {
         return folder;
     }
 

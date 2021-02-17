@@ -33,7 +33,7 @@ public class AuthKey extends Model {
     @Column
     public Timestamp updatedAt;
 
-    public AuthKey(){
+    public AuthKey() {
         key = RandomStringUtils.random(60, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890");
     }
 

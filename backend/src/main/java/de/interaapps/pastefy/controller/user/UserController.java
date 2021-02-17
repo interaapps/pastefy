@@ -28,19 +28,19 @@ public class UserController extends HttpController {
     public AuthenticationProvider authenticationProvider;
 
     @Get
-    public UserResponse getUser(@Attrib("user") User user){
+    public UserResponse getUser(@Attrib("user") User user) {
         return new UserResponse(user);
     }
 
     @Get("/overview")
     @With("auth")
-    public UserPastesResponse userPastes(Exchange exchange, @Attrib("user") User user){
+    public UserPastesResponse userPastes(Exchange exchange, @Attrib("user") User user) {
         UserPastesResponse response = new UserPastesResponse();
         int page = 0;
         if (exchange.rawRequest().getParameter("page") != null)
-            page = Integer.parseInt(exchange.rawRequest().getParameter("page"))-1;
+            page = Integer.parseInt(exchange.rawRequest().getParameter("page")) - 1;
 
-        response.pastes = Repo.get(Paste.class).where("userId", user.getId()).isNull("folder").order("updated_at", true).limit(10).offset(page*10).all().stream().map(paste -> new PasteResponse(paste).shortenContent()).collect(Collectors.toList());
+        response.pastes = Repo.get(Paste.class).where("userId", user.getId()).isNull("folder").order("updated_at", true).limit(10).offset(page * 10).all().stream().map(paste -> new PasteResponse(paste).shortenContent()).collect(Collectors.toList());
         response.folder = Repo.get(Folder.class).where("userId", user.getId()).isNull("parent").order("updated_at", true).all().stream().map(folder -> new FolderResponse(folder, exchange.rawRequest().getParameter("hide_children") == null)).collect(Collectors.toList());
 
         return response;
@@ -48,13 +48,13 @@ public class UserController extends HttpController {
 
     @Get("/folders")
     @With("auth")
-    public List<FolderResponse> getFolder(Exchange exchange, @Attrib("user") User user){
+    public List<FolderResponse> getFolder(Exchange exchange, @Attrib("user") User user) {
         return user.getFolderTree(exchange.rawRequest().getParameter("hide_children") == null);
     }
 
     @Get("/pastes")
     @With("auth")
-    public List<PasteResponse> getPastes(@Attrib("user") User user){
+    public List<PasteResponse> getPastes(@Attrib("user") User user) {
         List<PasteResponse> pastes = new ArrayList<>();
         pastes = user.getPastes().stream().map(PasteResponse::new).collect(Collectors.toList());
         return pastes;
@@ -62,16 +62,16 @@ public class UserController extends HttpController {
 
     @Get("/sharedpastes")
     @With("auth")
-    public List<PasteResponse> getSharedPastes(Exchange exchange, @Attrib("user") User user){
+    public List<PasteResponse> getSharedPastes(Exchange exchange, @Attrib("user") User user) {
         List<PasteResponse> pastes = new ArrayList<>();
         int page = 0;
         if (exchange.rawRequest().getParameter("page") != null)
-            page = Integer.parseInt(exchange.rawRequest().getParameter("page"))-1;
+            page = Integer.parseInt(exchange.rawRequest().getParameter("page")) - 1;
 
         pastes = Repo.get(SharedPaste.class)
                 .where("targetId", user.getId())
                 .limit(10)
-                .offset(page*10)
+                .offset(page * 10)
                 .order("updated_at", true)
                 .all().stream()
                 .map(sharedPaste -> {

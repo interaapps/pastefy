@@ -24,7 +24,7 @@ public class PasteController extends HttpController {
     private AuthenticationProvider authenticationProvider;
 
     @Post
-    public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user){
+    public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user) {
         CreatePasteResponse response = new CreatePasteResponse();
 
         Paste paste = new Paste();
@@ -43,24 +43,24 @@ public class PasteController extends HttpController {
         paste.save();
 
         response.success = true;
-        response.paste   = new PasteResponse(paste);
+        response.paste = new PasteResponse(paste);
 
         return response;
     }
 
     @Get("/{id}")
-    public PasteResponse getPaste(Exchange exchange, @Path("id") String id){
+    public PasteResponse getPaste(Exchange exchange, @Path("id") String id) {
         Paste paste = Repo.get(Paste.class).where("key", id).first();
         return new PasteResponse(paste);
     }
 
     @Delete("/{id}")
     @With("auth")
-    public ActionResponse getPaste(Exchange exchange, @Path("id") String id, @Attrib("user") User user){
+    public ActionResponse getPaste(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
         ActionResponse response = new ActionResponse();
         Paste paste = Repo.get(Paste.class).where("key", id).first();
 
-        if (paste != null){
+        if (paste != null) {
             if (paste.getUserId() == user.getId()) {
                 paste.delete();
                 response.success = true;
@@ -72,7 +72,7 @@ public class PasteController extends HttpController {
 
     @Post("/{id}/friend")
     @With("auth")
-    public ActionResponse addFriend(Exchange exchange, @Body AddFriendToPasteRequest request, @Path("id") String id, @Attrib("user") User user){
+    public ActionResponse addFriend(Exchange exchange, @Body AddFriendToPasteRequest request, @Path("id") String id, @Attrib("user") User user) {
         ActionResponse response = new ActionResponse();
         Paste paste = Repo.get(Paste.class).where("key", id).first();
         if (paste != null && paste.getUserId() == user.getId()) {
@@ -86,7 +86,7 @@ public class PasteController extends HttpController {
 
                 Notification notification = new Notification();
                 notification.setMessage(user.getName() + " shared a paste with you! Click to open.");
-                notification.url = "/"+paste.getKey();
+                notification.url = "/" + paste.getKey();
                 friend.sendNotification(notification);
                 response.success = true;
             }

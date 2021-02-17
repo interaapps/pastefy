@@ -13,14 +13,14 @@ public class IAAuthProvider implements AuthenticationProvider {
     private final HTTPClient iaAuthClient;
     private String apiKey;
 
-    public IAAuthProvider(String apiKey){
+    public IAAuthProvider(String apiKey) {
         this.apiKey = apiKey;
-        iaAuthClient =  new HTTPClient()
+        iaAuthClient = new HTTPClient()
                 .setBaseUrl("https://accounts.interaapps.de/iaauth/api");
     }
 
     public User getUser(AuthKey authKey) {
-        IAAuthUser authUser =  iaAuthClient.post("/getuserinformation")
+        IAAuthUser authUser = iaAuthClient.post("/getuserinformation")
                 .body(new AbstractObject()
                         .set("userkey", authKey != null ? authKey.apiKey : "")
                         .set("key", apiKey)
@@ -46,7 +46,7 @@ public class IAAuthProvider implements AuthenticationProvider {
         return null;
     }
 
-    public User findUser(String key, String operator, String value){
+    public User findUser(String key, String operator, String value) {
         AbstractElement abstractElement = iaAuthClient.post("/finduser")
                 .body(new AbstractObject()
                         .set("key", apiKey)
@@ -69,7 +69,7 @@ public class IAAuthProvider implements AuthenticationProvider {
     }
 
     public boolean isFriend(User user, String name) {
-         return iaAuthClient.post("/friends/isfriend")
+        return iaAuthClient.post("/friends/isfriend")
                 .body(new AbstractObject()
                         .set("userkey", ((IAAuthUser) user).userKey)
                         .set("key", apiKey)

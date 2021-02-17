@@ -15,14 +15,14 @@ public class AuthController extends HttpController {
     public AuthenticationProvider authenticationProvider;
 
     @Get("/login")
-    public String login(Exchange exchange)  {
+    public String login(Exchange exchange) {
         if (exchange.rawRequest().getParameter("userkey") != null) {
             String key = authenticationProvider.login(exchange.rawRequest().getParameter("userkey"));
 
             if (key != null)
-                exchange.redirect("/auth?key="+key);
+                exchange.redirect("/auth?key=" + key);
         } else {
-            exchange.redirect("https://accounts.interaapps.de/iaauth/"+Pastefy.getInstance().getConfig().get("interaapps.auth.id"));
+            exchange.redirect("https://accounts.interaapps.de/iaauth/" + Pastefy.getInstance().getConfig().get("interaapps.auth.id"));
         }
         return "";
     }

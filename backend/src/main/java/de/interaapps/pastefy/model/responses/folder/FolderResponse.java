@@ -14,7 +14,7 @@ public class FolderResponse {
     public List<FolderResponse> children;
     public List<PasteResponse> pastes;
 
-    public FolderResponse(Folder folder, boolean fetchChildren, boolean fetchSubChildren){
+    public FolderResponse(Folder folder, boolean fetchChildren, boolean fetchSubChildren) {
         if (folder != null) {
             exists = true;
             name = folder.getName();
@@ -27,11 +27,11 @@ public class FolderResponse {
         }
     }
 
-    public FolderResponse(Folder folder, boolean showChildren){
+    public FolderResponse(Folder folder, boolean showChildren) {
         this(folder, showChildren, showChildren);
     }
 
-    public FolderResponse(Folder folder){
+    public FolderResponse(Folder folder) {
         this(folder, true, true);
     }
 

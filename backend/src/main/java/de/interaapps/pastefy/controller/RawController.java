@@ -11,7 +11,7 @@ import org.javawebstack.orm.Repo;
 public class RawController extends HttpController {
 
     @Get("/{id}/raw")
-    public String getPasteRaw(Exchange exchange, @Path("id") String id){
+    public String getPasteRaw(Exchange exchange, @Path("id") String id) {
         Paste paste = Repo.get(Paste.class).where("key", id).first();
         exchange.contentType(MimeType.PLAIN);
         if (paste == null) {

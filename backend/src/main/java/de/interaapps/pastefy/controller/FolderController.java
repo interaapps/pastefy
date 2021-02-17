@@ -15,7 +15,7 @@ import org.javawebstack.orm.Repo;
 public class FolderController extends HttpController {
     @Post
     @With("auth")
-    public CreateFolderResponse createFolder(Exchange exchange, @Body CreateFolderRequest request, @Attrib("user") User user){
+    public CreateFolderResponse createFolder(Exchange exchange, @Body CreateFolderRequest request, @Attrib("user") User user) {
         CreateFolderResponse response = new CreateFolderResponse();
 
         Folder folder = new Folder();
@@ -35,17 +35,17 @@ public class FolderController extends HttpController {
     }
 
     @Get("/{id}")
-    public FolderResponse getFolder(Exchange exchange, @Path("id") String id, @Attrib("user") User user){
+    public FolderResponse getFolder(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
         return new FolderResponse(Repo.get(Folder.class).where("key", id).first(), true, exchange.rawRequest().getParameter("hide_children") == null);
     }
 
     @Delete("/{id}")
     @With("auth")
-    public ActionResponse delete(Exchange exchange, @Path("id") String id, @Attrib("user") User user){
+    public ActionResponse delete(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
         ActionResponse response = new ActionResponse();
         Folder folder = Repo.get(Folder.class).where("key", id).first();
 
-        if (folder != null){
+        if (folder != null) {
             if (folder.getUserId() == user.getId()) {
                 folder.delete();
                 response.success = true;
