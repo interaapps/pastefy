@@ -216,6 +216,8 @@ export default {
 
 
     #paste-contents {
+        font-size:16.8px;
+        
         #line-nums {
             float: left;
             user-select: none;
@@ -225,6 +227,7 @@ export default {
                 display: block;
                 text-decoration: none;
                 color: #AAA;
+                font-family: 'DM Mono', "Space Mono", monospace;
                 &.selected {
                     color: #66d9ef;
                     background: #FFFFFF11;

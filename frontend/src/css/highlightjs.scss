@@ -3,14 +3,12 @@
 	overflow-x: auto;
 	padding: 0.5em;
   background: transparent;
-  font-family: 'Roboto Mono', "Jost", monospace;
 }
 
 .hljs,
 .hljs-tag,
 .hljs-subst {
 	color: #f8f8f2;
-	font-family: 'Roboto Mono', "Jost", monospace;
 }
 
 .hljs-strong,
@@ -32,7 +30,7 @@
 .hljs-title,
 .hljs-section,
 .hljs-selector-class {
-	color: #a6e22e;
+	color: #26eb37;
 }
 
 .hljs-strong {
@@ -46,15 +44,14 @@
 .hljs-keyword,
 .hljs-selector-tag,
 .hljs-name {
-  color: #5a72dd;
-  font-weight: 600;
+  color: #5c87ff;
+  font-weight: 500;
 }
 
 .hljs-keyword,
 .hljs-selector-class,
 .hljs-selector-tag {
 	font-weight: normal;
-	font-family: "Roboto Mono", "Jost", monospace;
 }
 
 .hljs-symbol,
@@ -77,19 +74,20 @@
 .hljs-addition,
 .hljs-variable,
 .hljs-template-variable,
-.hljs-deletion,
-.hljs-meta {
-  color: #ff5b49;
-  font-family: "Roboto Mono", "Jost", monospace;
+.hljs-deletion {
+  color: #eb2668;
   font-weight: 400;
-  font-style: italic;
+}
+
+.hljs-meta {
+	color: #eb2668EE;
 }
 
 .hljs-comment {
-	color: #5c6075;
+	color: #ffffff6e;
   font-family: "Jost", sans-serif;
 }
 
 .hljs-string {
-	color: #b5bd68;
+	color: #69d8a0;
 }
