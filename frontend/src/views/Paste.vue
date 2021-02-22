@@ -111,7 +111,8 @@ export default {
                         const pasteTitleComponents = this.title.split(".");
                         let ending = pasteTitleComponents[pasteTitleComponents.length-1];
                         const replacements = {
-                            "md": "markdown"
+                            "md": "markdown",
+                            "txt": "text"
                         }
 
                         for (let replace  in replacements)
@@ -213,6 +214,7 @@ export default {
         overflow-x: auto;
     }
 
+
     #paste-contents {
         #line-nums {
             float: left;
@@ -238,6 +240,7 @@ export default {
 
     #preview {
         margin-top: 40px;
+        padding: 26px;
     }
 
     .language {
@@ -276,6 +279,17 @@ export default {
 </style>
 <style lang="scss">
     #preview {
+
+        font-size: 17px;
+        h1, h2, h3, h4, h5 {
+            margin-top: 19px;
+            margin-bottom: 17px;
+        }
+        h1 {
+            border-bottom: 2px solid #FFFFFF33;
+            padding-bottom: 7px;
+            padding-top: 7px;
+        }
         img {
             max-width: 100%;
             border-radius: 7px;
@@ -299,6 +313,10 @@ export default {
             background: none;
             padding: 0px;
             border-radius: 0px;
+        }
+
+        ul, ol {
+            padding-left: 20px;
         }
     }
 </style>
