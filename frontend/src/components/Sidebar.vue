@@ -303,6 +303,27 @@ export default {
         #create-paste {
             position: relative;
 
+            #line-nums {
+                float: left;
+                user-select: none;
+                margin-right: 9px;
+
+                a {
+                    display: block;
+                    text-decoration: none;
+                    color: #AAA;
+                    &.selected {
+                        color: #66d9ef;
+                        background: #FFFFFF11;
+                        padding: 0px 8px;
+                        border-radius: 20px;
+                        margin-left: -8px;
+                        margin-right: -8px;
+                        text-align: center;
+                    }
+                }
+            }
+
             #content-input {
                 height: 220px;
                 font-size: 16px;

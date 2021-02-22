@@ -23,7 +23,17 @@
             </a>
         </div>
         <h1>{{title}}<span class="language" v-if="language !== null">{{language}}</span></h1>
-        <code id="paste-contents"><pre v-html="content" :style="{'white-space': this.language == 'text' ? 'break-spaces' : 'pre'}"></pre></code>
+        <code id="paste-contents">
+            <div id="line-nums">
+                <a 
+                    v-for="(line, lineNum) of rawContent.split('\n')" 
+                    :key="lineNum" 
+                    :href="'#ln-'+lineNum" 
+                    :class='{selected: getUrlLineHash()=="#ln-"+lineNum}'>
+                    {{lineNum+1}}
+                </a>
+            </div>
+            <pre v-html="content" :style="{'white-space': this.language == 'text' ? 'break-spaces' : 'pre'}"></pre></code>
         <div id="preview" v-if="extraContent !== ''" v-html="extraContent"></div>
     </div>
 </template>
@@ -178,6 +188,9 @@ export default {
         },
         isPWA(){
             return window.matchMedia('(display-mode: standalone)').matches;
+        },
+        getUrlLineHash(){
+            return window.location.hash
         }
     }
 }
@@ -198,6 +211,29 @@ export default {
         border-radius: 7px;
         padding: 10px;
         overflow-x: auto;
+    }
+
+    #paste-contents {
+        #line-nums {
+            float: left;
+            user-select: none;
+            margin-right: 9px;
+
+            a {
+                display: block;
+                text-decoration: none;
+                color: #AAA;
+                &.selected {
+                    color: #66d9ef;
+                    background: #FFFFFF11;
+                    padding: 0px 8px;
+                    border-radius: 20px;
+                    margin-left: -8px;
+                    margin-right: -8px;
+                    text-align: center;
+                }
+            }
+        }
     }
 
     #preview {
