@@ -16,7 +16,7 @@ public class Folder extends Model {
     @Column
     private int id;
 
-    @Column
+    @Column(size = 8)
     private String key;
 
     @Column

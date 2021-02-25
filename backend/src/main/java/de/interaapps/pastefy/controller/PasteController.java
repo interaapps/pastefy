@@ -56,7 +56,7 @@ public class PasteController extends HttpController {
 
     @Delete("/{id}")
     @With("auth")
-    public ActionResponse getPaste(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
+    public ActionResponse deletePaste(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
         ActionResponse response = new ActionResponse();
         Paste paste = Repo.get(Paste.class).where("key", id).first();
 

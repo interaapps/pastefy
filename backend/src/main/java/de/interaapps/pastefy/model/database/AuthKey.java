@@ -14,11 +14,11 @@ public class AuthKey extends Model {
     @Column
     public int id;
 
-    @Column
+    @Column(size = 60)
     private String key;
 
 
-    @Column
+    @Column(size = 160)
     public String apiKey;
 
     @Column

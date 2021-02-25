@@ -147,7 +147,7 @@ export default {
             let key;
 
             if (this.clientEncrypted || this.$store.state.currentPaste.password !== "") {
-                key = this.$store.state.currentPaste.password === "" ? Math.random().toString(36).substring(5) : this.$store.state.currentPaste.password;
+                key = this.$store.state.currentPaste.password === "" ? Math.random().toString(36).substring(3)+Math.random().toString(36).substring(3) : this.$store.state.currentPaste.password;
 
                 data.content = CryptoJS.AES.encrypt(data.content, key).toString();
                 data.title = CryptoJS.AES.encrypt(data.title, key).toString();

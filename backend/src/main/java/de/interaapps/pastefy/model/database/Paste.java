@@ -8,7 +8,6 @@ import org.javawebstack.orm.annotation.Dates;
 import org.javawebstack.orm.annotation.Table;
 
 import java.sql.Timestamp;
-import java.util.Base64;
 
 @Dates
 @Table("pastes")
@@ -16,7 +15,7 @@ public class Paste extends Model {
     @Column
     private int id;
 
-    @Column
+    @Column(size = 8)
     private String key;
 
     @Column
@@ -30,7 +29,7 @@ public class Paste extends Model {
     @Column
     private boolean encrypted = false;
 
-    @Column
+    @Column(size = 8)
     public String folder;
 
     @Column
@@ -44,19 +43,19 @@ public class Paste extends Model {
     }
 
     public String getContent() {
-        return new String(Base64.getDecoder().decode(content));
+        return content;
     }
 
     public void setContent(String content) {
-        this.content = Base64.getEncoder().encodeToString(content.getBytes());
+        this.content = content;
     }
 
     public String getTitle() {
-        return new String(Base64.getDecoder().decode(title));
+        return title;
     }
 
     public void setTitle(String content) {
-        this.title = Base64.getEncoder().encodeToString(content.getBytes());
+        this.title = content;
     }
 
     public int getUserId() {
