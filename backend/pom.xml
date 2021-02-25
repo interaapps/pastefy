@@ -37,8 +37,6 @@
         </dependency>
     </dependencies>
 
-
-
     <build>
         <finalName>backend</finalName>
         <resources>
