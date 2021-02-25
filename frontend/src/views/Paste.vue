@@ -17,7 +17,7 @@
             <a href="#preview" v-if="extraContent !== ''">PREVIEW</a>
             <a v-if="$store.state.user.id == userid" @click="deletePaste">DELETE</a>
             <a @click="$store.state.currentPaste.content = rawContent; $store.state.currentPaste.title = title" v-if="!$store.state.mobileVersion">FORK</a>
-            <a :href="'/'+$route.params.id+'/raw'+(password===''?'':'?password='+password)">RAW</a>
+            <a :href="rawURL">RAW</a>
             <a id="copy-contents" @click="copy">
                 <i class="material-icons" >content_copy</i>
             </a>
@@ -53,7 +53,8 @@ export default {
         passwordRequired: false,
         validPassword: true,
         userid: -2,
-        found: true
+        found: true,
+        rawURL: ""
     }),
     mounted(){
         this.load(this.$route.params.id)
@@ -75,6 +76,7 @@ export default {
                     if (paste.exists) {
                         this.title = paste.title
                         this.rawContent = paste.content
+                        this.rawURL = paste.raw_url;
                         this.userid = paste.user_id
                         
                         this.validPassword = false

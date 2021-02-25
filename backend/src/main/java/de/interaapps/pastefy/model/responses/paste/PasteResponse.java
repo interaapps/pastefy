@@ -1,5 +1,7 @@
 package de.interaapps.pastefy.model.responses.paste;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import de.interaapps.pastefy.model.database.Paste;
 
 public class PasteResponse {
@@ -10,6 +12,7 @@ public class PasteResponse {
     public boolean encrypted = false;
     public String folder;
     public int userId;
+    @SerializedName("raw_url")
     public String rawURL;
     public String created = "0000-00-00 00:00:00";
 
@@ -18,6 +21,7 @@ public class PasteResponse {
             return;
         }
         id = paste.getKey();
+        rawURL = "/"+id+"/raw";
         title = paste.getTitle();
         content = paste.getContent();
         created = paste.createdAt.toString();
