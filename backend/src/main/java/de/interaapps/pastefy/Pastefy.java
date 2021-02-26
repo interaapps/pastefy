@@ -62,7 +62,7 @@ public class Pastefy extends WebApplication {
     }
 
     protected void setupServer(HTTPServer server) {
-        String authProvider = getConfig().get("auth.provider", "none");
+        String authProvider = getConfig().get("auth.provider", "NONE");
         if (authProvider.equalsIgnoreCase("INTERAAPPSAUTH"))
             authenticationProvider = new IAAuthProvider(getConfig().get("interaapps.auth.key"));
         else

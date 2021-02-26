@@ -24,13 +24,10 @@ public class PasteController extends HttpController {
     private AuthenticationProvider authenticationProvider;
 
     @Post
-    public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user) {
+    public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user, @Path("id") String pasteId) {
         CreatePasteResponse response = new CreatePasteResponse();
 
         Paste paste = new Paste();
-        paste.setTitle(request.title);
-        paste.setContent(request.content);
-        paste.setEncrypted(request.encrypted);
 
         Folder folder = Repo.get(Folder.class).where("key", request.folder).first();
 
@@ -40,6 +37,11 @@ public class PasteController extends HttpController {
             if (folder != null && folder.getUserId() == user.getId())
                 paste.setFolder(folder);
         }
+
+        paste.setTitle(request.title);
+        paste.setContent(request.content);
+        paste.setEncrypted(request.encrypted);
+
         paste.save();
 
         response.success = true;

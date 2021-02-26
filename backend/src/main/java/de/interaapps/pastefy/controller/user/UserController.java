@@ -1,5 +1,6 @@
 package de.interaapps.pastefy.controller.user;
 
+import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.auth.AuthenticationProvider;
 import de.interaapps.pastefy.model.auth.User;
 import de.interaapps.pastefy.model.database.Folder;
@@ -29,7 +30,7 @@ public class UserController extends HttpController {
 
     @Get
     public UserResponse getUser(@Attrib("user") User user) {
-        return new UserResponse(user);
+        return new UserResponse(user, Pastefy.getInstance().getConfig().get("auth.provider", "NONE"));
     }
 
     @Get("/overview")

@@ -9,8 +9,10 @@ public class UserResponse {
     public String name;
     public String color;
     public String profilePicture;
+    public String authType = "none";
 
-    public UserResponse(User user) {
+    public UserResponse(User user, String authType) {
+        this.authType = authType;
         if (user == null)
             return;
 
