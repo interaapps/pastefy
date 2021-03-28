@@ -166,7 +166,7 @@ export default {
                             id: paste.id,
                             title: this.$store.state.currentPaste.title,
                             content: this.$store.state.currentPaste.content.substring(0, 50)+"...",
-                            date: date.getMonth()+"/"+date.getDay()+"/"+date.getFullYear()
+                            date: date.getMonth()+"/"+date.getDate()+"/"+date.getFullYear()
                         })
                         console.log(this.$store.state.app.created_pastes)
                         localStorage.setItem("created_pastes", JSON.stringify(this.$store.state.app.lastPastes))
