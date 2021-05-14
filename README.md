@@ -2,6 +2,8 @@
 
 Pastefy is an open source alternative to Gists or Pastebin.
 
+![Screenshot](https://i.ibb.co/THWmH7s/shot1341621013741.png)
+
 ## Develop
 #### Build frontend into the backend
 ```bash
