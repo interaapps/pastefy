@@ -40,7 +40,7 @@
         <dependency>
             <groupId>org.javawebstack</groupId>
             <artifactId>ORM</artifactId>
-            <version>1.0-20210428-20210428.010020-1</version>
+            <version>1.0-20210428-20210428.164856-2</version>
         </dependency>
 
         <dependency>
