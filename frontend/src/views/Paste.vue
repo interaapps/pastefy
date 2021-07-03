@@ -24,7 +24,7 @@
         </div>
         <h1>{{title}}<span class="language" v-if="language !== null">{{language}}</span></h1>
         <code id="paste-contents">
-            <div id="line-nums">
+            <div id="line-nums" v-if="showLineNums">
                 <a 
                     v-for="(line, lineNum) of rawContent.split('\n')" 
                     :key="lineNum" 
@@ -54,7 +54,8 @@ export default {
         validPassword: true,
         userid: -2,
         found: true,
-        rawURL: ""
+        rawURL: "",
+        showLineNums: true
     }),
     mounted(){
         this.load(this.$route.params.id)
@@ -126,13 +127,14 @@ export default {
                         if (languages.includes(ending)) {
                             this.language = ending;
                         }
-
+                        this.showLineNums = true
                         if (this.language === null)
                             this.content = hljs.highlightAuto(this.rawContent).value
                         else {
-                            if (this.language == 'text')
+                            if (this.language == 'text') {
                                 this.content = this.escapeHtml(this.rawContent)
-                            else
+                                this.showLineNums = false
+                            } else
                                 this.content = hljs.highlight(this.language, this.rawContent).value
 
                             if (this.language === "markdown") {
