@@ -24,7 +24,7 @@
                 <span class="date">{{paste.created_at}}</span>
                 <h4 v-if="paste.type == 'MULTI_PASTE'" style="float: right; font-weight: 500; padding: 0px 10px; margin-bottom: 10px;background: #FFFFFF11; border-radius: 100px; display: inline-block">MULTI</h4>
                 <h3 v-if="!paste.encrypted">{{paste.title}}</h3>
-                <pre><code v-if="paste.encrypted">This paste can't be previewed. It's client-encrypted.</code><code v-else-if="paste.type == 'MULTI_PASTE'" v-html="highlight(paste.content)"></code></pre>
+                <pre><code v-if="paste.encrypted">This paste can't be previewed. It's client-encrypted.</code><code v-else-if="paste.type != 'MULTI_PASTE'" v-html="highlight(paste.content)"></code></pre>
             </router-link>
         </div>
     </div>
