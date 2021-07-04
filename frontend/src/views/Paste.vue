@@ -24,7 +24,7 @@
             </a>
         </div>
         <h1>{{title}}<span class="language" v-if="language !== null && !multiPastes">{{language}}</span></h1>
-        <div id="tabs">
+        <div id="tabs" v-if="multiPastes != null && Object.keys(multiPastes).length > 1">
             <a v-for="(tab,i) of multiPastes" :key="i" @click="changeTab(i)" :class="{selected: multiPastesSelected==i}">
                 {{tab.name}}
             </a>
