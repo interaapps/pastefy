@@ -15,9 +15,25 @@
             <div v-if="$store.state.app.sideNavTab === 'paste'" id="create-paste" :class="{'input-fullscreen': inputFullscreen}" style="height: 70%">
                 <input spellcheck="false" autocomplete="off" v-model="$store.state.currentPaste.title" class="input" type="text" placeholder="Title" id="title-input">
                 
+                <svg @click="
+                    if (Object.keys($store.state.currentPaste.multiPastes).length == 0) addTab($store.state.currentPaste.title ? $store.state.currentPaste.title : 'new');
+                    addTab()
+                " id="create-new-tab-button" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/></svg>
+                
                 <svg id="input-fullscreen-button" @click="inputFullscreen = false" v-if="inputFullscreen && !$store.state.mobileVersion" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fullscreen-exit" viewBox="0 0 16 16"><path d="M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5zM0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zm10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4z"/></svg>
                 <svg id="input-fullscreen-button" @click="inputFullscreen = true" v-else-if="!$store.state.mobileVersion" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg>
-
+                <div id="tabs" v-if="$store.state.currentPaste.multiPastes.length > 0">
+                    <div v-for="(contents, i) of $store.state.currentPaste.multiPastes" :key="i" @click="selectTab(i, multiPastesSelected)" :class="{selected:i==multiPastesSelected}">
+                        <input v-model="$store.state.currentPaste.multiPastes[i].name" type="text" placeholder="Name">
+                        <svg @click="
+                        if (i==multiPastesSelected)
+                            selectTab(0)
+                        $store.state.currentPaste.multiPastes.splice(i, 1); 
+                        if (multiPastesSelected > i)
+                            selectTab(multiPastesSelected-1)
+                        " xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+                    </div>
+                </div>
                 <textarea spellcheck="false" v-model="$store.state.currentPaste.content" @keydown="editor" class="input" id="content-input" placeholder="Paste in here"></textarea>
                 <div id="options" :class="{'opened': optionsOpened}">
                     <h5 class="label">Password</h5>
@@ -40,8 +56,14 @@
                         <a v-for="friend of friendList" :key="friend" @click="addFriendToList(friend)" :class='{selected: $store.state.currentPaste.friends.includes(friend)}'>{{friend}}</a>
                     </div>
                 </div>
+                
+                <div id="edit-indicator" v-if="$store.state.currentPaste.editId">
+                    <span>EDITING pastefy.ga/{{$store.state.currentPaste.editId}}</span>
+                    <svg @click="clearInputs()" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+                </div>
+
                 <div id="buttons" :class="{mobile: $store.state.mobileVersion}">
-                    <a id="submit-button" @click="send">SUBMIT</a>
+                    <a id="submit-button" @click="send">{{$store.state.currentPaste.editId ? 'SAVE' : 'SUBMIT'}}</a>
                     <a id="settings-button" @click="optionsOpened = !optionsOpened">
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-sliders" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z"/></svg>
                     </a>
@@ -54,6 +76,7 @@
             <a v-for="(item, key) of footer" :href="item" :key="key" ><span v-if="!isPWA()">{{key}}</span></a>
             <router-link to="/settings">SETTINGS</router-link>
         </div>
+        <div style="display: none">{{r}}</div>
     </div>
 </template>
 <script>
@@ -68,13 +91,20 @@ export default {
         loading: false,
         clientEncrypted: false,
         friendList: [],
+        multiPastesSelected: null,
         footer: {
             IMPRINT: process.env.VUE_APP_API_IMPRINT_URL,
             PRIVACY: process.env.VUE_APP_API_PRIVACY_URL,
         },
         loginURL: process.env.VUE_APP_API_BASE + "/api/authentication/login",
-        inputFullscreen: false
+        inputFullscreen: false,
+        r:0
     }),
+    mounted(){
+        this.eventBus.$on("setMultiPasteTabTo0", ()=>{
+            this.selectTab(0)
+        })      
+    },
     created(){
         document.onkeyup = (e) => {
             if (e.ctrlKey && e.which == 66) {
@@ -83,8 +113,7 @@ export default {
             }
         };
 
-        this.pastefyAPI.get("/api/v2/user/folders", {show_children: false}).then(res=>{
-            const folders = res.json()
+        this.pastefyAPI.get("/api/v2/user/folders", {show_children: false}).then(folders=>{
             for (let folder of folders) {
                 this.folders[folder.name] = folder.id
             }
@@ -99,6 +128,11 @@ export default {
     },
     components: {
         LoadingSpinner
+    },
+    watch:{
+        '$store.state.currentPaste.editId'(){
+            this.r = Math.random()
+        }
     },
     methods: {
         editor(event){
@@ -134,7 +168,7 @@ export default {
                 }
             }
         },
-        send(){
+        async send(){
             let data = {
                 content: this.$store.state.currentPaste.content,
                 title: this.$store.state.currentPaste.title
@@ -146,6 +180,13 @@ export default {
             data.encrypted = false;
             let key;
 
+            if (Object.keys(this.$store.state.currentPaste.multiPastes).length > 0) {
+                this.$store.state.currentPaste.multiPastes[this.multiPastesSelected].contents = this.$store.state.currentPaste.content
+                
+                data.content = JSON.stringify(this.$store.state.currentPaste.multiPastes)
+                data.type = 'MULTI_PASTE'
+            }
+
             if (this.clientEncrypted || this.$store.state.currentPaste.password !== "") {
                 key = this.$store.state.currentPaste.password === "" ? Math.random().toString(36).substring(3)+Math.random().toString(36).substring(3) : this.$store.state.currentPaste.password;
 
@@ -156,50 +197,72 @@ export default {
 
             const toast = helper.showSnackBar("Sending...")
             this.loading = true
-            this.pastefyAPI.post("/api/v2/paste", data)
-                .then(res=>{
-                    const response = res.json()
-                    if (response.success) {
-                        const paste = response.paste
+
+            if (this.$store.state.currentPaste.editId) {
+
+                this.pastefyAPI.editPaste(this.$store.state.currentPaste.editId, data)
+                    .then(()=>{
+                        this.loading = false
+
+                        let hash = "";
+                        if (this.$store.state.currentPaste.password === "" && this.clientEncrypted)
+                            hash = "#"+key
+                        this.$router.push("/"+this.$store.state.currentPaste.editId+hash)
+                        this.eventBus.$emit("reloadPaste")
+                        this.clearInputs()
+                        toast.close()
+                        helper.showSnackBar("Done!")
+                    })
+                    .catch((e)=>{
+                        console.log(e);
+                        toast.close()
+                        helper.showSnackBar("Error during posting the paste :(", "#EE4343")
+                        this.loading = false
+                    })
+            } else {
+                this.pastefyAPI.createPaste(data)
+                    .then(paste=>{
+                        console.log(paste);
                         let date = new Date()
                         this.$store.state.app.lastPastes.unshift({
-                            id: paste.id,
-                            title: this.$store.state.currentPaste.title,
-                            content: this.$store.state.currentPaste.content.substring(0, 50)+"...",
-                            date: date.getMonth()+"/"+date.getDate()+"/"+date.getFullYear()
+                            id: paste.id, title: this.$store.state.currentPaste.title,
+                            content: this.$store.state.currentPaste.content.substring(0, 50)+"...", date: date.getMonth()+"/"+date.getDate()+"/"+date.getFullYear()
                         })
-                        console.log(this.$store.state.app.created_pastes)
                         localStorage.setItem("created_pastes", JSON.stringify(this.$store.state.app.lastPastes))
 
                         let hash = "";
                         if (this.$store.state.currentPaste.password === "" && this.clientEncrypted)
                             hash = "#"+key
-
-
+                            
                         this.$router.push("/"+paste.id+hash)
-                        this.$store.state.app.fullscreen = false
-                        this.inputFullscreen = false
-                        this.$store.state.currentPaste.content  = ""
-                        this.$store.state.currentPaste.title    = ""
-                        this.$store.state.currentPaste.password = ""
-                        
+                        this.clearInputs()
+                            
                         helper.copyStringToClipboard(window.location.protocol+"//"+window.location.host+"/"+paste.id+hash)
                         toast.close()
                         helper.showSnackBar("Copied "+window.location.protocol+"//"+window.location.host+"/"+paste.id+hash+" to clipboard.")
 
                         this.shareToFriends(paste.id, this.$store.state.currentPaste.friends.split(","))
                         this.$store.state.currentPaste.friends = ""
-                    } else  {
+
+                        this.loading = false 
+                    })
+                    .catch((a)=>{
+                        console.log(a);
                         toast.close()
                         helper.showSnackBar("Error during posting the paste :(", "#EE4343")
-                    }
-                    this.loading = false
-                }).catch(res=>{
-                        toast.close()
-                        helper.showSnackBar("Error during posting the paste :(", "#EE4343")
-                        console.log(res)
                         this.loading = false
-                })
+                    })
+            }
+        },
+        clearInputs(){
+            this.$store.state.app.fullscreen = false
+            this.inputFullscreen = false
+            this.$store.state.currentPaste.content  = ""
+            this.$store.state.currentPaste.title    = ""
+            this.$store.state.currentPaste.password = ""
+            this.$store.state.currentPaste.editId   = null
+            this.$store.state.currentPaste.multiPastes = []
+            this.multiPastesSelected = null
         },
         isPWA(){
             return window.matchMedia('(display-mode: standalone)').matches;
@@ -214,9 +277,9 @@ export default {
                 friend = friend.trim()
                 if (friend.length > 3) {
                     const toast = helper.showSnackBar("Adding friend ("+friend+") to paste...")
-                    let res = await this.pastefyAPI.post("/api/v2/paste/"+paste+"/friend", {
+                    let res = await this.pastefyAPI.post(`/api/v2/paste/${paste}/friend`, {
                         friend
-                    }).then(res=>res.json())
+                    })
                     toast.close()
                     if (res.success) {
                         helper.showSnackBar("Added friend ("+friend+") to paste!")
@@ -227,6 +290,23 @@ export default {
                     } else
                         helper.showSnackBar("Couldn't add friend ("+friend+") to paste!", "#FF3232")
                 }
+            }
+        },
+        addTab(title = "new"){
+            const first = this.$store.state.currentPaste.multiPastes.length == 0
+            const index = this.$store.state.currentPaste.multiPastes.push({
+                name: title,
+                contents: first ? this.$store.state.currentPaste.content : ''
+            })
+            this.selectTab(index-1, this.multiPastesSelected)
+        },
+        selectTab(i, current = null){
+            if (current !== null && this.$store.state.currentPaste.multiPastes[current]) {
+                this.$store.state.currentPaste.multiPastes[current].contents = this.$store.state.currentPaste.content
+            }
+            if (this.$store.state.currentPaste.multiPastes[i]){
+                this.multiPastesSelected = i
+                this.$store.state.currentPaste.content = this.$store.state.currentPaste.multiPastes[i].contents
             }
         }
     }
@@ -323,6 +403,61 @@ export default {
                     }
                 }
             }
+            #tabs {
+                margin-top: 10px;
+                overflow-x: auto;
+                overflow-y: hidden;
+                white-space: nowrap;
+                width: calc(100% - 70px);
+                margin-bottom: 10px;
+
+                div {
+                    display: inline-block;
+                    padding: 5px 10px;
+                    background: #262B39DD;
+                    border-radius: 7px;
+                    overflow: hidden;
+                    margin-right: 10px;
+                    height: 37px;
+                    cursor: pointer;
+
+                    input {
+                        background: transparent;
+                        color: #FFF;
+                        display: inline-block;
+                        width: 85px;
+                        border: none;
+                        height: 100%;
+                        outline: none;
+                        vertical-align: middle;
+                        cursor: pointer;
+                    }
+
+                    svg {
+                        vertical-align: middle;
+                        height: 25px;
+                        width:  25px;
+                        color: #FFF;
+                        display: none;
+                    }
+
+                    &:hover {
+                        input {
+                            width: 60px;
+                        }
+                        svg {
+                            display: inline-block;
+                        }
+                    }
+
+                    &.selected {
+                        background: #303647;
+                        input {
+                            cursor:cell;
+                        }
+                    }
+                }
+            }
 
             #content-input {
                 height: 220px;
@@ -338,6 +473,25 @@ export default {
                 font-size: 17px;
                 margin-top: 65px;
             }
+
+            #edit-indicator {
+                color: #FFF;
+                background: #262B39;
+                border-radius: 7px;
+                padding: 10px;
+
+                span {
+                    vertical-align: middle;
+                }
+
+                svg {
+                    height: 27px;
+                    width:  27px;
+                    vertical-align: middle;
+                    float: right;
+                    cursor: pointer;
+                }
+            }
             
             #input-fullscreen-button {
                 color: #FFFFFF53;
@@ -345,6 +499,19 @@ export default {
                 height: 18px;
                 position: absolute;
                 right: 10px;
+                top: 70px;
+                cursor: pointer;
+                transition: 0.3s color;
+                &:hover {
+                    color: #FFFFFFBB;    
+                }
+            }
+            #create-new-tab-button {
+                color: #FFFFFF53;
+                width:  18px;
+                height: 18px;
+                position: absolute;
+                right: 40px;
                 top: 70px;
                 cursor: pointer;
                 transition: 0.3s color;

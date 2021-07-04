@@ -24,13 +24,9 @@ export default {
         load(){
             this.pastefyAPI.get("/api/v2/user/keys")
                 .then(res => {
-                    const response = res.json()
-
-                    if (response.error) {
-                        this.$router.push("/")
-                    } else {
-                        this.apiKeys = response
-                    }
+                    this.apiKeys = res
+                }).catch(()=>{
+                    this.$router.push("/")
                 })
         },
         newApiKey(){
@@ -44,7 +40,7 @@ export default {
         deleteApiKey(id){
             this.pastefyAPI.delete("/api/v2/user/keys/"+id)
                 .then((res)=>{
-                    if (res.json().success) {
+                    if (res.success) {
                         helper.showSnackBar("Deleted API-Key")
                         this.load()
                     }

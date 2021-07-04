@@ -8,6 +8,7 @@ import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.SharedPaste;
 import de.interaapps.pastefy.model.requests.paste.AddFriendToPasteRequest;
 import de.interaapps.pastefy.model.requests.paste.CreatePasteRequest;
+import de.interaapps.pastefy.model.requests.paste.EditPasteRequest;
 import de.interaapps.pastefy.model.responses.ActionResponse;
 import de.interaapps.pastefy.model.responses.paste.CreatePasteResponse;
 import de.interaapps.pastefy.model.responses.paste.PasteResponse;
@@ -41,6 +42,7 @@ public class PasteController extends HttpController {
         paste.setTitle(request.title);
         paste.setContent(request.content);
         paste.setEncrypted(request.encrypted);
+        paste.setType(request.type);
 
         paste.save();
 
@@ -50,8 +52,30 @@ public class PasteController extends HttpController {
         return response;
     }
 
+    @Put("/{id}")
+    @With("auth")
+    public ActionResponse putPaste(@Body EditPasteRequest request, @Path("id") String id, @Attrib("user") User user) {
+        ActionResponse response = new ActionResponse();
+        Paste paste = Repo.get(Paste.class).where("key", id).where("userId", user.getId()).first();
+        if (paste != null) {
+            if (request.title != null)
+                paste.setTitle(request.title);
+            if (request.content != null)
+                paste.setContent(request.content);
+            if (request.folder != null)
+                paste.setFolder(request.folder);
+            if (request.type != null)
+                paste.setType(request.type);
+            if (request.encrypted != null)
+                paste.setEncrypted(request.encrypted);
+            paste.save();
+            response.success = true;
+        }
+        return response;
+    }
+
     @Get("/{id}")
-    public PasteResponse getPaste(Exchange exchange, @Path("id") String id) {
+    public PasteResponse getPaste(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
         Paste paste = Repo.get(Paste.class).where("key", id).first();
         return new PasteResponse(paste);
     }

@@ -19,7 +19,9 @@ let store = new Vuex.Store({
         content: "",
         password: "",
         folder: "",
-        friends: ""
+        friends: "",
+        editId: null,
+        multiPastes: []
     },
     app: {
         fullscreen: false,

@@ -7,7 +7,7 @@
 export default {
     mounted(){
         localStorage["session"] = this.$route.query.key
-        this.pastefyAPI.options.header["x-auth-key"] = localStorage["session"]
+        this.pastefyAPI.bearer(localStorage["session"])
         this.$router.push("/")
     }
 }

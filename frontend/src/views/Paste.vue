@@ -16,13 +16,19 @@
             <a v-if="isPWA()" @click="copyURL">Copy URL</a>
             <a href="#preview" v-if="extraContent !== ''">PREVIEW</a>
             <a v-if="$store.state.user.id == userid" @click="deletePaste">DELETE</a>
-            <a @click="$store.state.currentPaste.content = rawContent; $store.state.currentPaste.title = title" v-if="!$store.state.mobileVersion">FORK</a>
-            <a :href="rawURL">RAW</a>
+            <a @click="editPaste(true)" v-if="!$store.state.mobileVersion">FORK</a>
+            <a v-if="$store.state.user.id == userid" @click="editPaste()">EDIT</a>
+            <a :href="rawURL" v-if="!passwordRequired && !multiPastes">RAW</a>
             <a id="copy-contents" @click="copy">
                 <i class="material-icons" >content_copy</i>
             </a>
         </div>
-        <h1>{{title}}<span class="language" v-if="language !== null">{{language}}</span></h1>
+        <h1>{{title}}<span class="language" v-if="language !== null && !multiPastes">{{language}}</span></h1>
+        <div id="tabs">
+            <a v-for="(tab,i) of multiPastes" :key="i" @click="changeTab(i)" :class="{selected: multiPastesSelected==i}">
+                {{tab.name}}
+            </a>
+        </div>
         <code id="paste-contents">
             <div id="line-nums" v-if="showLineNums">
                 <a 
@@ -55,14 +61,24 @@ export default {
         userid: -2,
         found: true,
         rawURL: "",
-        showLineNums: true
+        showLineNums: true,
+        paste: {},
+
+        multiPastes: null,
+        multiPastesSelected: null
     }),
     mounted(){
         this.load(this.$route.params.id)
         this.password = ""
+        
+        this.eventBus.$on("reloadPaste", ()=>{
+            this.load(this.$route.params.id)
+        })          
     },	
     beforeRouteUpdate (to, from, next) {
         this.password = ""
+        this.multiPastes = null
+        this.multiPastesSelected = null
         this.load(to.params.id)
         next()
     },
@@ -73,12 +89,13 @@ export default {
                 data.password = this.password
             this.pastefyAPI.get("/api/v2/paste/"+id, data)
                 .then(res=>{
-                    let paste = res.json()
+                    let paste = res
                     if (paste.exists) {
                         this.title = paste.title
                         this.rawContent = paste.content
                         this.rawURL = paste.raw_url;
                         this.userid = paste.user_id
+                        this.paste = paste
                         
                         this.validPassword = false
 
@@ -110,56 +127,72 @@ export default {
                         } else
                             this.validPassword = true
                             
-                        
-                        const pasteTitleComponents = this.title.split(".");
-                        let ending = pasteTitleComponents[pasteTitleComponents.length-1];
-                        const replacements = {
-                            "md": "markdown",
-                            "txt": "text"
+                        if (paste.type == 'PASTE')
+                            this.highlight(this.title, this.rawContent)
+                        else if (paste.type == 'MULTI_PASTE') {
+                            this.multiPastes = JSON.parse(paste.content)
+                            this.changeTab(0)
                         }
-
-                        for (let replace  in replacements)
-                            ending = ending.replace(replace, replacements[replace]);
-                        
-                        let languages = hljs.listLanguages();
-                        languages.push("text")
-
-                        if (languages.includes(ending)) {
-                            this.language = ending;
-                        }
-                        this.showLineNums = true
-                        if (this.language === null)
-                            this.content = hljs.highlightAuto(this.rawContent).value
-                        else {
-                            if (this.language == 'text') {
-                                this.content = this.escapeHtml(this.rawContent)
-                                this.showLineNums = false
-                            } else
-                                this.content = hljs.highlight(this.language, this.rawContent).value
-
-                            if (this.language === "markdown") {
-                                const md = require('markdown-it')({
-                                    html:         false,
-                                    highlight: function (str, lang) {
-                                        if (lang && hljs.getLanguage(lang)) {
-                                            try {
-                                                return hljs.highlight(lang, str).value;
-                                            } catch (e) {
-                                                //
-                                            }
-                                        }
-
-                                        return str;
-                                    }
-                                });
-                                this.extraContent = md.render(this.rawContent)
-                            }
-                        }
-
-                        console.log(this.language)
                     } else 
                         this.found = false
                 })
+        },
+        changeTab(i){
+            this.multiPastesSelected = i
+            const tab = this.multiPastes[i]
+            this.rawContent = tab.contents
+            this.extraContent = ''
+            this.highlight(tab.name, tab.contents)
+        },
+        highlight(title, contents){
+            const pasteTitleComponents = title.split(".");
+            let ending = pasteTitleComponents[pasteTitleComponents.length-1];
+            this.language = null
+            const replacements = {
+                "md": "markdown",
+                "txt": "text",
+                "js": "javascript"
+            }
+
+            for (let replace  in replacements)
+                ending = ending.replace(replace, replacements[replace]);
+            
+            let languages = hljs.listLanguages();
+            languages.push("text")
+            
+            if (languages.includes(ending)) {
+                
+                this.language = ending;
+            }
+            
+            this.showLineNums = true
+            if (this.language === null)
+                this.content = hljs.highlightAuto(contents).value
+            else {
+                if (this.language == 'text') {
+                    this.content = this.escapeHtml(contents)
+                    this.showLineNums = false
+                } else
+                    this.content = hljs.highlight(this.language, contents).value
+
+                if (this.language === "markdown") {
+                    const md = require('markdown-it')({
+                        html:         false,
+                        highlight: function (str, lang) {
+                            if (lang && hljs.getLanguage(lang)) {
+                                try {
+                                    return hljs.highlight(lang, str).value;
+                                } catch (e) {
+                                    //
+                                }
+                            }
+
+                            return str;
+                        }
+                    });
+                    this.extraContent = md.render(contents)
+                }
+            }
         },
         copy(){
             helper.copyStringToClipboard(this.rawContent)
@@ -173,7 +206,7 @@ export default {
             const toast = helper.showSnackBar("Deleting...", "#ff9d34")
             this.pastefyAPI.delete("/api/v2/paste/"+this.$route.params.id)
                 .then(res=>{
-                    if (res.json().success) {
+                    if (res.success) {
                         toast.close()
                         helper.showSnackBar("Deleted")
                         this.$router.push("/")
@@ -196,6 +229,21 @@ export default {
         },
         getUrlLineHash(){
             return window.location.hash
+        },
+        editPaste(fork = false) {
+            this.$store.state.currentPaste.title     = this.title
+            if (!fork) {
+                this.$store.state.currentPaste.password  = this.password
+                this.$store.state.currentPaste.editId    = this.paste.id
+                if (this.paste.folder)
+                    this.$store.state.currentPaste.folder    = this.paste.folder
+            }
+
+            if (this.paste.type == 'MULTI_PASTE') {
+                this.$store.state.currentPaste.multiPastes = this.multiPastes
+                this.eventBus.$emit("setMultiPasteTabTo0")
+            } else
+                this.$store.state.currentPaste.content   = this.rawContent
         }
     }
 }
@@ -280,6 +328,22 @@ export default {
             position: static;
             i {
                 display: block;
+            }
+        }
+    }
+
+    #tabs {
+        margin-bottom: 10px;
+        a {
+            padding: 7px 10px;
+            display: inline-block;
+            background: #262B39DD;
+            border-radius: 7px;
+            margin-right: 10px;
+            cursor: pointer;
+
+            &.selected {
+                background: #303647
             }
         }
     }

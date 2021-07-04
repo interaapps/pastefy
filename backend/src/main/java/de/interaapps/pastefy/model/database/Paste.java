@@ -23,6 +23,7 @@ public class Paste extends Model {
 
     @Column
     private String content;
+
     @Column
     private int userId = -1;
 
@@ -31,6 +32,9 @@ public class Paste extends Model {
 
     @Column(size = 8)
     public String folder;
+
+    @Column
+    private Type type = Type.PASTE;
 
     @Column
     public Timestamp createdAt;
@@ -100,5 +104,18 @@ public class Paste extends Model {
 
     public void setFolder(Folder folder) {
         this.folder = folder.getKey();
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public enum Type {
+        PASTE,
+        MULTI_PASTE
     }
 }

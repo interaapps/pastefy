@@ -3,32 +3,26 @@ import Vue from 'vue'
 import router from './router'
 import store from './store'
 import helper from "./helper"
-import { PrajaxClient } from "cajaxjs"
 import { $n } from 'jdomjs'
 import App from "./App";
+import { PastefyAPI } from './PastefyAPI'
 require("babel-polyfill");
 require("./css/app.scss")
-
+import eventBus from './eventBus'
 Vue.config.productionTip = false
 
 let worker = null
 
 
-const pastefyAPI = new PrajaxClient({
-    baseUrl: process.env.VUE_APP_API_BASE,
-    options: {
-            header: {
-                "x-auth-key": ""
-            }
-    }
-})
+const pastefyAPI = new PastefyAPI(process.env.VUE_APP_API_BASE)
 
 if (localStorage["session"])
-    pastefyAPI.options.header["x-auth-key"] = localStorage["session"]
+    pastefyAPI.bearer(localStorage["session"])
 
 Vue.mixin({
     data: function(){return {
-            pastefyAPI
+            pastefyAPI,
+            eventBus
         }
     }
 })
@@ -41,7 +35,7 @@ new Vue({
 
 store.state.app.loadingUser = true
 pastefyAPI.get("/api/v2/user").then(res=>{
-    store.state.user = res.json()
+    store.state.user = res
     store.state.app.loadingUser = false
     if (worker !== null && store.state.user.logged_in) {
         console.log("worker is now working :)");

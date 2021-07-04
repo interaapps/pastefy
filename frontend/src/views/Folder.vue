@@ -22,8 +22,9 @@
         <div id="pastes">
             <router-link v-for="paste of pastes" :to="'/'+paste.id"  :key="paste.id" class="paste">
                 <span class="date">{{paste.created_at}}</span>
+                <h4 v-if="paste.type == 'MULTI_PASTE'" style="float: right; font-weight: 500; padding: 0px 10px; margin-bottom: 10px;background: #FFFFFF11; border-radius: 100px; display: inline-block">MULTI</h4>
                 <h3 v-if="!paste.encrypted">{{paste.title}}</h3>
-                <pre><code v-html="highlight(paste.content)"></code></pre>
+                <pre><code v-if="paste.encrypted">This paste can't be previewed. It's client-encrypted.</code><code v-else v-html="highlight(paste.type == 'MULTI_PASTE' ? JSON.parse(paste.content)[0].contents : paste.content)"></code></pre>
             </router-link>
         </div>
     </div>
@@ -48,7 +49,6 @@ export default {
     methods: {
         load(id){
             this.pastefyAPI.get("/api/v2/folder/"+id, {hide_children: true})
-                .then(res=>res.json())
                 .then(res=>{
                     if (res.exists) {
                         this.id = res.id
@@ -70,7 +70,7 @@ export default {
             helper.showSnackBar("Deleting...", "#ff9d34")
             this.pastefyAPI.delete("/api/v2/folder/"+this.id)
                 .then(res=>{
-                    if (res.json().success) {
+                    if (res.success) {
                         helper.showSnackBar("Deleted")
                         this.$router.push("/")
                     } else

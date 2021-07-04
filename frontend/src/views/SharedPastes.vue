@@ -34,7 +34,6 @@ export default {
             this.pastefyAPI.get("/api/v2/user/sharedpastes", {
                 page: this.page
             })
-                .then(res=>res.json())
                 .then(res=>{
                     this.pastes = res
                     this.loading = false
