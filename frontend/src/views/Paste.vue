@@ -113,7 +113,7 @@ export default {
                             }
 
                             this.title = CryptoJS.AES.decrypt(paste.title, key).toString(CryptoJS.enc.Utf8);
-                            console.log(this.title)
+                            
                             this.rawContent = CryptoJS.AES.decrypt(paste.content, key).toString(CryptoJS.enc.Utf8);
                             if (this.rawContent === "")
                                 this.validPassword = false
@@ -129,10 +129,12 @@ export default {
                         } else
                             this.validPassword = true
                             
-                        if (paste.type == 'PASTE')
+                        
+                        if (paste.type == 'PASTE') {
                             this.highlight(this.title, this.rawContent)
-                        else if (paste.type == 'MULTI_PASTE') {
-                            this.multiPastes = JSON.parse(paste.content)
+                        } else if (paste.type == 'MULTI_PASTE') {
+                            console.log();
+                            this.multiPastes = JSON.parse(this.rawContent)
                             this.changeTab(0)
                         }
                     } else 
