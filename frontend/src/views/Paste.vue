@@ -96,6 +96,8 @@ export default {
                         this.rawURL = paste.raw_url;
                         this.userid = paste.user_id
                         this.paste = paste
+                        this.multiPastes = null
+                        this.multiPastesSelected = null
                         
                         this.validPassword = false
 
@@ -240,7 +242,7 @@ export default {
             }
 
             if (this.paste.type == 'MULTI_PASTE') {
-                this.$store.state.currentPaste.multiPastes = this.multiPastes
+                this.$store.state.currentPaste.multiPastes = [...this.multiPastes]
                 this.eventBus.$emit("setMultiPasteTabTo0")
             } else
                 this.$store.state.currentPaste.content   = this.rawContent

@@ -179,6 +179,8 @@ export default {
 
             data.encrypted = false;
             let key;
+            
+            data.type = 'PASTE'
 
             if (Object.keys(this.$store.state.currentPaste.multiPastes).length > 0) {
                 this.$store.state.currentPaste.multiPastes[this.multiPastesSelected].contents = this.$store.state.currentPaste.content
