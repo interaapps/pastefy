@@ -34,7 +34,12 @@
                         " xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
                     </div>
                 </div>
-                <textarea spellcheck="false" v-model="$store.state.currentPaste.content" @keydown="editor" class="input" id="content-input" placeholder="Paste in here"></textarea>
+                
+                <div id="content-input">
+                    <textarea ref="pasteContentsTextArea" spellcheck="false" v-model="$store.state.currentPaste.content" @input="highlight" @keydown="editor" placeholder="Paste in here" :style="pasteContentsTextAreaStyle" :class="{native: nativeInput}"></textarea>
+                    <pre v-if="!nativeInput" v-html="highlightedContents" />
+                </div>
+                
                 <div id="options" :class="{'opened': optionsOpened}">
                     <h5 class="label">Password</h5>
                     <input autocomplete="new-password" v-model="$store.state.currentPaste.password" class="input" type="password" placeholder="Password (Optional)">
@@ -83,6 +88,9 @@
 import helper from "../helper.js";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import CryptoJS from "crypto-js";
+import hljs from "highlight.js";
+
+const LANGUAGES = hljs.listLanguages()
 
 export default {
     data: ()=>({
@@ -98,12 +106,19 @@ export default {
         },
         loginURL: process.env.VUE_APP_API_BASE + "/api/authentication/login",
         inputFullscreen: false,
-        r:0
+        highlightedContents: '',
+        r:0,
+        nativeInput: true,
+        pasteContentsTextAreaStyle: {
+            height: '100px',
+            width: '100px'
+        }
     }),
     mounted(){
         this.eventBus.$on("setMultiPasteTabTo0", ()=>{
             this.selectTab(0)
         })      
+        this.highlight()
     },
     created(){
         document.onkeyup = (e) => {
@@ -132,6 +147,9 @@ export default {
     watch:{
         '$store.state.currentPaste.editId'(){
             this.r = Math.random()
+        },
+        '$store.state.currentPaste.content'(){
+            this.highlight()
         }
     },
     methods: {
@@ -139,28 +157,30 @@ export default {
             const textarea = event.target
             
             if (event.keyCode == 9) {
-                let newCaretPosition;
-                newCaretPosition = textarea.getCaretPosition() + "    ".length;
+                let newCaretPosition = textarea.getCaretPosition() + "    ".length;
                 textarea.value = textarea.value.substring(0, textarea.getCaretPosition()) + "    " + textarea.value.substring(textarea.getCaretPosition(), textarea.value.length);
-                textarea.setCaretPosition(newCaretPosition);
+                
+                if (!this.nativeInput){
+                    this.$store.state.currentPaste.content = textarea.value
+                }
+
                 event.preventDefault()
-            }
-            if(event.keyCode == 8){
+                
+                textarea.setCaretPosition(newCaretPosition);
+            } else if(event.keyCode == 8){
                 if (textarea.value.substring(textarea.getCaretPosition() - 4, textarea.getCaretPosition()) == "    ") { //it's a tab space
                     let newCaretPosition;
                     newCaretPosition = textarea.getCaretPosition() - 3;
                     textarea.value = textarea.value.substring(0, textarea.getCaretPosition() - 3) + textarea.value.substring(textarea.getCaretPosition(), textarea.value.length);
                     textarea.setCaretPosition(newCaretPosition);
                 }
-            }
-            if(event.keyCode == 37){
+            } else if(event.keyCode == 37){
                 let newCaretPosition;
                 if (textarea.value.substring(textarea.getCaretPosition() - 4, textarea.getCaretPosition()) == "    ") { //it's a tab space
                     newCaretPosition = textarea.getCaretPosition() - 3;
                     textarea.setCaretPosition(newCaretPosition);
                 }    
-            }
-            if(event.keyCode == 39){
+            } else if(event.keyCode == 39){
                 let newCaretPosition;
                 if (textarea.value.substring(textarea.getCaretPosition() + 4, textarea.getCaretPosition()) == "    ") { //it's a tab space
                     newCaretPosition = textarea.getCaretPosition() + 3;
@@ -224,7 +244,6 @@ export default {
             } else {
                 this.pastefyAPI.createPaste(data)
                     .then(paste=>{
-                        console.log(paste);
                         let date = new Date()
                         this.$store.state.app.lastPastes.unshift({
                             id: paste.id, title: this.$store.state.currentPaste.title,
@@ -310,6 +329,32 @@ export default {
                 this.multiPastesSelected = i
                 this.$store.state.currentPaste.content = this.$store.state.currentPaste.multiPastes[i].contents
             }
+        },
+        async highlight(){
+            let nativeInput = true // Because of the watcher
+            this.pasteContentsTextAreaStyle = {
+                width: this.$refs.pasteContentsTextArea.scrollWidth+'px',
+                height: this.$refs.pasteContentsTextArea.scrollHeight+'px',
+            }
+
+            this.highlightedContents = this.escapeHtml(this.$store.state.currentPaste.content)
+            const split = this.$store.state.currentPaste.title.split(".")
+            if (split.length > 1 && !this.$store.state.mobileVersion){
+                const language = split[split.length-1].replace("md", "markdown").replace("js", "javascript").replace("html", "xml")
+                if (LANGUAGES.includes(language) && this.$store.state.currentPaste.content.length < 15000){
+                    this.highlightedContents = hljs.highlight(language, this.$store.state.currentPaste.content).value
+                    nativeInput = false
+                }
+            }
+            this.nativeInput = nativeInput
+        },
+        escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
     }
 }
@@ -463,12 +508,46 @@ export default {
 
             #content-input {
                 height: 220px;
-                font-size: 16px;
-                white-space: pre;
                 overflow-wrap: normal;
                 overflow-x: scroll;
-                font-family: "Roboto Sans", monospace;
                 resize: vertical;
+                border-radius: 7px;
+
+                background: #262B39;
+                color: #FFF;
+
+                position: relative;
+
+                textarea {
+                    background: transparent;
+                    min-height: 100%;
+                    overflow: hidden;
+                    padding: 12px;
+                    border: none;
+                    outline: none;
+                    width: 100%;
+                    resize: none;
+                    font-size: 18px;
+                    color: #FFF;
+                    font-family: 'DM Mono', monospace;
+                    color: transparent;
+                    caret-color: #FFFFFF;
+                    white-space: pre;
+                    min-width: 100%;
+
+                    &.native {
+                        color: #FFF;
+                    }
+                }
+
+                pre {
+                    position: absolute;
+                    top: 0px;
+                    font-size: 18px;
+                    padding: 12px;
+                    pointer-events: none;
+                    font-family: 'DM Mono', monospace;
+                }
             }
 
             #title-input {
@@ -504,6 +583,7 @@ export default {
                 top: 70px;
                 cursor: pointer;
                 transition: 0.3s color;
+                z-index: 10000;
                 &:hover {
                     color: #FFFFFFBB;    
                 }
@@ -517,6 +597,7 @@ export default {
                 top: 70px;
                 cursor: pointer;
                 transition: 0.3s color;
+                z-index: 10000;
                 &:hover {
                     color: #FFFFFFBB;    
                 }
@@ -610,8 +691,10 @@ export default {
                     top: 0px;
                     height: 100%;
                     width: 100%;
-                    padding-top: 75px;
-                    padding-left: 26px;
+                    padding-left: 16px;
+                    textarea, pre {
+                        padding-top: 75px;
+                    }
                 }
                 #buttons #submit-button {
                     position: fixed;
@@ -627,6 +710,10 @@ export default {
                     z-index: 1000;
                     width:  23px;
                     height: 23px;
+                }
+
+                #create-new-tab-button {
+                    display: none;
                 }
             }
         }

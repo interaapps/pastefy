@@ -170,6 +170,7 @@ export default {
             }
             
             this.showLineNums = true
+            
             if (this.language === null)
                 this.content = hljs.highlightAuto(contents).value
             else {
@@ -178,7 +179,6 @@ export default {
                     this.showLineNums = false
                 } else
                     this.content = hljs.highlight(this.language, contents).value
-
                 if (this.language === "markdown") {
                     const md = require('markdown-it')({
                         html:         false,
