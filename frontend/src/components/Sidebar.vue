@@ -13,7 +13,7 @@
             <a :href="loginURL" id="profile-picture" class="login" v-else-if="$store.state.user.auth_type != 'NONE'">LOGIN</a>
             
             <div v-if="$store.state.app.sideNavTab === 'paste'" id="create-paste" :class="{'input-fullscreen': inputFullscreen}" style="height: 70%">
-                <input spellcheck="false" autocomplete="off" v-model="$store.state.currentPaste.title" class="input" type="text" placeholder="Title" id="title-input">
+                <input @input="highlight" spellcheck="false" autocomplete="off" v-model="$store.state.currentPaste.title" class="input" type="text" placeholder="Title" id="title-input">
                 
                 <svg @click="
                     if (Object.keys($store.state.currentPaste.multiPastes).length == 0) addTab($store.state.currentPaste.title ? $store.state.currentPaste.title : 'new');
@@ -36,7 +36,7 @@
                 </div>
                 
                 <div id="content-input">
-                    <textarea ref="pasteContentsTextArea" spellcheck="false" v-model="$store.state.currentPaste.content" @input="highlight" @keydown="editor" placeholder="Paste in here" :style="pasteContentsTextAreaStyle" :class="{native: nativeInput}"></textarea>
+                    <textarea ref="pasteContentsTextArea" spellcheck="false" v-model="$store.state.currentPaste.content" @keydown="editor" placeholder="Paste in here" :style="pasteContentsTextAreaStyle" :class="{native: nativeInput}"></textarea>
                     <pre v-if="!nativeInput" v-html="highlightedContents" />
                 </div>
                 
@@ -332,13 +332,16 @@ export default {
         },
         async highlight(){
             let nativeInput = true // Because of the watcher
+            this.$refs.pasteContentsTextArea.style.height = '0px'
+            this.$refs.pasteContentsTextArea.style.height = this.$refs.pasteContentsTextArea.scrollHeight+'px'
             this.pasteContentsTextAreaStyle = {
                 width: this.$refs.pasteContentsTextArea.scrollWidth+'px',
                 height: this.$refs.pasteContentsTextArea.scrollHeight+'px',
             }
 
             this.highlightedContents = this.escapeHtml(this.$store.state.currentPaste.content)
-            const split = this.$store.state.currentPaste.title.split(".")
+            console.log(this.multiPastesSelected, this.$store.state.currentPaste.multiPastes);
+            const split = (Object.keys(this.$store.state.currentPaste.multiPastes).length == 0 ? this.$store.state.currentPaste.title : this.$store.state.currentPaste.multiPastes[this.multiPastesSelected].name).split(".")
             if (split.length > 1 && !this.$store.state.mobileVersion){
                 const language = split[split.length-1].replace("md", "markdown").replace("js", "javascript").replace("html", "xml")
                 if (LANGUAGES.includes(language) && this.$store.state.currentPaste.content.length < 15000){
@@ -509,7 +512,7 @@ export default {
             #content-input {
                 height: 220px;
                 overflow-wrap: normal;
-                overflow-x: scroll;
+                overflow-x: auto;
                 resize: vertical;
                 border-radius: 7px;
 
