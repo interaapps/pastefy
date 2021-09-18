@@ -264,9 +264,17 @@ export default {
                     
                     if (event.key == key) {
                         if (textarea.hasSelection()) {
-                            textarea.value = textarea.value.substring(0, textarea.selectionEnd)+key+closeBrackets[key]+textarea.value.substring(textarea.selectionEnd, textarea.value.length)
-                            textarea.setCaretPosition(caretPos+1);
-                        } else{
+                            // textarea.value = textarea.value.substring(0, textarea.selectionEnd)+key+closeBrackets[key]+textarea.value.substring(textarea.selectionEnd, textarea.value.length)
+                            const newCaret = caretPos+textarea.value.substring(textarea.selectionStart, textarea.selectionEnd).length
+                            const oldStart = textarea.selectionStart
+                            const oldEnd = textarea.selectionEnd
+                            textarea.value = textarea.value.substring(0, textarea.selectionStart)+key+textarea.value.substring(textarea.selectionStart, textarea.selectionEnd)+closeBrackets[key]+textarea.value.substring(textarea.selectionEnd, textarea.value.length)
+                            
+                            textarea.setCaretPosition(newCaret+1);
+                            textarea.select()
+                            textarea.selectionStart = oldStart+1
+                            textarea.selectionEnd = oldEnd+1
+                        } else {
                             textarea.value = textarea.value.substring(0, caretPos)+key+closeBrackets[key]+textarea.value.substring(caretPos, textarea.value.length)
                             textarea.setCaretPosition(caretPos+1);
                         }
