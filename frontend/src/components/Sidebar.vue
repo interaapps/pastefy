@@ -101,7 +101,8 @@ const LANGUAGES = hljs.listLanguages()
 const LANGUAGE_REPLACEMENTS = {
     md: 'markdown',
     js: 'javascript',
-    html: 'xml'
+    html: 'xml',
+    yml: 'yaml'
 }
 export default {
     data: ()=>({
@@ -299,6 +300,8 @@ export default {
                     } i++
                 } i++
             }*/
+            if (textarea.value != this.$store.state.currentPaste.content && !this.nativeInput)
+                this.$store.state.currentPaste.content = textarea.value
         },
         async send(){
             let data = {
