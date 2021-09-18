@@ -212,12 +212,25 @@ export default {
                 }
 
                 for (const key in closeBrackets) {
-                    if (event.key == closeBrackets[key]) {
+                    console.log(event.key == closeBrackets[key], textarea.value.substring(caretPos-1, caretPos) == key);
+                    if (event.key == closeBrackets[key] && textarea.value.substring(caretPos-1, caretPos) == key) {
                         event.preventDefault()
-                        textarea.setCaretPosition(caretPos+1);
+                        textarea.setCaretPosition(caretPos+1)
+                        break
                     }
 
-                    if (event.key == "Enter" && textarea.value.substring(caretPos-1, caretPos) == key) {
+
+                    if (event.key == 'Backspace'
+                        && textarea.value.substring(caretPos-1, caretPos) == key
+                        && textarea.value.substring(caretPos, caretPos+1) == closeBrackets[key]
+                    ) {
+                        textarea.value = textarea.value.substring(0, caretPos-1)+textarea.value.substring(caretPos+1, textarea.value.length)
+                        event.preventDefault()
+                        textarea.setCaretPosition(caretPos)
+                        break
+                    }
+
+                    if (event.key == "Enter" && textarea.value.substring(caretPos-1, caretPos) == key && ['{','(','['].includes(key)) {
                         let startingSpaces = ""
 
                         let i = 0
@@ -245,15 +258,16 @@ export default {
                         
                         textarea.setCaretPosition(caretPos+startingSpaces.length+5);
                     }
-
+                    
                     if (event.key == key) {
                         if (textarea.hasSelection()) {
-                            textarea.value = textarea.value.substring(0, textarea.selectionEnd)+closeBrackets[key]+textarea.value.substring(textarea.selectionEnd, textarea.value.length)
-                            textarea.setCaretPosition(caretPos);
+                            textarea.value = textarea.value.substring(0, textarea.selectionEnd)+key+closeBrackets[key]+textarea.value.substring(textarea.selectionEnd, textarea.value.length)
+                            textarea.setCaretPosition(caretPos+1);
                         } else{
-                            textarea.value = textarea.value.substring(0, caretPos)+closeBrackets[key]+textarea.value.substring(caretPos, textarea.value.length)
-                            textarea.setCaretPosition(caretPos);
+                            textarea.value = textarea.value.substring(0, caretPos)+key+closeBrackets[key]+textarea.value.substring(caretPos, textarea.value.length)
+                            textarea.setCaretPosition(caretPos+1);
                         }
+                        event.preventDefault()
                     }
                 }
             }
