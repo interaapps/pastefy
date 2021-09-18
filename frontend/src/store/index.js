@@ -28,6 +28,9 @@ let store = new Vuex.Store({
         sideNavTab: "paste",
         fullscreenOnHomepage: localStorage.getItem('fullscreen_on_homepage') == 'true',
         browserNotifications: localStorage.getItem('browser_notifications') == 'true',
+        newPasteEditorDisableHighlighting: localStorage.getItem('new_paste_editor_disable_highlighting') == 'true',
+        newPasteEditorDisableBracketClosing: localStorage.getItem('new_paste_editor_disable_bracket_closing') == 'true',
+        newPasteEditorDisableLineNumbering: localStorage.getItem('new_paste_editor_disable_line_numbering') == 'true',
         lastPastes: JSON.parse(localStorage['created_pastes'] || "[]").splice(0, 15),
         loadingUser: false
     }

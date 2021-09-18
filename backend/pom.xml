@@ -12,6 +12,10 @@
 
     <repositories>
         <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
             <id>javawebstack</id>
             <url>https://repo.javawebstack.org</url>
         </repository>
@@ -53,6 +57,12 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.25</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.interaapps</groupId>
+            <artifactId>accounts-java-client</artifactId>
+            <version>1.0.4</version>
         </dependency>
     </dependencies>
 

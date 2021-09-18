@@ -170,7 +170,7 @@ export default {
             }
             
             this.showLineNums = true
-            
+            console.log("LANG: "+this.language);
             if (this.language === null)
                 this.content = hljs.highlightAuto(contents).value
             else {

@@ -1,5 +1,6 @@
 package de.interaapps.pastefy;
 
+import de.interaapps.accounts.apiclient.AccountsClient;
 import de.interaapps.pastefy.auth.AuthMiddleware;
 import de.interaapps.pastefy.auth.AuthenticationProvider;
 import de.interaapps.pastefy.auth.IAAuthProvider;
@@ -20,6 +21,7 @@ import org.javawebstack.orm.ORM;
 import org.javawebstack.orm.ORMConfig;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.exception.ORMConfigurationException;
+import org.javawebstack.orm.mapper.AbstractDataTypeMapper;
 import org.javawebstack.orm.wrapper.SQL;
 
 import java.io.File;
@@ -56,7 +58,9 @@ public class Pastefy extends WebApplication {
         handler.setLevel(Level.ALL);
         Logger.getLogger("ORM").addHandler(handler);
         Logger.getLogger("ORM").setLevel(Level.ALL);
-        ORMConfig config = new ORMConfig().setTablePrefix("pastefy_");
+        ORMConfig config = new ORMConfig()
+            .setTablePrefix("pastefy_")
+            .addTypeMapper(new AbstractDataTypeMapper());
         ORM.register(Paste.class.getPackage(), sql, config);
         ORM.autoMigrate();
     }
@@ -92,6 +96,7 @@ public class Pastefy extends WebApplication {
                     if (user != null) {
                         exchange.attrib("loggedIn", true);
                         exchange.attrib("user", user);
+                        exchange.attrib("authkey", authKey);
                     }
                 }
             }

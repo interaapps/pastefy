@@ -36,8 +36,14 @@
                 </div>
                 
                 <div id="content-input">
+                    <div v-if="!$store.state.app.newPasteEditorDisableLineNumbering" id="line-nums" ref="pasteContentsLineNums" @click="$refs.pasteContentsTextArea.focus()">
+                        <span v-for="(l, i) in $store.state.currentPaste.content.split('\n').length" :key="i">{{i+1}}</span>
+                    </div>
                     <textarea ref="pasteContentsTextArea" spellcheck="false" v-model="$store.state.currentPaste.content" @keydown="editor" placeholder="Paste in here" :style="pasteContentsTextAreaStyle" :class="{native: nativeInput}"></textarea>
-                    <pre v-if="!nativeInput" v-html="highlightedContents" />
+                    <pre v-if="!nativeInput" style="left: 36px;" ref="pasteContentsHighlighting" v-html="highlightedContents" />
+                    <div v-if="this.autocompletion" id="autocompletion" :style="{marginLeft: (autocompletion.left*11)+'px', marginTop: (10+(autocompletion.top+1)*22)+'px'}">
+                        <span v-for="(c, i) in autocompletion.list" :key="i">{{c}}</span>
+                    </div>
                 </div>
                 
                 <div id="options" :class="{'opened': optionsOpened}">
@@ -91,7 +97,11 @@ import CryptoJS from "crypto-js";
 import hljs from "highlight.js";
 
 const LANGUAGES = hljs.listLanguages()
-
+const LANGUAGE_REPLACEMENTS = {
+    md: 'markdown',
+    js: 'javascript',
+    html: 'xml'
+}
 export default {
     data: ()=>({
         optionsOpened: false,
@@ -112,7 +122,8 @@ export default {
         pasteContentsTextAreaStyle: {
             height: '100px',
             width: '100px'
-        }
+        },
+        autocompletion: null
     }),
     mounted(){
         this.eventBus.$on("setMultiPasteTabTo0", ()=>{
@@ -155,6 +166,7 @@ export default {
     methods: {
         editor(event){
             const textarea = event.target
+            const caretPos = textarea.getCaretPosition()
             
             if (event.keyCode == 9) {
                 let newCaretPosition = textarea.getCaretPosition() + "    ".length;
@@ -187,6 +199,91 @@ export default {
                     textarea.setCaretPosition(newCaretPosition);
                 }
             }
+
+            if (!this.$store.state.app.newPasteEditorDisableBracketClosing){
+                const closeBrackets = {
+                    '{': '}',
+                    '(': ')',
+                    '[': ']',
+                    '"': '"',
+                    "'": "'",
+                    '`': '`'
+                }
+
+                for (const key in closeBrackets) {
+                    if (event.key == closeBrackets[key]) {
+                        event.preventDefault()
+                        textarea.setCaretPosition(caretPos+1);
+                    }
+
+                    if (event.key == "Enter" && textarea.value.substring(caretPos-1, caretPos) == key) {
+                        let startingSpaces = ""
+
+                        let i = 0
+                        let lines = textarea.value.split("\n")
+                        for (let line in lines) {
+                            for (let a in lines[line].split("")) {
+                                i++
+                                if (caretPos == i) {
+                                    const l = lines[line].split("")
+                                    for (let b in l) {
+                                        if (l[b] == ' ')
+                                            startingSpaces += " "
+                                        else
+                                            break
+                                    }
+                                }  a;
+                            }
+                            i++
+                        }
+
+                        textarea.value = textarea.value.substring(0, caretPos)+"\n    "+startingSpaces+"\n"+startingSpaces+textarea.value.substring(caretPos, textarea.value.length)
+                        event.preventDefault()
+
+                        this.$store.state.currentPaste.content = textarea.value
+                        
+                        textarea.setCaretPosition(caretPos+startingSpaces.length+5);
+                    }
+
+                    if (event.key == key) {
+                        if (textarea.hasSelection()) {
+                            textarea.value = textarea.value.substring(0, textarea.selectionEnd)+closeBrackets[key]+textarea.value.substring(textarea.selectionEnd, textarea.value.length)
+                            textarea.setCaretPosition(caretPos);
+                        } else{
+                            textarea.value = textarea.value.substring(0, caretPos)+closeBrackets[key]+textarea.value.substring(caretPos, textarea.value.length)
+                            textarea.setCaretPosition(caretPos);
+                        }
+                    }
+                }
+            }
+            /*let i = 0
+            let lines = textarea.value.split("\n")
+            for (let line in lines) {
+                let lineW = 0
+                for (let word of lines[line].split(" ")) {
+                    for (const c in word.split("")) {
+                        if (i+1 == caretPos) {
+                            word = word+event.key
+                            if (event.key.length == 1 &&
+                                word.match(/^[0-9a-zA-z_-]+$/) &&
+                                word[0].match(/^[a-zA-z]+$/)
+                            ) {
+                                this.autocompletion = {
+                                    list: [word],
+                                    left: lineW+1,
+                                    top: line
+                                }
+                            } else if (event.key != 'Shift' && event.key != 'Alt' && event.key != 'Control') {
+                                this.autocompletion = null
+                            }
+                        }
+                        if (event.key == 'Backspace')
+                            this.autocompletion = null
+                        lineW++
+                        c; i++
+                    } i++
+                } i++
+            }*/
         },
         async send(){
             let data = {
@@ -334,16 +431,35 @@ export default {
             let nativeInput = true // Because of the watcher
             this.$refs.pasteContentsTextArea.style.height = '0px'
             this.$refs.pasteContentsTextArea.style.height = this.$refs.pasteContentsTextArea.scrollHeight+'px'
+            
+            const left = (this.$store.state.app.newPasteEditorDisableLineNumbering 
+                ? 14 
+                : this.$refs.pasteContentsLineNums.clientWidth+8 )
+
             this.pasteContentsTextAreaStyle = {
-                width: this.$refs.pasteContentsTextArea.scrollWidth+'px',
+                width: (this.$refs.pasteContentsTextArea.scrollWidth-(this.$store.state.app.newPasteEditorDisableLineNumbering ? 10 : this.$refs.pasteContentsLineNums.clientWidth))+'px',
                 height: this.$refs.pasteContentsTextArea.scrollHeight+'px',
+                minWidth: `calc(100% - ${left+12}px)`,
+                left: left+"px"
             }
 
+            if (this.$refs.pasteContentsHighlighting)
+                this.$refs.pasteContentsHighlighting.style.left = left+"px"
+
             this.highlightedContents = this.escapeHtml(this.$store.state.currentPaste.content)
-            console.log(this.multiPastesSelected, this.$store.state.currentPaste.multiPastes);
+
             const split = (Object.keys(this.$store.state.currentPaste.multiPastes).length == 0 ? this.$store.state.currentPaste.title : this.$store.state.currentPaste.multiPastes[this.multiPastesSelected].name).split(".")
-            if (split.length > 1 && !this.$store.state.mobileVersion){
-                const language = split[split.length-1].replace("md", "markdown").replace("js", "javascript").replace("html", "xml")
+            
+            if (split.length > 1 && !this.$store.state.mobileVersion && !this.$store.state.app.newPasteEditorDisableHighlighting){
+                let language = split[split.length-1]
+                
+                for (const name in LANGUAGE_REPLACEMENTS) {
+                    if (language == name) {
+                        language = LANGUAGE_REPLACEMENTS[name]
+                        break;
+                    }
+                }
+
                 if (LANGUAGES.includes(language) && this.$store.state.currentPaste.content.length < 15000){
                     this.highlightedContents = hljs.highlight(language, this.$store.state.currentPaste.content).value
                     nativeInput = false
@@ -521,7 +637,10 @@ export default {
 
                 position: relative;
 
+                line-height: 22px;
+
                 textarea {
+                    line-height: 22px;
                     background: transparent;
                     min-height: 100%;
                     overflow: hidden;
@@ -537,6 +656,10 @@ export default {
                     caret-color: #FFFFFF;
                     white-space: pre;
                     min-width: 100%;
+                    padding-left: 0px;
+
+                    position: absolute;
+                    top: 0px;
 
                     &.native {
                         color: #FFF;
@@ -548,8 +671,31 @@ export default {
                     top: 0px;
                     font-size: 18px;
                     padding: 12px;
+                    padding-left: 0px;
                     pointer-events: none;
                     font-family: 'DM Mono', monospace;
+                }
+
+                #line-nums {
+                    float: left;
+                    padding: 12px;
+                    width: fit-content;
+                    color: #FFFFFF88;
+                    padding-right: 5px;
+                    user-select: none;
+                    span {
+                        font-size: 18px;
+                        display: block;
+                    }
+                }
+
+                #autocompletion {
+                    display: inline-block;
+                    padding: 2px 8px;
+                    border-radius: 5px;
+
+                    background: #00000022;
+                    font-size: 18px;
                 }
             }
 
@@ -694,9 +840,13 @@ export default {
                     top: 0px;
                     height: 100%;
                     width: 100%;
-                    padding-left: 16px;
-                    textarea, pre {
+                    padding-left: 26px;
+                    textarea, pre, #line-nums {
                         padding-top: 75px;
+                        padding-left: 25px;
+                    }
+                    #line-nums {
+                        padding-left: 0px;
                     }
                 }
                 #buttons #submit-button {
