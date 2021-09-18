@@ -213,8 +213,10 @@ export default {
                 }
 
                 for (const key in closeBrackets) {
-                    console.log(event.key == closeBrackets[key], textarea.value.substring(caretPos-1, caretPos) == key);
-                    if (event.key == closeBrackets[key] && textarea.value.substring(caretPos-1, caretPos) == key) {
+                    
+                    if (event.key == closeBrackets[key] && textarea.value.substring(caretPos-1, caretPos) == key
+                        && (['"',"'",'`'].includes(key) ? textarea.value.substring(caretPos-2, caretPos-1) != key : true)
+                    ) {
                         event.preventDefault()
                         textarea.setCaretPosition(caretPos+1)
                         break
