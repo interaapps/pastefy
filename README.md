@@ -33,7 +33,7 @@ You want to share some code to your friends or just save it for yourself? Just p
 
 ## Deploy
 ### Docker
-DockerHub: https://hub.docker.com/repository/docker/interaapps/pastefy/general
+DockerHub: https://hub.docker.com/r/interaapps/pastefy
 ```bash
 docker run -p 8080:80 \
       --env HTTP_SERVER_PORT=80 \
