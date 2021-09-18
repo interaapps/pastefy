@@ -47,6 +47,7 @@ docker run -p 8080:80 \
       --env AUTH_PROVIDER=NONE \
       --env INTERAAPPS_AUTH_KEY= \
       --env INTERAAPPS_AUTH_ID= \
+      interaapps/pastefy
 ```
 
 ### Docker-Compose
