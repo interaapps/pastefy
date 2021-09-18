@@ -457,9 +457,8 @@ export default {
                 : this.$refs.pasteContentsLineNums.clientWidth+8 )
 
             this.pasteContentsTextAreaStyle = {
-                width: (this.$refs.pasteContentsTextArea.scrollWidth-(this.$store.state.app.newPasteEditorDisableLineNumbering ? 10 : this.$refs.pasteContentsLineNums.clientWidth))+'px',
+                width: (this.$refs.pasteContentsTextArea.scrollWidth)+'px',
                 height: this.$refs.pasteContentsTextArea.scrollHeight+'px',
-                minWidth: `calc(100% - ${left+12}px)`,
                 left: left+"px"
             }
 
