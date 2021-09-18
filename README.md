@@ -19,17 +19,17 @@ You want to share some code to your friends or just save it for yourself? Just p
 - [Deploy](#Deploy)
   - [Docker](#Deploy)
   - [Docker-Compose](#Docker-Compose)
-  - [Custom Docker-Compose](#Custom-Docker-Compose)
+  - [Custom Docker-Compose (Using Docker-Hub)](#custom-docker-compose-using-docker-hub)
   - [Kubernetes](#Kubernetes)
   - [Container-Less](#Container-Less)
 - [Develop](#Develop)
 - [API](#API)
 
 # Screenshots
-![](.github/screenshots/home.png)
-![](.github/screenshots/paste.png)
-![](.github/screenshots/new.png)
-![](.github/screenshots/fullscreen.png)
+![](./.github/screenshots/home.png)
+![](./.github/screenshots/paste.png)
+![](./.github/screenshots/new.png)
+![](./.github/screenshots/fullscreen.png)
 
 ## Deploy
 ### Docker
