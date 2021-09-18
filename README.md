@@ -36,17 +36,17 @@ You want to share some code to your friends or just save it for yourself? Just p
 DockerHub: https://hub.docker.com/repository/docker/interaapps/pastefy/general
 ```bash
 docker run -p 8080:80 \
-      --HTTP_SERVER_PORT=80 \
-      --HTTP_SERVER_CORS="*" \
-      --DATABASE_DRIVER=mysql \
-      --DATABASE_NAME=pastefy \
-      --DATABASE_USER=pastefy \
-      --DATABASE_PASSWORD=pastefy \
-      --DATABASE_HOST=db \
-      --DATABASE_PORT=3306 \
-      --AUTH_PROVIDER=NONE \
-      --INTERAAPPS_AUTH_KEY= \
-      --INTERAAPPS_AUTH_ID= \
+      --env HTTP_SERVER_PORT=80 \
+      --env HTTP_SERVER_CORS="*" \
+      --env DATABASE_DRIVER=mysql \
+      --env DATABASE_NAME=pastefy \
+      --env DATABASE_USER=pastefy \
+      --env DATABASE_PASSWORD=pastefy \
+      --env DATABASE_HOST=db \
+      --env DATABASE_PORT=3306 \
+      --env AUTH_PROVIDER=NONE \
+      --env INTERAAPPS_AUTH_KEY= \
+      --env INTERAAPPS_AUTH_ID= \
 ```
 
 ### Docker-Compose
