@@ -42,13 +42,14 @@ docker run -p 8080:80 \
       --env DATABASE_NAME=pastefy \
       --env DATABASE_USER=pastefy \
       --env DATABASE_PASSWORD=pastefy \
-      --env DATABASE_HOST=db \
+      --env DATABASE_HOST=host \
       --env DATABASE_PORT=3306 \
       --env AUTH_PROVIDER=NONE \
       --env INTERAAPPS_AUTH_KEY= \
       --env INTERAAPPS_AUTH_ID= \
       interaapps/pastefy
 ```
+Or [Pastefy Docker in Host-Mode](https://pastefy.ga/JWLoudTI)
 
 ### Docker-Compose
 https://github.com/interaapps/pastefy/blob/master/docker-compose.yml
