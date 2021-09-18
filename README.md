@@ -3,7 +3,7 @@
 Pastefy is an open source alternative to Gists or Pastebin.<br>
 You want to share some code to your friends or just save it for yourself? Just paste it.
 
-![Screenshot](https://i.ibb.co/THWmH7s/shot1341621013741.png)
+![Screenshot](./.github/screenshots/vid.gif)
 ## Features
 - Raw-Preview
 - Copy Button
