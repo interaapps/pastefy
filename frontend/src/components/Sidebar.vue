@@ -12,13 +12,13 @@
             <LoadingSpinner width="32px" height="32px" style="margin-top: 6.4px" id="profile-picture" v-else-if="$store.state.app.loadingUser" />
             <a :href="loginURL" id="profile-picture" class="login" v-else-if="$store.state.user.auth_type != 'NONE'">LOGIN</a>
             
-            <div v-if="$store.state.app.sideNavTab === 'paste'" id="create-paste" :class="{'input-fullscreen': inputFullscreen}" style="height: 70%">
+            <div v-if="$store.state.app.sideNavTab === 'paste'" id="create-paste" :class="{'input-fullscreen': inputFullscreen}" style="height: calc(100% - 300px); min-height: 300px">
                 <input @input="highlight" spellcheck="false" autocomplete="off" v-model="$store.state.currentPaste.title" class="input" type="text" placeholder="Title" id="title-input">
                 
                 <svg @click="
                     if (Object.keys($store.state.currentPaste.multiPastes).length == 0) addTab($store.state.currentPaste.title ? $store.state.currentPaste.title : 'new');
                     addTab()
-                " id="create-new-tab-button" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/></svg>
+                " :style="{right: $store.state.mobileVersion ? '15px' : ''}" id="create-new-tab-button" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/></svg>
                 
                 <svg id="input-fullscreen-button" @click="inputFullscreen = false" v-if="inputFullscreen && !$store.state.mobileVersion" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fullscreen-exit" viewBox="0 0 16 16"><path d="M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5zM0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zm10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4z"/></svg>
                 <svg id="input-fullscreen-button" @click="inputFullscreen = true" v-else-if="!$store.state.mobileVersion" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg>
@@ -163,6 +163,10 @@ export default {
         },
         '$store.state.currentPaste.content'(){
             this.highlight()
+        },
+        '$route'(to){
+            if (this.$store.state.app.fullscreenOnHomepage && to.path !== '/')
+                this.$store.state.app.fullscreen = false
         }
     },
     methods: {
@@ -751,7 +755,7 @@ export default {
                 height: 18px;
                 position: absolute;
                 right: 10px;
-                top: 70px;
+                top: 75px;
                 cursor: pointer;
                 transition: 0.3s color;
                 z-index: 10000;
@@ -765,7 +769,7 @@ export default {
                 height: 18px;
                 position: absolute;
                 right: 40px;
-                top: 70px;
+                top: 75px;
                 cursor: pointer;
                 transition: 0.3s color;
                 z-index: 10000;
@@ -871,6 +875,28 @@ export default {
                         padding-left: 0px;
                     }
                 }
+                #tabs {
+                    position: fixed;
+                    z-index: 10000;
+                    top: 12px;
+                    left: 190px;
+
+                    width: calc(100% - 290px);
+
+                    div {
+                        background: #FFFFFF06;
+                        width: 150px;
+                        input {
+                            font-size: 15px;
+                            width: 110px;
+                        }
+
+                        &.selected {
+                            background: #FFFFFF11;    
+                        }
+                    }
+
+                }
                 #buttons #submit-button {
                     position: fixed;
                     bottom: 60px;
@@ -888,7 +914,12 @@ export default {
                 }
 
                 #create-new-tab-button {
-                    display: none;
+                    position: fixed;
+                    right: 70px;
+                    top: 31px;
+                    z-index: 1000;
+                    width:  20px;
+                    height: 20px;
                 }
             }
         }
@@ -927,7 +958,7 @@ export default {
                 }
 
                 #content-input {
-                    height: 70%;
+                    height: calc(100%);
                 }
 
                 &.input-fullscreen {
