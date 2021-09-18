@@ -26,10 +26,10 @@ You want to share some code to your friends or just save it for yourself? Just p
 - [API](#API)
 
 # Screenshots
-![](./.github/screenshots/home.png)
-![](./.github/screenshots/paste.png)
-![](./.github/screenshots/new.png)
-![](./.github/screenshots/fullscreen.png)
+<img src="./.github/screenshots/home.png" width="49%" >
+<img src="./.github/screenshots/paste.png" width="49%" >
+<img src="./.github/screenshots/new.png" width="49%" >
+<img src="./.github/screenshots/fullscreen.png" width="49%" >
 
 ## Deploy
 ### Docker
