@@ -177,10 +177,6 @@ export default {
             if (event.keyCode == 9) {
                 let newCaretPosition = textarea.getCaretPosition() + "    ".length;
                 textarea.value = textarea.value.substring(0, textarea.getCaretPosition()) + "    " + textarea.value.substring(textarea.getCaretPosition(), textarea.value.length);
-                
-                if (!this.nativeInput){
-                    this.$store.state.currentPaste.content = textarea.value
-                }
 
                 event.preventDefault()
                 
@@ -233,7 +229,7 @@ export default {
                     ) {
                         textarea.value = textarea.value.substring(0, caretPos-1)+textarea.value.substring(caretPos+1, textarea.value.length)
                         event.preventDefault()
-                        textarea.setCaretPosition(caretPos)
+                        textarea.setCaretPosition(caretPos-1)
                         break
                     }
 
