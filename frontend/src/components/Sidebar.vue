@@ -213,7 +213,6 @@ export default {
                 }
 
                 for (const key in closeBrackets) {
-                    
                     if (event.key == closeBrackets[key] && textarea.value.substring(caretPos-1, caretPos) == key
                         && (['"',"'",'`'].includes(key) ? textarea.value.substring(caretPos-2, caretPos-1) != key : true)
                     ) {
@@ -231,35 +230,6 @@ export default {
                         event.preventDefault()
                         textarea.setCaretPosition(caretPos-1)
                         break
-                    }
-
-                    if (event.key == "Enter" && textarea.value.substring(caretPos-1, caretPos) == key && ['{','(','['].includes(key)) {
-                        let startingSpaces = ""
-
-                        let i = 0
-                        let lines = textarea.value.split("\n")
-                        for (let line in lines) {
-                            for (let a in lines[line].split("")) {
-                                i++
-                                if (caretPos == i) {
-                                    const l = lines[line].split("")
-                                    for (let b in l) {
-                                        if (l[b] == ' ')
-                                            startingSpaces += " "
-                                        else
-                                            break
-                                    }
-                                }  a;
-                            }
-                            i++
-                        }
-
-                        textarea.value = textarea.value.substring(0, caretPos)+"\n    "+startingSpaces+"\n"+startingSpaces+textarea.value.substring(caretPos, textarea.value.length)
-                        event.preventDefault()
-
-                        this.$store.state.currentPaste.content = textarea.value
-                        
-                        textarea.setCaretPosition(caretPos+startingSpaces.length+5);
                     }
                     
                     if (event.key == key) {
@@ -282,6 +252,40 @@ export default {
                     }
                 }
             }
+
+            if (event.key == "Enter") {
+                let startingSpaces = ""
+
+                let i = 0
+                let lines = textarea.value.split("\n")
+                for (let line in lines) {
+                    for (let a in lines[line].split("")) {
+                        i++
+                        if (caretPos == i) {
+                            const l = lines[line].split("")
+                            for (let b in l) {
+                                if (l[b] == ' ')
+                                    startingSpaces += " "
+                                else
+                                    break
+                            }
+                        }  a;
+                    }
+                    i++
+                }
+                let caretInc = 0
+                if (['{','(','['].includes(textarea.value.substring(caretPos-1, caretPos))){
+                    textarea.value = textarea.value.substring(0, caretPos)+"\n    "+startingSpaces+"\n"+startingSpaces+textarea.value.substring(caretPos, textarea.value.length)
+                    caretInc = 5
+                } else {
+                    textarea.value = textarea.value.substring(0, caretPos)+"\n"+startingSpaces+textarea.value.substring(caretPos, textarea.value.length)
+                    caretInc = 1
+                }
+                event.preventDefault()
+                textarea.setCaretPosition(caretPos+startingSpaces.length+caretInc);
+                
+            }
+            
             /*let i = 0
             let lines = textarea.value.split("\n")
             for (let line in lines) {
@@ -310,7 +314,7 @@ export default {
                     } i++
                 } i++
             }*/
-            if (textarea.value != this.$store.state.currentPaste.content && !this.nativeInput)
+            if (textarea.value != this.$store.state.currentPaste.content)
                 this.$store.state.currentPaste.content = textarea.value
         },
         async send(){
