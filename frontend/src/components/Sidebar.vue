@@ -181,7 +181,7 @@ export default {
                 event.preventDefault()
                 
                 textarea.setCaretPosition(newCaretPosition);
-            } else if(event.keyCode == 8 && textarea.hasSelection()){
+            } else if(event.keyCode == 8 && !textarea.hasSelection()){
                 if (textarea.value.substring(textarea.getCaretPosition() - 4, textarea.getCaretPosition()) == "    ") { //it's a tab space
                     let newCaretPosition;
                     newCaretPosition = textarea.getCaretPosition() - 3;
