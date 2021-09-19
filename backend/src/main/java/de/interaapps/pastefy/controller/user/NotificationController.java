@@ -6,6 +6,9 @@ import de.interaapps.pastefy.model.responses.ActionResponse;
 import org.javawebstack.framework.HttpController;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.router.annotation.*;
+import org.javawebstack.httpserver.router.annotation.params.Attrib;
+import org.javawebstack.httpserver.router.annotation.verbs.Get;
+import org.javawebstack.httpserver.router.annotation.verbs.Post;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.query.Query;
 

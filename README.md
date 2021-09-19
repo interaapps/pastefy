@@ -14,6 +14,7 @@ You want to share some code to your friends or just save it for yourself? Just p
   - Folders 
   - See your created pastes
   - delete created pastes
+- Create paste with `curl -F f=@file.txt pastefy.ga`
 
 # Overview
 - [Screenshots](#Screenshots)

@@ -1,5 +1,6 @@
 package de.interaapps.pastefy.controller;
 
+import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.auth.AuthenticationProvider;
 import de.interaapps.pastefy.model.auth.User;
 import de.interaapps.pastefy.model.database.Folder;
@@ -15,14 +16,17 @@ import de.interaapps.pastefy.model.responses.paste.PasteResponse;
 import org.javawebstack.framework.HttpController;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.router.annotation.*;
-import org.javawebstack.injector.Inject;
+import org.javawebstack.httpserver.router.annotation.params.Attrib;
+import org.javawebstack.httpserver.router.annotation.params.Body;
+import org.javawebstack.httpserver.router.annotation.params.Path;
+import org.javawebstack.httpserver.router.annotation.verbs.Delete;
+import org.javawebstack.httpserver.router.annotation.verbs.Get;
+import org.javawebstack.httpserver.router.annotation.verbs.Post;
+import org.javawebstack.httpserver.router.annotation.verbs.Put;
 import org.javawebstack.orm.Repo;
 
 @PathPrefix("/api/v2/paste")
 public class PasteController extends HttpController {
-
-    @Inject
-    private AuthenticationProvider authenticationProvider;
 
     @Post
     public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user, @Path("id") String pasteId) {
@@ -102,8 +106,8 @@ public class PasteController extends HttpController {
         ActionResponse response = new ActionResponse();
         Paste paste = Repo.get(Paste.class).where("key", id).first();
         if (paste != null && paste.getUserId() == user.getId()) {
-            if (authenticationProvider.isFriend(user, request.friend)) {
-                User friend = authenticationProvider.getUserByName(request.friend);
+            if (Pastefy.getInstance().getAuthenticationProvider().isFriend(user, request.friend)) {
+                User friend = Pastefy.getInstance().getAuthenticationProvider().getUserByName(request.friend);
                 SharedPaste sharedPaste = new SharedPaste();
                 sharedPaste.setUser(user);
                 sharedPaste.setTarget(friend);

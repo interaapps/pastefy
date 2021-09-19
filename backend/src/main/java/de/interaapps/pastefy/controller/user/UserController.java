@@ -12,11 +12,10 @@ import de.interaapps.pastefy.model.responses.user.UserPastesResponse;
 import de.interaapps.pastefy.model.responses.user.UserResponse;
 import org.javawebstack.framework.HttpController;
 import org.javawebstack.httpserver.Exchange;
-import org.javawebstack.httpserver.router.annotation.Attrib;
-import org.javawebstack.httpserver.router.annotation.Get;
 import org.javawebstack.httpserver.router.annotation.PathPrefix;
 import org.javawebstack.httpserver.router.annotation.With;
-import org.javawebstack.injector.Inject;
+import org.javawebstack.httpserver.router.annotation.params.Attrib;
+import org.javawebstack.httpserver.router.annotation.verbs.Get;
 import org.javawebstack.orm.Repo;
 
 import java.util.ArrayList;
@@ -25,8 +24,6 @@ import java.util.stream.Collectors;
 
 @PathPrefix("/api/v2/user")
 public class UserController extends HttpController {
-    @Inject
-    public AuthenticationProvider authenticationProvider;
 
     @Get
     public UserResponse getUser(@Attrib("user") User user) {

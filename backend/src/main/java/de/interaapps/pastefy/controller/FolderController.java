@@ -9,6 +9,12 @@ import de.interaapps.pastefy.model.responses.folder.FolderResponse;
 import org.javawebstack.framework.HttpController;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.router.annotation.*;
+import org.javawebstack.httpserver.router.annotation.params.Attrib;
+import org.javawebstack.httpserver.router.annotation.params.Body;
+import org.javawebstack.httpserver.router.annotation.params.Path;
+import org.javawebstack.httpserver.router.annotation.verbs.Delete;
+import org.javawebstack.httpserver.router.annotation.verbs.Get;
+import org.javawebstack.httpserver.router.annotation.verbs.Post;
 import org.javawebstack.orm.Repo;
 
 @PathPrefix("/api/v2/folder")

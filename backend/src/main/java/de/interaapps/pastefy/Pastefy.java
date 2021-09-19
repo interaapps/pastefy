@@ -4,13 +4,11 @@ import de.interaapps.accounts.apiclient.AccountsClient;
 import de.interaapps.pastefy.auth.AuthMiddleware;
 import de.interaapps.pastefy.auth.AuthenticationProvider;
 import de.interaapps.pastefy.auth.IAAuthProvider;
-import de.interaapps.pastefy.commands.PasteCommand;
 import de.interaapps.pastefy.controller.PasteController;
 import de.interaapps.pastefy.model.auth.User;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.responses.ExceptionResponse;
-import org.javawebstack.command.CommandSystem;
 import org.javawebstack.framework.HttpController;
 import org.javawebstack.framework.WebApplication;
 import org.javawebstack.framework.config.Config;
@@ -72,9 +70,6 @@ public class Pastefy extends WebApplication {
         else
             authenticationProvider = null;
 
-        if (authenticationProvider != null)
-            getInjector().setInstance(AuthenticationProvider.class, authenticationProvider);
-
         server.exceptionHandler((exchange, throwable) -> new ExceptionResponse(throwable));
         server.middleware("auth", new AuthMiddleware());
         server.beforeInterceptor(exchange -> {
@@ -118,10 +113,6 @@ public class Pastefy extends WebApplication {
         server.get("/", requestHandler);
         server.staticResourceDirectory("/", "static");
         server.get("/{*:path}", requestHandler);
-    }
-
-    protected void setupCommands(CommandSystem commandSystem) {
-        commandSystem.addCommand("paste", new PasteCommand());
     }
 
     public static void main(String[] args) {

@@ -4,8 +4,8 @@ import de.interaapps.pastefy.model.database.Paste;
 import org.javawebstack.framework.HttpController;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.helper.MimeType;
-import org.javawebstack.httpserver.router.annotation.Get;
-import org.javawebstack.httpserver.router.annotation.Path;
+import org.javawebstack.httpserver.router.annotation.params.Path;
+import org.javawebstack.httpserver.router.annotation.verbs.Get;
 import org.javawebstack.orm.Repo;
 
 public class RawController extends HttpController {
