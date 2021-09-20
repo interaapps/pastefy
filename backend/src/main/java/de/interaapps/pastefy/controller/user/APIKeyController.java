@@ -1,7 +1,7 @@
 package de.interaapps.pastefy.controller.user;
 
-import de.interaapps.pastefy.model.auth.User;
 import de.interaapps.pastefy.model.database.AuthKey;
+import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.responses.ActionResponse;
 import de.interaapps.pastefy.model.responses.user.keys.CreateAuthKeyResponse;
 import org.javawebstack.framework.HttpController;
@@ -27,7 +27,6 @@ public class APIKeyController extends HttpController {
         if (userAuthKey != null) {
             authKey.type = AuthKey.Type.API;
             authKey.userId = userAuthKey.userId;
-            authKey.apiKey = userAuthKey.apiKey;
             authKey.save();
 
             response.success = true;

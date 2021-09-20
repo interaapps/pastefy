@@ -1,6 +1,5 @@
 package de.interaapps.pastefy.model.database;
 
-import de.interaapps.pastefy.model.auth.User;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.Column;
@@ -15,11 +14,11 @@ public class SharedPaste extends Model {
     @Column
     private int id;
 
-    @Column
-    private int userId;
+    @Column(size = 8)
+    private String userId;
 
-    @Column
-    private int targetId;
+    @Column(size = 8)
+    private String targetId;
 
     @Column
     private String paste;
@@ -30,24 +29,25 @@ public class SharedPaste extends Model {
     @Column
     public Timestamp updatedAt;
 
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
 
     public void setUser(User user) {
         this.userId = user.getId();
     }
 
-    public int getTargetId() {
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getTargetId() {
         return targetId;
     }
 
-    public void setTargetId(int targetId) {
+    public void setTargetId(String targetId) {
         this.targetId = targetId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public void setTarget(User target) {

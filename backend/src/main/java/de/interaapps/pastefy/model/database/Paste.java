@@ -24,8 +24,8 @@ public class Paste extends Model {
     @Column
     private String content;
 
-    @Column
-    private int userId = -1;
+    @Column(size = 8)
+    private String userId;
 
     @Column
     private boolean encrypted = false;
@@ -62,11 +62,11 @@ public class Paste extends Model {
         this.title = content;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

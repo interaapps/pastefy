@@ -16,8 +16,8 @@ public class Notification extends Model {
     @Column
     private String message;
 
-    @Column
-    public int userId;
+    @Column(size = 8)
+    public String userId;
 
     @Column
     public String url;
@@ -47,10 +47,6 @@ public class Notification extends Model {
         return id;
     }
 
-    public int getUserId() {
-        return userId;
-    }
-
     public String getUrl() {
         return url;
     }
@@ -71,7 +67,11 @@ public class Notification extends Model {
         this.url = url;
     }
 
-    public void setUserId(int userId) {
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 }

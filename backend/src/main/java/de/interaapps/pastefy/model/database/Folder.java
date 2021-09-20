@@ -22,8 +22,8 @@ public class Folder extends Model {
     @Column
     private String name = "";
 
-    @Column
-    private int userId;
+    @Column(size = 8)
+    public String userId;
 
 
     @Column
@@ -39,11 +39,11 @@ public class Folder extends Model {
         key = RandomStringUtils.random(8, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890");
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

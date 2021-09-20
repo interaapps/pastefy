@@ -16,7 +16,7 @@ public class PasteResponse {
     public String title;
     public boolean encrypted = false;
     public String folder;
-    public int userId;
+    public String userId;
     @SerializedName("raw_url")
     public String rawURL;
     public Paste.Type type;

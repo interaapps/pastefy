@@ -10,7 +10,7 @@
                 <img :src="$store.state.user.profile_picture" :style="{border: $store.state.user.color+' 2px solid'}">
             </router-link>
             <LoadingSpinner width="32px" height="32px" style="margin-top: 6.4px" id="profile-picture" v-else-if="$store.state.app.loadingUser" />
-            <a :href="loginURL" id="profile-picture" class="login" v-else-if="$store.state.user.auth_type != 'NONE'">LOGIN</a>
+            <a :href="$store.state.user.auth_types.length == 1 ? loginBaseURL+$store.state.user.auth_types[0] : '/login-with'" id="profile-picture" class="login" v-else-if="$store.state.user.auth_types.length > 0">LOGIN</a>
             
             <div v-if="$store.state.app.sideNavTab === 'paste'" id="create-paste" :class="{'input-fullscreen': inputFullscreen}" style="height: calc(100% - 300px); min-height: 300px">
                 <input @input="highlight" spellcheck="false" autocomplete="off" v-model="$store.state.currentPaste.title" class="input" type="text" placeholder="Title" id="title-input">
@@ -19,7 +19,7 @@
                     if (Object.keys($store.state.currentPaste.multiPastes).length == 0) addTab($store.state.currentPaste.title ? $store.state.currentPaste.title : 'new');
                     addTab()
                 " :style="{right: $store.state.mobileVersion ? '15px' : ''}" id="create-new-tab-button" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/></svg>
-                
+
                 <svg id="input-fullscreen-button" @click="inputFullscreen = false" v-if="inputFullscreen && !$store.state.mobileVersion" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fullscreen-exit" viewBox="0 0 16 16"><path d="M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5zM0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zm10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4z"/></svg>
                 <svg id="input-fullscreen-button" @click="inputFullscreen = true" v-else-if="!$store.state.mobileVersion" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg>
                 <div id="tabs" v-if="$store.state.currentPaste.multiPastes.length > 0">
@@ -60,11 +60,12 @@
                         <option selected value="">none</option>
                         <option v-for="(id, name) of folders" :key="id" :value="id">{{name}}</option>
                     </select>
-
-                    <h5 v-if="$store.state.user.logged_in" class="label">Share to friend</h5>
-                    <input v-if="$store.state.user.logged_in" autocomplete="off" v-model="$store.state.currentPaste.friends" class="input" type="text" placeholder="Friends (By username, split with ,)">
-                    <div id="friend-list">
-                        <a v-for="friend of friendList" :key="friend" @click="addFriendToList(friend)" :class='{selected: $store.state.currentPaste.friends.includes(friend)}'>{{friend}}</a>
+                    <div v-if="$store.state.user.logged_in && $store.state.user.auth_type == 'interaapps'">
+                        <h5 class="label">Share to friend</h5>
+                        <input autocomplete="off" v-model="$store.state.currentPaste.friends" class="input" type="text" placeholder="Friends (By username, split with ,)">
+                        <div id="friend-list" v-if="friendList.length > 0">
+                            <a v-for="friend of friendList" :key="friend" @click="addFriendToList(friend)" :class='{selected: $store.state.currentPaste.friends.includes(friend)}'>{{friend}}</a>
+                        </div>
                     </div>
                 </div>
                 
@@ -121,7 +122,7 @@ export default {
             IMPRINT: process.env.VUE_APP_API_IMPRINT_URL,
             PRIVACY: process.env.VUE_APP_API_PRIVACY_URL,
         },
-        loginURL: process.env.VUE_APP_API_BASE + "/api/authentication/login",
+        loginBaseURL: process.env.VUE_APP_API_BASE +"/api/v2/auth/oauth2/",
         inputFullscreen: false,
         highlightedContents: '',
         r:0,

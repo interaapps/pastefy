@@ -1,7 +1,7 @@
 package de.interaapps.pastefy.controller;
 
-import de.interaapps.pastefy.model.auth.User;
 import de.interaapps.pastefy.model.database.Folder;
+import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.requests.CreateFolderRequest;
 import de.interaapps.pastefy.model.responses.ActionResponse;
 import de.interaapps.pastefy.model.responses.folder.CreateFolderResponse;
@@ -30,7 +30,7 @@ public class FolderController extends HttpController {
 
         Folder parent = Repo.get(Folder.class).where("key", request.parent).first();
 
-        if (parent != null && parent.getUserId() == user.getId())
+        if (parent != null && parent.getUserId().equals(user.getId()))
             folder.setParent(parent);
 
         folder.save();
@@ -52,7 +52,7 @@ public class FolderController extends HttpController {
         Folder folder = Repo.get(Folder.class).where("key", id).first();
 
         if (folder != null) {
-            if (folder.getUserId() == user.getId()) {
+            if (folder.getUserId().equals(user.getId())) {
                 folder.delete();
                 response.success = true;
             }

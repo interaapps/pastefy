@@ -4,11 +4,7 @@
             <i @click="load" class="material-icons" id="copy-button" :class="{loading: loading}">cached</i>
             <h3 style="margin-top: 20px; margin-bottom: 40px;">Shared Pastes</h3>
             <div id="pastes">
-                <router-link v-for="paste of pastes" :to="'/'+paste.id"  :key="paste.id" class="paste">
-                    <span class="date">{{paste.created_at}}</span>
-                    <h3>{{paste.title}}</h3>
-                    <pre><code v-html="highlight(paste.content)"></code></pre>
-                </router-link>
+                <PasteCard v-for="paste of pastes" :key="paste.id" :paste="paste" />
             </div>
             <a @click="page -= 1; load()" class="button">PREVIOUS PAGE</a>
             <a @click="page += 1; load()" style="float: right;" class="button">NEXT PAGE</a>
@@ -18,6 +14,7 @@
 
 <script>
 import hljs from "highlight.js";
+import PasteCard from "../components/PasteCard.vue";
 
 export default {
     data: ()=>({
@@ -28,6 +25,7 @@ export default {
     mounted(){
         this.load()
     },
+    components: {PasteCard},
     methods:{
         load(){
             this.loading = true

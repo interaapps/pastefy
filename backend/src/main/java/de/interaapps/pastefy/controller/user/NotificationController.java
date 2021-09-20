@@ -1,7 +1,7 @@
 package de.interaapps.pastefy.controller.user;
 
-import de.interaapps.pastefy.model.auth.User;
 import de.interaapps.pastefy.model.database.Notification;
+import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.responses.ActionResponse;
 import org.javawebstack.framework.HttpController;
 import org.javawebstack.httpserver.Exchange;

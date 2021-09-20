@@ -10,7 +10,7 @@ public class FolderResponse {
     public boolean exists = false;
     public String id;
     public String name;
-    public int userId;
+    public String userId;
     public List<FolderResponse> children;
     public List<PasteResponse> pastes;
 

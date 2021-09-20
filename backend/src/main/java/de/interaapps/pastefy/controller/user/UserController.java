@@ -1,11 +1,10 @@
 package de.interaapps.pastefy.controller.user;
 
 import de.interaapps.pastefy.Pastefy;
-import de.interaapps.pastefy.auth.AuthenticationProvider;
-import de.interaapps.pastefy.model.auth.User;
 import de.interaapps.pastefy.model.database.Folder;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.SharedPaste;
+import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.responses.folder.FolderResponse;
 import de.interaapps.pastefy.model.responses.paste.PasteResponse;
 import de.interaapps.pastefy.model.responses.user.UserPastesResponse;
@@ -27,7 +26,7 @@ public class UserController extends HttpController {
 
     @Get
     public UserResponse getUser(@Attrib("user") User user) {
-        return new UserResponse(user, Pastefy.getInstance().getConfig().get("auth.provider", "NONE"));
+        return new UserResponse(user);
     }
 
     @Get("/overview")

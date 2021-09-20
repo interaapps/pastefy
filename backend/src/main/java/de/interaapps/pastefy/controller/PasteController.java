@@ -1,12 +1,9 @@
 package de.interaapps.pastefy.controller;
 
+import de.interaapps.accounts.apiclient.AccountsClient;
+import de.interaapps.accounts.apiclient.responses.contacts.ContactResponse;
 import de.interaapps.pastefy.Pastefy;
-import de.interaapps.pastefy.auth.AuthenticationProvider;
-import de.interaapps.pastefy.model.auth.User;
-import de.interaapps.pastefy.model.database.Folder;
-import de.interaapps.pastefy.model.database.Notification;
-import de.interaapps.pastefy.model.database.Paste;
-import de.interaapps.pastefy.model.database.SharedPaste;
+import de.interaapps.pastefy.model.database.*;
 import de.interaapps.pastefy.model.requests.paste.AddFriendToPasteRequest;
 import de.interaapps.pastefy.model.requests.paste.CreatePasteRequest;
 import de.interaapps.pastefy.model.requests.paste.EditPasteRequest;
@@ -25,6 +22,9 @@ import org.javawebstack.httpserver.router.annotation.verbs.Post;
 import org.javawebstack.httpserver.router.annotation.verbs.Put;
 import org.javawebstack.orm.Repo;
 
+import javax.jws.soap.SOAPBinding;
+import java.util.stream.Collectors;
+
 @PathPrefix("/api/v2/paste")
 public class PasteController extends HttpController {
 
@@ -39,7 +39,7 @@ public class PasteController extends HttpController {
         if (user != null) {
             paste.setUserId(user.getId());
 
-            if (folder != null && folder.getUserId() == user.getId())
+            if (folder != null && folder.getUserId().equals(user.getId()))
                 paste.setFolder(folder);
         }
 
@@ -91,7 +91,7 @@ public class PasteController extends HttpController {
         Paste paste = Repo.get(Paste.class).where("key", id).first();
 
         if (paste != null) {
-            if (paste.getUserId() == user.getId()) {
+            if (paste.getUserId().equals(user.getId())) {
                 paste.delete();
                 response.success = true;
             }
@@ -105,21 +105,29 @@ public class PasteController extends HttpController {
     public ActionResponse addFriend(Exchange exchange, @Body AddFriendToPasteRequest request, @Path("id") String id, @Attrib("user") User user) {
         ActionResponse response = new ActionResponse();
         Paste paste = Repo.get(Paste.class).where("key", id).first();
-        if (paste != null && paste.getUserId() == user.getId()) {
-            if (Pastefy.getInstance().getAuthenticationProvider().isFriend(user, request.friend)) {
-                User friend = Pastefy.getInstance().getAuthenticationProvider().getUserByName(request.friend);
-                SharedPaste sharedPaste = new SharedPaste();
-                sharedPaste.setUser(user);
-                sharedPaste.setTarget(friend);
-                sharedPaste.setPaste(paste);
-                sharedPaste.save();
+        if (paste != null && paste.getUserId().equals(user.getId())) {
+            if (user.authProvider == User.AuthenticationProvider.INTERAAPPS) {
+                AuthKey authKey = Repo.get(AuthKey.class).where("userId", user.id).where("type", AuthKey.Type.USER).order("createdAt", true).first();
 
-                Notification notification = new Notification();
-                notification.setMessage(user.getName() + " shared a paste with you! Click to open.");
-                notification.url = "/" + paste.getKey();
-                friend.sendNotification(notification);
-                response.success = true;
+                AccountsClient accountsClient = new AccountsClient(authKey.accessToken);
+                for (ContactResponse contact : accountsClient.getContacts().stream().filter(contact -> contact.getName().equalsIgnoreCase(request.friend)).collect(Collectors.toList())) {
+                    User friend = Repo.get(User.class).where("name", contact.getName()).where("authProvider", User.AuthenticationProvider.INTERAAPPS).first();
+                    SharedPaste sharedPaste = new SharedPaste();
+                    sharedPaste.setUser(user);
+                    sharedPaste.setTarget(friend);
+                    sharedPaste.setPaste(paste);
+                    sharedPaste.save();
+
+                    Notification notification = new Notification();
+                    notification.setMessage(user.getName() + " shared a paste with you! Click to open.");
+                    notification.url = "/" + paste.getKey();
+                    friend.sendNotification(notification);
+                    response.success = true;
+                }
+            } else {
+                throw new RuntimeException("NOT IMPLEMENTED");
             }
+
         }
         return response;
     }

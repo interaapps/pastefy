@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import NotFound from '../views/NotFound.vue';
+import LoginViaAPI from '../views/auth/LoginViaAPI.vue';
 
 Vue.use(VueRouter)
-
 const routes = [
     {
         path: "/",
@@ -26,9 +26,14 @@ const routes = [
         component: ()=> import('../views/Settings')
     },
     {
+        path: "/login-with",
+        name: "Login with",
+        component: ()=> import('../views/auth/LoginSelection')
+    },
+    {
         path: "/auth",
         name: "Authentication",
-        component: ()=> import('../views/auth/LoginViaAPI')
+        component: LoginViaAPI
     },
     {
         path: "/apikeys",

@@ -19,12 +19,14 @@ public class AuthKey extends Model {
     @Column(size = 60)
     private String key;
 
+    @Column(size = 255)
+    public String accessToken;
 
-    @Column(size = 160)
-    public String apiKey;
+    @Column(size = 255)
+    public String refreshToken;
 
-    @Column
-    public int userId;
+    @Column(size = 8)
+    public String userId;
 
     @Column
     public Type type = Type.USER;
@@ -76,7 +78,7 @@ public class AuthKey extends Model {
 
         if (scopes == null)
             return false;
-        return scopes != null && scopes.stream().anyMatch(scope1 -> scope1.string().equals(scope));
+        return scopes.stream().anyMatch(scope1 -> scope1.string().equals(scope));
     }
 
     public enum Type {

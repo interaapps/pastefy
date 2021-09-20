@@ -2,10 +2,10 @@
     <div>
         <div v-if="$store.state.user.logged_in">
             <h1>Welcome, {{$store.state.user.name}}</h1>
-            <h2>Your pastes & folders. <router-link to="/shared">Shared pastes</router-link></h2>
+            <h2>Your pastes & folders. <router-link to="/shared" v-if="$store.state.user.auth_type == 'interaapps'">Shared pastes</router-link></h2>
             <div id="folders">
                 <a class="button" style="float: right; padding: 4px 16px" @click="addFolderInput = !addFolderInput">NEW</a>
-                <h3 style="margin-top: 20px; margin-bottom: 40px;">Folder</h3>
+                <h3 style="margin-top: 20px; margin-bottom: 40px; font-size: 24px">Folder</h3>
                 <div v-if="addFolderInput" style="margin-bottom: 20px">
                     <input type="text" v-model="folderName" class="input" placeholder="name">
                     <a class="button" style="width: 49%; margin-right: 1%; background: #FFFFFF09" @click="addFolderInput = false">CANCLE</a>
@@ -17,15 +17,11 @@
                 </router-link>
             </div>
             <div id="pastes">
-                <router-link to="/" class="button" style="float: right; padding: 4px 16px">NEW</router-link>
-                <h3 style="margin-top: 20px; margin-bottom: 40px;">Pastes</h3>
-
-                <router-link v-for="paste of pastes" :to="'/'+paste.id"  :key="paste.id" class="paste">
-                    <span class="date">{{paste.created_at}}</span>
-                    <h4 v-if="paste.type == 'MULTI_PASTE'" style="float: right; font-weight: 500; padding: 0px 10px; margin-bottom: 10px;background: #FFFFFF11; border-radius: 100px; display: inline-block">MULTI</h4>
-                    <h3 v-if="!paste.encrypted">{{paste.title}}</h3>
-                    <pre><code v-if="paste.encrypted">This paste can't be previewed. It's client-encrypted.</code><code v-else-if="paste.type != 'MULTI_PASTE'" v-html="highlight(paste.content)"></code></pre>
-                </router-link>
+                <a class="button" @click="$store.state.currentPaste.folder = null; $store.state.app.fullscreen = true" style="float: right; padding: 4px 16px">NEW</a>
+                <h3 style="margin-top: 20px; margin-bottom: 40px; font-size: 24px">Pastes</h3>
+                
+                <PasteCard v-for="paste of pastes" :key="paste.id" :paste="paste" />
+                
                 <a @click="page -= 1; load()" class="button">PREVIOUS PAGE</a>
                 <a @click="page += 1; load()" style="float: right;" class="button">NEXT PAGE</a>
             </div>
@@ -47,7 +43,7 @@
     </div>
 </template>
 <script>
-import hljs from "highlight.js";
+import PasteCard from "../components/PasteCard.vue";
 export default {
     data: ()=>({
         pastes: [],
@@ -56,13 +52,11 @@ export default {
         addFolderInput: false,
         folderName: ""
     }),
+    components: {PasteCard},
     created(){
         this.load()
     },
     methods: {
-        highlight(content){
-            return hljs.highlightAuto(content).value
-        },
         load(){
             this.pastefyAPI.get("/api/v2/user/overview", {page: this.page, hide_children: true})
                 .then(res=>{
