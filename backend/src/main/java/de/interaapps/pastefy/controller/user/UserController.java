@@ -47,7 +47,7 @@ public class UserController extends HttpController {
     @Get("/folders")
     @With("auth")
     public List<FolderResponse> getFolder(Exchange exchange, @Attrib("user") User user) {
-        return user.getFolderTree(exchange.rawRequest().getParameter("hide_children") == null);
+        return user.getFolderTree(exchange.rawRequest().getParameter("hide_children") == null, exchange.rawRequest().getParameter("hide_sub_children") == null, exchange.rawRequest().getParameter("hide_pastes") == null);
     }
 
     @Get("/pastes")

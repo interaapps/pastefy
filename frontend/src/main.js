@@ -124,7 +124,12 @@ if (typeof Worker !== 'undefined') {
 Vue.mixin({
     data: function(){return {
         worker
-    }}
+    }},
+    methods: {
+        isPublicPastefyServer(){
+            return window.location.host == 'pastefy.ga' || window.location.host.endsWith('.pastefy.ga') 
+        }
+    }
 })
 
 window.addEventListener("resize", function(){

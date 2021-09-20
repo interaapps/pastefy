@@ -14,17 +14,22 @@ public class FolderResponse {
     public List<FolderResponse> children;
     public List<PasteResponse> pastes;
 
-    public FolderResponse(Folder folder, boolean fetchChildren, boolean fetchSubChildren) {
+    public FolderResponse(Folder folder, boolean fetchChildren, boolean fetchSubChildren, boolean fetchPastes) {
         if (folder != null) {
             exists = true;
             name = folder.getName();
             id = folder.getKey();
             userId = folder.getUserId();
             if (fetchChildren) {
-                children = folder.getFolders().stream().map(child -> new FolderResponse(child, fetchSubChildren, fetchSubChildren)).collect(Collectors.toList());
-                pastes = folder.getPastes().stream().map(PasteResponse::new).collect(Collectors.toList());
+                children = folder.getFolders().stream().map(child -> new FolderResponse(child, fetchSubChildren, fetchSubChildren, fetchPastes)).collect(Collectors.toList());
+                if (fetchPastes)
+                    pastes = folder.getPastes().stream().map(PasteResponse::new).collect(Collectors.toList());
             }
         }
+    }
+
+    public FolderResponse(Folder folder, boolean showChildren, boolean fetchSubChildren) {
+        this(folder, showChildren, fetchSubChildren, true);
     }
 
     public FolderResponse(Folder folder, boolean showChildren) {

@@ -18,5 +18,6 @@ export default {
     scss: 'css',
     sass: 'yaml',
     cs: 'csharp',
-    env: 'properties'
+    env: 'properties',
+    txt: "text"
 }

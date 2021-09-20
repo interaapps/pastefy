@@ -74,7 +74,7 @@
                 </div>
 
                 <div id="buttons" :class="{mobile: $store.state.mobileVersion}">
-                    <a id="submit-button" @click="send">{{$store.state.currentPaste.editId ? 'SAVE' : 'SUBMIT'}}</a>
+                    <a id="submit-button" @click="send">{{$store.state.currentPaste.editId ? 'SAVE' : $store.state.currentPaste.folder ? 'SUBMIT TO FOLDER' : 'SUBMIT'}}</a>
                     <a id="settings-button" @click="optionsOpened = !optionsOpened">
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-sliders" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z"/></svg>
                     </a>
@@ -146,9 +146,17 @@ export default {
             }
         };
 
-        this.pastefyAPI.get("/api/v2/user/folders", {show_children: false}).then(folders=>{
+        this.pastefyAPI.get("/api/v2/user/folders", {hide_pastes: true}).then(folders=>{
+            const recursiveAddFolder = (folder, parentName = "") => {
+                this.folders[parentName+folder.name] = folder.id
+            
+                folder.children.forEach(child => {
+                    recursiveAddFolder(child, folder.name+'/')
+                })
+            }
+            
             for (let folder of folders) {
-                this.folders[folder.name] = folder.id
+                recursiveAddFolder(folder)
             }
         })
 
@@ -415,6 +423,7 @@ export default {
             this.$store.state.currentPaste.content  = ""
             this.$store.state.currentPaste.title    = ""
             this.$store.state.currentPaste.password = ""
+            this.$store.state.currentPaste.folder = ""
             this.$store.state.currentPaste.editId   = null
             this.$store.state.currentPaste.multiPastes = []
             this.multiPastesSelected = null

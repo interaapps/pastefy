@@ -26,8 +26,12 @@ public interface User {
         return Repo.get(Folder.class).where("userId", getId()).all();
     }
 
-    default List<FolderResponse> getFolderTree(boolean showChildren) {
-        return Repo.get(Folder.class).where("userId", getId()).isNull("parent").all().stream().map(folder -> new FolderResponse(folder, showChildren)).collect(Collectors.toList());
+    default List<FolderResponse> getFolderTree(boolean fetchChildren, boolean fetchSubChildren, boolean fetchPastes) {
+        return Repo.get(Folder.class).where("userId", getId()).isNull("parent").all().stream().map(folder -> new FolderResponse(folder, fetchChildren, fetchSubChildren, fetchPastes)).collect(Collectors.toList());
+    }
+
+    default List<FolderResponse> getFolderWithChildren() {
+        return Repo.get(Folder.class).where("userId", getId()).isNull("parent").all().stream().map(folder -> new FolderResponse(folder, true, true, false)).collect(Collectors.toList());
     }
 
     default void sendNotification(Notification notification) {
