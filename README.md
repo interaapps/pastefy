@@ -24,6 +24,7 @@ You want to share some code to your friends or just save it for yourself? Just p
   - [Custom Docker-Compose (Using Docker-Hub)](#custom-docker-compose-using-docker-hub)
   - [Kubernetes](#Kubernetes)
   - [Container-Less](#Container-Less)
+- [Configuration](#Configuration)
 - [Develop](#Develop)
 - [API](#API)
 
@@ -86,6 +87,33 @@ nano .env
 java -jar backend/target/backend.jar
 ```
 Using intelliJ? Look at [Develop](#Develop)
+
+## Configuration
+### Basic Stuff 
+```properties
+http.server.port=1337
+HTTP_SERVER_CORS=*
+
+DATABASE_DRIVER=mysql
+DATABASE_NAME=
+DATABASE_USER=
+DATABASE_PASSWORD=
+DATABASE_HOST=
+DATABASE_PORT=3306
+
+SERVER_NAME=http://example.com
+```
+### Adding login
+You can choose between [INTERAAPPS](https://accounts.interaapps.de/developers/projects) (best integration), [GOOGLE](https://support.google.com/cloud/answer/6158849?hl=en), [GITHUB](https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app), [DISCORD](https://discord.com/developers/docs/topics/oauth2) or [TWITCH](https://dev.twitch.tv/docs/authentication) for the provider (You can use all of them at the same time).
+```properties
+OAUTH2_${provider}_CLIENT_ID=${client_id}
+OAUTH2_${provider}_CLIENT_SECRET=${client_secret}
+```
+#### Example
+```properties
+OAUTH2_INTERAAPPS_CLIENT_ID=dan3q9n
+OAUTH2_INTERAAPPS_CLIENT_SECRET=ASDFASDF
+```
 
 ## Develop
 #### Build frontend into the backend
