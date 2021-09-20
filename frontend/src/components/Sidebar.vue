@@ -100,6 +100,15 @@ import hljs from "highlight.js";
 import LANGUAGE_REPLACEMENTS from '../assets/data/langReplacements'
 const LANGUAGES = hljs.listLanguages()
 
+const CLOSE_BRACKETS = {
+    '{': '}',
+    '(': ')',
+    '[': ']',
+    '"': '"',
+    "'": "'",
+    '`': '`'
+}
+
 export default {
     data: ()=>({
         optionsOpened: false,
@@ -201,17 +210,8 @@ export default {
             }
 
             if (!this.$store.state.app.newPasteEditorDisableBracketClosing){
-                const closeBrackets = {
-                    '{': '}',
-                    '(': ')',
-                    '[': ']',
-                    '"': '"',
-                    "'": "'",
-                    '`': '`'
-                }
-
-                for (const key in closeBrackets) {
-                    if (event.key == closeBrackets[key] && textarea.value.substring(caretPos-1, caretPos) == key
+                for (const key in CLOSE_BRACKETS) {
+                    if (event.key == CLOSE_BRACKETS[key] && textarea.value.substring(caretPos-1, caretPos) == key
                         && (['"',"'",'`'].includes(key) ? textarea.value.substring(caretPos-2, caretPos-1) != key : true)
                     ) {
                         event.preventDefault()
@@ -222,7 +222,7 @@ export default {
 
                     if (event.key == 'Backspace'
                         && textarea.value.substring(caretPos-1, caretPos) == key
-                        && textarea.value.substring(caretPos, caretPos+1) == closeBrackets[key]
+                        && textarea.value.substring(caretPos, caretPos+1) == CLOSE_BRACKETS[key]
                     ) {
                         textarea.value = textarea.value.substring(0, caretPos-1)+textarea.value.substring(caretPos+1, textarea.value.length)
                         event.preventDefault()
@@ -232,18 +232,18 @@ export default {
                     
                     if (event.key == key) {
                         if (textarea.hasSelection()) {
-                            // textarea.value = textarea.value.substring(0, textarea.selectionEnd)+key+closeBrackets[key]+textarea.value.substring(textarea.selectionEnd, textarea.value.length)
+                            // textarea.value = textarea.value.substring(0, textarea.selectionEnd)+key+CLOSE_BRACKETS[key]+textarea.value.substring(textarea.selectionEnd, textarea.value.length)
                             const newCaret = caretPos+textarea.value.substring(textarea.selectionStart, textarea.selectionEnd).length
                             const oldStart = textarea.selectionStart
                             const oldEnd = textarea.selectionEnd
-                            textarea.value = textarea.value.substring(0, textarea.selectionStart)+key+textarea.value.substring(textarea.selectionStart, textarea.selectionEnd)+closeBrackets[key]+textarea.value.substring(textarea.selectionEnd, textarea.value.length)
+                            textarea.value = textarea.value.substring(0, textarea.selectionStart)+key+textarea.value.substring(textarea.selectionStart, textarea.selectionEnd)+CLOSE_BRACKETS[key]+textarea.value.substring(textarea.selectionEnd, textarea.value.length)
                             
                             textarea.setCaretPosition(newCaret+1);
                             textarea.select()
                             textarea.selectionStart = oldStart+1
                             textarea.selectionEnd = oldEnd+1
                         } else {
-                            textarea.value = textarea.value.substring(0, caretPos)+key+closeBrackets[key]+textarea.value.substring(caretPos, textarea.value.length)
+                            textarea.value = textarea.value.substring(0, caretPos)+key+CLOSE_BRACKETS[key]+textarea.value.substring(caretPos, textarea.value.length)
                             textarea.setCaretPosition(caretPos+1);
                         }
                         event.preventDefault()
@@ -273,7 +273,11 @@ export default {
                 }
                 let caretInc = 0
                 if (['{','(','['].includes(textarea.value.substring(caretPos-1, caretPos))){
-                    textarea.value = textarea.value.substring(0, caretPos)+"\n    "+startingSpaces+"\n"+startingSpaces+textarea.value.substring(caretPos, textarea.value.length)
+                    textarea.value = textarea.value.substring(0, caretPos)+"\n    "+startingSpaces
+                        // Check if the closing bracket is right after the caret. If yes, add newline
+                        +(textarea.value.substring(caretPos, caretPos+1) == CLOSE_BRACKETS[textarea.value.substring(caretPos-1, caretPos)] ? "\n" : '')
+                        +startingSpaces
+                        +textarea.value.substring(caretPos, textarea.value.length)
                     caretInc = 5
                 } else if ([':', ': '].includes(textarea.value.substring(caretPos-1, caretPos))){
                     textarea.value = textarea.value.substring(0, caretPos)+"\n    "+startingSpaces+textarea.value.substring(caretPos, textarea.value.length)
