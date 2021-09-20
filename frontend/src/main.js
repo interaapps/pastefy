@@ -67,8 +67,6 @@ if (typeof Worker !== 'undefined') {
     }})
     worker.onmessage = (e)=>{
         const data = e.data
-        console.log("RECEIVED DATA");
-        console.log(e);
         if (data.action == 'pushRoute') {
             window.focus()
             router.push(data.url)

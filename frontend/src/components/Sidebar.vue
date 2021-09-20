@@ -97,13 +97,9 @@ import LoadingSpinner from "./LoadingSpinner.vue";
 import CryptoJS from "crypto-js";
 import hljs from "highlight.js";
 
+import LANGUAGE_REPLACEMENTS from '../assets/data/langReplacements'
 const LANGUAGES = hljs.listLanguages()
-const LANGUAGE_REPLACEMENTS = {
-    md: 'markdown',
-    js: 'javascript',
-    html: 'xml',
-    yml: 'yaml'
-}
+
 export default {
     data: ()=>({
         optionsOpened: false,
@@ -148,8 +144,8 @@ export default {
         })
 
         try {
-        if (localStorage["saved_contacts"] != null)
-            this.friendList = JSON.parse(localStorage["saved_contacts"])
+            if (localStorage["saved_contacts"] != null)
+                this.friendList = JSON.parse(localStorage["saved_contacts"])
         } catch(e){
             this.friendList = []
         }
@@ -161,7 +157,9 @@ export default {
         '$store.state.currentPaste.editId'(){
             this.r = Math.random()
         },
-        '$store.state.currentPaste.content'(){
+        '$store.state.currentPaste.content'(to){
+            // Weird fix for updating inner width
+            this.$refs.pasteContentsTextArea.value = to
             this.highlight()
         },
         '$route'(to){
@@ -276,6 +274,9 @@ export default {
                 let caretInc = 0
                 if (['{','(','['].includes(textarea.value.substring(caretPos-1, caretPos))){
                     textarea.value = textarea.value.substring(0, caretPos)+"\n    "+startingSpaces+"\n"+startingSpaces+textarea.value.substring(caretPos, textarea.value.length)
+                    caretInc = 5
+                } else if ([':', ': '].includes(textarea.value.substring(caretPos-1, caretPos))){
+                    textarea.value = textarea.value.substring(0, caretPos)+"\n    "+startingSpaces+textarea.value.substring(caretPos, textarea.value.length)
                     caretInc = 5
                 } else {
                     textarea.value = textarea.value.substring(0, caretPos)+"\n"+startingSpaces+textarea.value.substring(caretPos, textarea.value.length)

@@ -14,7 +14,7 @@
         
         <div id="action-buttons" :class="{mobile: $store.state.mobileVersion}">
             <a v-if="isPWA()" @click="copyURL">Copy URL</a>
-            <a href="#preview" v-if="extraContent !== ''">PREVIEW</a>
+            <a href="#paste-contents" v-if="extraContent !== ''">CODE</a>
             <a v-if="$store.state.user.id == userid" @click="deletePaste">DELETE</a>
             <a @click="editPaste(true)" v-if="!$store.state.mobileVersion">FORK</a>
             <a v-if="$store.state.user.id == userid" @click="editPaste()">EDIT</a>
@@ -23,12 +23,14 @@
                 <i class="material-icons" >content_copy</i>
             </a>
         </div>
-        <h1>{{title}}<span class="language" v-if="language !== null && !multiPastes">{{language}}</span></h1>
+        <h1>{{title}}<span class="language" v-if="language !== null && language == 'markdown' && !multiPastes">{{language}}</span></h1>
         <div id="tabs" v-if="multiPastes != null && Object.keys(multiPastes).length > 1">
             <a v-for="(tab,i) of multiPastes" :key="i" @click="changeTab(i)" :class="{selected: multiPastesSelected==i}">
                 {{tab.name}}
             </a>
         </div>
+        <div id="preview" v-if="extraContent !== ''" v-html="extraContent"></div>
+        <h1 v-if="extraContent !== ''" style="margin-top: 30px;">{{language=='markdown'?'Markdown ':''}}Code</h1>
         <code id="paste-contents">
             <div id="line-nums" v-if="showLineNums">
                 <a 
@@ -39,14 +41,15 @@
                     {{lineNum+1}}
                 </a>
             </div>
-            <pre v-html="content" :style="{'white-space': this.language == 'text' ? 'break-spaces' : 'pre'}"></pre></code>
-        <div id="preview" v-if="extraContent !== ''" v-html="extraContent"></div>
+            <pre v-html="content" :style="{'white-space': this.language == 'text' ? 'break-spaces' : 'pre'}"></pre>
+        </code>
     </div>
 </template>
 <script>
 import hljs from "highlight.js";
 import helper from "../helper.js";
 import CryptoJS from "crypto-js";
+import LANGUAGE_REPLACEMENTS from '../assets/data/langReplacements'
 
 export default {
     data: ()=>({
@@ -133,7 +136,6 @@ export default {
                         if (paste.type == 'PASTE') {
                             this.highlight(this.title, this.rawContent)
                         } else if (paste.type == 'MULTI_PASTE') {
-                            console.log();
                             this.multiPastes = JSON.parse(this.rawContent)
                             this.changeTab(0)
                         }
@@ -152,14 +154,9 @@ export default {
             const pasteTitleComponents = title.split(".");
             let ending = pasteTitleComponents[pasteTitleComponents.length-1];
             this.language = null
-            const replacements = {
-                "md": "markdown",
-                "txt": "text",
-                "js": "javascript"
-            }
 
-            for (let replace  in replacements)
-                ending = ending.replace(replace, replacements[replace]);
+            for (let replace  in LANGUAGE_REPLACEMENTS)
+                ending = ending.replace(replace, LANGUAGE_REPLACEMENTS[replace]);
             
             let languages = hljs.listLanguages();
             languages.push("text")
@@ -170,7 +167,6 @@ export default {
             }
             
             this.showLineNums = true
-            console.log("LANG: "+this.language);
             if (this.language === null)
                 this.content = hljs.highlightAuto(contents).value
             else {
@@ -248,6 +244,8 @@ export default {
                 this.eventBus.$emit("setMultiPasteTabTo0")
             } else
                 this.$store.state.currentPaste.content   = this.rawContent
+            
+            this.eventBus.$emit("updatePasteEditorHighlighting")
         }
     }
 }
@@ -388,6 +386,9 @@ export default {
             background: none;
             padding: 0px;
             border-radius: 0px;
+        }
+        pre {
+            overflow-x: auto;
         }
 
         ul, ol {
