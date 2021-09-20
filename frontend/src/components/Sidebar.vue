@@ -251,7 +251,7 @@ export default {
                 }
             }
 
-            if (event.key == "Enter") {
+            if (event.key == "Enter" && !textarea.hasSelection()) {
                 let startingSpaces = ""
 
                 let i = 0
@@ -494,7 +494,7 @@ export default {
                 }
             } else if (split[0] == 'Dockerfile')
                 language = 'dockerfile'
-                
+
             if (language && !this.$store.state.mobileVersion && !this.$store.state.app.newPasteEditorDisableHighlighting){
                 if (LANGUAGES.includes(language) && this.$store.state.currentPaste.content.length < 15000){
                     this.highlightedContents = hljs.highlight(language, this.$store.state.currentPaste.content).value
