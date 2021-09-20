@@ -88,6 +88,7 @@ export default {
     methods: {
         load(id){
             let data = {}
+            this.extraContent = ""
             if (this.password !== "" && this.passwordRequired)
                 data.password = this.password
             this.pastefyAPI.get("/api/v2/paste/"+id, data)

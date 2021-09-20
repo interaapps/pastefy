@@ -482,16 +482,20 @@ export default {
 
             const split = (Object.keys(this.$store.state.currentPaste.multiPastes).length == 0 ? this.$store.state.currentPaste.title : this.$store.state.currentPaste.multiPastes[this.multiPastesSelected].name).split(".")
             
-            if (split.length > 1 && !this.$store.state.mobileVersion && !this.$store.state.app.newPasteEditorDisableHighlighting){
-                let language = split[split.length-1]
-                
+            let language;
+
+            if (split.length > 1) {
+                language = split[split.length-1]
                 for (const name in LANGUAGE_REPLACEMENTS) {
                     if (language == name) {
                         language = LANGUAGE_REPLACEMENTS[name]
                         break;
                     }
                 }
-
+            } else if (split[0] == 'Dockerfile')
+                language = 'dockerfile'
+                
+            if (language && !this.$store.state.mobileVersion && !this.$store.state.app.newPasteEditorDisableHighlighting){
                 if (LANGUAGES.includes(language) && this.$store.state.currentPaste.content.length < 15000){
                     this.highlightedContents = hljs.highlight(language, this.$store.state.currentPaste.content).value
                     nativeInput = false
