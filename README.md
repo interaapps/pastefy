@@ -51,7 +51,6 @@ docker run -p 8080:80 \
       --env SERVER_NAME=http://example.com \
       --env OAUTH2_PROVIDER_CLIENT_ID=NONE \
       --env OAUTH2_PROVIDER_CLIENT_SECRET= \
-      --env INTERAAPPS_AUTH_ID= \
       interaapps/pastefy
 ```
 Or [Pastefy Docker in Host-Mode](https://pastefy.ga/JWLoudTI)
