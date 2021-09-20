@@ -11,7 +11,7 @@ let store = new Vuex.Store({
     user: {
         loggedIn: false,
         id: -1,
-        authType: "NONE"
+        auth_types: []
     },
     mobileVersion: window.innerWidth <= 720,
     currentPaste: {
