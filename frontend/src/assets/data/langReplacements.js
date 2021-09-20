@@ -1,0 +1,22 @@
+export default {
+    md: 'markdown',
+    js: 'javascript',
+    jsx: 'javascript',
+    jsm: 'javascript',
+    ts: "typescript",
+    tsm: "typescript",
+    tsx: "typescript",
+    html: 'xml',
+    htm: 'xml',
+    xhtml: 'xml',
+    iml: 'xml',
+    vue: 'xml',
+    yml: 'yaml',
+    py: 'python',
+    py3: 'python',
+    py2: 'python',
+    scss: 'css',
+    sass: 'yaml',
+    cs: 'csharp',
+    env: 'properties'
+}
