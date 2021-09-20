@@ -48,7 +48,9 @@ docker run -p 8080:80 \
       --env DATABASE_HOST=host \
       --env DATABASE_PORT=3306 \
       --env AUTH_PROVIDER=NONE \
-      --env INTERAAPPS_AUTH_KEY= \
+      --env SERVER_NAME=http://example.com \
+      --env OAUTH2_PROVIDER_CLIENT_ID=NONE \
+      --env OAUTH2_PROVIDER_CLIENT_SECRET= \
       --env INTERAAPPS_AUTH_ID= \
       interaapps/pastefy
 ```
