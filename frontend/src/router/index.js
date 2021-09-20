@@ -1,13 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Homepage from '../views/Homepage.vue';
-import Paste from '../views/Paste.vue';
-import Folder from '../views/Folder.vue';
 import NotFound from '../views/NotFound.vue';
-import Settings from '../views/Settings.vue';
-import SharedPastes from '../views/SharedPastes.vue';
-import ApiKeys from '../views/ApiKeys.vue';
-import LoginViaAPI from "../views/auth/LoginViaAPI";
 
 Vue.use(VueRouter)
 
@@ -15,42 +8,42 @@ const routes = [
     {
         path: "/",
         name: "Homepage",
-        component: Homepage
+        component: ()=> import('../views/Homepage')
     },
     {
         path: "/home",
         name: "Homepage",
-        component: Homepage
+        component: ()=> import('../views/Homepage')
     },
     {
         path: "/shared",
         name: "SharedPastes",
-        component: SharedPastes
+        component: ()=> import('../views/SharedPastes')
     },
     {
         path: "/settings",
         name: "Settings",
-        component: Settings
+        component: ()=> import('../views/Settings')
     },
     {
         path: "/auth",
         name: "Authentication",
-        component: LoginViaAPI
+        component: ()=> import('../views/auth/LoginViaAPI')
     },
     {
         path: "/apikeys",
         name: "API-Keys",
-        component: ApiKeys
+        component: ()=> import('../views/ApiKeys')
     },
     {
         path: "/:id",
         name: "Paste",
-        component: Paste
+        component: ()=> import('../views/Paste')
     },
     {
         path: "/folder/:id",
         name: "Folder",
-        component: Folder
+        component: ()=> import('../views/Folder')
     },
     {
         path: "/*",
