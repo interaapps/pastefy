@@ -15,7 +15,7 @@
         <div id="action-buttons" :class="{mobile: $store.state.mobileVersion}">
             <a v-if="isPWA()" @click="copyURL">Copy URL</a>
             <a href="#paste-contents" v-if="extraContent !== ''">CODE</a>
-            <a v-if="$store.state.user.id == userid" @click="deletePaste">DELETE</a>
+            <a v-if="$store.state.user.loggedIn && $store.state.user.id == userid" @click="deletePaste">DELETE</a>
             <a @click="editPaste(true)" v-if="!$store.state.mobileVersion">FORK</a>
             <a v-if="$store.state.user.id == userid" @click="editPaste()">EDIT</a>
             <a :href="rawURL" v-if="!passwordRequired && !multiPastes">RAW</a>
