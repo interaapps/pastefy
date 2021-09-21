@@ -28,7 +28,7 @@ services:
        DATABASE_PASSWORD: pastefy
        DATABASE_HOST: db
        DATABASE_PORT: 3306
-       SERVER_NAME:
+       SERVER_NAME: "http://localhost:9999"
        # There is INTERAAPPS, GOOGLE, GITHUB, DISCORD, TWITCH
        OAUTH2_PROVIDER_CLIENT_ID:
        OAUTH2_PROVIDER_CLIENT_SECRET:
