@@ -684,6 +684,7 @@ export default {
                 overflow-x: auto;
                 resize: vertical;
                 border-radius: 7px;
+                margin-bottom: 13px;
 
                 background: #262B39;
                 color: #FFF;
