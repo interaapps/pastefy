@@ -17,7 +17,7 @@
             <a href="#paste-contents" v-if="extraContent !== ''">CODE</a>
             <a v-if="$store.state.user.logged_in && $store.state.user.id == userid" @click="deletePaste">DELETE</a>
             <a @click="editPaste(true)" v-if="!$store.state.mobileVersion">FORK</a>
-            <a v-if="$store.state.user.id == userid" @click="editPaste()">EDIT</a>
+            <a v-if="$store.state.user.logged_in && $store.state.user.id == userid" @click="editPaste()">EDIT</a>
             <a :href="rawURL" v-if="!passwordRequired && !multiPastes">RAW</a>
             <a id="copy-contents" @click="copy">
                 <i class="material-icons" >content_copy</i>
