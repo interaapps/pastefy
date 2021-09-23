@@ -105,7 +105,7 @@ public class Pastefy extends WebApplication {
         server.middleware("auth", new AuthMiddleware());
 
         if (getConfig().has("ratelimiter.millis"))
-            server.middleware("rate-limiter", new RateLimitMiddleware(getConfig().getInt("ratelimiter.millis", 5000), getConfig().getInt("ratelimiter.limit", 5)));
+            server.middleware("rate-limiter", new RateLimitMiddleware(getConfig().getInt("ratelimiter.millis", 5000), getConfig().getInt("ratelimiter.limit", 5)).createAutoDeadRateLimitsRemover(1000*60*10));
         //else
         //    server.middleware("rate-limiter", e->null);
 
