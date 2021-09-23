@@ -2,6 +2,7 @@ package de.interaapps.pastefy;
 
 import de.interaapps.accounts.apiclient.AccountsClient;
 import de.interaapps.pastefy.auth.AuthMiddleware;
+import de.interaapps.pastefy.auth.OAuth2Callback;
 import de.interaapps.pastefy.controller.PasteController;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Paste;
@@ -11,7 +12,9 @@ import org.javawebstack.framework.HttpController;
 import org.javawebstack.framework.WebApplication;
 import org.javawebstack.framework.config.Config;
 import org.javawebstack.httpclient.HTTPClient;
+import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.HTTPServer;
+import org.javawebstack.httpserver.handler.Middleware;
 import org.javawebstack.httpserver.handler.RequestHandler;
 import org.javawebstack.orm.ORM;
 import org.javawebstack.orm.ORMConfig;
@@ -22,6 +25,7 @@ import org.javawebstack.orm.wrapper.SQL;
 import org.javawebstack.passport.OAuth2Module;
 import org.javawebstack.passport.Profile;
 import org.javawebstack.passport.services.oauth2.*;
+import org.javawebstack.webutils.middlewares.RateLimitMiddleware;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +52,9 @@ public class Pastefy extends WebApplication {
         map.put("AUTH_PROVIDER", "auth.provider");
 
         map.put("SERVER_NAME", "server.name");
+
+        map.put("RATELIMITER_MILLIS", "ratelimiter.millis");
+        map.put("RATELIMITER_LIMIT", "ratelimiter.limit");
 
         map.put("OAUTH2_INTERAAPPS_CLIENT_ID", "oauth2.interaapps.id");
         map.put("OAUTH2_INTERAAPPS_CLIENT_SECRET", "oauth2.interaapps.secret");
@@ -91,49 +98,18 @@ public class Pastefy extends WebApplication {
         oAuth2Module.getServices().forEach(authService -> {
             System.out.println("ADDED "+authService.getName()+" ON "+oAuth2Module.getPathPrefix()+""+ authService.getName());
         });
-        Map<String, Class<? extends OAuth2Service>> oauthServicesClasses = new HashMap<>();
-        oauthServicesClasses.put("interaapps", InteraAppsOAuth2Service.class);
-        oauthServicesClasses.put("github", GithubOAuth2Service.class);
-        oauthServicesClasses.put("google", GoogleOAuth2Service.class);
-        oauthServicesClasses.put("twitch", TwitchOAuth2Service.class);
-        oauthServicesClasses.put("discord", DiscordOAuth2Service.class);
-        oAuth2Module.setOAuth2Callback((s, exchange, oAuth2Callback) -> {
-            User.AuthenticationProvider provider = de.interaapps.pastefy.model.database.User.AuthenticationProvider.getProviderByClass(oauthServicesClasses.get(s));
-            Profile profile = oAuth2Callback.getProfile();
 
-            User user = Repo.get(User.class).where("authId", profile.getId()).where("authProvider", provider).first();
-
-            if (user == null) {
-                user = new de.interaapps.pastefy.model.database.User();
-                int i = 1;
-                final String uniqueName = profile.getName().replaceAll("[^a-zA-Z0-9]", "");
-                user.uniqueName = uniqueName;
-                while (Repo.get(de.interaapps.pastefy.model.database.User.class).where("uniqueName", user.uniqueName).first() != null) {
-                    user.uniqueName = uniqueName+i++;
-                }
-                user.authId = profile.getId();
-                user.authProvider = provider;
-            }
-            // On every login the username, avatar and e-mail gets updated
-            user.name = profile.getName();
-            user.avatar = profile.getAvatar();
-            user.eMail = profile.getMail();
-            user.save();
-
-            AuthKey authKey = new AuthKey();
-            authKey.refreshToken = oAuth2Callback.getRefreshToken();
-            authKey.accessToken = oAuth2Callback.getToken();
-            authKey.userId = user.id;
-            authKey.type = AuthKey.Type.USER;
-            authKey.save();
-
-            exchange.redirect("/auth?key=" + authKey.getKey());
-            return "";
-        });
+        oAuth2Module.setOAuth2Callback(new OAuth2Callback());
 
         server.exceptionHandler((exchange, throwable) -> new ExceptionResponse(throwable));
         server.middleware("auth", new AuthMiddleware());
-        server.beforeInterceptor(exchange -> {
+
+        if (getConfig().has("ratelimiter.millis"))
+            server.middleware("rate-limiter", new RateLimitMiddleware(getConfig().getInt("ratelimiter.millis", 5000), getConfig().getInt("ratelimiter.limit", 5)));
+        //else
+        //    server.middleware("rate-limiter", e->null);
+
+                    server.beforeInterceptor(exchange -> {
             exchange.header("Server", "InteraApps-Pastefy");
 
             exchange.attrib("loggedIn", false);

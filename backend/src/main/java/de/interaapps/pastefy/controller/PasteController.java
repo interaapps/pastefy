@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 public class PasteController extends HttpController {
 
     @Post
+    @With("rate-limiter")
     public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user, @Path("id") String pasteId) {
         CreatePasteResponse response = new CreatePasteResponse();
 
