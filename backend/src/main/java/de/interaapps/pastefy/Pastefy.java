@@ -111,6 +111,7 @@ public class Pastefy extends WebApplication {
 
         server.beforeInterceptor(exchange -> {
             System.out.println(exchange.rawRequest().getRemoteAddr());
+            System.out.println(exchange.rawRequest().getHeader("X-Forwarded-For"));
             exchange.header("Server", "InteraApps-Pastefy");
 
             exchange.attrib("loggedIn", false);
