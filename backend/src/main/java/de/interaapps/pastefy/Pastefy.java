@@ -109,7 +109,8 @@ public class Pastefy extends WebApplication {
         //else
         //    server.middleware("rate-limiter", e->null);
 
-                    server.beforeInterceptor(exchange -> {
+        server.beforeInterceptor(exchange -> {
+            System.out.println(exchange.rawRequest().getRemoteAddr());
             exchange.header("Server", "InteraApps-Pastefy");
 
             exchange.attrib("loggedIn", false);
