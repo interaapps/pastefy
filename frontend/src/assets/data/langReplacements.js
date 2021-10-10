@@ -19,5 +19,7 @@ export default {
     sass: 'yaml',
     cs: 'csharp',
     env: 'properties',
-    txt: "text"
+    txt: "text",
+    h: "c",
+    ino: "c"
 }
