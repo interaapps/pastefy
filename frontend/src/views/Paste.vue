@@ -178,7 +178,8 @@ export default {
                     this.content = hljs.highlight(this.language, contents).value
                 if (this.language === "markdown") {
                     const md = require('markdown-it')({
-                        html:         false,
+                        html: false,
+                        breaks: true,
                         highlight: function (str, lang) {
                             if (lang && hljs.getLanguage(lang)) {
                                 try {

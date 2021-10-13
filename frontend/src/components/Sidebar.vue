@@ -39,7 +39,7 @@
                     <div v-if="!$store.state.app.newPasteEditorDisableLineNumbering" id="line-nums" ref="pasteContentsLineNums" @click="$refs.pasteContentsTextArea.focus()">
                         <span v-for="(l, i) in $store.state.currentPaste.content.split('\n').length" :key="i">{{i+1}}</span>
                     </div>
-                    <textarea ref="pasteContentsTextArea" spellcheck="false" v-model="$store.state.currentPaste.content" @keydown="editor" placeholder="Paste in here" :style="pasteContentsTextAreaStyle" :class="{native: nativeInput}"></textarea>
+                    <textarea wrap="off" ref="pasteContentsTextArea" spellcheck="false" v-model="$store.state.currentPaste.content" @keydown="editor" placeholder="Paste in here" :style="pasteContentsTextAreaStyle" :class="{native: nativeInput}"></textarea>
                     <pre v-if="!nativeInput" style="left: 36px;" ref="pasteContentsHighlighting" v-html="highlightedContents" />
                     <div v-if="this.autocompletion" id="autocompletion" :style="{marginLeft: (autocompletion.left*11)+'px', marginTop: (10+(autocompletion.top+1)*22)+'px'}">
                         <span v-for="(c, i) in autocompletion.list" :key="i">{{c}}</span>
@@ -708,10 +708,11 @@ export default {
                     font-family: 'DM Mono', monospace;
                     color: transparent;
                     caret-color: #FFFFFF;
+                    overflow-wrap: normal;
+                    
                     white-space: pre;
                     min-width: 100%;
                     padding-left: 0px;
-
                     position: absolute;
                     top: 0px;
 
@@ -736,7 +737,12 @@ export default {
                     width: fit-content;
                     color: #FFFFFF88;
                     padding-right: 5px;
-                    user-select: none;
+                    
+                    /*
+                    border-right: 1px #FFFFFF06 solid;
+                    min-height: 100%;*/
+
+                    z-index: 10;
                     span {
                         font-size: 18px;
                         display: block;
