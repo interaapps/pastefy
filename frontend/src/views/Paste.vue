@@ -14,7 +14,7 @@
         
         <div id="action-buttons" :class="{mobile: $store.state.mobileVersion}">
             <a v-if="isPWA()" @click="copyURL">Copy URL</a>
-            <a href="#paste-contents" v-if="extraContent !== ''">CODE</a>
+            <a href="#paste-contents" @click="readCode = true" v-if="extraContent !== ''">CODE</a>
             <a v-if="$store.state.user.logged_in && $store.state.user.id == userid" @click="deletePaste">DELETE</a>
             <a @click="editPaste(true)" v-if="!$store.state.mobileVersion">FORK</a>
             <a v-if="$store.state.user.logged_in && $store.state.user.id == userid" @click="editPaste()">EDIT</a>
@@ -30,19 +30,21 @@
             </a>
         </div>
         <div id="preview" v-if="extraContent !== ''" v-html="extraContent"></div>
-        <h1 v-if="extraContent !== ''" style="margin-top: 30px;">{{language=='markdown'?'Markdown ':''}}Code</h1>
-        <code id="paste-contents">
-            <div id="line-nums" v-if="showLineNums">
-                <a 
-                    v-for="(line, lineNum) of rawContent.split('\n')" 
-                    :key="lineNum" 
-                    :href="'#ln-'+lineNum" 
-                    :class='{selected: getUrlLineHash()=="#ln-"+lineNum}'>
-                    {{lineNum+1}}
-                </a>
-            </div>
-            <pre v-html="content" :style="{'white-space': this.language == 'text' ? 'break-spaces' : 'pre'}"></pre>
-        </code>
+        <template  v-if="extraContent == '' || readCode">
+            <h1 v-if="extraContent !== ''" style="margin-top: 30px;">{{language=='markdown'?'Markdown ':''}}Code</h1>
+            <code id="paste-contents">
+                <div id="line-nums" v-if="showLineNums">
+                    <a 
+                        v-for="(line, lineNum) of rawContent.split('\n')" 
+                        :key="lineNum" 
+                        :href="'#ln-'+lineNum" 
+                        :class='{selected: getUrlLineHash()=="#ln-"+lineNum}'>
+                        {{lineNum+1}}
+                    </a>
+                </div>
+                <pre v-html="content" :style="{'white-space': this.language == 'text' ? 'break-spaces' : 'pre'}"></pre>
+            </code>
+        </template>
     </div>
 </template>
 <script>
@@ -68,7 +70,8 @@ export default {
         paste: {},
 
         multiPastes: null,
-        multiPastesSelected: null
+        multiPastesSelected: null,
+        readCode: false
     }),
     mounted(){
         this.load(this.$route.params.id)
@@ -254,7 +257,7 @@ export default {
 </script>
 <style lang="scss" scoped>
     h1 {
-        color: #FFF;
+        color: var(--text-color);
         font-size: 30px;
         margin-bottom: 30px;
         min-height: 30px;
@@ -263,8 +266,8 @@ export default {
     #paste-contents,
     #preview {
         display: block;
-        color: #FFF;
-        background: #262B39;
+        color: var(--text-color);
+        background: var(--background-color);
         border-radius: 7px;
         padding: 10px;
         overflow-x: auto;
@@ -286,7 +289,7 @@ export default {
                 font-family: 'DM Mono', "Space Mono", monospace;
                 &.selected {
                     color: #66d9ef;
-                    background: #FFFFFF11;
+                    background: var(--obj-background-color-hover);
                     padding: 0px 8px;
                     border-radius: 20px;
                     margin-left: -8px;
@@ -341,13 +344,13 @@ export default {
         a {
             padding: 7px 10px;
             display: inline-block;
-            background: #262B39DD;
+            background: var(--obj-background-color);
             border-radius: 7px;
             margin-right: 10px;
             cursor: pointer;
 
             &.selected {
-                background: #303647
+                background: var(--obj-background-color-hover);
             }
         }
     }
@@ -355,15 +358,25 @@ export default {
 <style lang="scss">
     #preview {
 
-        font-size: 17px;
+        font-size: 17.5px;
         h1, h2, h3, h4, h5 {
-            margin-top: 19px;
-            margin-bottom: 17px;
+            margin-top: 30px;
+            margin-bottom: 15px;
         }
         h1 {
-            border-bottom: 2px solid #FFFFFF33;
-            padding-bottom: 7px;
-            padding-top: 7px;
+            padding-bottom: 18px;
+        }
+        h2 {
+            font-size: 28px;
+        }
+        h3 {
+            font-size: 23px;
+        }
+        h4 {
+            font-size: 20px;
+        }
+        h5 {
+            font-size: 18px;
         }
         img {
             max-width: 100%;
@@ -379,7 +392,7 @@ export default {
         }
 
         code {
-            background: #FFFFFF11;
+            background: #FFFFFF22;
             padding: 0px 6px;
             border-radius: 5px;
         }
@@ -391,6 +404,8 @@ export default {
         }
         pre {
             overflow-x: auto;
+            background: #00000025;
+            margin: 30px 0px;
         }
 
         ul, ol {

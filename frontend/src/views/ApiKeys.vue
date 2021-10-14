@@ -56,7 +56,7 @@ export default {
     }
 
     .api-key {
-        background: #212531;
+        background: var(--background-color);
         padding: 10px;
         margin-top: 10px;
         border-radius: 10px;

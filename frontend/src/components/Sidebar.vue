@@ -3,7 +3,7 @@
         <router-link to="/" id="logo" :class="{'mobile': $store.state.mobileVersion && this.$route.path !== '/'}">
             <img src="../assets/logo.png">
         </router-link>
-        <div id="sidebar" :class="{'fullscreen': $store.state.app.fullscreen || (($store.state.mobileVersion || $store.state.app.fullscreenOnHomepage) && this.$route.path === '/'), 'hidden': $store.state.mobileVersion && this.$route.path !== '/'}">
+        <div id="sidebar" :class="{'input-scrolled': contentInputScrolled, 'fullscreen': $store.state.app.fullscreen || (($store.state.mobileVersion || $store.state.app.fullscreenOnHomepage) && this.$route.path === '/'), 'hidden': $store.state.mobileVersion && this.$route.path !== '/'}">
             <svg v-if="!($store.state.mobileVersion || ($store.state.app.fullscreenOnHomepage && this.$route.path === '/'))" id="fullscreen-button" @click="$store.state.app.fullscreen = !$store.state.app.fullscreen" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
             
             <router-link v-if="$store.state.user.logged_in" id="profile-picture" to="/home" :style="{'margin-right': $store.state.mobileVersion || ($store.state.app.fullscreenOnHomepage && this.$route.path === '/') ? '0px' : '14px'}">
@@ -35,7 +35,7 @@
                     </div>
                 </div>
                 
-                <div id="content-input">
+                <div id="content-input" @scroll="onContentInputScroll">
                     <div v-if="!$store.state.app.newPasteEditorDisableLineNumbering" id="line-nums" ref="pasteContentsLineNums" @click="$refs.pasteContentsTextArea.focus()">
                         <span v-for="(l, i) in $store.state.currentPaste.content.split('\n').length" :key="i">{{i+1}}</span>
                     </div>
@@ -51,7 +51,7 @@
                     <input autocomplete="new-password" v-model="$store.state.currentPaste.password" class="input" type="password" placeholder="Password (Optional)">
                     
                     <h5 class="label">CLIENT-ENCRYPTED</h5>
-                    <label style="color: #FFF;" for="clientencrypted">Client-Encrypted</label>
+                    <label for="clientencrypted">Client-Encrypted</label>
                     <input type="checkbox" v-model="clientEncrypted" :readonly="$store.state.currentPaste.password != ''" name="clientencrypted">
                     <br><span style="color: #FFFFFF88" v-if="clientEncrypted">Client-Encryption deactivates the RAW function and some more. You can't open an encrypted paste without the password (If you set one) or the link.</span><br>
 
@@ -131,7 +131,8 @@ export default {
             height: '100px',
             width: '100px'
         },
-        autocompletion: null
+        autocompletion: null,
+        contentInputScrolled: false
     }),
     mounted(){
         this.eventBus.$on("setMultiPasteTabTo0", ()=>{
@@ -527,13 +528,16 @@ export default {
         },
         showImprintAndPrivacy(){
             return window.location.host == "pastefy.ga" || window.location.host == "www.pastefy.ga"
+        },
+        onContentInputScroll(e){
+            this.contentInputScrolled = e.target.scrollTop > 30
         }
     }
 }
 </script>
 <style lang="scss" scoped>
     #sidenav{
-        color: #FFF;
+        color: var(--text-color);
     }
     #logo {
         position: fixed;
@@ -568,14 +572,14 @@ export default {
     }
 
     #profile-picture.login {
-        color: #FFFFFF;
+        color: var(--text-color);
         font-size: 17px;
         margin-top: 10.3px;
         text-decoration: none;
     }
 
     #sidebar {
-        background: #212531;
+        background: var(--background-color);
         position: fixed;
         width: 380px;
         height: 100%;
@@ -586,7 +590,7 @@ export default {
         overflow-y: auto;
         #fullscreen-button {
             float: right;
-            color: #ffffffce;
+            color: var(--text-color);
             height: 27px;
             width: 27px;
             margin-top: 10px;
@@ -633,7 +637,7 @@ export default {
                 div {
                     display: inline-block;
                     padding: 5px 10px;
-                    background: #262B39DD;
+                    background: var(--obj-background-color);
                     border-radius: 7px;
                     overflow: hidden;
                     margin-right: 10px;
@@ -642,7 +646,7 @@ export default {
 
                     input {
                         background: transparent;
-                        color: #FFF;
+                        color: var(--text-color);
                         display: inline-block;
                         width: 85px;
                         border: none;
@@ -656,7 +660,7 @@ export default {
                         vertical-align: middle;
                         height: 25px;
                         width:  25px;
-                        color: #FFF;
+                        color: var(--text-color);
                         display: none;
                     }
 
@@ -670,7 +674,7 @@ export default {
                     }
 
                     &.selected {
-                        background: #303647;
+                        background: var(--obj-background-color-hover);
                         input {
                             cursor:cell;
                         }
@@ -686,8 +690,8 @@ export default {
                 border-radius: 7px;
                 margin-bottom: 13px;
 
-                background: #262B39;
-                color: #FFF;
+                background: var(--obj-background-color);
+                color: var(--text-color);
 
                 position: relative;
 
@@ -704,10 +708,10 @@ export default {
                     width: 100%;
                     resize: none;
                     font-size: 18px;
-                    color: #FFF;
+                    color: var(--text-color);
                     font-family: 'DM Mono', monospace;
                     color: transparent;
-                    caret-color: #FFFFFF;
+                    caret-color: var(--text-color);
                     overflow-wrap: normal;
                     
                     white-space: pre;
@@ -717,7 +721,7 @@ export default {
                     top: 0px;
 
                     &.native {
-                        color: #FFF;
+                        color: var(--text-color);
                     }
                 }
 
@@ -735,7 +739,7 @@ export default {
                     float: left;
                     padding: 12px;
                     width: fit-content;
-                    color: #FFFFFF88;
+                    color: var(--text-color-alpha);
                     padding-right: 5px;
                     
                     /*
@@ -765,8 +769,8 @@ export default {
             }
 
             #edit-indicator {
-                color: #FFF;
-                background: #262B39;
+                color: var(--text-color);
+                background: var(--obj-background-color);
                 border-radius: 7px;
                 padding: 10px;
 
@@ -784,31 +788,33 @@ export default {
             }
             
             #input-fullscreen-button {
-                color: #FFFFFF53;
+                color: var(--text-color);
+                opacity: 0.7;
                 width:  18px;
                 height: 18px;
                 position: absolute;
                 right: 10px;
                 top: 75px;
                 cursor: pointer;
-                transition: 0.3s color;
+                transition: 0.3s opacity;
                 z-index: 10000;
                 &:hover {
-                    color: #FFFFFFBB;    
+                    opacity: 1;    
                 }
             }
             #create-new-tab-button {
-                color: #FFFFFF53;
+                color: var(--text-color);
+                opacity: 0.7;
                 width:  18px;
                 height: 18px;
                 position: absolute;
                 right: 40px;
                 top: 75px;
                 cursor: pointer;
-                transition: 0.3s color;
+                transition: 0.3s opacity;
                 z-index: 10000;
                 &:hover {
-                    color: #FFFFFFBB;    
+                    opacity: 1;    
                 }
             }
 
@@ -818,13 +824,14 @@ export default {
                     display: inline-block;
                     border-radius: 7px;
                     padding: 10px;
-                    color: #FFF;
+                    color: var(--text-color);
                     text-align: center;
                     cursor: pointer;
                     transition: 0.3s background;
                 }
                 #submit-button {
                     background: #3469FF;
+                    color: #FFF;
                     width: calc(100% - 54.8px);
                     margin-top: 10px;
                     margin-bottom: 60px;
@@ -836,13 +843,13 @@ export default {
                 #settings-button {
                     margin-left: 9.6px;
                     width: 45px;
-                    background: #262B39;
+                    background: var(--obj-background-color);
                     svg {
                         vertical-align: middle;
                         margin-top: -4.2px;
                     }
                     &:hover {
-                        background: #1c202b;
+                        background: var(--obj-background-color-hover);
                     }
                 }
             }
@@ -872,7 +879,7 @@ export default {
                 }
 
                 #friend-list {
-                    background: #262B39;
+                    background: var(--obj-background-color);
                     border-radius: 7px;
                     padding: 2px;
                     max-height: 150px;
@@ -880,7 +887,7 @@ export default {
                     a {
                         display: block;
                         padding: 4px 7px;
-                        color: #FFF;
+                        color: var(--text-color);
                         border-radius: 5px;
                         &:hover {
                             background: #FFFFFF44;
@@ -918,7 +925,7 @@ export default {
                     width: calc(100% - 290px);
 
                     div {
-                        background: #FFFFFF06;
+                        background: #00000007;
                         width: 150px;
                         input {
                             font-size: 15px;
@@ -926,10 +933,9 @@ export default {
                         }
 
                         &.selected {
-                            background: #FFFFFF11;    
+                            background: var(--obj-background-color-hover);
                         }
                     }
-
                 }
                 #buttons #submit-button {
                     position: fixed;
@@ -1015,7 +1021,8 @@ export default {
 
         a,a:visited {
             display: inline-block;
-            color: #FFFFFF66;
+            color: var(--text-color);
+            opacity: 0.6;
             text-decoration: none;
             vertical-align: middle;
             margin: 5px 0px;
@@ -1025,8 +1032,17 @@ export default {
                 width: 29px;
                 margin-right: 6px;
                 margin-left: 3px;
-                color: #FFFFFF88;
+                color: var(--text-color);
+                opacity: 0.6;
             }
         }
     }
+    /*.input-scrolled {
+        #logo {
+            top: -100px !important;
+        }
+        #footer {
+            display: none !important;
+        }
+    }*/
 </style>

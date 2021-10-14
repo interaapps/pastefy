@@ -9,6 +9,8 @@ import { PastefyAPI } from './PastefyAPI'
 require("babel-polyfill");
 require("./css/app.scss")
 import eventBus from './eventBus'
+import dark from './assets/themes/dark'
+import light from './assets/themes/light'
 Vue.config.productionTip = false
 
 let worker = null
@@ -159,3 +161,35 @@ HTMLTextAreaElement.prototype.setSelection = function (start, end) { //change th
     this.selectionEnd = end;
     this.focus();
 };
+
+export function setThemeFrom(vars = {}){
+    for (const key in vars) {
+        if (typeof vars[key] == 'object')
+            setThemeFrom(vars[key])
+        else
+            document.documentElement.style.setProperty(key, vars[key])
+    }
+}
+
+const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+const darkmodeListener = e => {
+  if (e.matches)
+    setThemeFrom(dark)
+  else
+    setThemeFrom(light)
+}
+
+export function setTheme(name) {
+    console.log("AAAAAAAAAAAAAAAa", name)
+  darkThemeMq.removeListener(darkmodeListener)
+  if (name == 'light') {
+    setThemeFrom(light)
+  } else if (name == 'auto') {
+    darkThemeMq.addListener(darkmodeListener)
+    darkmodeListener(window.matchMedia("(prefers-color-scheme: dark)"))
+  } else {
+    setThemeFrom(dark)
+  }
+}
+
+setTheme(localStorage["theme"])

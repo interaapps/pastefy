@@ -1,5 +1,14 @@
 @import './highlightjs.scss';
 
+:root {
+	--background-color: #212531;
+	--page-background-color: #1a1e27;
+	--obj-background-color: #262b39;
+	--obj-background-color-hover: #1d212c;
+	--text-color: #ffffff;
+	--text-color-alpha: #ffffff88;
+}
+
 * {
     padding: 0px;
     margin: 0px;
@@ -17,37 +26,38 @@ pre {
 html, body {
     height: 100%;
     min-height: 100%;
-	background: #1A1E27;
+	background: var(--page-background-color);
 }
 
 #app {
-	background: #1A1E27;
+	background: var(--page-background-color);
 	@media screen and (max-width: 720px) {
-		background: #212531;
+		background: var(--background-color);
 	}
 }
 
 a:link,
-a:visited {
-	color: #FFF;
+a:visited,
+label {
+	color: var(--text-color);
 }
 
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
-    background: #212531;
+    background: var(--background-color);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #050813;
+    background: #00000033;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #14161d;
+    background: #00000066;
 }
 
 #snackbar {
-	background-color: #ffffff;
+	background-color: var(--text-color);
 	color: #17fc2e;
 	text-align: center;
 	border-radius: 3px;
@@ -68,8 +78,8 @@ a:visited {
 }
 
 .input {
-	background: #262B39;
-	color: #FFF;
+	background: var(--obj-background-color);
+	color: var(--text-color);
 	display: block;
 	border: none;
 	margin-bottom: 15px;
@@ -103,18 +113,19 @@ a:visited {
 	}
 
 	&.gray {
-		background: #FFFFFF09;
+		background: var(--background-color);
+		color: var(--text-color);
 	}
 }
 
 .label {
 	font-size: 14px;
-	color: #FFFFFF;
+	color: var(--text-color);
 	margin-bottom: 10px;
 }
 
 .error {
-	color: #ffffff;
+	color: var(--text-color);
     background: #ee0000;
     width: 80%;
     padding: 9px;
@@ -134,9 +145,9 @@ a:visited {
 	.paste,
 	.paste:visited {
 		display: block;
-		color: #FFF;
+		color: var(--text-color);
 		text-decoration: none;
-		background: #262B39;
+		background: var(--obj-background-color);
 		border-radius: 7px;
 		padding: 10px;
 		overflow-x: auto;
@@ -155,7 +166,7 @@ a:visited {
 
 		}
 		&:hover {
-			background: #1d212c;
+			background: var(--obj-background-color-hover);
 		}
 
 	}
@@ -176,7 +187,7 @@ a:visited {
 	a:link,
 	a:visited {
 		margin-left: 20px;
-		color: #FFF;
+		color: var(--text-color);
 		text-decoration: none !important;
 		vertical-align: middle;
 		margin-top: 10px;

@@ -16,7 +16,7 @@ export default {
     #page {
         min-height: 100%;
         padding: 20px;
-        color: #FFFFFF;
+        color: var(--text-color);
         padding-left: 410px;
         &.mobile {
             padding: 20px;

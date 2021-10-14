@@ -30,7 +30,7 @@ $duration: 1.4s;
   stroke-dasharray: $offset;
   stroke-dashoffset: 0;
   transform-origin: center;
-  stroke: #FFFFFF;
+  stroke: var(--background-color);
   animation:
     dash $duration ease-in-out infinite, 
     /*colors ($duration*4) ease-in-out infinite*/;
