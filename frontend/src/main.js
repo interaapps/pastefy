@@ -193,3 +193,11 @@ export function setTheme(name) {
 }
 
 setTheme(localStorage["theme"])
+
+if (window.location.search && window.location.search.includes("?")) {
+    for (const q of window.location.search.split("?")[1].split("&")) {
+        const split = q.split("=")
+        if (split[0] == "theme")
+            setTheme(split[1])
+    }
+}
