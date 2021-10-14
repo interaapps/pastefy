@@ -302,7 +302,7 @@ export default {
     }
 
     #preview {
-        padding: 26px;
+        padding: 18px 26px;
     }
 
     .language {
