@@ -195,7 +195,8 @@ export default {
                             return str;
                         }
                     });
-                    this.extraContent = md.render(contents)
+                    const EMPTY_CHAR = "‎"
+                    this.extraContent = md.render(contents.replaceAll("<br>", "\n"+EMPTY_CHAR+"\n"))
                 }
             }
         },
