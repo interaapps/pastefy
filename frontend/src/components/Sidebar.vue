@@ -637,7 +637,7 @@ export default {
                 div {
                     display: inline-block;
                     padding: 5px 10px;
-                    background: var(--obj-background-color);
+                    background: var(--tab-color);
                     border-radius: 7px;
                     overflow: hidden;
                     margin-right: 10px;
@@ -674,7 +674,7 @@ export default {
                     }
 
                     &.selected {
-                        background: var(--obj-background-color-hover);
+                        background: var(--tab-color-selected);
                         input {
                             cursor:cell;
                         }
@@ -925,7 +925,7 @@ export default {
                     width: calc(100% - 290px);
 
                     div {
-                        background: #00000007;
+                        background: var(--tab-color);
                         width: 150px;
                         input {
                             font-size: 15px;
@@ -933,7 +933,7 @@ export default {
                         }
 
                         &.selected {
-                            background: var(--obj-background-color-hover);
+                            background: var(--tab-color-selected);
                         }
                     }
                 }

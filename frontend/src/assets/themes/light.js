@@ -8,6 +8,8 @@ export default {...dark,
 	"--obj-background-color-hover": "#d1d1d1",
 	"--text-color": "#242424",
 	"--text-color-alpha": "#07070788",
+    "--tab-color": "#DDDDDD",
+    "--tab-color-selected": "#C9C9C9",
 
 	
     "--highlight-tab": "#878787",

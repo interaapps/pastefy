@@ -302,7 +302,6 @@ export default {
     }
 
     #preview {
-        margin-top: 40px;
         padding: 26px;
     }
 
@@ -345,13 +344,13 @@ export default {
         a {
             padding: 7px 10px;
             display: inline-block;
-            background: var(--obj-background-color);
+            background: var(--tab-color);
             border-radius: 7px;
             margin-right: 10px;
             cursor: pointer;
 
             &.selected {
-                background: var(--obj-background-color-hover);
+                background: var(--tab-color-selected);
             }
         }
     }

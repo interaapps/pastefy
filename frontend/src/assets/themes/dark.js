@@ -6,6 +6,8 @@ export default {
 	"--obj-background-color-hover": "#1d212c",
 	"--text-color": "#ffffff",
 	"--text-color-alpha": "#ffffff88",
+    "--tab-color": "#212733",
+    "--tab-color-selected": "#2d3341",
 
     "--highlight-tab": "#f8f8f2",
     "--highlight-emphasis": "#a8a8a2",
