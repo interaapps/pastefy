@@ -9,35 +9,17 @@ export class PastefyAPI extends Cajax {
             const json = await res.json()
             
             if (json.error)
-                throw new Error("Authentication")
+                throw new Error()
             
             return json
         }
     }
 
     createPaste(data){
-        return new Promise((res, err)=>{
-            this.post("/api/v2/paste", data)
-                .then(response => {
-                    if (response.success) {
-                        const paste = response.paste
-
-                        res(paste)
-                    } else err(Error());
-                    this.loading = false
-                })
-        })
+        return this.post("/api/v2/paste", data).then(res=>res.paste)
     }
 
     editPaste(id, data){
-        return new Promise((res, err)=>{
-            this.put(`/api/v2/paste/${id}`, data)
-                .then(response => {
-                    if (response.success) {
-                        res()
-                    } else err(Error());
-                    this.loading = false
-                })
-        })
+        this.put(`/api/v2/paste/${id}`, data).then(() => null)
     }
 }

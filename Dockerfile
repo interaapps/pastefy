@@ -1,4 +1,5 @@
-FROM node:lts-alpine as frontend
+FROM node:16-alpine as frontend
+
 WORKDIR /
 COPY frontend/package*.json ./app/
 

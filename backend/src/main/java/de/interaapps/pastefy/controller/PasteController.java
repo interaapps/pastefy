@@ -3,6 +3,7 @@ package de.interaapps.pastefy.controller;
 import de.interaapps.accounts.apiclient.AccountsClient;
 import de.interaapps.accounts.apiclient.responses.contacts.ContactResponse;
 import de.interaapps.pastefy.Pastefy;
+import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
 import de.interaapps.pastefy.model.database.*;
 import de.interaapps.pastefy.model.requests.paste.AddFriendToPasteRequest;
 import de.interaapps.pastefy.model.requests.paste.CreatePasteRequest;
@@ -31,6 +32,8 @@ public class PasteController extends HttpController {
     @Post
     @With("rate-limiter")
     public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user, @Path("id") String pasteId) {
+        if (true)
+            throw new PermissionsDeniedException();
         CreatePasteResponse response = new CreatePasteResponse();
 
         Paste paste = new Paste();
