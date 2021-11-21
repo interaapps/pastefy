@@ -32,8 +32,6 @@ public class PasteController extends HttpController {
     @Post
     @With("rate-limiter")
     public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user, @Path("id") String pasteId) {
-        if (true)
-            throw new PermissionsDeniedException();
         CreatePasteResponse response = new CreatePasteResponse();
 
         Paste paste = new Paste();
