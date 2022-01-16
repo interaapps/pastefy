@@ -1,5 +1,6 @@
 package de.interaapps.pastefy.controller;
 
+import de.interaapps.pastefy.exceptions.NotFoundException;
 import de.interaapps.pastefy.model.database.Folder;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.requests.CreateFolderRequest;
@@ -42,7 +43,10 @@ public class FolderController extends HttpController {
 
     @Get("/{id}")
     public FolderResponse getFolder(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
-        return new FolderResponse(Repo.get(Folder.class).where("key", id).first(), true, exchange.rawRequest().getParameter("hide_children") == null);
+        Folder folder = Repo.get(Folder.class).where("key", id).first();
+        if (folder == null)
+            throw new NotFoundException();
+        return new FolderResponse(folder, true, exchange.rawRequest().getParameter("hide_children") == null);
     }
 
     @Delete("/{id}")

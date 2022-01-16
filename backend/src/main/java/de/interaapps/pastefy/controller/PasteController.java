@@ -3,6 +3,7 @@ package de.interaapps.pastefy.controller;
 import de.interaapps.accounts.apiclient.AccountsClient;
 import de.interaapps.accounts.apiclient.responses.contacts.ContactResponse;
 import de.interaapps.pastefy.Pastefy;
+import de.interaapps.pastefy.exceptions.NotFoundException;
 import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
 import de.interaapps.pastefy.model.database.*;
 import de.interaapps.pastefy.model.requests.paste.AddFriendToPasteRequest;
@@ -83,6 +84,8 @@ public class PasteController extends HttpController {
     @Get("/{id}")
     public PasteResponse getPaste(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
         Paste paste = Repo.get(Paste.class).where("key", id).first();
+        if (paste == null)
+            throw new NotFoundException();
         return new PasteResponse(paste);
     }
 

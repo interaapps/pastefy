@@ -5,6 +5,7 @@ import de.interaapps.pastefy.auth.AuthMiddleware;
 import de.interaapps.pastefy.auth.OAuth2Callback;
 import de.interaapps.pastefy.controller.PasteController;
 import de.interaapps.pastefy.exceptions.AuthenticationException;
+import de.interaapps.pastefy.exceptions.NotFoundException;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
@@ -105,6 +106,8 @@ public class Pastefy extends WebApplication {
         server.exceptionHandler((exchange, throwable) -> {
             if (throwable instanceof AuthenticationException) {
                 exchange.status(401);
+            } else if (throwable instanceof NotFoundException) {
+                exchange.status(404);
             } else {
                 exchange.status(500);
             }
