@@ -326,6 +326,7 @@ export default {
             }
         },
         clearInputs(){
+            codeEditor.value = ""
             this.$store.state.app.fullscreen = false
             this.inputFullscreen = false
             this.$store.state.currentPaste.content  = ""

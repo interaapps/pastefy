@@ -20,6 +20,6 @@ export class PastefyAPI extends Cajax {
     }
 
     editPaste(id, data){
-        this.put(`/api/v2/paste/${id}`, data).then(() => null)
+        return this.put(`/api/v2/paste/${id}`, data).then(() => null)
     }
 }
