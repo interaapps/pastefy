@@ -117,8 +117,8 @@ public class Pastefy extends WebApplication {
 
         if (getConfig().has("ratelimiter.millis"))
             server.middleware("rate-limiter", new RateLimitMiddleware(getConfig().getInt("ratelimiter.millis", 5000), getConfig().getInt("ratelimiter.limit", 5)).createAutoDeadRateLimitsRemover(1000*60*10));
-        //else
-        //    server.middleware("rate-limiter", e->null);
+        else
+            server.middleware("rate-limiter", e->null);
 
         server.beforeInterceptor(exchange -> {
             exchange.header("Server", "InteraApps-Pastefy");

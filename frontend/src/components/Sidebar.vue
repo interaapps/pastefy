@@ -378,6 +378,7 @@ export default {
                         this.eventBus.$emit("reloadPaste")
                         this.clearInputs()
                         toast.close()
+                        this.loading = false
                         helper.showSnackBar("Done!")
                     })
                     .catch(()=>{

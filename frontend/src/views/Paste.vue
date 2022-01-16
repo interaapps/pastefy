@@ -14,6 +14,7 @@
         
         <div id="action-buttons" :class="{mobile: $store.state.mobileVersion}">
             <a v-if="isPWA()" @click="copyURL">Copy URL</a>
+            <a v-if="language == 'json'" @click="jsonPretty">{{jsonPrettified ? 'UNPRETTY' : 'PRETTY'}}</a>
             <a href="#paste-contents" @click="readCode = true" v-if="extraContent !== ''">CODE</a>
             <a v-if="$store.state.user.logged_in && $store.state.user.id == userid" @click="deletePaste">DELETE</a>
             <a @click="editPaste(true)" v-if="!$store.state.mobileVersion">FORK</a>
@@ -53,6 +54,9 @@ import helper from "../helper.js";
 import CryptoJS from "crypto-js";
 import LANGUAGE_REPLACEMENTS from '../assets/data/langReplacements'
 
+
+let languages = [...hljs.listLanguages(), "text"];
+
 export default {
     data: ()=>({
         title: "Title",
@@ -68,6 +72,10 @@ export default {
         rawURL: "",
         showLineNums: true,
         paste: {},
+
+        currentPasteContents: "",
+
+        jsonPrettified: false,
 
         multiPastes: null,
         multiPastesSelected: null,
@@ -159,18 +167,19 @@ export default {
             let ending = pasteTitleComponents[pasteTitleComponents.length-1];
             this.language = null
 
-            for (let replace  in LANGUAGE_REPLACEMENTS)
-                ending = ending.replace(replace, LANGUAGE_REPLACEMENTS[replace]);
-            
-            let languages = hljs.listLanguages();
-            languages.push("text")
-            
+            for (let replace  in LANGUAGE_REPLACEMENTS){
+                if (ending == replace){
+                    ending = LANGUAGE_REPLACEMENTS[replace];
+                    break;
+                }
+            }
+
             if (languages.includes(ending)) {
-                
                 this.language = ending;
             }
             
             this.showLineNums = true
+            
             if (this.language === null)
                 this.content = hljs.highlightAuto(contents).value
             else {
@@ -252,6 +261,17 @@ export default {
                 this.$store.state.currentPaste.content   = this.rawContent
             
             this.eventBus.$emit("updatePasteEditorHighlighting")
+        },
+        jsonPretty(){
+            if (this.jsonPrettified){
+                this.jsonPrettified = false
+                this.rawContent = JSON.stringify(JSON.parse(this.rawContent), null, 0)
+                this.highlight(this.title, this.rawContent)
+            } else {
+                this.jsonPrettified = true
+                this.rawContent = JSON.stringify(JSON.parse(this.rawContent), null, 2)
+                this.highlight(this.title, this.rawContent)
+            }
         }
     }
 }
