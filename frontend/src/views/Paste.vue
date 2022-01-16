@@ -289,7 +289,7 @@ export default {
         display: block;
         color: var(--text-color);
         background: var(--background-color);
-        border-radius: 7px;
+        border-radius: 10px;
         padding: 10px;
         overflow-x: auto;
     }
@@ -331,7 +331,7 @@ export default {
         padding: 1px 7px;
         user-select: none;
         display: inline-block;
-        border-radius: 7px;
+        border-radius: 10px;
     }
 
     #action-buttons.mobile {
@@ -365,7 +365,7 @@ export default {
             padding: 7px 10px;
             display: inline-block;
             background: var(--tab-color);
-            border-radius: 7px;
+            border-radius: 10px;
             margin-right: 10px;
             cursor: pointer;
 
@@ -400,7 +400,7 @@ export default {
         }
         img {
             max-width: 100%;
-            border-radius: 7px;
+            border-radius: 10px;
             margin: 10px 0px;
         }
 

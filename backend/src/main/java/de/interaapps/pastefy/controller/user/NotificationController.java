@@ -59,7 +59,7 @@ public class NotificationController extends HttpController {
     @Get("/readall")
     @With("auth")
     public ActionResponse readAll(@Attrib("user") User user) {
-        Repo.get(Notification.class).query().where("userId", user.getId()).update(new HashMap() {{
+        Repo.get(Notification.class).query().where("userId", user.getId()).where("already_read", false).update(new HashMap() {{
             put("received", true);
             put("already_read", true);
         }});

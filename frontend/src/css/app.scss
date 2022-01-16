@@ -85,7 +85,7 @@ label {
 	margin-bottom: 15px;
 	width: 100%;
 	padding: 10px;
-	border-radius: 7px;
+	border-radius: 10px;
 	&::placeholder {
 
 	}
@@ -99,7 +99,7 @@ label {
 
 .button {
 	display: inline-block;
-	border-radius: 7px;
+	border-radius: 10px;
 	padding: 10px;
 	color: #FFF;
 	text-align: center;
@@ -148,7 +148,7 @@ label {
 		color: var(--text-color);
 		text-decoration: none;
 		background: var(--obj-background-color);
-		border-radius: 7px;
+		border-radius: 10px;
 		padding: 10px;
 		overflow-x: auto;
 		transition: 0.3s background;
@@ -175,7 +175,7 @@ label {
 #preview pre {
 	background: #00000011;
 	padding: 14px;
-	border-radius: 7px;
+	border-radius: 10px;
 	margin-top: 10px;
 	margin-bottom: 10px;
 }

@@ -241,7 +241,7 @@ export default {
         },
         async send(){
             let data = {
-                content: this.$store.state.currentPaste.content,
+                content: codeEditor.value,
                 title: this.$store.state.currentPaste.title
             }
             
@@ -504,7 +504,7 @@ export default {
                     display: inline-block;
                     padding: 5px 10px;
                     background: var(--tab-color);
-                    border-radius: 7px;
+                    border-radius: 10px;
                     overflow: hidden;
                     margin-right: 10px;
                     height: 37px;
@@ -560,7 +560,7 @@ export default {
             #edit-indicator {
                 color: var(--text-color);
                 background: var(--obj-background-color);
-                border-radius: 7px;
+                border-radius: 10px;
                 padding: 10px;
 
                 span {
@@ -611,7 +611,7 @@ export default {
                 margin-bottom: 31px;
                 a {
                     display: inline-block;
-                    border-radius: 7px;
+                    border-radius: 10px;
                     padding: 10px;
                     color: var(--text-color);
                     text-align: center;
@@ -669,7 +669,7 @@ export default {
 
                 #friend-list {
                     background: var(--obj-background-color);
-                    border-radius: 7px;
+                    border-radius: 10px;
                     padding: 2px;
                     max-height: 150px;
                     overflow: auto;
