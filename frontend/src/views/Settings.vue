@@ -5,9 +5,8 @@
         Fullscreen-Paste on Homepage: <input v-model="$store.state.app.fullscreenOnHomepage" type="checkbox"><br>
         Browser-notifications: <input v-model="$store.state.app.browserNotifications" type="checkbox"><br>
         <br><h3>Editor</h3>
+        Disable Auto-Completion: <input v-model="$store.state.app.newPasteEditorDisableAutocompletion" type="checkbox"><br>
         Disable Highlighting: <input v-model="$store.state.app.newPasteEditorDisableHighlighting" type="checkbox"><br>
-        Disable Bracket-Closing: <input v-model="$store.state.app.newPasteEditorDisableBracketClosing" type="checkbox"><br>
-        Disable Line-Numbering: <input v-model="$store.state.app.newPasteEditorDisableLineNumbering" type="checkbox"><br>
 
         <br><h3>Theme</h3><br>
         <div id="themes">
@@ -110,8 +109,7 @@ export default {
     watch: {
         '$store.state.app.fullscreenOnHomepage': createWatcher('fullscreen_on_homepage'),
         '$store.state.app.newPasteEditorDisableHighlighting': createWatcher('new_paste_editor_disable_highlighting'),
-        '$store.state.app.newPasteEditorDisableBracketClosing': createWatcher('new_paste_editor_disable_bracket_closing'),
-        '$store.state.app.newPasteEditorDisableLineNumbering': createWatcher('new_paste_editor_disable_line_numbering'),
+        '$store.state.app.newPasteEditorDisableAutocompletion': createWatcher('new_paste_editor_disable_autocompletion'),
         '$store.state.app.browserNotifications': {
             handler: function(to){
                 localStorage.setItem('browser_notifications', to)

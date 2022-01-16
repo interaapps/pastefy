@@ -13,7 +13,7 @@
             <a :href="$store.state.user.auth_types.length == 1 ? loginBaseURL+$store.state.user.auth_types[0] : '/login-with'" id="profile-picture" class="login" v-else-if="$store.state.user.auth_types.length > 0">LOGIN</a>
             
             <div v-if="$store.state.app.sideNavTab === 'paste'" id="create-paste" :class="{'input-fullscreen': inputFullscreen}" style="height: calc(100% - 300px); min-height: 300px">
-                <input @input="highlight" spellcheck="false" autocomplete="off" v-model="$store.state.currentPaste.title" class="input" type="text" placeholder="Title" id="title-input">
+                <input @input="updateEditorLang" spellcheck="false" autocomplete="off" v-model="$store.state.currentPaste.title" class="input" type="text" placeholder="Title" id="title-input">
                 
                 <svg @click="
                     if (Object.keys($store.state.currentPaste.multiPastes).length == 0) addTab($store.state.currentPaste.title ? $store.state.currentPaste.title : 'new');
@@ -24,7 +24,7 @@
                 <svg id="input-fullscreen-button" @click="inputFullscreen = true" v-else-if="!$store.state.mobileVersion" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg>
                 <div id="tabs" v-if="$store.state.currentPaste.multiPastes.length > 0">
                     <div v-for="(contents, i) of $store.state.currentPaste.multiPastes" :key="i" @click="selectTab(i, multiPastesSelected)" :class="{selected:i==multiPastesSelected}">
-                        <input v-model="$store.state.currentPaste.multiPastes[i].name" type="text" placeholder="Name">
+                        <input @input="updateEditorLang" v-model="$store.state.currentPaste.multiPastes[i].name" type="text" placeholder="Name">
                         <svg @click="
                         if (i==multiPastesSelected)
                             selectTab(0)
@@ -34,17 +34,8 @@
                         " xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
                     </div>
                 </div>
-                
-                <div id="content-input" @scroll="onContentInputScroll">
-                    <div v-if="!$store.state.app.newPasteEditorDisableLineNumbering" id="line-nums" ref="pasteContentsLineNums" @click="$refs.pasteContentsTextArea.focus()">
-                        <span v-for="(l, i) in $store.state.currentPaste.content.split('\n').length" :key="i">{{i+1}}</span>
-                    </div>
-                    <textarea wrap="off" ref="pasteContentsTextArea" spellcheck="false" v-model="$store.state.currentPaste.content" @keydown="editor" placeholder="Paste in here" :style="pasteContentsTextAreaStyle" :class="{native: nativeInput}"></textarea>
-                    <pre v-if="!nativeInput" style="left: 36px;" ref="pasteContentsHighlighting" v-html="highlightedContents" />
-                    <div v-if="this.autocompletion" id="autocompletion" :style="{marginLeft: (autocompletion.left*11)+'px', marginTop: (10+(autocompletion.top+1)*22)+'px'}">
-                        <span v-for="(c, i) in autocompletion.list" :key="i">{{c}}</span>
-                    </div>
-                </div>
+
+                <div ref="editor" id="editor"></div>
                 
                 <div id="options" :class="{'opened': optionsOpened}">
                     <h5 class="label">Password</h5>
@@ -93,22 +84,18 @@
     </div>
 </template>
 <script>
+import { CodeEditor, JavaScriptAutoComplete, PHPAutoComplete, JavaAutoComplete } from 'petrel'
 import helper from "../helper.js";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import CryptoJS from "crypto-js";
 import hljs from "highlight.js";
-
 import LANGUAGE_REPLACEMENTS from '../assets/data/langReplacements'
 const LANGUAGES = hljs.listLanguages()
 
-const CLOSE_BRACKETS = {
-    '{': '}',
-    '(': ')',
-    '[': ']',
-    '"': '"',
-    "'": "'",
-    '`': '`'
-}
+let codeEditor = null;
+let codeEditorInputListener;
+codeEditor;
+const DEFAULT_HIGHLIGHTER = v=>v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;")
 
 export default {
     data: ()=>({
@@ -125,21 +112,29 @@ export default {
         },
         loginBaseURL: process.env.VUE_APP_API_BASE +"/api/v2/auth/oauth2/",
         inputFullscreen: false,
-        highlightedContents: '',
         r:0,
-        nativeInput: true,
-        pasteContentsTextAreaStyle: {
-            height: '100px',
-            width: '100px'
-        },
-        autocompletion: null,
-        contentInputScrolled: false
+        
+        currentLanguage: ""
     }),
     mounted(){
         this.eventBus.$on("setMultiPasteTabTo0", ()=>{
             this.selectTab(0)
         })      
-        this.highlight()
+
+        codeEditor = new CodeEditor(this.$refs.editor)
+        let lastLength = 0
+        codeEditorInputListener = () => {
+            this.$store.state.currentPaste.content = codeEditor.value
+            const length = this.$store.state.currentPaste.content.length
+            if (lastLength != length && length > 9000) {
+                this.updateEditorLang()
+            }
+            lastLength = length
+        }
+        codeEditor.textAreaElement.addEventListener("keydown", codeEditorInputListener)
+        codeEditor.textAreaElement.addEventListener("paste", codeEditorInputListener)
+        codeEditor.textAreaElement.placeholder = "Paste in here"
+        codeEditor.create()
     },
     created(){
         document.onkeyup = (e) => {
@@ -177,10 +172,13 @@ export default {
         '$store.state.currentPaste.editId'(){
             this.r = Math.random()
         },
+        '$store.state.currentPaste.title'(){
+            this.updateEditorLang()
+        },
         '$store.state.currentPaste.content'(to){
-            // Weird fix for updating inner width
-            this.$refs.pasteContentsTextArea.value = to
-            this.highlight()
+            console.log("SETTING");
+            codeEditor.value = to
+            codeEditor.update()
         },
         '$route'(to){
             if (this.$store.state.app.fullscreenOnHomepage && to.path !== '/')
@@ -188,150 +186,56 @@ export default {
         }
     },
     methods: {
-        editor(event){
-            const textarea = event.target
-            const caretPos = textarea.getCaretPosition()
-            
-            if (event.keyCode == 9) {
-                let newCaretPosition = textarea.getCaretPosition() + "    ".length;
-                textarea.value = textarea.value.substring(0, textarea.getCaretPosition()) + "    " + textarea.value.substring(textarea.getCaretPosition(), textarea.value.length);
-
-                event.preventDefault()
+        updateEditorLang(){
+            let language;
+            const split = (Object.keys(this.$store.state.currentPaste.multiPastes).length == 0 ? this.$store.state.currentPaste.title : this.$store.state.currentPaste.multiPastes[this.multiPastesSelected].name).split(".")
                 
-                textarea.setCaretPosition(newCaretPosition);
-            } else if(event.keyCode == 8 && !textarea.hasSelection()){
-                if (textarea.value.substring(textarea.getCaretPosition() - 4, textarea.getCaretPosition()) == "    ") { //it's a tab space
-                    let newCaretPosition;
-                    newCaretPosition = textarea.getCaretPosition() - 3;
-                    textarea.value = textarea.value.substring(0, textarea.getCaretPosition() - 3) + textarea.value.substring(textarea.getCaretPosition(), textarea.value.length);
-                    textarea.setCaretPosition(newCaretPosition);
-                }
-            } else if(event.keyCode == 37){
-                let newCaretPosition;
-                if (textarea.value.substring(textarea.getCaretPosition() - 4, textarea.getCaretPosition()) == "    ") { //it's a tab space
-                    newCaretPosition = textarea.getCaretPosition() - 3;
-                    textarea.setCaretPosition(newCaretPosition);
-                }    
-            } else if(event.keyCode == 39){
-                let newCaretPosition;
-                if (textarea.value.substring(textarea.getCaretPosition() + 4, textarea.getCaretPosition()) == "    ") { //it's a tab space
-                    newCaretPosition = textarea.getCaretPosition() + 3;
-                    textarea.setCaretPosition(newCaretPosition);
-                }
-            }
-
-            if (!this.$store.state.app.newPasteEditorDisableBracketClosing){
-                for (const key in CLOSE_BRACKETS) {
-                    if (event.key == CLOSE_BRACKETS[key] && textarea.value.substring(caretPos-1, caretPos) == key
-                        && (['"',"'",'`'].includes(key) ? textarea.value.substring(caretPos-2, caretPos-1) != key : true)
-                    ) {
-                        event.preventDefault()
-                        textarea.setCaretPosition(caretPos+1)
-                        break
+            if (split.length > 1) {
+                language = split[split.length-1]
+                for (const name in LANGUAGE_REPLACEMENTS) {
+                    if (language == name) {
+                        language = LANGUAGE_REPLACEMENTS[name]
+                        break;
                     }
+                }
+            } else if (split[0] == 'Dockerfile')
+                language = 'dockerfile'
+        
 
-
-                    if (event.key == 'Backspace'
-                        && textarea.value.substring(caretPos-1, caretPos) == key
-                        && textarea.value.substring(caretPos, caretPos+1) == CLOSE_BRACKETS[key]
-                    ) {
-                        textarea.value = textarea.value.substring(0, caretPos-1)+textarea.value.substring(caretPos+1, textarea.value.length)
-                        event.preventDefault()
-                        textarea.setCaretPosition(caretPos-1)
-                        break
+            if (this.currentLanguage != language) {
+                this.currentLanguage = language
+                if (LANGUAGES.includes(language)){
+                    if (!this.$store.state.app.newPasteEditorDisableHighlighting) {
+                        codeEditor.setHighlighter(c => hljs.highlight(language, c).value)
+                    } else {
+                        codeEditor.setHighlighter(DEFAULT_HIGHLIGHTER)
                     }
-                    
-                    if (event.key == key) {
-                        if (textarea.hasSelection()) {
-                            // textarea.value = textarea.value.substring(0, textarea.selectionEnd)+key+CLOSE_BRACKETS[key]+textarea.value.substring(textarea.selectionEnd, textarea.value.length)
-                            const newCaret = caretPos+textarea.value.substring(textarea.selectionStart, textarea.selectionEnd).length
-                            const oldStart = textarea.selectionStart
-                            const oldEnd = textarea.selectionEnd
-                            textarea.value = textarea.value.substring(0, textarea.selectionStart)+key+textarea.value.substring(textarea.selectionStart, textarea.selectionEnd)+CLOSE_BRACKETS[key]+textarea.value.substring(textarea.selectionEnd, textarea.value.length)
-                            
-                            textarea.setCaretPosition(newCaret+1);
-                            textarea.select()
-                            textarea.selectionStart = oldStart+1
-                            textarea.selectionEnd = oldEnd+1
-                        } else {
-                            textarea.value = textarea.value.substring(0, caretPos)+key+CLOSE_BRACKETS[key]+textarea.value.substring(caretPos, textarea.value.length)
-                            textarea.setCaretPosition(caretPos+1);
+                    if (!this.$store.state.app.newPasteEditorDisableAutocompletion){
+                        switch (language) {
+                            case "javascript":
+                                codeEditor.setAutoCompleteHandler(new JavaScriptAutoComplete())
+                                break;
+                            case "php":
+                                codeEditor.setAutoCompleteHandler(new PHPAutoComplete())
+                                break;
+                            case "java":
+                                codeEditor.setAutoCompleteHandler(new JavaAutoComplete())
+                                break;
+                            default:
+                                codeEditor.setAutoCompleteHandler(null)
                         }
-                        event.preventDefault()
                     }
                 }
+                codeEditor.update()
             }
 
-            if (event.key == "Enter" && !textarea.hasSelection()) {
-                let startingSpaces = ""
 
-                let i = 0
-                let lines = textarea.value.split("\n")
-                for (let line in lines) {
-                    for (let a in lines[line].split("")) {
-                        i++
-                        if (caretPos == i) {
-                            const l = lines[line].split("")
-                            for (let b in l) {
-                                if (l[b] == ' ')
-                                    startingSpaces += " "
-                                else
-                                    break
-                            }
-                        }  a;
-                    }
-                    i++
+            if (codeEditor.value.length > 7000) {
+                codeEditor.setAutoCompleteHandler(null)
+                if (codeEditor.value.length > 9000){
+                    codeEditor.setHighlighter(DEFAULT_HIGHLIGHTER)
                 }
-                let caretInc = 0
-                if (['{','(','['].includes(textarea.value.substring(caretPos-1, caretPos))){
-                    textarea.value = textarea.value.substring(0, caretPos)+"\n    "+startingSpaces
-                        // Check if the closing bracket is right after the caret. If yes, add newline
-                        +(textarea.value.substring(caretPos, caretPos+1) == CLOSE_BRACKETS[textarea.value.substring(caretPos-1, caretPos)] ? "\n" : '')
-                        +startingSpaces
-                        +textarea.value.substring(caretPos, textarea.value.length)
-                    caretInc = 5
-                } else if ([':', ': '].includes(textarea.value.substring(caretPos-1, caretPos))){
-                    textarea.value = textarea.value.substring(0, caretPos)+"\n    "+startingSpaces+textarea.value.substring(caretPos, textarea.value.length)
-                    caretInc = 5
-                } else {
-                    textarea.value = textarea.value.substring(0, caretPos)+"\n"+startingSpaces+textarea.value.substring(caretPos, textarea.value.length)
-                    caretInc = 1
-                }
-                event.preventDefault()
-                textarea.setCaretPosition(caretPos+startingSpaces.length+caretInc);
-                
             }
-            
-            /*let i = 0
-            let lines = textarea.value.split("\n")
-            for (let line in lines) {
-                let lineW = 0
-                for (let word of lines[line].split(" ")) {
-                    for (const c in word.split("")) {
-                        if (i+1 == caretPos) {
-                            word = word+event.key
-                            if (event.key.length == 1 &&
-                                word.match(/^[0-9a-zA-z_-]+$/) &&
-                                word[0].match(/^[a-zA-z]+$/)
-                            ) {
-                                this.autocompletion = {
-                                    list: [word],
-                                    left: lineW+1,
-                                    top: line
-                                }
-                            } else if (event.key != 'Shift' && event.key != 'Alt' && event.key != 'Control') {
-                                this.autocompletion = null
-                            }
-                        }
-                        if (event.key == 'Backspace')
-                            this.autocompletion = null
-                        lineW++
-                        c; i++
-                    } i++
-                } i++
-            }*/
-            if (textarea.value != this.$store.state.currentPaste.content)
-                this.$store.state.currentPaste.content = textarea.value
         },
         async send(){
             let data = {
@@ -475,49 +379,6 @@ export default {
                 this.$store.state.currentPaste.content = this.$store.state.currentPaste.multiPastes[i].contents
             }
         },
-        async highlight(){
-            let nativeInput = true // Because of the watcher
-            this.$refs.pasteContentsTextArea.style.height = '0px'
-            this.$refs.pasteContentsTextArea.style.height = this.$refs.pasteContentsTextArea.scrollHeight+'px'
-            
-            const left = (this.$store.state.app.newPasteEditorDisableLineNumbering 
-                ? 14 
-                : this.$refs.pasteContentsLineNums.clientWidth+8 )
-
-            this.pasteContentsTextAreaStyle = {
-                width: (this.$refs.pasteContentsTextArea.scrollWidth)+'px',
-                height: this.$refs.pasteContentsTextArea.scrollHeight+'px',
-                left: left+"px"
-            }
-
-            if (this.$refs.pasteContentsHighlighting)
-                this.$refs.pasteContentsHighlighting.style.left = left+"px"
-
-            this.highlightedContents = this.escapeHtml(this.$store.state.currentPaste.content)
-
-            const split = (Object.keys(this.$store.state.currentPaste.multiPastes).length == 0 ? this.$store.state.currentPaste.title : this.$store.state.currentPaste.multiPastes[this.multiPastesSelected].name).split(".")
-            
-            let language;
-
-            if (split.length > 1) {
-                language = split[split.length-1]
-                for (const name in LANGUAGE_REPLACEMENTS) {
-                    if (language == name) {
-                        language = LANGUAGE_REPLACEMENTS[name]
-                        break;
-                    }
-                }
-            } else if (split[0] == 'Dockerfile')
-                language = 'dockerfile'
-
-            if (language && !this.$store.state.mobileVersion && !this.$store.state.app.newPasteEditorDisableHighlighting){
-                if (LANGUAGES.includes(language) && this.$store.state.currentPaste.content.length < 15000){
-                    this.highlightedContents = hljs.highlight(language, this.$store.state.currentPaste.content).value
-                    nativeInput = false
-                }
-            }
-            this.nativeInput = nativeInput
-        },
         escapeHtml(unsafe) {
             return unsafe
                 .replace(/&/g, "&amp;")
@@ -536,48 +397,49 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-    #sidenav{
-        color: var(--text-color);
+#sidenav{
+    color: var(--text-color);
+}
+#logo {
+    position: fixed;
+    top: 16px;
+    left: 27px;
+    z-index: 1000;
+    transition: 0.3s;
+    img {
+        height: 46px;
     }
-    #logo {
-        position: fixed;
-        top: 16px;
-        left: 27px;
-        z-index: 1000;
-        transition: 0.3s;
+    &.mobile {
+        position: relative;
+        left: 0px;
         img {
-            height: 46px;
-        }
-        &.mobile {
-            position: relative;
-            left: 0px;
-            img {
-                margin: auto;
-                display: block;
-            }
+            margin: auto;
+            display: block;
         }
     }
+}
 
-    #profile-picture {
-        float: right;
-        margin-right: 14px;
-        margin-top: 2px;
+#profile-picture {
+    float: right;
+    margin-right: 14px;
+    margin-top: 2px;
+    border-radius: 50px;
+
+    img {
+        width: 40px;
+        height: 40px;
         border-radius: 50px;
-
-        img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50px;
-        }
     }
+}
 
-    #profile-picture.login {
-        color: var(--text-color);
-        font-size: 17px;
-        margin-top: 10.3px;
-        text-decoration: none;
-    }
-
+#profile-picture.login {
+    color: var(--text-color);
+    font-size: 17px;
+    margin-top: 10.3px;
+    text-decoration: none;
+}
+</style>
+<style lang="scss">
     #sidebar {
         background: var(--background-color);
         position: fixed;
@@ -627,7 +489,7 @@ export default {
                 }
             }
             #tabs {
-                margin-top: 10px;
+                margin-top: 20px;
                 overflow-x: auto;
                 overflow-y: hidden;
                 white-space: nowrap;
@@ -682,85 +544,8 @@ export default {
                 }
             }
 
-            #content-input {
+            #editor {
                 height: 220px;
-                overflow-wrap: normal;
-                overflow-x: auto;
-                resize: vertical;
-                border-radius: 7px;
-                margin-bottom: 13px;
-
-                background: var(--obj-background-color);
-                color: var(--text-color);
-
-                position: relative;
-
-                line-height: 22px;
-
-                textarea {
-                    line-height: 22px;
-                    background: transparent;
-                    min-height: 100%;
-                    overflow: hidden;
-                    padding: 12px;
-                    border: none;
-                    outline: none;
-                    width: 100%;
-                    resize: none;
-                    font-size: 18px;
-                    color: var(--text-color);
-                    font-family: 'DM Mono', monospace;
-                    color: transparent;
-                    caret-color: var(--text-color);
-                    overflow-wrap: normal;
-                    
-                    white-space: pre;
-                    min-width: 100%;
-                    padding-left: 0px;
-                    position: absolute;
-                    top: 0px;
-
-                    &.native {
-                        color: var(--text-color);
-                    }
-                }
-
-                pre {
-                    position: absolute;
-                    top: 0px;
-                    font-size: 18px;
-                    padding: 12px;
-                    padding-left: 0px;
-                    pointer-events: none;
-                    font-family: 'DM Mono', monospace;
-                }
-
-                #line-nums {
-                    float: left;
-                    padding: 12px;
-                    width: fit-content;
-                    color: var(--text-color-alpha);
-                    padding-right: 5px;
-                    
-                    /*
-                    border-right: 1px #FFFFFF06 solid;
-                    min-height: 100%;*/
-
-                    z-index: 10;
-                    span {
-                        font-size: 18px;
-                        display: block;
-                    }
-                }
-
-                #autocompletion {
-                    display: inline-block;
-                    padding: 2px 8px;
-                    border-radius: 5px;
-
-                    background: #00000022;
-                    font-size: 18px;
-                }
             }
 
             #title-input {
@@ -901,19 +686,27 @@ export default {
             }
 
             &.input-fullscreen {
-                #content-input {
+                #editor {
                     position: fixed;
                     left: 0px;
                     top: 0px;
                     height: 100%;
                     width: 100%;
-                    padding-left: 26px;
-                    textarea, pre, #line-nums {
-                        padding-top: 75px;
-                        padding-left: 25px;
+
+                    padding-top: 75px;
+                    min-height: 100%;
+                    max-height: 100%;
+                    padding-left: 15px;
+                    textarea, pre {
+                        left: 35px !important;
+                        top:  85px !important;
                     }
-                    #line-nums {
-                        padding-left: 0px;
+                    .petrel-code-editor-autocompletion {
+                        margin-top: 60px;
+                        margin-left: -53px;
+                    }
+                    .petrel-code-editor-line-numbering {
+                        padding-right: 13px;
                     }
                 }
                 #tabs {
@@ -921,6 +714,7 @@ export default {
                     z-index: 10000;
                     top: 12px;
                     left: 190px;
+                    margin-top: 10px;
 
                     width: calc(100% - 290px);
 
@@ -997,12 +791,12 @@ export default {
                     }
                 }
 
-                #content-input {
+                #editor {
                     height: calc(100%);
                 }
 
                 &.input-fullscreen {
-                    #content-input {
+                    #editor {
                         height: 100%;
                     }
                 }
