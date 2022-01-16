@@ -113,6 +113,7 @@ export default {
         loginBaseURL: process.env.VUE_APP_API_BASE +"/api/v2/auth/oauth2/",
         inputFullscreen: false,
         r:0,
+        contentInputScrolled: 0,
         
         currentLanguage: ""
     }),
@@ -131,8 +132,9 @@ export default {
             }
             lastLength = length
         }
-        codeEditor.textAreaElement.addEventListener("keydown", codeEditorInputListener)
-        codeEditor.textAreaElement.addEventListener("paste", codeEditorInputListener)
+        codeEditorInputListener;
+        //codeEditor.textAreaElement.addEventListener("keydown", codeEditorInputListener)
+        //codeEditor.textAreaElement.addEventListener("paste", codeEditorInputListener)
         codeEditor.textAreaElement.placeholder = "Paste in here"
         codeEditor.create()
     },
@@ -232,7 +234,7 @@ export default {
 
             if (codeEditor.value.length > 7000) {
                 codeEditor.setAutoCompleteHandler(null)
-                if (codeEditor.value.length > 9000){
+                if (codeEditor.value.length > 11000){
                     codeEditor.setHighlighter(DEFAULT_HIGHLIGHTER)
                 }
             }
@@ -366,17 +368,19 @@ export default {
             const first = this.$store.state.currentPaste.multiPastes.length == 0
             const index = this.$store.state.currentPaste.multiPastes.push({
                 name: title,
-                contents: first ? this.$store.state.currentPaste.content : ''
+                contents: first ? codeEditor.value : ''
             })
             this.selectTab(index-1, this.multiPastesSelected)
         },
         selectTab(i, current = null){
             if (current !== null && this.$store.state.currentPaste.multiPastes[current]) {
-                this.$store.state.currentPaste.multiPastes[current].contents = this.$store.state.currentPaste.content
+                this.$store.state.currentPaste.multiPastes[current].contents = codeEditor.value
             }
             if (this.$store.state.currentPaste.multiPastes[i]){
                 this.multiPastesSelected = i
                 this.$store.state.currentPaste.content = this.$store.state.currentPaste.multiPastes[i].contents
+                codeEditor.value = this.$store.state.currentPaste.content
+                codeEditor.update()
             }
         },
         escapeHtml(unsafe) {
