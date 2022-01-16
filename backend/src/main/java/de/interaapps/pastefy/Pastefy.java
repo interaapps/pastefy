@@ -4,6 +4,7 @@ import de.interaapps.accounts.apiclient.AccountsClient;
 import de.interaapps.pastefy.auth.AuthMiddleware;
 import de.interaapps.pastefy.auth.OAuth2Callback;
 import de.interaapps.pastefy.controller.PasteController;
+import de.interaapps.pastefy.exceptions.AuthenticationException;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
@@ -101,7 +102,14 @@ public class Pastefy extends WebApplication {
 
         oAuth2Module.setOAuth2Callback(new OAuth2Callback());
 
-        server.exceptionHandler((exchange, throwable) -> new ExceptionResponse(throwable));
+        server.exceptionHandler((exchange, throwable) -> {
+            if (throwable instanceof AuthenticationException) {
+                exchange.status(401);
+            } else {
+                exchange.status(500);
+            }
+            return new ExceptionResponse(throwable);
+        });
         server.middleware("auth", new AuthMiddleware());
 
         if (getConfig().has("ratelimiter.millis"))
