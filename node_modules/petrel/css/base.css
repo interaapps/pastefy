@@ -1,0 +1,110 @@
+.petrel-code-editor {
+    overflow-wrap: normal;
+    overflow-x: auto;
+    position: relative;
+    font-family: monospace;
+}
+.petrel-code-editor * {
+    font-family: inherit;
+    line-height: inherit;
+}
+.petrel-code-editor textarea {
+    padding: 0px;
+    margin: 0px;
+    line-height: inherit;
+    background: transparent;
+    min-height: 100%;
+    overflow: hidden;
+    border: none;
+    outline: none;
+    width: 100%;
+    resize: none;
+    font-family: inherit;
+    color: transparent;
+    caret-color: #989898;
+    overflow-wrap: normal;
+    white-space: pre;
+    min-width: 100%;
+    padding-left: 0;
+    position: absolute;
+    top: 0;
+    font-size: inherit;
+    left: 0px;
+}
+
+.petrel-code-editor textarea::-moz-selection, .petrel-code-editor textarea::selection {
+    color: #000FFF00;
+    background: #FFFFFF21;
+    border-radius: 10px;
+}
+
+.petrel-code-editor pre {
+    padding: 0px;
+    margin: 0px;
+    user-select: none;
+    line-height: inherit;
+    position: absolute;
+    top: 0;
+    padding-left: 0;
+    pointer-events: none;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.petrel-code-editor .petrel-code-editor-line-numbering {
+    position: sticky;
+    min-height: 100%;
+    left: 0;
+
+    line-height: inherit;
+    float: left;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+    padding-right: 5px;
+    text-align: right;
+    z-index: 10;
+    background: #FFF;
+}
+
+.petrel-code-editor .petrel-code-editor-line-numbering span {
+    display: block;
+}
+
+
+.petrel-code-editor .petrel-code-editor-line-numbering span div {
+    height: 22px;
+    width: 100%;
+    left: 0px;
+    position: absolute;
+    background: #FFFFFF11;
+    margin-top: -1px;
+}
+
+.petrel-code-editor .petrel-code-editor-autocompletion {
+    display: block;
+    min-height: 35px;
+    min-width: 240px;
+    max-width: 400px;
+    top: 22px;
+    position: absolute;
+    left: 92px;
+    background: #FFF;
+}
+
+
+.petrel-code-editor .petrel-code-editor-autocompletion a {
+    cursor: pointer;
+    display: block;
+}
+
+.petrel-code-editor .petrel-code-editor-autocompletion a.selected {
+    background: #00000022;
+}
+.petrel-code-editor .petrel-code-editor-autocompletion a span {
+    position: absolute;
+    right: 10px;
+    opacity: 0.6;
+    text-transform: lowercase;
+    margin-left: 15px;
+}

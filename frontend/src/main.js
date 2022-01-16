@@ -13,6 +13,8 @@ import dark from './assets/themes/dark'
 import light from './assets/themes/light'
 Vue.config.productionTip = false
 
+require('./css/petrel/dark.scss')
+
 let worker = null
 
 
