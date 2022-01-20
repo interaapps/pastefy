@@ -53,11 +53,24 @@ public class Pastefy {
         config = new Config();
         httpServer = new HTTPServer();
         passport = new Passport("/api/v2/auth");
-        oAuth2Strategy = new OAuth2Strategy("oauth2");
-        oAuth2Strategy.setHttpCallbackHandler(new OAuth2Callback());
-        passport.use("oauth2", oAuth2Strategy);
 
         setupConfig();
+        oAuth2Strategy = new OAuth2Strategy(getConfig().get("server.name", "http://localhost"));
+        oAuth2Strategy.setHttpCallbackHandler(new OAuth2Callback());
+
+        if (!getConfig().get("oauth2.interaapps.id", "NONE").equalsIgnoreCase("NONE"))
+            oAuth2Strategy.use("interaapps", new InteraAppsOAuth2Provider(getConfig().get("oauth2.interaapps.id"), getConfig().get("oauth2.interaapps.secret")).setScopes("user:read", "contacts.accepted:read"));
+        if (!getConfig().get("oauth2.google.id", "NONE").equalsIgnoreCase("NONE"))
+            oAuth2Strategy.use("google", new GoogleOAuth2Provider(getConfig().get("oauth2.google.id"), getConfig().get("oauth2.google.secret")));
+        if (!getConfig().get("oauth2.discord.id", "NONE").equalsIgnoreCase("NONE"))
+            oAuth2Strategy.use("discord", new DiscordOAuth2Provider(getConfig().get("oauth2.discord.id"), getConfig().get("oauth2.discord.secret")));
+        if (!getConfig().get("oauth2.github.id", "NONE").equalsIgnoreCase("NONE"))
+            oAuth2Strategy.use("github", new GitHubOAuth2Provider(getConfig().get("oauth2.github.id"), getConfig().get("oauth2.github.secret")));
+        if (!getConfig().get("oauth2.twitch.id", "NONE").equalsIgnoreCase("NONE"))
+            oAuth2Strategy.use("twitch", new TwitchOAuth2Provider(getConfig().get("oauth2.twitch.id"), getConfig().get("oauth2.twitch.secret")));
+
+        passport.use("oauth2", oAuth2Strategy);
+
         setupModels();
         setupServer();
     }
@@ -97,18 +110,9 @@ public class Pastefy {
         File file = new File(".env");
         if (file.exists()) {
             config.add(new EnvFile(file).withVariables(), map);
+        } else {
+            config.add(new EnvFile().withVariables(), map);
         }
-
-        if (!getConfig().get("oauth2.interaapps.id", "NONE").equalsIgnoreCase("NONE"))
-            oAuth2Strategy.use("interaapps", new InteraAppsOAuth2Provider(getConfig().get("oauth2.interaapps.id"), getConfig().get("oauth2.interaapps.secret")).setScopes("user:read", "contacts.accepted:read"));
-        if (!getConfig().get("oauth2.google.id", "NONE").equalsIgnoreCase("NONE"))
-            oAuth2Strategy.use("google", new GoogleOAuth2Provider(getConfig().get("oauth2.google.id"), getConfig().get("oauth2.google.secret")));
-        if (!getConfig().get("oauth2.discord.id", "NONE").equalsIgnoreCase("NONE"))
-            oAuth2Strategy.use("discord", new DiscordOAuth2Provider(getConfig().get("oauth2.discord.id"), getConfig().get("oauth2.discord.secret")));
-        if (!getConfig().get("oauth2.github.id", "NONE").equalsIgnoreCase("NONE"))
-            oAuth2Strategy.use("github", new GitHubOAuth2Provider(getConfig().get("oauth2.github.id"), getConfig().get("oauth2.github.secret")));
-        if (!getConfig().get("oauth2.twitch.id", "NONE").equalsIgnoreCase("NONE"))
-            oAuth2Strategy.use("twitch", new TwitchOAuth2Provider(getConfig().get("oauth2.twitch.id"), getConfig().get("oauth2.twitch.secret")));
     }
 
     protected void setupModels(){
