@@ -84,13 +84,26 @@
     </div>
 </template>
 <script>
-import { CodeEditor, JavaScriptAutoComplete, PHPAutoComplete, JavaAutoComplete } from 'petrel'
+import { CodeEditor } from 'petrel'
 import helper from "../helper.js";
 import LoadingSpinner from "./LoadingSpinner.vue";
 import CryptoJS from "crypto-js";
 import hljs from "highlight.js";
 import LANGUAGE_REPLACEMENTS from '../assets/data/langReplacements'
 const LANGUAGES = hljs.listLanguages()
+
+const AUTOCOMPLETIONS = [
+    { language: "javascript", file: "JavaScriptAutoComplete" },
+    { language: "dockerfile", file: "DockerfileAutoComplete" },
+    { language: "html", file: "HTMLAutoComplete" },
+    { language: "json", file: "JSONAutoComplete" },
+    { language: "java", file: "JavaAutoComplete" },
+    { language: "markdown", file: "MarkdownAutoComplete" },
+    { language: "php", file: "PHPAutoComplete" },
+    { language: "sql", file: "SQLAutoComplete" },
+    { language: "xml", file: "XMLAutoComplete" },
+    { language: "yaml", file: "YAMLAutoComplete" },
+]
 
 let codeEditor = null;
 let codeEditorInputListener;
@@ -191,9 +204,12 @@ export default {
         updateEditorLang(){
             let language;
             const split = (Object.keys(this.$store.state.currentPaste.multiPastes).length == 0 ? this.$store.state.currentPaste.title : this.$store.state.currentPaste.multiPastes[this.multiPastesSelected].name).split(".")
-                
+            let isHTML = false
             if (split.length > 1) {
                 language = split[split.length-1]
+                if (language == "html" || language == "htm")
+                    isHTML = true
+
                 for (const name in LANGUAGE_REPLACEMENTS) {
                     if (language == name) {
                         language = LANGUAGE_REPLACEMENTS[name]
@@ -213,18 +229,13 @@ export default {
                         codeEditor.setHighlighter(DEFAULT_HIGHLIGHTER)
                     }
                     if (!this.$store.state.app.newPasteEditorDisableAutocompletion){
-                        switch (language) {
-                            case "javascript":
-                                codeEditor.setAutoCompleteHandler(new JavaScriptAutoComplete())
-                                break;
-                            case "php":
-                                codeEditor.setAutoCompleteHandler(new PHPAutoComplete())
-                                break;
-                            case "java":
-                                codeEditor.setAutoCompleteHandler(new JavaAutoComplete())
-                                break;
-                            default:
-                                codeEditor.setAutoCompleteHandler(null)
+                        codeEditor.setAutoCompleteHandler(null)
+                        for (const autocompletion of AUTOCOMPLETIONS) {
+                            if (autocompletion.language == language || (autocompletion.language == "html" && isHTML)){
+                                (async ()=>{
+                                    codeEditor.setAutoCompleteHandler(new (await import(`petrel/src/languages/${autocompletion.file}.js`)).default())
+                                })()
+                            }
                         }
                     }
                 }
