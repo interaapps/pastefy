@@ -2,9 +2,7 @@ package de.interaapps.pastefy.controller;
 
 import de.interaapps.accounts.apiclient.AccountsClient;
 import de.interaapps.accounts.apiclient.responses.contacts.ContactResponse;
-import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.exceptions.NotFoundException;
-import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
 import de.interaapps.pastefy.model.database.*;
 import de.interaapps.pastefy.model.requests.paste.AddFriendToPasteRequest;
 import de.interaapps.pastefy.model.requests.paste.CreatePasteRequest;
@@ -12,9 +10,9 @@ import de.interaapps.pastefy.model.requests.paste.EditPasteRequest;
 import de.interaapps.pastefy.model.responses.ActionResponse;
 import de.interaapps.pastefy.model.responses.paste.CreatePasteResponse;
 import de.interaapps.pastefy.model.responses.paste.PasteResponse;
-import org.javawebstack.framework.HttpController;
 import org.javawebstack.httpserver.Exchange;
-import org.javawebstack.httpserver.router.annotation.*;
+import org.javawebstack.httpserver.router.annotation.PathPrefix;
+import org.javawebstack.httpserver.router.annotation.With;
 import org.javawebstack.httpserver.router.annotation.params.Attrib;
 import org.javawebstack.httpserver.router.annotation.params.Body;
 import org.javawebstack.httpserver.router.annotation.params.Path;
@@ -24,7 +22,6 @@ import org.javawebstack.httpserver.router.annotation.verbs.Post;
 import org.javawebstack.httpserver.router.annotation.verbs.Put;
 import org.javawebstack.orm.Repo;
 
-import javax.jws.soap.SOAPBinding;
 import java.util.stream.Collectors;
 
 @PathPrefix("/api/v2/paste")

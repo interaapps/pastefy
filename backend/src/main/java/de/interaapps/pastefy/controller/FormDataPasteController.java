@@ -3,14 +3,16 @@ package de.interaapps.pastefy.controller;
 import com.google.gson.Gson;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.responses.paste.MultiPastesElement;
-import org.javawebstack.framework.HttpController;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.router.annotation.verbs.Post;
-import org.javawebstack.webutils.IO;
+import org.javawebstack.webutils.util.IO;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FormDataPasteController extends HttpController {
     @Post("/")

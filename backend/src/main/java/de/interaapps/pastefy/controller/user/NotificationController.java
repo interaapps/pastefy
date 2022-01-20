@@ -1,11 +1,12 @@
 package de.interaapps.pastefy.controller.user;
 
+import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.model.database.Notification;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.responses.ActionResponse;
-import org.javawebstack.framework.HttpController;
 import org.javawebstack.httpserver.Exchange;
-import org.javawebstack.httpserver.router.annotation.*;
+import org.javawebstack.httpserver.router.annotation.PathPrefix;
+import org.javawebstack.httpserver.router.annotation.With;
 import org.javawebstack.httpserver.router.annotation.params.Attrib;
 import org.javawebstack.httpserver.router.annotation.verbs.Get;
 import org.javawebstack.httpserver.router.annotation.verbs.Post;

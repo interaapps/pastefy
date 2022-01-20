@@ -1,13 +1,7 @@
 package de.interaapps.pastefy.model.responses.paste;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import de.interaapps.pastefy.model.database.Paste;
-import org.javawebstack.orm.Repo;
-import org.javawebstack.orm.annotation.Column;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class PasteResponse {
     public boolean exists = false;

@@ -1,8 +1,8 @@
 package de.interaapps.pastefy;
 
-import de.interaapps.accounts.apiclient.AccountsClient;
 import de.interaapps.pastefy.auth.AuthMiddleware;
 import de.interaapps.pastefy.auth.OAuth2Callback;
+import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.controller.PasteController;
 import de.interaapps.pastefy.exceptions.AuthenticationException;
 import de.interaapps.pastefy.exceptions.NotFoundException;
@@ -10,23 +10,23 @@ import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.responses.ExceptionResponse;
-import org.javawebstack.framework.HttpController;
-import org.javawebstack.framework.WebApplication;
-import org.javawebstack.framework.config.Config;
-import org.javawebstack.httpclient.HTTPClient;
-import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.HTTPServer;
-import org.javawebstack.httpserver.handler.Middleware;
 import org.javawebstack.httpserver.handler.RequestHandler;
 import org.javawebstack.orm.ORM;
 import org.javawebstack.orm.ORMConfig;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.exception.ORMConfigurationException;
 import org.javawebstack.orm.mapper.AbstractDataTypeMapper;
-import org.javawebstack.orm.wrapper.SQL;
-import org.javawebstack.passport.OAuth2Module;
-import org.javawebstack.passport.Profile;
-import org.javawebstack.passport.services.oauth2.*;
+import org.javawebstack.orm.wrapper.SQLDriverFactory;
+import org.javawebstack.orm.wrapper.SQLDriverNotFoundException;
+import org.javawebstack.passport.Passport;
+import org.javawebstack.passport.strategies.oauth2.OAuth2Strategy;
+import org.javawebstack.passport.strategies.oauth2.providers.*;
+import org.javawebstack.webutils.config.Config;
+import org.javawebstack.webutils.config.EnvFile;
+import org.javawebstack.webutils.middleware.CORSPolicy;
+import org.javawebstack.webutils.middleware.MultipartPolicy;
+import org.javawebstack.webutils.middleware.SerializedResponseTransformer;
 import org.javawebstack.webutils.middlewares.RateLimitMiddleware;
 
 import java.io.File;
@@ -38,17 +38,42 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Pastefy extends WebApplication {
+public class Pastefy {
 
     private static Pastefy instance;
-    private OAuth2Module oAuth2Module;
-
     public static Pastefy getInstance() {
         return instance;
     }
+    private Config config;
+    private Passport passport;
+    private OAuth2Strategy oAuth2Strategy;
+    private HTTPServer httpServer;
 
-    protected void setupConfig(Config config) {
+    public Pastefy(){
+        config = new Config();
+        httpServer = new HTTPServer();
+        passport = new Passport("/api/v2/auth");
+        oAuth2Strategy = new OAuth2Strategy("oauth2");
+        oAuth2Strategy.setHttpCallbackHandler(new OAuth2Callback());
+        passport.use("oauth2", oAuth2Strategy);
+
+        setupConfig();
+        setupModels();
+        setupServer();
+    }
+
+    protected void setupConfig() {
         Map<String, String> map = new HashMap<>();
+        map.put("HTTP_SERVER_PORT", "http.server.port");
+        map.put("HTTP_SERVER_CORS", "http.server.cors");
+
+        map.put("DATABASE_DRIVER", "database.driver");
+        map.put("DATABASE_NAME", "database.name");
+        map.put("DATABASE_USER", "database.user");
+        map.put("DATABASE_PASSWORD", "database.password");
+        map.put("DATABASE_HOSt", "database.host");
+        map.put("DATABASE_PORT", "database.port");
+
         map.put("INTERAAPPS_AUTH_KEY", "interaapps.auth.key");
         map.put("INTERAAPPS_AUTH_ID", "interaapps.auth.id");
         map.put("AUTH_PROVIDER", "auth.provider");
@@ -69,41 +94,64 @@ public class Pastefy extends WebApplication {
         map.put("OAUTH2_DISCORD_CLIENT_ID", "oauth2.discord.id");
         map.put("OAUTH2_DISCORD_CLIENT_SECRET", "oauth2.discord.secret");
 
-        config.addEnvKeyMapping(map);
-        config.addEnvFile(new File(".env"));
+        File file = new File(".env");
+        if (file.exists()) {
+            config.add(new EnvFile(file).withVariables(), map);
+        }
 
         if (!getConfig().get("oauth2.interaapps.id", "NONE").equalsIgnoreCase("NONE"))
-            oAuth2Module.addService(new InteraAppsOAuth2Service(getConfig().get("oauth2.interaapps.id"), getConfig().get("oauth2.interaapps.secret"), getConfig().get("server.name", "http://localhost:1337")).setScopes(new String[]{"user:read", "contacts.accepted:read"}));
+            oAuth2Strategy.use("interaapps", new InteraAppsOAuth2Provider(getConfig().get("oauth2.interaapps.id"), getConfig().get("oauth2.interaapps.secret")).setScopes("user:read", "contacts.accepted:read"));
         if (!getConfig().get("oauth2.google.id", "NONE").equalsIgnoreCase("NONE"))
-            oAuth2Module.addService(new GoogleOAuth2Service(getConfig().get("oauth2.google.id"), getConfig().get("oauth2.google.secret"), getConfig().get("server.name", "http://localhost:1337")));
+            oAuth2Strategy.use("google", new GoogleOAuth2Provider(getConfig().get("oauth2.google.id"), getConfig().get("oauth2.google.secret")));
         if (!getConfig().get("oauth2.discord.id", "NONE").equalsIgnoreCase("NONE"))
-            oAuth2Module.addService(new DiscordOAuth2Service(getConfig().get("oauth2.discord.id"), getConfig().get("oauth2.discord.secret"), getConfig().get("server.name", "http://localhost:1337")));
+            oAuth2Strategy.use("discord", new DiscordOAuth2Provider(getConfig().get("oauth2.discord.id"), getConfig().get("oauth2.discord.secret")));
         if (!getConfig().get("oauth2.github.id", "NONE").equalsIgnoreCase("NONE"))
-            oAuth2Module.addService(new GithubOAuth2Service(getConfig().get("oauth2.github.id"), getConfig().get("oauth2.github.secret"), getConfig().get("server.name", "http://localhost:1337")));
+            oAuth2Strategy.use("github", new GitHubOAuth2Provider(getConfig().get("oauth2.github.id"), getConfig().get("oauth2.github.secret")));
         if (!getConfig().get("oauth2.twitch.id", "NONE").equalsIgnoreCase("NONE"))
-            oAuth2Module.addService(new TwitchOAuth2Service(getConfig().get("oauth2.twitch.id"), getConfig().get("oauth2.twitch.secret"), getConfig().get("server.name", "http://localhost:1337"), oAuth2Module));
+            oAuth2Strategy.use("twitch", new TwitchOAuth2Provider(getConfig().get("oauth2.twitch.id"), getConfig().get("oauth2.twitch.secret")));
     }
 
-    protected void setupModels(SQL sql) throws ORMConfigurationException {
-        Handler handler = new ConsoleHandler();
-        handler.setLevel(Level.ALL);
-        Logger.getLogger("ORM").addHandler(handler);
-        Logger.getLogger("ORM").setLevel(Level.ALL);
-        ORMConfig config = new ORMConfig()
-            .setTablePrefix("pastefy_")
-            .addTypeMapper(new AbstractDataTypeMapper());
-        ORM.register(Paste.class.getPackage(), sql, config);
-        ORM.autoMigrate();
+    protected void setupModels(){
+        try {
+            SQLDriverFactory sqlDriverFactory = new SQLDriverFactory(new HashMap<String, String>() {{
+                put("file", config.get("database.file", "sb.sqlite"));
+                put("host", config.get("database.host", "localhost"));
+                put("port", config.get("database.port", "3306"));
+                put("name", config.get("database.name", "app"));
+                put("user", config.get("database.user", "root"));
+                put("password", config.get("database.password", ""));
+            }});
+
+            Handler handler = new ConsoleHandler();
+            handler.setLevel(Level.ALL);
+            Logger.getLogger("ORM").addHandler(handler);
+            Logger.getLogger("ORM").setLevel(Level.ALL);
+            ORMConfig ormConfig = new ORMConfig()
+                    .setTablePrefix("pastefy_")
+                    .addTypeMapper(new AbstractDataTypeMapper());
+
+            ORM.register(Paste.class.getPackage(), sqlDriverFactory.getDriver(config.get("database.driver", "none")), ormConfig);
+            ORM.autoMigrate();
+        } catch (SQLDriverNotFoundException | ORMConfigurationException e) {
+            e.printStackTrace();
+        }
     }
 
-    protected void setupServer(HTTPServer server) {
-        oAuth2Module.getServices().forEach(authService -> {
-            System.out.println("ADDED "+authService.getName()+" ON "+oAuth2Module.getPathPrefix()+""+ authService.getName());
+    protected void setupServer() {
+        httpServer.port(config.getInt("http.server.port", 80));
+
+        if (config.has("http.server.cors")) {
+            httpServer.beforeInterceptor(new CORSPolicy(config.get("http.server.cors")));
+        }
+
+        httpServer.beforeInterceptor(new MultipartPolicy(config.get("http.server.tmp", null)));
+        httpServer.responseTransformer(new SerializedResponseTransformer().ignoreStrings());
+
+        oAuth2Strategy.getProviders().forEach((name, authService) -> {
+            System.out.println("ADDED "+name+ " as auth provider");
         });
 
-        oAuth2Module.setOAuth2Callback(new OAuth2Callback());
-
-        server.exceptionHandler((exchange, throwable) -> {
+        httpServer.exceptionHandler((exchange, throwable) -> {
             if (throwable instanceof AuthenticationException) {
                 exchange.status(401);
             } else if (throwable instanceof NotFoundException) {
@@ -113,14 +161,14 @@ public class Pastefy extends WebApplication {
             }
             return new ExceptionResponse(throwable);
         });
-        server.middleware("auth", new AuthMiddleware());
+        httpServer.middleware("auth", new AuthMiddleware());
 
         if (getConfig().has("ratelimiter.millis"))
-            server.middleware("rate-limiter", new RateLimitMiddleware(getConfig().getInt("ratelimiter.millis", 5000), getConfig().getInt("ratelimiter.limit", 5)).createAutoDeadRateLimitsRemover(1000*60*10));
+            httpServer.middleware("rate-limiter", new RateLimitMiddleware(getConfig().getInt("ratelimiter.millis", 5000), getConfig().getInt("ratelimiter.limit", 5)).createAutoDeadRateLimitsRemover(1000*60*10));
         else
-            server.middleware("rate-limiter", e->null);
+            httpServer.middleware("rate-limiter", e->null);
 
-        server.beforeInterceptor(exchange -> {
+        httpServer.beforeInterceptor(exchange -> {
             exchange.header("Server", "InteraApps-Pastefy");
 
             exchange.attrib("loggedIn", false);
@@ -133,7 +181,7 @@ public class Pastefy extends WebApplication {
 
             if (accessToken != null) {
                 AuthKey authKey = Repo.get(AuthKey.class).where("key", accessToken).first();
-                if (oAuth2Module.getServices().size() > 0 && authKey != null) {
+                if (oAuth2Strategy.getProviders().size() > 0 && authKey != null) {
                     User user = Repo.get(User.class).get(authKey.userId);
 
                     if (user != null) {
@@ -147,9 +195,6 @@ public class Pastefy extends WebApplication {
             return false;
         });
 
-        server.controller(HttpController.class, PasteController.class.getPackage());
-
-
         RequestHandler requestHandler = exchange -> {
             try {
                 exchange.write(getClass().getClassLoader().getResourceAsStream("static/index.html"));
@@ -158,23 +203,36 @@ public class Pastefy extends WebApplication {
             }
             return "";
         };
-        server.get("/", requestHandler);
-        server.staticResourceDirectory("/", "static");
-        server.get("/{*:path}", requestHandler);
+
+        httpServer.controller(HttpController.class, PasteController.class.getPackage());
+
+        passport.createRoutes(httpServer);
+
+        httpServer.get("/", requestHandler);
+        httpServer.staticResourceDirectory("/", "static");
+        httpServer.get("/api/{*:path}", e -> {throw new NotFoundException();});
+
+        httpServer.get("/{*:path}", requestHandler);
     }
 
-    protected void setupModules() {
-        oAuth2Module = new OAuth2Module();
-        oAuth2Module.setPathPrefix("/api/v2/auth/oauth2/");
-        addModule(oAuth2Module);
+    public void start(){
+        httpServer.start();
     }
 
     public static void main(String[] args) {
         instance = new Pastefy();
-        instance.run(args);
+        instance.start();
     }
 
-    public OAuth2Module getoAuth2Module() {
-        return oAuth2Module;
+    public Passport getPassport() {
+        return passport;
+    }
+
+    public OAuth2Strategy getOAuth2Strategy() {
+        return oAuth2Strategy;
+    }
+
+    public Config getConfig() {
+        return config;
     }
 }

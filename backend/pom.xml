@@ -15,49 +15,36 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-        <repository>
-            <id>javawebstack</id>
-            <url>https://repo.javawebstack.org</url>
-        </repository>
     </repositories>
 
     <dependencies>
-
         <dependency>
             <groupId>org.javawebstack</groupId>
-            <artifactId>Web-Framework</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>http-server</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.javawebstack</groupId>
+            <artifactId>http-client</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.javawebstack</groupId>
+            <artifactId>web-utils</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.javawebstack</groupId>
+            <artifactId>orm</artifactId>
+            <version>1.0.1</version>
         </dependency>
 
         <dependency>
-            <groupId>org.javawebstack</groupId>
-            <artifactId>HTTP-Server</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.javawebstack</groupId>
-            <artifactId>HTTP-Client</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.javawebstack</groupId>
-            <artifactId>ORM</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.javawebstack</groupId>
+            <groupId>com.github.JavaWebStack</groupId>
             <artifactId>Passport</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>ac887a3a76</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.javawebstack</groupId>
-            <artifactId>HTTP-Client</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>

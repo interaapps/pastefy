@@ -2,10 +2,9 @@ package de.interaapps.pastefy.model.responses.user;
 
 import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.model.database.User;
-import org.javawebstack.passport.AuthService;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class UserResponse {
 
@@ -15,7 +14,7 @@ public class UserResponse {
     public String color;
     public String profilePicture;
     public String authType;
-    public List<String> authTypes = Pastefy.getInstance().getoAuth2Module().getServices().stream().map(AuthService::getName).collect(Collectors.toList());
+    public List<String> authTypes = new ArrayList<>(Pastefy.getInstance().getOAuth2Strategy().getProviders().keySet());
 
     public UserResponse(User user) {
         if (user == null)

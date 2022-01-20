@@ -7,7 +7,8 @@ import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.Column;
 import org.javawebstack.orm.annotation.Dates;
 import org.javawebstack.orm.annotation.Table;
-import org.javawebstack.passport.services.oauth2.*;
+import org.javawebstack.passport.strategies.oauth2.OAuth2Provider;
+import org.javawebstack.passport.strategies.oauth2.providers.*;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -71,26 +72,26 @@ public class User extends Model {
     }
 
     public enum AuthenticationProvider {
-        INTERAAPPS(InteraAppsOAuth2Service.class, "interaapps"),
-        GOOGLE(GoogleOAuth2Service.class, "google"),
-        GITHUB(GithubOAuth2Service.class, "github"),
-        TWITCH(TwitchOAuth2Service.class, "twitch"),
-        DISCORD(DiscordOAuth2Service.class, "discord");
+        INTERAAPPS(InteraAppsOAuth2Provider.class, "interaapps"),
+        GOOGLE(GoogleOAuth2Provider.class, "google"),
+        GITHUB(GitHubOAuth2Provider.class, "github"),
+        TWITCH(TwitchOAuth2Provider.class, "twitch"),
+        DISCORD(DiscordOAuth2Provider.class, "discord");
 
-        private Class<? extends OAuth2Service> oauth2Service;
+        private Class<? extends OAuth2Provider> oauth2Service;
         private String name;
 
 
-        AuthenticationProvider(Class<? extends OAuth2Service> oauth2Service, String name) {
+        AuthenticationProvider(Class<? extends OAuth2Provider> oauth2Service, String name) {
             this.name = name;
             this.oauth2Service = oauth2Service;
         }
 
-        public Class<? extends OAuth2Service> getOAuth2ServiceClass() {
+        public Class<? extends OAuth2Provider> getOAuth2ServiceClass() {
             return oauth2Service;
         }
 
-        public static AuthenticationProvider getProviderByClass(Class<? extends OAuth2Service> oauth2ServiceClass){
+        public static AuthenticationProvider getProviderByClass(Class<? extends OAuth2Provider> oauth2ServiceClass){
             for (AuthenticationProvider authenticationProvider : AuthenticationProvider.values()){
                 if (oauth2ServiceClass == authenticationProvider.getOAuth2ServiceClass())
                     return authenticationProvider;

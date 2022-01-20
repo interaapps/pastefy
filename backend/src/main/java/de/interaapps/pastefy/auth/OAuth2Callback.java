@@ -4,26 +4,15 @@ import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.User;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.orm.Repo;
-import org.javawebstack.passport.Profile;
-import org.javawebstack.passport.services.oauth2.*;
+import org.javawebstack.passport.strategies.oauth2.OAuth2Profile;
+import org.javawebstack.passport.strategies.oauth2.OAuth2Strategy;
 
-import java.util.HashMap;
-import java.util.Map;
+public class OAuth2Callback  implements OAuth2Strategy.HttpCallbackHandler {
 
-public class OAuth2Callback  implements OAuth2CallbackHandler {
-    private static Map<String, Class<? extends OAuth2Service>> oauthServicesClasses = new HashMap<>();
-    static {
-        oauthServicesClasses.put("interaapps", InteraAppsOAuth2Service.class);
-        oauthServicesClasses.put("github", GithubOAuth2Service.class);
-        oauthServicesClasses.put("google", GoogleOAuth2Service.class);
-        oauthServicesClasses.put("twitch", TwitchOAuth2Service.class);
-        oauthServicesClasses.put("discord", DiscordOAuth2Service.class);
-    }
 
-    @Override
-    public Object callback(String s, Exchange exchange, org.javawebstack.passport.services.oauth2.OAuth2Callback oAuth2Callback) {
-        User.AuthenticationProvider provider = de.interaapps.pastefy.model.database.User.AuthenticationProvider.getProviderByClass(oauthServicesClasses.get(s));
-        Profile profile = oAuth2Callback.getProfile();
+    public Object handle(Exchange exchange, org.javawebstack.passport.strategies.oauth2.OAuth2Callback callback, String name) {
+        User.AuthenticationProvider provider = de.interaapps.pastefy.model.database.User.AuthenticationProvider.getProviderByClass(callback.getProvider().getClass());
+        OAuth2Profile profile = callback.getProfile();
 
         User user = Repo.get(User.class).where("authId", profile.getId()).where("authProvider", provider).first();
 
@@ -45,8 +34,8 @@ public class OAuth2Callback  implements OAuth2CallbackHandler {
         user.save();
 
         AuthKey authKey = new AuthKey();
-        authKey.refreshToken = oAuth2Callback.getRefreshToken();
-        authKey.accessToken = oAuth2Callback.getToken();
+        authKey.refreshToken = callback.getRefreshToken();
+        authKey.accessToken = callback.getAccessToken();
         authKey.userId = user.id;
         authKey.type = AuthKey.Type.USER;
         authKey.save();

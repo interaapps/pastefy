@@ -1,7 +1,6 @@
 package de.interaapps.pastefy.controller;
 
 import de.interaapps.pastefy.model.database.Paste;
-import org.javawebstack.framework.HttpController;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.helper.MimeType;
 import org.javawebstack.httpserver.router.annotation.params.Path;

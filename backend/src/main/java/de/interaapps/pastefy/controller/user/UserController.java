@@ -1,6 +1,6 @@
 package de.interaapps.pastefy.controller.user;
 
-import de.interaapps.pastefy.Pastefy;
+import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.model.database.Folder;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.SharedPaste;
@@ -9,7 +9,6 @@ import de.interaapps.pastefy.model.responses.folder.FolderResponse;
 import de.interaapps.pastefy.model.responses.paste.PasteResponse;
 import de.interaapps.pastefy.model.responses.user.UserPastesResponse;
 import de.interaapps.pastefy.model.responses.user.UserResponse;
-import org.javawebstack.framework.HttpController;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.router.annotation.PathPrefix;
 import org.javawebstack.httpserver.router.annotation.With;
