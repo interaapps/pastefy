@@ -84,7 +84,7 @@ public class Pastefy {
         map.put("DATABASE_NAME", "database.name");
         map.put("DATABASE_USER", "database.user");
         map.put("DATABASE_PASSWORD", "database.password");
-        map.put("DATABASE_HOSt", "database.host");
+        map.put("DATABASE_HOST", "database.host");
         map.put("DATABASE_PORT", "database.port");
 
         map.put("INTERAAPPS_AUTH_KEY", "interaapps.auth.key");
