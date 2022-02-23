@@ -4,7 +4,7 @@ services:
    db:
      image: mariadb:latest
      volumes:
-       - dbvol:/var/lib/mysql
+       - ./dbvol:/var/lib/mysql
 
      environment:
        MYSQL_ROOT_PASSWORD: pastefy
