@@ -10,7 +10,7 @@
             <h3 style="margin-top: 20px; margin-bottom: 40px;">Folder</h3>
             <div v-if="addFolderInput" style="margin-bottom: 20px">
                 <input type="text" v-model="folderName" class="input" placeholder="name">
-                <a class="button" style="width: 49%; margin-right: 1%; background: var(--obj-background-color-hover)" @click="addFolderInput = false">CANCLE</a>
+                <a class="button" style="width: 49%; margin-right: 1%; background: var(--obj-background-color-hover)" @click="addFolderInput = false">CANCEL</a>
                 <a class="button" style="width: 50%" @click="createFolder">ADD</a>
             </div>
             <div id="folders">
