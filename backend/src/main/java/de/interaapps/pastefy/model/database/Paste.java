@@ -21,7 +21,7 @@ public class Paste extends Model {
     @Column
     private String title;
 
-    @Column(size = 0) // Sets MySQL Field type to TEXT
+    @Column(size = 16777215)
     private String content;
 
     @Column(size = 8)

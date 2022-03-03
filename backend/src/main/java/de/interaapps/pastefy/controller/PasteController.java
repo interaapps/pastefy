@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class PasteController extends HttpController {
 
     @Post
-    @With("rate-limiter")
+    @With({"rate-limiter", "auth-login-required-create"})
     public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user, @Path("id") String pasteId) {
         CreatePasteResponse response = new CreatePasteResponse();
 
@@ -79,6 +79,7 @@ public class PasteController extends HttpController {
     }
 
     @Get("/{id}")
+    @With("auth-login-required-read")
     public PasteResponse getPaste(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
         Paste paste = Repo.get(Paste.class).where("key", id).first();
         if (paste == null)

@@ -10,6 +10,9 @@
             404! Paste not found
         </div>
     </div>
+    <div v-else-if="$store.state.appInfo.login_required_for_read && !$store.state.user.logged_in">
+        <h2>Please log in to see this paste.</h2>
+    </div>
     <div v-else>
         
         <div id="action-buttons" :class="{mobile: $store.state.mobileVersion}">
@@ -336,6 +339,7 @@ export default {
 
     #action-buttons.mobile {
         a {
+            color: #FFF;
             background: #3469FF;
             padding: 0px 26px;
             border-radius: 100px;

@@ -32,6 +32,14 @@ let store = new Vuex.Store({
         newPasteEditorDisableAutocompletion: localStorage.getItem('new_paste_editor_disable_autocompletion') == 'true',
         lastPastes: JSON.parse(localStorage['created_pastes'] || "[]").splice(0, 15),
         loadingUser: false
+    },
+    appInfo: {
+      custom_logo: null,
+      custom_name: null,
+      custom_footer: {},
+      login_required_for_read: false,
+      login_required_for_create: false,
+      encryption_is_default: false
     }
   },
   mutations: {

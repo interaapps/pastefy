@@ -38,9 +38,9 @@
         <div v-if="isPublicPastefyServer() || true" style="max-width: 840px">
             <h3>Information</h3>
             <p>
-                Privacy Information: Pastefy doesn't use any trackers or ad-services to collect data.
+                Privacy Information: {{$store.state.appInfo.custom_name || 'Pastefy'}} doesn't use any trackers or ad-services to collect data.
                 <br><br>
-                You love Pastefy? We don't earn any money with pastefy, so if you have some money left you can donate <a href="https://liberapay.com/JulianFun123">here</a> if you want to.
+                You love Pastefy{{$store.state.appInfo.custom_name ? ` (The software ${$store.state.appInfo.custom_name} uses)` : ''}}? We don't earn any money with pastefy, so if you have some money left you can donate <a href="https://liberapay.com/JulianFun123">here</a> if you want to.
             </p>
         </div> 
         <div v-show="false">{{h}}</div>

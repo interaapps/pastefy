@@ -103,6 +103,22 @@ DATABASE_HOST=
 DATABASE_PORT=3306
 
 SERVER_NAME=http://example.com
+
+
+# Optional
+PASTEFY_INFO_CUSTOM_LOGO=https://urltoimage
+PASTEFY_INFO_CUSTOM_NAME=Custom Name
+PASTEFY_INFO_CUSTOM_FOOTER=WEBSITE=https://example.org,SEPERATED BY COMMA=https://example.org
+
+# Requires login for read and creation of pastes
+PASTEFY_LOGIN_REQUIRED=false
+# Login-requirements for specific access types
+PASTEFY_LOGIN_REQUIRED_CREATE=false
+# This will disable the raw mode as well for browser users
+PASTEFY_LOGIN_REQUIRED_READ=false
+
+# Check the encryption checkbox by default
+PASTEFY_ENCRYPTION_DEFAULT=false
 ```
 ### Adding login
 You can choose between [INTERAAPPS](https://accounts.interaapps.de/developers/projects) (best integration), [GOOGLE](https://support.google.com/cloud/answer/6158849?hl=en), [GITHUB](https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app), [DISCORD](https://discord.com/developers/docs/topics/oauth2) or [TWITCH](https://dev.twitch.tv/docs/authentication) for the provider (You can use all of them at the same time).

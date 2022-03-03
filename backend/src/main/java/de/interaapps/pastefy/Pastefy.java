@@ -32,6 +32,7 @@ import org.javawebstack.webutils.middlewares.RateLimitMiddleware;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -48,6 +49,9 @@ public class Pastefy {
     private Passport passport;
     private OAuth2Strategy oAuth2Strategy;
     private HTTPServer httpServer;
+    private boolean loginRequired = false;
+    private boolean loginRequiredForRead = false;
+    private boolean loginRequiredForCreate = false;
 
     public Pastefy(){
         config = new Config();
@@ -107,12 +111,27 @@ public class Pastefy {
         map.put("OAUTH2_DISCORD_CLIENT_ID", "oauth2.discord.id");
         map.put("OAUTH2_DISCORD_CLIENT_SECRET", "oauth2.discord.secret");
 
+        map.put("PASTEFY_INFO_CUSTOM_LOGO", "pastefy.info.custom.logo");
+        map.put("PASTEFY_INFO_CUSTOM_NAME", "pastefy.info.custom.name");
+        map.put("PASTEFY_INFO_CUSTOM_FOOTER", "pastefy.info.custom.footer");
+
+        map.put("PASTEFY_ENCRYPTION_DEFAULT", "pastefy.encryption.default");
+
+        map.put("PASTEFY_LOGIN_REQUIRED", "pastefy.loginrequired");
+        map.put("PASTEFY_LOGIN_REQUIRED_CREATE", "pastefy.loginrequired.create");
+        map.put("PASTEFY_LOGIN_REQUIRED_READ", "pastefy.loginrequired.read");
+
+
         File file = new File(".env");
         if (file.exists()) {
             config.add(new EnvFile(file).withVariables(), map);
         } else {
             config.add(new EnvFile().withVariables(), map);
         }
+
+        loginRequired = config.get("pastefy.loginrequired", "false").toLowerCase(Locale.ROOT).equals("true");
+        loginRequiredForCreate = loginRequired || config.get("pastefy.loginrequired.create", "false").toLowerCase(Locale.ROOT).equals("true");
+        loginRequiredForRead   = loginRequired || config.get("pastefy.loginrequired.read", "false").toLowerCase(Locale.ROOT).equals("true");
     }
 
     protected void setupModels(){
@@ -166,6 +185,16 @@ public class Pastefy {
             return new ExceptionResponse(throwable);
         });
         httpServer.middleware("auth", new AuthMiddleware());
+        httpServer.middleware("auth-login-required-read", exchange -> {
+            if (loginRequiredForRead && exchange.attrib("user") == null)
+                throw new AuthenticationException();
+            return null;
+        });
+        httpServer.middleware("auth-login-required-create", exchange -> {
+            if (loginRequiredForCreate && exchange.attrib("user") == null)
+                throw new AuthenticationException();
+            return null;
+        });
 
         if (getConfig().has("ratelimiter.millis"))
             httpServer.middleware("rate-limiter", new RateLimitMiddleware(getConfig().getInt("ratelimiter.millis", 5000), getConfig().getInt("ratelimiter.limit", 5)).createAutoDeadRateLimitsRemover(1000*60*10));
@@ -238,5 +267,17 @@ public class Pastefy {
 
     public Config getConfig() {
         return config;
+    }
+
+    public boolean isLoginRequired() {
+        return loginRequired;
+    }
+
+    public boolean isLoginRequiredForCreate() {
+        return loginRequiredForCreate;
+    }
+
+    public boolean isLoginRequiredForRead() {
+        return loginRequiredForRead;
     }
 }

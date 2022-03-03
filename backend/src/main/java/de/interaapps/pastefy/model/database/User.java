@@ -39,6 +39,9 @@ public class User extends Model {
     public AuthenticationProvider authProvider;
 
     @Column
+    public Type type = Type.USER;
+
+    @Column
     public Timestamp createdAt;
 
     @Column
@@ -102,6 +105,13 @@ public class User extends Model {
         public String getName() {
             return name;
         }
+    }
+
+    public enum Type {
+        USER,
+        ADMIN,
+        BLOCKED,
+        AWAITING_ACCESS
     }
 
     public String getId() {

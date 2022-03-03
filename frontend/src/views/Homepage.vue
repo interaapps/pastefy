@@ -27,7 +27,7 @@
             </div>
         </div>
         <div v-else>
-            <h1>Welcome to Pastefy!</h1><br>
+            <h1>Welcome to {{$store.state.appInfo.custom_name || 'Pastefy'}}!</h1><br>
             <p>
                 Pastefy is a code-paster. Just paste your code into the input-field on the left side and voilá!<br>
             </p><br><br>

@@ -38,18 +38,25 @@ new Vue({
 }).$mount("#app")
 
 store.state.app.loadingUser = true
-pastefyAPI.get("/api/v2/user").then(res=>{
-    store.state.user = res
-    store.state.app.loadingUser = false
-    if (worker !== null && store.state.user.logged_in) {
-        console.log("worker is now working :)");
-        worker.postMessage({
-            action: 'registerUserLogin',
-            user: store.state.user,
-            session: localStorage["session"],
-            baseUrl: pastefyAPI.baseUrl
-        })
-    }
+
+
+pastefyAPI.get("/api/v2/app/info").then(res=>{
+    store.state.appInfo = res
+    eventBus.$emit("appInfoLoaded")
+    pastefyAPI.get("/api/v2/user").then(res=>{
+        store.state.user = res
+        store.state.app.loadingUser = false
+        eventBus.$emit("userLoaded")
+        if (worker !== null && store.state.user.logged_in) {
+            console.log("worker is now working :)");
+            worker.postMessage({
+                action: 'registerUserLogin',
+                user: store.state.user,
+                session: localStorage["session"],
+                baseUrl: pastefyAPI.baseUrl
+            })
+        }
+    })
 })
 
 if (typeof navigator !== 'undefined') {

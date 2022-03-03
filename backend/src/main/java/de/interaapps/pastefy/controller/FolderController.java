@@ -42,6 +42,7 @@ public class FolderController extends HttpController {
     }
 
     @Get("/{id}")
+    @With("auth-login-required-read")
     public FolderResponse getFolder(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
         Folder folder = Repo.get(Folder.class).where("key", id).first();
         if (folder == null)

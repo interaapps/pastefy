@@ -15,6 +15,7 @@ public class UserResponse {
     public String profilePicture;
     public String authType;
     public List<String> authTypes = new ArrayList<>(Pastefy.getInstance().getOAuth2Strategy().getProviders().keySet());
+    public User.Type type;
 
     public UserResponse(User user) {
         if (user == null)
@@ -27,5 +28,6 @@ public class UserResponse {
         profilePicture = user.getAvatar();
         id = user.getId();
         loggedIn = true;
+        type = user.type;
     }
 }
