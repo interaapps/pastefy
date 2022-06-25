@@ -48,6 +48,19 @@
                 </div>
                 <pre v-html="content" :style="{'white-space': this.language == 'text' ? 'break-spaces' : 'pre'}"></pre>
             </code>
+
+        </template>
+        <template v-if="htmlPreview != ''">
+            <a class="button gray" v-if="!htmlPreviewEnabled" @click="htmlPreviewEnabled = !htmlPreviewEnabled">
+                Show Preview
+            </a>
+            <div id="html-preview" :class="['lang-'+language]" v-else>
+                <iframe sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-scripts allow-top-navigation-by-user-activation" :srcdoc="htmlPreview" />
+                <div>
+                    <i class="material-icons" @click="reloadHTMLPreview()">refresh</i>
+                    <i class="material-icons" @click="htmlPreviewEnabled = false">close</i>
+                </div>
+            </div>
         </template>
     </div>
 </template>
@@ -56,6 +69,7 @@ import hljs from "highlight.js";
 import helper from "../helper.js";
 import CryptoJS from "crypto-js";
 import LANGUAGE_REPLACEMENTS from '../assets/data/langReplacements'
+import {currentThemeVars} from "@/main";
 
 
 let languages = [...hljs.listLanguages(), "text"];
@@ -67,6 +81,10 @@ export default {
         rawContent: "Loading...",
         language: null,
         extraContent: "",
+
+        htmlPreview: "",
+        htmlPreviewEnabled: false,
+
         password: "",
         passwordRequired: false,
         validPassword: true,
@@ -90,7 +108,7 @@ export default {
         
         this.eventBus.$on("reloadPaste", ()=>{
             this.load(this.$route.params.id)
-        })          
+        })
     },	
     beforeRouteUpdate (to, from, next) {
         this.password = ""
@@ -102,7 +120,6 @@ export default {
     methods: {
         load(id){
             let data = {}
-            this.extraContent = ""
             if (this.password !== "" && this.passwordRequired)
                 data.password = this.password
             this.pastefyAPI.get("/api/v2/paste/"+id, data)
@@ -162,13 +179,17 @@ export default {
             this.multiPastesSelected = i
             const tab = this.multiPastes[i]
             this.rawContent = tab.contents
-            this.extraContent = ''
             this.highlight(tab.name, tab.contents)
         },
         highlight(title, contents){
             const pasteTitleComponents = title.split(".");
             let ending = pasteTitleComponents[pasteTitleComponents.length-1];
+            const originalEnding = (ending || "").toLowerCase()
             this.language = null
+
+            this.extraContent = ''
+            this.htmlPreview = ""
+            this.htmlPreviewEnabled = false
 
             for (let replace  in LANGUAGE_REPLACEMENTS){
                 if (ending == replace){
@@ -191,6 +212,14 @@ export default {
                     this.showLineNums = false
                 } else
                     this.content = hljs.highlight(this.language, contents).value
+
+                const importMap = {imports: {}}
+                if (this.multiPastes) {
+                    for (const tab of this.multiPastes) {
+                        importMap.imports[`./${tab.name}`] = `data:text/javascript;base64,${btoa(tab.contents)}`
+                    }
+                }
+
                 if (this.language === "markdown") {
                     const md = require('markdown-it')({
                         html: false,
@@ -209,6 +238,34 @@ export default {
                     });
                     const EMPTY_CHAR = "‎"
                     this.extraContent = md.render(contents.replaceAll("<br>", "\n"+EMPTY_CHAR+"\n"))
+                } else if (originalEnding === "html") {
+                    this.htmlPreview = `
+
+                    <script src="${window.location.protocol}//${window.location.host}/assets/js/htmlconsole.js"><`+`/script>
+                    <style>* { box-sizing: border-box; margin: 0px; }</style>
+                    <script>createConsole(${JSON.stringify(currentThemeVars)}, false, '200px')<`+`/script>
+                    <script type="importmap">${JSON.stringify(importMap)}<`+`/script>
+                    ${contents}
+                    <script>
+                    document.querySelectorAll("a[href]").forEach(el => {
+                        el.setAttribute("target", "_blank")
+                    })
+                    <`+`/script>
+                    `
+                } else if (this.language === "javascript") {
+                    const htmlScriptElement = document.createElement("script");
+                    htmlScriptElement.innerHTML = contents
+                    htmlScriptElement.type = 'module'
+                    const wrappingHTML = document.createElement("div")
+                    wrappingHTML.appendChild(htmlScriptElement)
+
+                    this.htmlPreview = `
+                    <script src="${window.location.protocol}//${window.location.host}/assets/js/htmlconsole.js"><`+`/script>
+                    <style>* { box-sizing: border-box; margin: 0px; }</style>
+                    <script>createConsole(${JSON.stringify(currentThemeVars)}, true, '100%')<`+`/script>
+                    <script type="importmap">${JSON.stringify(importMap)}<`+`/script>
+                    ${ wrappingHTML.innerHTML }
+                    `
                 }
             }
         },
@@ -275,6 +332,12 @@ export default {
                 this.rawContent = JSON.stringify(JSON.parse(this.rawContent), null, 2)
                 this.highlight(this.title, this.rawContent)
             }
+        },
+        reloadHTMLPreview(){
+            this.htmlPreviewEnabled = false
+            setTimeout(()=>{
+                this.htmlPreviewEnabled = true
+            }, 100)
         }
     }
 }
@@ -326,6 +389,44 @@ export default {
 
     #preview {
         padding: 18px 26px;
+    }
+
+    #html-preview {
+        background: #FFF;
+        border-radius: 10px;
+        margin-top: 10px;
+        overflow: hidden;
+        position: relative;
+        border: var(--background-color) solid 2px;
+
+        iframe {
+            width: 100%;
+            height: 70vh;
+            border: none;
+            outline: none;
+            margin-bottom: -6px;
+        }
+
+        div {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            i {
+                color: #000;
+                cursor: pointer;
+                border-radius: 20px;
+                padding: 2px;
+                &:hover {
+                    background: #00000022;
+                }
+            }
+        }
+
+        &.lang-javascript {
+            i {
+                color: var(--text-color)
+            }
+        }
     }
 
     .language {

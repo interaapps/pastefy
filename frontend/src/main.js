@@ -170,8 +170,9 @@ HTMLTextAreaElement.prototype.setSelection = function (start, end) { //change th
     this.selectionEnd = end;
     this.focus();
 };
-
+export let currentThemeVars = {}
 export function setThemeFrom(vars = {}){
+    currentThemeVars = vars
     for (const key in vars) {
         if (typeof vars[key] == 'object')
             setThemeFrom(vars[key])
