@@ -655,6 +655,7 @@ export default {
                     }
                 }
 
+
                 #settings-button {
                     margin-left: 9.6px;
                     width: 45px;
