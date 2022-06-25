@@ -8,7 +8,8 @@ public class InteraAppsExternalAccessRequest {
     public String appId;
     public String appSecret;
     public String scope;
-    public List<String> scopeList = new ArrayList<>();
-    public List<String> appScopeList = new ArrayList<>();
+
+    public List<String> scopeList;
+    public List<String> appScopeList;
     public String userId;
 }

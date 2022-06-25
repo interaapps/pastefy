@@ -1,5 +1,8 @@
 package de.interaapps.pastefy.controller.auth;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.exceptions.AuthenticationException;
@@ -7,6 +10,7 @@ import de.interaapps.pastefy.exceptions.NotFoundException;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.requests.auth.InteraAppsExternalAccessRequest;
+import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.router.annotation.PathPrefix;
 import org.javawebstack.httpserver.router.annotation.params.Body;
 import org.javawebstack.httpserver.router.annotation.verbs.Post;
@@ -20,7 +24,9 @@ import java.util.Map;
 @PathPrefix("/api/v2/auth")
 public class InteraAppsExternalAccessController extends HttpController {
     @Post("/iaea")
-    public String iaea(@Body InteraAppsExternalAccessRequest request){
+    public String iaea(@Body InteraAppsExternalAccessRequest request, Exchange exchange){
+        System.out.println(exchange.body(String.class));
+        System.out.println(new Gson().toJson(request));
         Map<String, OAuth2Provider> providers = Pastefy.getInstance().getOAuth2Strategy().getProviders();
 
         if (providers.containsKey("interaapps")) {
