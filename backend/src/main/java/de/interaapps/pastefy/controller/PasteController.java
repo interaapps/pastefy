@@ -29,7 +29,10 @@ public class PasteController extends HttpController {
 
     @Post
     @With({"rate-limiter", "auth-login-required-create"})
-    public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user, @Path("id") String pasteId) {
+    public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey, @Path("id") String pasteId) {
+        if (authKey != null)
+            authKey.checkPermission("pastes:create", "pastes:write");
+
         CreatePasteResponse response = new CreatePasteResponse();
 
         Paste paste = new Paste();
@@ -58,7 +61,10 @@ public class PasteController extends HttpController {
 
     @Put("/{id}")
     @With("auth")
-    public ActionResponse putPaste(@Body EditPasteRequest request, @Path("id") String id, @Attrib("user") User user) {
+    public ActionResponse putPaste(@Body EditPasteRequest request, @Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        if (authKey != null)
+            authKey.checkPermission("pastes:edit", "pastes:write");
+
         ActionResponse response = new ActionResponse();
         Paste paste = Repo.get(Paste.class).where("key", id).where("userId", user.getId()).first();
         if (paste != null) {
@@ -80,7 +86,7 @@ public class PasteController extends HttpController {
 
     @Get("/{id}")
     @With("auth-login-required-read")
-    public PasteResponse getPaste(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
+    public PasteResponse getPaste(Exchange exchange, @Path("id") String id) {
         Paste paste = Repo.get(Paste.class).where("key", id).first();
         if (paste == null)
             throw new NotFoundException();
@@ -89,7 +95,10 @@ public class PasteController extends HttpController {
 
     @Delete("/{id}")
     @With("auth")
-    public ActionResponse deletePaste(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
+    public ActionResponse deletePaste(Exchange exchange, @Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        if (authKey != null)
+            authKey.checkPermission("pastes:delete");
+
         ActionResponse response = new ActionResponse();
         Paste paste = Repo.get(Paste.class).where("key", id).first();
 
@@ -105,7 +114,10 @@ public class PasteController extends HttpController {
 
     @Post("/{id}/friend")
     @With("auth")
-    public ActionResponse addFriend(Exchange exchange, @Body AddFriendToPasteRequest request, @Path("id") String id, @Attrib("user") User user) {
+    public ActionResponse addFriend(Exchange exchange, @Body AddFriendToPasteRequest request, @Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey requestAuthKey) {
+        if (requestAuthKey != null)
+            requestAuthKey.checkPermission("pastes.friends:edit");
+
         ActionResponse response = new ActionResponse();
         Paste paste = Repo.get(Paste.class).where("key", id).first();
         if (paste != null && paste.getUserId().equals(user.getId())) {

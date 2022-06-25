@@ -1,6 +1,7 @@
 package de.interaapps.pastefy.controller.user;
 
 import de.interaapps.pastefy.controller.HttpController;
+import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Notification;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.responses.ActionResponse;
@@ -24,7 +25,10 @@ public class NotificationController extends HttpController {
      */
     @Post
     @With("auth")
-    public ActionResponse add(@Attrib("user") User user) {
+    public ActionResponse add(@Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        if (authKey != null)
+            authKey.checkPermission("notifications:create");
+
         ActionResponse response = new ActionResponse();
         //Notification notification = new Notification();
         //notification.setMessage();
@@ -38,7 +42,10 @@ public class NotificationController extends HttpController {
 
     @Get
     @With("auth")
-    public List<Notification> getNotifications(Exchange exchange, @Attrib("user") User user) {
+    public List<Notification> getNotifications(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        if (authKey != null)
+            authKey.checkPermission("notifications:read");
+
         Query<Notification> query = Repo.get(Notification.class).where("userId", user.getId());
 
         if (exchange.rawRequest().getParameter("not_received") != null)
@@ -59,7 +66,10 @@ public class NotificationController extends HttpController {
 
     @Get("/readall")
     @With("auth")
-    public ActionResponse readAll(@Attrib("user") User user) {
+    public ActionResponse readAll(@Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        if (authKey != null)
+            authKey.checkPermission("notifications:edit");
+
         Repo.get(Notification.class).query().where("userId", user.getId()).where("already_read", false).update(new HashMap() {{
             put("received", true);
             put("already_read", true);

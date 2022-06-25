@@ -36,11 +36,6 @@ public class InteraAppsExternalAccessController extends HttpController {
                     authKey.type = AuthKey.Type.ACCESS_TOKEN;
                     request.appScopeList.forEach(authKey::addScope);
 
-                    AuthKey accessTokenAuthKey = Repo.get(AuthKey.class).where("userId", user.id).where("type", AuthKey.Type.USER).notNull("accessToken").order("createdAt", true).first();
-                    if (accessTokenAuthKey != null) {
-                        authKey.accessToken  = accessTokenAuthKey.accessToken;
-                        authKey.refreshToken = accessTokenAuthKey.refreshToken;
-                    }
                     authKey.save();
                     return authKey.getKey();
                 }

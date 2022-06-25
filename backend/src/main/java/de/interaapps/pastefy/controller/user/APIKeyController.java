@@ -21,7 +21,10 @@ import java.util.stream.Collectors;
 public class APIKeyController extends HttpController {
     @Post
     @With("auth")
-    public CreateAuthKeyResponse addKey(@Attrib("user") User user) {
+    public CreateAuthKeyResponse addKey(@Attrib("user") User user, @Attrib("authkey") AuthKey requestAuthKey) {
+        if (requestAuthKey != null)
+            requestAuthKey.checkPermission("authkeys:create");
+
         CreateAuthKeyResponse response = new CreateAuthKeyResponse();
         AuthKey authKey = new AuthKey();
         AuthKey userAuthKey = Repo.get(AuthKey.class).where("userId", user.getId()).order("createdAt", true).first();
@@ -38,13 +41,19 @@ public class APIKeyController extends HttpController {
 
     @Get
     @With("auth")
-    public List<String> getKeys(@Attrib("user") User user) {
+    public List<String> getKeys(@Attrib("user") User user, @Attrib("authkey") AuthKey requestAuthKey) {
+        if (requestAuthKey != null)
+            requestAuthKey.checkPermission("authkeys:read");
+
         return Repo.get(AuthKey.class).where("type", AuthKey.Type.API).where("userId", user.getId()).all().stream().map(authKey -> authKey.getKey()).collect(Collectors.toList());
     }
 
     @Delete("/{key}")
     @With("auth")
-    public ActionResponse delete(@Attrib("user") User user, @Path("key") String key) {
+    public ActionResponse delete(@Attrib("user") User user, @Path("key") String key, @Attrib("authkey") AuthKey requestAuthKey) {
+        if (requestAuthKey != null)
+            requestAuthKey.checkPermission("authkeys:delete");
+
         Repo.get(AuthKey.class).where("key", key).where("userId", user.getId()).all().forEach(authKey -> authKey.delete());
         return new ActionResponse(true);
     }

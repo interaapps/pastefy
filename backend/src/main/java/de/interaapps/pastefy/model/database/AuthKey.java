@@ -59,10 +59,12 @@ public class AuthKey extends Model {
      * Standard: group.permission:action
      *      or pastefy.ga|paste:read (Will passthrough the request but adds a user-id header)
      * */
-    public boolean checkPermission(String permission){
-        if (!hasPermission(permission))
-            throw new PermissionsDeniedException();
-        return true;
+    public boolean checkPermission(String ...permissions){
+        for (String permission : permissions) {
+            if (hasPermission(permission))
+                return true;
+        }
+        throw new PermissionsDeniedException();
     }
 
     public AuthKey addScope(String scope){

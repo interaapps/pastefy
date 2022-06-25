@@ -1,10 +1,8 @@
 package de.interaapps.pastefy.controller.user;
 
 import de.interaapps.pastefy.controller.HttpController;
-import de.interaapps.pastefy.model.database.Folder;
-import de.interaapps.pastefy.model.database.Paste;
-import de.interaapps.pastefy.model.database.SharedPaste;
-import de.interaapps.pastefy.model.database.User;
+import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
+import de.interaapps.pastefy.model.database.*;
 import de.interaapps.pastefy.model.responses.folder.FolderResponse;
 import de.interaapps.pastefy.model.responses.paste.PasteResponse;
 import de.interaapps.pastefy.model.responses.user.UserPastesResponse;
@@ -30,7 +28,10 @@ public class UserController extends HttpController {
 
     @Get("/overview")
     @With("auth")
-    public UserPastesResponse userPastes(Exchange exchange, @Attrib("user") User user) {
+    public UserPastesResponse userPastes(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        if (authKey != null && (!authKey.hasPermission("pastes:read") || !authKey.hasPermission("folders:read")))
+            throw new PermissionsDeniedException();
+
         UserPastesResponse response = new UserPastesResponse();
         int page = 0;
         if (exchange.rawRequest().getParameter("page") != null)
@@ -44,21 +45,28 @@ public class UserController extends HttpController {
 
     @Get("/folders")
     @With("auth")
-    public List<FolderResponse> getFolder(Exchange exchange, @Attrib("user") User user) {
+    public List<FolderResponse> getFolder(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        if (authKey != null)
+            authKey.checkPermission("folders:read");
+
         return user.getFolderTree(exchange.rawRequest().getParameter("hide_children") == null, exchange.rawRequest().getParameter("hide_sub_children") == null, exchange.rawRequest().getParameter("hide_pastes") == null);
     }
 
     @Get("/pastes")
     @With("auth")
-    public List<PasteResponse> getPastes(@Attrib("user") User user) {
-        List<PasteResponse> pastes = new ArrayList<>();
-        pastes = user.getPastes().stream().map(PasteResponse::new).collect(Collectors.toList());
-        return pastes;
+    public List<PasteResponse> getPastes(@Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        if (authKey != null)
+            authKey.checkPermission("pastes:read");
+
+        return user.getPastes().stream().map(PasteResponse::new).collect(Collectors.toList());
     }
 
     @Get("/sharedpastes")
     @With("auth")
-    public List<PasteResponse> getSharedPastes(Exchange exchange, @Attrib("user") User user) {
+    public List<PasteResponse> getSharedPastes(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        if (authKey != null)
+            authKey.checkPermission("sharedpastes:read");
+
         List<PasteResponse> pastes = new ArrayList<>();
         int page = 0;
         if (exchange.rawRequest().getParameter("page") != null)

@@ -1,6 +1,7 @@
 package de.interaapps.pastefy.controller;
 
 import de.interaapps.pastefy.exceptions.NotFoundException;
+import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Folder;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.requests.CreateFolderRequest;
@@ -22,7 +23,10 @@ import org.javawebstack.orm.Repo;
 public class FolderController extends HttpController {
     @Post
     @With("auth")
-    public CreateFolderResponse createFolder(Exchange exchange, @Body CreateFolderRequest request, @Attrib("user") User user) {
+    public CreateFolderResponse createFolder(Exchange exchange, @Body CreateFolderRequest request, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        if (authKey != null)
+            authKey.checkPermission("folders:create");
+
         CreateFolderResponse response = new CreateFolderResponse();
 
         Folder folder = new Folder();
@@ -43,7 +47,10 @@ public class FolderController extends HttpController {
 
     @Get("/{id}")
     @With("auth-login-required-read")
-    public FolderResponse getFolder(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
+    public FolderResponse getFolder(Exchange exchange, @Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        if (authKey != null)
+            authKey.checkPermission("folders:read");
+
         Folder folder = Repo.get(Folder.class).where("key", id).first();
         if (folder == null)
             throw new NotFoundException();
@@ -52,7 +59,10 @@ public class FolderController extends HttpController {
 
     @Delete("/{id}")
     @With("auth")
-    public ActionResponse delete(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
+    public ActionResponse delete(Exchange exchange, @Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        if (authKey != null)
+            authKey.checkPermission("folders:delete");
+
         ActionResponse response = new ActionResponse();
         Folder folder = Repo.get(Folder.class).where("key", id).first();
 
