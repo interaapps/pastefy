@@ -25,8 +25,6 @@ import java.util.Map;
 public class InteraAppsExternalAccessController extends HttpController {
     @Post("/iaea")
     public String iaea(@Body InteraAppsExternalAccessRequest request, Exchange exchange){
-        System.out.println(exchange.body(String.class));
-        System.out.println(new Gson().toJson(request));
         Map<String, OAuth2Provider> providers = Pastefy.getInstance().getOAuth2Strategy().getProviders();
 
         if (providers.containsKey("interaapps")) {
