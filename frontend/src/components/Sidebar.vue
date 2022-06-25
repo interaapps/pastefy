@@ -649,6 +649,7 @@ export default {
                     width: calc(100% - 54.8px);
                     margin-top: 10px;
                     margin-bottom: 60px;
+                    z-index: 1000;
                     &:hover {
                         background: #2c5de6;
                     }
