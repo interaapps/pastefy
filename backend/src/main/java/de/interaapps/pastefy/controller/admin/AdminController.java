@@ -29,6 +29,7 @@ public class AdminController extends HttpController {
         Query<User> query = Repo.get(User.class).query();
 
         RequestHelper.userIdPastesFilter(user, query, exchange);
+        RequestHelper.pagination(query, exchange);
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
 

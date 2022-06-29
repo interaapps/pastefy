@@ -70,6 +70,7 @@ public class PasteController extends HttpController {
         Query<Paste> query = Repo.get(Paste.class).query();
 
         RequestHelper.userIdPastesFilter(user, query, exchange);
+        RequestHelper.pagination(query, exchange);
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
 

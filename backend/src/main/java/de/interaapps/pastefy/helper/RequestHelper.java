@@ -11,6 +11,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RequestHelper {
+
+    public static void pagination(Query<?> query, Exchange exchange) {
+        int page = 0;
+        if (exchange.query("page") != null)
+            page = Integer.parseInt(exchange.query("page")) - 1;
+
+        int limit = 10;
+
+        if (exchange.query("page_limit") != null)
+            limit = exchange.query("page_limit", Integer.class);
+
+        query.limit(limit).offset(page * limit);
+
+        exchange.header("PAGINATION_LIMIT", String.valueOf(limit));
+        exchange.header("PAGINATION_PAGE", String.valueOf(page));
+    }
+
     public static void queryFilter(Query<?> query, AbstractObject params) {
         Map<String, String> filters = new HashMap<>();
         params.forEach((key, value) -> {

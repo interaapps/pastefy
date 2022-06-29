@@ -58,6 +58,7 @@ public class FolderController extends HttpController {
         Query<Folder> query = Repo.get(Folder.class).query();
 
         RequestHelper.userIdPastesFilter(user, query, exchange);
+        RequestHelper.pagination(query, exchange);
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
 
