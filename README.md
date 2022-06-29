@@ -160,3 +160,9 @@ We are using IntelliJ Idea and Visual Studio code.
 
 ### API
 You can find the docs of the Pastefy-Rest-APi here: [Github Wiki](https://github.com/interaapps/pastefy/wiki/API-v2)
+
+
+## Administration
+If you want to give yourself the admin role, you have to log into your MySQL server and set `type` on your account to `ADMIN` in the `pastefy_users` table.
+
+You'll find the admin panel under `https://YOUR_URL/admin`
