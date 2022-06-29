@@ -87,7 +87,7 @@ public class FolderController extends HttpController {
         Folder folder = Repo.get(Folder.class).where("key", id).first();
 
         if (folder != null) {
-            if (folder.getUserId().equals(user.getId())) {
+            if (folder.getUserId().equals(user.getId()) || user.type == User.Type.ADMIN) {
                 folder.delete();
                 response.success = true;
             }

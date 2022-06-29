@@ -3,6 +3,7 @@ package de.interaapps.pastefy.controller;
 import de.interaapps.accounts.apiclient.AccountsClient;
 import de.interaapps.accounts.apiclient.responses.contacts.ContactResponse;
 import de.interaapps.pastefy.exceptions.NotFoundException;
+import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
 import de.interaapps.pastefy.helper.RequestHelper;
 import de.interaapps.pastefy.model.database.*;
 import de.interaapps.pastefy.model.requests.paste.AddFriendToPasteRequest;
@@ -84,20 +85,23 @@ public class PasteController extends HttpController {
             authKey.checkPermission("pastes:edit", "pastes:write");
 
         ActionResponse response = new ActionResponse();
-        Paste paste = Repo.get(Paste.class).where("key", id).where("userId", user.getId()).first();
+        Paste paste = Repo.get(Paste.class).where("key", id).first();
         if (paste != null) {
-            if (request.title != null)
-                paste.setTitle(request.title);
-            if (request.content != null)
-                paste.setContent(request.content);
-            if (request.folder != null)
-                paste.setFolder(request.folder);
-            if (request.type != null)
-                paste.setType(request.type);
-            if (request.encrypted != null)
-                paste.setEncrypted(request.encrypted);
-            paste.save();
-            response.success = true;
+            if (paste.getUserId().equals(user.getId()) || user.type == User.Type.ADMIN) {
+                if (request.title != null)
+                    paste.setTitle(request.title);
+                if (request.content != null)
+                    paste.setContent(request.content);
+                if (request.folder != null)
+                    paste.setFolder(request.folder);
+                if (request.type != null)
+                    paste.setType(request.type);
+                if (request.encrypted != null)
+                    paste.setEncrypted(request.encrypted);
+                paste.save();
+                response.success = true;
+            } else
+                throw new PermissionsDeniedException();
         }
         return response;
     }
@@ -121,10 +125,11 @@ public class PasteController extends HttpController {
         Paste paste = Repo.get(Paste.class).where("key", id).first();
 
         if (paste != null) {
-            if (paste.getUserId().equals(user.getId())) {
+            if (paste.getUserId().equals(user.getId()) || user.type == User.Type.ADMIN) {
                 paste.delete();
                 response.success = true;
-            }
+            } else
+                throw new PermissionsDeniedException();
         }
 
         return response;
