@@ -123,6 +123,7 @@ public class Pastefy {
         map.put("PASTEFY_LOGIN_REQUIRED_READ", "pastefy.loginrequired.read");
 
         map.put("PASTEFY_LIST_PASTES", "pastefy.listpastes");
+        map.put("PASTEFY_PUBLIC_STATS", "pastefy.publicstats");
 
         File file = new File(".env");
         if (file.exists()) {
