@@ -48,7 +48,7 @@ public class AuthKey extends Model {
         return key;
     }
 
-    public boolean hasPermission(String permission){
+    public boolean hasPermission(String permission) {
         if (permission.equals(""))
             return true;
 
@@ -57,9 +57,9 @@ public class AuthKey extends Model {
 
     /**
      * Standard: group.permission:action
-     *      or pastefy.ga|paste:read (Will passthrough the request but adds a user-id header)
-     * */
-    public void checkPermission(String ...permissions){
+     * or pastefy.ga|paste:read (Will passthrough the request but adds a user-id header)
+     */
+    public void checkPermission(String... permissions) {
         for (String permission : permissions) {
             if (hasPermission(permission))
                 return;
@@ -67,14 +67,14 @@ public class AuthKey extends Model {
         throw new PermissionsDeniedException();
     }
 
-    public AuthKey addScope(String scope){
+    public AuthKey addScope(String scope) {
         if (scopes == null)
             scopes = new AbstractArray();
         scopes.add(scope);
         return this;
     }
 
-    private boolean hasScope(String scope){
+    private boolean hasScope(String scope) {
         if (type != Type.ACCESS_TOKEN)
             return true;
 

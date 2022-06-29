@@ -46,7 +46,7 @@ public class FormDataPasteController extends HttpController {
             }
 
             paste.save();
-            return "https://"+exchange.header("Host")+"/"+paste.getKey()+"\n";
+            return "https://" + exchange.header("Host") + "/" + paste.getKey() + "\n";
         }
 
         return "No file given. curl -F 'f=@filename' pastefy.ga\n";

@@ -43,9 +43,11 @@ import java.util.logging.Logger;
 public class Pastefy {
 
     private static Pastefy instance;
+
     public static Pastefy getInstance() {
         return instance;
     }
+
     private Config config;
     private Passport passport;
     private OAuth2Strategy oAuth2Strategy;
@@ -54,7 +56,7 @@ public class Pastefy {
     private boolean loginRequiredForRead = false;
     private boolean loginRequiredForCreate = false;
 
-    public Pastefy(){
+    public Pastefy() {
         config = new Config();
         httpServer = new HTTPServer();
         passport = new Passport("/api/v2/auth");
@@ -134,10 +136,10 @@ public class Pastefy {
 
         loginRequired = config.get("pastefy.loginrequired", "false").toLowerCase(Locale.ROOT).equals("true");
         loginRequiredForCreate = loginRequired || config.get("pastefy.loginrequired.create", "false").toLowerCase(Locale.ROOT).equals("true");
-        loginRequiredForRead   = loginRequired || config.get("pastefy.loginrequired.read", "false").toLowerCase(Locale.ROOT).equals("true");
+        loginRequiredForRead = loginRequired || config.get("pastefy.loginrequired.read", "false").toLowerCase(Locale.ROOT).equals("true");
     }
 
-    protected void setupModels(){
+    protected void setupModels() {
         try {
             SQLDriverFactory sqlDriverFactory = new SQLDriverFactory(new HashMap<String, String>() {{
                 put("file", config.get("database.file", "sb.sqlite"));
@@ -174,7 +176,7 @@ public class Pastefy {
         httpServer.responseTransformer(new SerializedResponseTransformer().ignoreStrings());
 
         oAuth2Strategy.getProviders().forEach((name, authService) -> {
-            System.out.println("ADDED "+name+ " as auth provider");
+            System.out.println("ADDED " + name + " as auth provider");
         });
 
         httpServer.exceptionHandler((exchange, throwable) -> {
@@ -201,9 +203,9 @@ public class Pastefy {
         });
 
         if (getConfig().has("ratelimiter.millis"))
-            httpServer.middleware("rate-limiter", new RateLimitMiddleware(getConfig().getInt("ratelimiter.millis", 5000), getConfig().getInt("ratelimiter.limit", 5)).createAutoDeadRateLimitsRemover(1000*60*10));
+            httpServer.middleware("rate-limiter", new RateLimitMiddleware(getConfig().getInt("ratelimiter.millis", 5000), getConfig().getInt("ratelimiter.limit", 5)).createAutoDeadRateLimitsRemover(1000 * 60 * 10));
         else
-            httpServer.middleware("rate-limiter", e->null);
+            httpServer.middleware("rate-limiter", e -> null);
 
         httpServer.beforeInterceptor(exchange -> {
             exchange.header("Server", "InteraApps-Pastefy");
@@ -247,12 +249,14 @@ public class Pastefy {
 
         httpServer.get("/", requestHandler);
         httpServer.staticResourceDirectory("/", "static");
-        httpServer.get("/api/{*:path}", e -> {throw new NotFoundException();});
+        httpServer.get("/api/{*:path}", e -> {
+            throw new NotFoundException();
+        });
 
         httpServer.get("/{*:path}", requestHandler);
     }
 
-    public void start(){
+    public void start() {
         httpServer.start();
     }
 

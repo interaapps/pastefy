@@ -8,7 +8,7 @@ import org.javawebstack.httpserver.router.annotation.verbs.Get;
 @PathPrefix("/api/v2/app")
 public class AppController extends HttpController {
     @Get("/info")
-    public AppInfoResponse appInfo(){
+    public AppInfoResponse appInfo() {
         return new AppInfoResponse(Pastefy.getInstance());
     }
 }

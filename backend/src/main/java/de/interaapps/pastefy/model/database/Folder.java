@@ -17,13 +17,17 @@ public class Folder extends Model {
     @Column(size = 8)
     private String key;
 
-    @Column @Searchable
+    @Column
+    @Searchable
     private String name = "";
 
-    @Column(size = 8) @Filterable
+    @Column(size = 8)
+    @Filterable
     public String userId;
 
-    @Column @Searchable @Filterable
+    @Column
+    @Searchable
+    @Filterable
     private String parent;
 
     @Column

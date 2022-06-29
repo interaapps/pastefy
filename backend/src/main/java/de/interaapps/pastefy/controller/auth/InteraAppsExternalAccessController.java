@@ -1,8 +1,5 @@
 package de.interaapps.pastefy.controller.auth;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.exceptions.AuthenticationException;
@@ -16,7 +13,6 @@ import org.javawebstack.httpserver.router.annotation.params.Body;
 import org.javawebstack.httpserver.router.annotation.verbs.Post;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.passport.strategies.oauth2.OAuth2Provider;
-import org.javawebstack.passport.strategies.oauth2.providers.InteraAppsOAuth2Provider;
 import org.javawebstack.webutils.config.Config;
 
 import java.util.Map;
@@ -24,7 +20,7 @@ import java.util.Map;
 @PathPrefix("/api/v2/auth")
 public class InteraAppsExternalAccessController extends HttpController {
     @Post("/iaea")
-    public String iaea(@Body InteraAppsExternalAccessRequest request, Exchange exchange){
+    public String iaea(@Body InteraAppsExternalAccessRequest request, Exchange exchange) {
         Map<String, OAuth2Provider> providers = Pastefy.getInstance().getOAuth2Strategy().getProviders();
 
         if (providers.containsKey("interaapps")) {

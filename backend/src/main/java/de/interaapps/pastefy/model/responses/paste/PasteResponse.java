@@ -21,7 +21,7 @@ public class PasteResponse {
             return;
         }
         id = paste.getKey();
-        rawURL = "/"+id+"/raw";
+        rawURL = "/" + id + "/raw";
         title = paste.getTitle();
         content = paste.getContent();
         created = paste.createdAt.toString();

@@ -1,6 +1,5 @@
 package de.interaapps.pastefy.model.requests.auth;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class InteraAppsExternalAccessRequest {

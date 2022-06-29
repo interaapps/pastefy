@@ -13,28 +13,39 @@ public class Paste extends Model {
     @Column
     private int id;
 
-    @Column(size = 8) @Searchable @Filterable
+    @Column(size = 8)
+    @Searchable
+    @Filterable
     private String key;
 
-    @Column @Searchable
+    @Column
+    @Searchable
     private String title;
 
-    @Column(size = 16777215) @Searchable
+    @Column(size = 16777215)
+    @Searchable
     private String content;
 
-    @Column(size = 8) @Filterable
+    @Column(size = 8)
+    @Filterable
     private String userId;
 
-    @Column @Filterable
+    @Column
+    @Filterable
     private boolean encrypted = false;
 
-    @Column(size = 8) @Searchable @Filterable
+    @Column(size = 8)
+    @Searchable
+    @Filterable
     public String folder;
 
-    @Column @Searchable @Filterable
+    @Column
+    @Searchable
+    @Filterable
     private Type type = Type.PASTE;
 
-    @Column @Searchable
+    @Column
+    @Searchable
     public Timestamp createdAt;
 
     @Column

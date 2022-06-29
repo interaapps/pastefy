@@ -12,7 +12,7 @@ import org.javawebstack.httpserver.router.annotation.verbs.Get;
 @PathPrefix("/api/v2/app/stats")
 public class StatsController extends HttpController {
     @Get
-    public StatsResponse stats(@Attrib("authkey") AuthKey authKey){
+    public StatsResponse stats(@Attrib("authkey") AuthKey authKey) {
         if (!Pastefy.getInstance().getConfig().get("pastefy.publicstats", "false").equalsIgnoreCase("true") && !authKey.hasPermission("stats:read"))
             throw new PermissionsDeniedException();
 

@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RequestHelper {
-    public static void queryFilter(Query<?> query, AbstractObject params){
+    public static void queryFilter(Query<?> query, AbstractObject params) {
         Map<String, String> filters = new HashMap<>();
         params.forEach((key, value) -> {
             if (key.startsWith("filter[") && key.endsWith("]")) {
@@ -22,7 +22,7 @@ public class RequestHelper {
             query.filter(filters);
     }
 
-    public static void userIdPastesFilter(User user, Query<?> query, Exchange exchange){
+    public static void userIdPastesFilter(User user, Query<?> query, Exchange exchange) {
         boolean isAdmin = user != null && user.type == User.Type.ADMIN;
         String filterUserId = null;
 

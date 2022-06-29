@@ -19,25 +19,33 @@ public class User extends Model {
     @Column(size = 8, id = true)
     public String id;
 
-    @Column @Searchable
+    @Column
+    @Searchable
     public String name;
 
-    @Column(size = 33) @Filterable
+    @Column(size = 33)
+    @Filterable
     public String uniqueName;
 
-    @Column(name = "email") @Filterable
+    @Column(name = "email")
+    @Filterable
     public String eMail;
 
     @Column
     public String avatar;
 
-    @Column(size = 455) @Filterable
+    @Column(size = 455)
+    @Filterable
     public String authId;
 
-    @Column @Filterable @Searchable
+    @Column
+    @Filterable
+    @Searchable
     public AuthenticationProvider authProvider;
 
-    @Column @Filterable @Searchable
+    @Column
+    @Filterable
+    @Searchable
     public Type type = Type.USER;
 
     @Column
@@ -93,8 +101,8 @@ public class User extends Model {
             return oauth2Service;
         }
 
-        public static AuthenticationProvider getProviderByClass(Class<? extends OAuth2Provider> oauth2ServiceClass){
-            for (AuthenticationProvider authenticationProvider : AuthenticationProvider.values()){
+        public static AuthenticationProvider getProviderByClass(Class<? extends OAuth2Provider> oauth2ServiceClass) {
+            for (AuthenticationProvider authenticationProvider : AuthenticationProvider.values()) {
                 if (oauth2ServiceClass == authenticationProvider.getOAuth2ServiceClass())
                     return authenticationProvider;
             }

@@ -1,18 +1,14 @@
 package de.interaapps.pastefy.controller;
 
-import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.exceptions.NotFoundException;
-import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
 import de.interaapps.pastefy.helper.RequestHelper;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Folder;
-import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.requests.CreateFolderRequest;
 import de.interaapps.pastefy.model.responses.ActionResponse;
 import de.interaapps.pastefy.model.responses.folder.CreateFolderResponse;
 import de.interaapps.pastefy.model.responses.folder.FolderResponse;
-import org.javawebstack.abstractdata.AbstractElement;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.router.annotation.PathPrefix;
 import org.javawebstack.httpserver.router.annotation.With;
@@ -25,9 +21,7 @@ import org.javawebstack.httpserver.router.annotation.verbs.Post;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.query.Query;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @PathPrefix("/api/v2/folder")
@@ -57,7 +51,7 @@ public class FolderController extends HttpController {
     }
 
     @Get
-    public List<FolderResponse> getFolder(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey){
+    public List<FolderResponse> getFolder(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         if (authKey != null)
             authKey.checkPermission("folders:read");
 

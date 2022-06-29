@@ -7,7 +7,7 @@ import org.javawebstack.orm.Repo;
 import org.javawebstack.passport.strategies.oauth2.OAuth2Profile;
 import org.javawebstack.passport.strategies.oauth2.OAuth2Strategy;
 
-public class OAuth2Callback  implements OAuth2Strategy.HttpCallbackHandler {
+public class OAuth2Callback implements OAuth2Strategy.HttpCallbackHandler {
 
 
     public Object handle(Exchange exchange, org.javawebstack.passport.strategies.oauth2.OAuth2Callback callback, String name) {
@@ -22,7 +22,7 @@ public class OAuth2Callback  implements OAuth2Strategy.HttpCallbackHandler {
             final String uniqueName = profile.getName().replaceAll("[^a-zA-Z0-9]", "");
             user.uniqueName = uniqueName;
             while (Repo.get(de.interaapps.pastefy.model.database.User.class).where("uniqueName", user.uniqueName).first() != null) {
-                user.uniqueName = uniqueName+i++;
+                user.uniqueName = uniqueName + i++;
             }
             user.authId = profile.getId();
             user.authProvider = provider;

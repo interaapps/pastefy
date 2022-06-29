@@ -3,12 +3,9 @@ package de.interaapps.pastefy.controller.admin;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.helper.RequestHelper;
 import de.interaapps.pastefy.model.database.AuthKey;
-import de.interaapps.pastefy.model.database.Folder;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.requests.admin.EditUserRequest;
 import de.interaapps.pastefy.model.responses.ActionResponse;
-import de.interaapps.pastefy.model.responses.folder.FolderResponse;
-import de.interaapps.pastefy.model.responses.user.UserResponse;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.router.annotation.PathPrefix;
 import org.javawebstack.httpserver.router.annotation.With;
@@ -27,7 +24,7 @@ import java.util.List;
 public class AdminController extends HttpController {
     @Get("/users")
     @With("admin")
-    public List<User> getUsers(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey){
+    public List<User> getUsers(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         authKey.checkPermission("admin.users:read");
         Query<User> query = Repo.get(User.class).query();
 
@@ -40,14 +37,14 @@ public class AdminController extends HttpController {
 
     @Get("/users/{id}")
     @With("admin")
-    public User getUser(@Path("id") String id, @Attrib("authkey") AuthKey authKey){
+    public User getUser(@Path("id") String id, @Attrib("authkey") AuthKey authKey) {
         authKey.checkPermission("admin.users:read");
         return Repo.get(User.class).get(id);
     }
 
     @Delete("/users/{id}")
     @With("admin")
-    public ActionResponse removeUser(@Path("id") String id, @Attrib("authkey") AuthKey authKey){
+    public ActionResponse removeUser(@Path("id") String id, @Attrib("authkey") AuthKey authKey) {
         authKey.checkPermission("admin.users:delete");
         Repo.get(User.class).get(id).delete();
         return new ActionResponse(true);
@@ -55,7 +52,7 @@ public class AdminController extends HttpController {
 
     @Put("/users/{id}")
     @With("admin")
-    public ActionResponse editUser(@Body EditUserRequest request, @Attrib("authkey") AuthKey authKey, @Path("id") String id){
+    public ActionResponse editUser(@Body EditUserRequest request, @Attrib("authkey") AuthKey authKey, @Path("id") String id) {
         authKey.checkPermission("admin.users:edit");
 
         User user = Repo.get(User.class).get(id);

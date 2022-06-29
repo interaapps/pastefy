@@ -1,11 +1,8 @@
 package de.interaapps.pastefy.controller;
 
 import de.interaapps.accounts.apiclient.AccountsClient;
-import de.interaapps.accounts.apiclient.responses.ListResponse;
 import de.interaapps.accounts.apiclient.responses.contacts.ContactResponse;
-import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.exceptions.NotFoundException;
-import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
 import de.interaapps.pastefy.helper.RequestHelper;
 import de.interaapps.pastefy.model.database.*;
 import de.interaapps.pastefy.model.requests.paste.AddFriendToPasteRequest;
@@ -66,7 +63,7 @@ public class PasteController extends HttpController {
     }
 
     @Get
-    public List<PasteResponse> getPastes(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey){
+    public List<PasteResponse> getPastes(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         if (authKey != null)
             authKey.checkPermission("pastes:read");
 
