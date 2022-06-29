@@ -1,5 +1,6 @@
 package de.interaapps.pastefy.auth;
 
+import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.User;
 import org.javawebstack.httpserver.Exchange;
@@ -26,6 +27,9 @@ public class OAuth2Callback implements OAuth2Strategy.HttpCallbackHandler {
             }
             user.authId = profile.getId();
             user.authProvider = provider;
+
+            if (Pastefy.getInstance().getConfig().get("pastefy.grantaccessrequired", "false").equalsIgnoreCase("true"))
+                user.type = User.Type.AWAITING_ACCESS;
         }
         // On every login the username, avatar and e-mail gets updated
         user.name = profile.getName();

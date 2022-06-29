@@ -2,8 +2,7 @@ package de.interaapps.pastefy.controller.admin;
 
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.helper.RequestHelper;
-import de.interaapps.pastefy.model.database.AuthKey;
-import de.interaapps.pastefy.model.database.User;
+import de.interaapps.pastefy.model.database.*;
 import de.interaapps.pastefy.model.requests.admin.EditUserRequest;
 import de.interaapps.pastefy.model.responses.ActionResponse;
 import org.javawebstack.httpserver.Exchange;
@@ -21,14 +20,13 @@ import org.javawebstack.orm.query.Query;
 import java.util.List;
 
 @PathPrefix("/api/v2/admin")
+@With("admin")
 public class AdminController extends HttpController {
     @Get("/users")
-    @With("admin")
     public List<User> getUsers(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         authKey.checkPermission("admin.users:read");
         Query<User> query = Repo.get(User.class).query();
 
-        RequestHelper.userIdPastesFilter(user, query, exchange);
         RequestHelper.pagination(query, exchange);
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
@@ -37,22 +35,27 @@ public class AdminController extends HttpController {
     }
 
     @Get("/users/{id}")
-    @With("admin")
     public User getUser(@Path("id") String id, @Attrib("authkey") AuthKey authKey) {
         authKey.checkPermission("admin.users:read");
         return Repo.get(User.class).get(id);
     }
 
     @Delete("/users/{id}")
-    @With("admin")
     public ActionResponse removeUser(@Path("id") String id, @Attrib("authkey") AuthKey authKey) {
         authKey.checkPermission("admin.users:delete");
+
+        Repo.get(Paste.class).where("userId", id).delete();
+        Repo.get(Folder.class).where("userId", id).delete();
+        Repo.get(AuthKey.class).where("userId", id).delete();
+        Repo.get(Notification.class).where("userId", id).delete();
+        Repo.get(SharedPaste.class).where("targetId", id).orWhere("userId", id).delete();
+
         Repo.get(User.class).get(id).delete();
+
         return new ActionResponse(true);
     }
 
     @Put("/users/{id}")
-    @With("admin")
     public ActionResponse editUser(@Body EditUserRequest request, @Attrib("authkey") AuthKey authKey, @Path("id") String id) {
         authKey.checkPermission("admin.users:edit");
 
@@ -66,6 +69,8 @@ public class AdminController extends HttpController {
 
         if (request.type != null)
             user.type = request.type;
+
+        user.save();
 
         return new ActionResponse(true);
     }

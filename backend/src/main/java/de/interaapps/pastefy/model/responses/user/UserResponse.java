@@ -28,6 +28,7 @@ public class UserResponse {
         profilePicture = user.getAvatar();
         id = user.getId();
         loggedIn = true;
-        type = user.type;
+
+        type = user.type == null ? User.Type.USER : user.type;
     }
 }

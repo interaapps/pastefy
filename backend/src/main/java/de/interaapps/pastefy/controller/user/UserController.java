@@ -27,7 +27,7 @@ public class UserController extends HttpController {
     }
 
     @Get("/overview")
-    @With("auth")
+    @With({"auth", "awaiting-access-check", "blocked-check"})
     public UserPastesResponse userPastes(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         if (authKey != null && (!authKey.hasPermission("pastes:read") || !authKey.hasPermission("folders:read")))
             throw new PermissionsDeniedException();
@@ -44,7 +44,7 @@ public class UserController extends HttpController {
     }
 
     @Get("/folders")
-    @With("auth")
+    @With({"auth", "awaiting-access-check", "blocked-check"})
     public List<FolderResponse> getFolder(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         if (authKey != null)
             authKey.checkPermission("folders:read");
@@ -53,7 +53,7 @@ public class UserController extends HttpController {
     }
 
     @Get("/pastes")
-    @With("auth")
+    @With({"auth", "awaiting-access-check", "blocked-check"})
     public List<PasteResponse> getPastes(@Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         if (authKey != null)
             authKey.checkPermission("pastes:read");
@@ -62,7 +62,7 @@ public class UserController extends HttpController {
     }
 
     @Get("/sharedpastes")
-    @With("auth")
+    @With({"auth", "awaiting-access-check", "blocked-check"})
     public List<PasteResponse> getSharedPastes(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         if (authKey != null)
             authKey.checkPermission("sharedpastes:read");

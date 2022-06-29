@@ -3,14 +3,16 @@ import Vue from 'vue'
 import router from './router'
 import store from './store'
 import helper from "./helper"
-import { $n } from 'jdomjs'
+import {$n} from 'jdomjs'
 import App from "./App";
-import { PastefyAPI } from './PastefyAPI'
+import {PastefyAPI} from './PastefyAPI'
+
 require("babel-polyfill");
 require("./css/app.scss")
 import eventBus from './eventBus'
 import dark from './assets/themes/dark'
 import light from './assets/themes/light'
+
 Vue.config.productionTip = false
 
 require('./css/petrel/dark.scss')
@@ -24,7 +26,8 @@ if (localStorage["session"])
     pastefyAPI.bearer(localStorage["session"])
 
 Vue.mixin({
-    data: function(){return {
+    data: function () {
+        return {
             pastefyAPI,
             eventBus
         }
@@ -34,21 +37,21 @@ Vue.mixin({
 new Vue({
     router,
     store,
-    render: h=>h(App)
+    render: h => h(App)
 }).$mount("#app")
 
 store.state.app.loadingUser = true
 
 
-pastefyAPI.get("/api/v2/app/info").then(res=>{
+pastefyAPI.get("/api/v2/app/info").then(res => {
     store.state.appInfo = res
     eventBus.$emit("appInfoLoaded")
-    pastefyAPI.get("/api/v2/user").then(res=>{
+
+    pastefyAPI.get("/api/v2/user").then(res => {
         store.state.user = res
         store.state.app.loadingUser = false
         eventBus.$emit("userLoaded")
         if (worker !== null && store.state.user.logged_in) {
-            console.log("worker is now working :)");
             worker.postMessage({
                 action: 'registerUserLogin',
                 user: store.state.user,
@@ -63,9 +66,9 @@ if (typeof navigator !== 'undefined') {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.js', {
             scope: '.'
-          }).then(function(registration) {
+        }).then(function (registration) {
             console.log('Registration successful, scope is:', registration.scope);
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log('Service worker registration failed, error:', error);
         });
     }
@@ -73,44 +76,46 @@ if (typeof navigator !== 'undefined') {
 
 if (typeof Worker !== 'undefined') {
     worker = new Worker("/worker.js")
-    worker.postMessage({action: 'updateStorage', storage: {
-        notificationsEnabled: localStorage["browser_notifications"] == 'true'
-    }})
-    worker.onmessage = (e)=>{
+    worker.postMessage({
+        action: 'updateStorage', storage: {
+            notificationsEnabled: localStorage["browser_notifications"] == 'true'
+        }
+    })
+    worker.onmessage = (e) => {
         const data = e.data
         if (data.action == 'pushRoute') {
             window.focus()
             router.push(data.url)
         } else if (data.action == 'notification') {
             const toast = helper.showSnackBar($n('div')
-                .append($n("i").text("close").addClass("material-icons").css({
-                    float: 'right',
-                    marginTop: '6px'
-                }).click((e)=>{
-                    toast.close()
-                    e.preventDefault()
-                    e.stopPropagation()
-                    return false
-                }))
-                .append($n("h1").text(data.title).css({
-                    fontSize: "21px",
-                    textAlign: "left",
-                    marginBottom: "10px",
-                    verticalAlign: "middle"
-                }))
-                .append($n("p").text(data.message).css({
-                    textAlign: "left",
-                    fontSize: "18px",
-                    maxWidth: "400px"
-                })).html(), 
-            "#434343", '#FFFFFF', false);
+                    .append($n("i").text("close").addClass("material-icons").css({
+                        float: 'right',
+                        marginTop: '6px'
+                    }).click((e) => {
+                        toast.close()
+                        e.preventDefault()
+                        e.stopPropagation()
+                        return false
+                    }))
+                    .append($n("h1").text(data.title).css({
+                        fontSize: "21px",
+                        textAlign: "left",
+                        marginBottom: "10px",
+                        verticalAlign: "middle"
+                    }))
+                    .append($n("p").text(data.message).css({
+                        textAlign: "left",
+                        fontSize: "18px",
+                        maxWidth: "400px"
+                    })).html(),
+                "#434343", '#FFFFFF', false);
             toast.useHTML = true
             toast.timeout = 5000
             if (data.url != "") {
                 const oldOnOpen = toast.onopen
-                toast.onopen = ()=>{
+                toast.onopen = () => {
                     toast.element.style.cursor = "pointer"
-                    toast.element.addEventListener("click", (e)=>{
+                    toast.element.addEventListener("click", (e) => {
                         if (e.target != null && e.target.nodeName == 'I') {
                             toast.close()
                             return false
@@ -120,10 +125,10 @@ if (typeof Worker !== 'undefined') {
                             window.location = data.url
                         else
                             router.push(data.url)
-                        
+
                         toast.close()
                     })
-                    
+
                     oldOnOpen()
                 }
             }
@@ -133,18 +138,20 @@ if (typeof Worker !== 'undefined') {
 }
 
 Vue.mixin({
-    data: function(){return {
-        worker
-    }},
+    data: function () {
+        return {
+            worker
+        }
+    },
     methods: {
-        isPublicPastefyServer(){
-            return window.location.host == 'pastefy.ga' || window.location.host.endsWith('.pastefy.ga') 
+        isPublicPastefyServer() {
+            return window.location.host == 'pastefy.ga' || window.location.host.endsWith('.pastefy.ga')
         }
     }
 })
 
-window.addEventListener("resize", function(){
-    store.state.mobileVersion = window.innerWidth <= 720 
+window.addEventListener("resize", function () {
+    store.state.mobileVersion = window.innerWidth <= 720
 })
 
 HTMLTextAreaElement.prototype.getCaretPosition = function () { //return the caret position of the textarea
@@ -171,7 +178,8 @@ HTMLTextAreaElement.prototype.setSelection = function (start, end) { //change th
     this.focus();
 };
 export let currentThemeVars = {}
-export function setThemeFrom(vars = {}){
+
+export function setThemeFrom(vars = {}) {
     currentThemeVars = vars
     for (const key in vars) {
         if (typeof vars[key] == 'object')
@@ -183,23 +191,23 @@ export function setThemeFrom(vars = {}){
 
 const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
 const darkmodeListener = e => {
-  if (e.matches)
-    setThemeFrom(dark)
-  else
-    setThemeFrom(light)
+    if (e.matches)
+        setThemeFrom(dark)
+    else
+        setThemeFrom(light)
 }
 
 export function setTheme(name) {
     console.log("AAAAAAAAAAAAAAAa", name)
-  darkThemeMq.removeListener(darkmodeListener)
-  if (name == 'light') {
-    setThemeFrom(light)
-  } else if (name == 'auto') {
-    darkThemeMq.addListener(darkmodeListener)
-    darkmodeListener(window.matchMedia("(prefers-color-scheme: dark)"))
-  } else {
-    setThemeFrom(dark)
-  }
+    darkThemeMq.removeListener(darkmodeListener)
+    if (name == 'light') {
+        setThemeFrom(light)
+    } else if (name == 'auto') {
+        darkThemeMq.addListener(darkmodeListener)
+        darkmodeListener(window.matchMedia("(prefers-color-scheme: dark)"))
+    } else {
+        setThemeFrom(dark)
+    }
 }
 
 setTheme(localStorage["theme"])

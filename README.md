@@ -119,6 +119,15 @@ PASTEFY_LOGIN_REQUIRED_READ=false
 
 # Check the encryption checkbox by default
 PASTEFY_ENCRYPTION_DEFAULT=false
+
+# Requires every new account being accepted by an administrator
+PASTEFY_GRANT_ACCESS_REQUIRED=false
+
+# Allows /paste route listing all pastes
+PASTEFY_LIST_PASTES=false
+
+# Makes /app/stats public
+PASTEFY_PUBLIC_STATS=false
 ```
 ### Adding login
 You can choose between [INTERAAPPS](https://accounts.interaapps.de/developers/projects) (best integration), [GOOGLE](https://support.google.com/cloud/answer/6158849?hl=en), [GITHUB](https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app), [DISCORD](https://discord.com/developers/docs/topics/oauth2) or [TWITCH](https://dev.twitch.tv/docs/authentication) for the provider (You can use all of them at the same time).

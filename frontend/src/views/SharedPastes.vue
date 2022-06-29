@@ -4,7 +4,7 @@
             <i @click="load" class="material-icons" id="copy-button" :class="{loading: loading}">cached</i>
             <h3 style="margin-top: 20px; margin-bottom: 40px;">Shared Pastes</h3>
             <div id="pastes">
-                <PasteCard v-for="paste of pastes" :key="paste.id" :paste="paste" />
+                <PasteCard v-for="paste of pastes" :key="paste.id" :paste="paste"/>
             </div>
             <a @click="page -= 1; load()" class="button">PREVIOUS PAGE</a>
             <a @click="page += 1; load()" style="float: right;" class="button">NEXT PAGE</a>
@@ -17,27 +17,27 @@ import hljs from "highlight.js";
 import PasteCard from "../components/PasteCard.vue";
 
 export default {
-    data: ()=>({
+    data: () => ({
         pastes: [],
         loading: false,
         page: 1
     }),
-    mounted(){
+    mounted() {
         this.load()
     },
     components: {PasteCard},
-    methods:{
-        load(){
+    methods: {
+        load() {
             this.loading = true
             this.pastefyAPI.get("/api/v2/user/sharedpastes", {
                 page: this.page
             })
-                .then(res=>{
+                .then(res => {
                     this.pastes = res
                     this.loading = false
                 })
         },
-        highlight(content){
+        highlight(content) {
             return hljs.highlightAuto(content).value
         }
     }
@@ -45,29 +45,31 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    #shared {
-        position: relative;
-        max-width: 840px;
-    }
-    #copy-button {
-        position: absolute;
-        right: 0px;
-        cursor: pointer;
-        font-size: 28px;
-        &.loading{
-            animation: rotate 1.1s infinite linear;
-        }
-    }
+#shared {
+    position: relative;
+    max-width: 840px;
+}
 
-    @keyframes rotate {
-        0% {
-            transform: rotate(0deg);
-        }
-        50% {
-            transform: rotate(180deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
+#copy-button {
+    position: absolute;
+    right: 0px;
+    cursor: pointer;
+    font-size: 28px;
+
+    &.loading {
+        animation: rotate 1.1s infinite linear;
     }
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(180deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
 </style>

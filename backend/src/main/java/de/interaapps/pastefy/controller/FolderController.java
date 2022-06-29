@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @PathPrefix("/api/v2/folder")
 public class FolderController extends HttpController {
     @Post
-    @With("auth")
+    @With({"auth", "awaiting-access-check", "blocked-check"})
     public CreateFolderResponse createFolder(Exchange exchange, @Body CreateFolderRequest request, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         if (authKey != null)
             authKey.checkPermission("folders:create");
@@ -66,7 +66,7 @@ public class FolderController extends HttpController {
     }
 
     @Get("/{id}")
-    @With("auth-login-required-read")
+    @With({"auth-login-required-read", "awaiting-access-check", "blocked-check"})
     public FolderResponse getFolder(Exchange exchange, @Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         if (authKey != null)
             authKey.checkPermission("folders:read");
@@ -78,7 +78,7 @@ public class FolderController extends HttpController {
     }
 
     @Delete("/{id}")
-    @With("auth")
+    @With({"auth", "awaiting-access-check", "blocked-check"})
     public ActionResponse delete(Exchange exchange, @Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         if (authKey != null)
             authKey.checkPermission("folders:delete");

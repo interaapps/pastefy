@@ -81,6 +81,10 @@ public class User extends Model {
         notification.save();
     }
 
+    public boolean roleCheck() {
+        return type != Type.AWAITING_ACCESS && type != Type.BLOCKED;
+    }
+
     public enum AuthenticationProvider {
         INTERAAPPS(InteraAppsOAuth2Provider.class, "interaapps"),
         GOOGLE(GoogleOAuth2Provider.class, "google"),

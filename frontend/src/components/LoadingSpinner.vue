@@ -18,22 +18,26 @@ $offset: 187;
 $duration: 1.4s;
 
 .spinner {
-  animation: rotator $duration linear infinite;
+    animation: rotator $duration linear infinite;
 }
 
 @keyframes rotator {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(270deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(270deg);
+    }
 }
 
 .path {
-  stroke-dasharray: $offset;
-  stroke-dashoffset: 0;
-  transform-origin: center;
-  stroke: var(--background-color);
-  animation:
-    dash $duration ease-in-out infinite, 
-    /*colors ($duration*4) ease-in-out infinite*/;
+    stroke-dasharray: $offset;
+    stroke-dashoffset: 0;
+    transform-origin: center;
+    stroke: var(--background-color);
+    animation: dash $duration ease-in-out infinite,
+    /*colors ($duration*4) ease-in-out infinite*/
+;
 }
 
 /*
@@ -46,14 +50,16 @@ $duration: 1.4s;
 }*/
 
 @keyframes dash {
- 0% { stroke-dashoffset: $offset; }
- 50% {
-   stroke-dashoffset: $offset/4;
-   transform:rotate(135deg);
- }
- 100% {
-   stroke-dashoffset: $offset;
-   transform:rotate(450deg);
- }
+    0% {
+        stroke-dashoffset: $offset;
+    }
+    50% {
+        stroke-dashoffset: $offset/4;
+        transform: rotate(135deg);
+    }
+    100% {
+        stroke-dashoffset: $offset;
+        transform: rotate(450deg);
+    }
 }
 </style>

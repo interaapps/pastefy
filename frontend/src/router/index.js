@@ -8,27 +8,27 @@ const routes = [
     {
         path: "/",
         name: "Homepage",
-        component: ()=> import('../views/Homepage')
+        component: () => import('../views/Homepage')
     },
     {
         path: "/home",
         name: "Homepage",
-        component: ()=> import('../views/Homepage')
+        component: () => import('../views/Homepage')
     },
     {
         path: "/shared",
         name: "SharedPastes",
-        component: ()=> import('../views/SharedPastes')
+        component: () => import('../views/SharedPastes')
     },
     {
         path: "/settings",
         name: "Settings",
-        component: ()=> import('../views/Settings')
+        component: () => import('../views/Settings')
     },
     {
         path: "/login-with",
         name: "Login with",
-        component: ()=> import('../views/auth/LoginSelection')
+        component: () => import('../views/auth/LoginSelection')
     },
     {
         path: "/auth",
@@ -38,17 +38,36 @@ const routes = [
     {
         path: "/apikeys",
         name: "API-Keys",
-        component: ()=> import('../views/ApiKeys')
+        component: () => import('../views/ApiKeys')
+    },
+    {
+        path: "/admin/overview",
+        name: "Admin Overview",
+        component: () => import('../views/admin/Overview'),
+    },
+    {
+        path: "/admin",
+        redirect: "/admin/overview"
+    },
+    {
+        path: "/admin/users",
+        name: "Admin Users",
+        component: () => import('../views/admin/Users')
+    },
+    {
+        path: "/admin/pastes",
+        name: "Admin Pastes",
+        component: () => import('../views/admin/Pastes')
     },
     {
         path: "/:id",
         name: "Paste",
-        component: ()=> import('../views/Paste')
+        component: () => import('../views/Paste')
     },
     {
         path: "/folder/:id",
         name: "Folder",
-        component: ()=> import('../views/Folder')
+        component: () => import('../views/Folder')
     },
     {
         path: "/*",

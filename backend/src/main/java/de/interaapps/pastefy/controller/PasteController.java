@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class PasteController extends HttpController {
 
     @Post
-    @With({"rate-limiter", "auth-login-required-create"})
+    @With({"rate-limiter", "auth-login-required-create", "awaiting-access-check", "blocked-check"})
     public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey, @Path("id") String pasteId) {
         if (authKey != null)
             authKey.checkPermission("pastes:create", "pastes:write");
@@ -79,7 +79,7 @@ public class PasteController extends HttpController {
     }
 
     @Put("/{id}")
-    @With("auth")
+    @With({"auth", "awaiting-access-check", "blocked-check"})
     public ActionResponse putPaste(@Body EditPasteRequest request, @Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         if (authKey != null)
             authKey.checkPermission("pastes:edit", "pastes:write");
@@ -107,7 +107,7 @@ public class PasteController extends HttpController {
     }
 
     @Get("/{id}")
-    @With("auth-login-required-read")
+    @With({"auth-login-required-read", "awaiting-access-check", "blocked-check"})
     public PasteResponse getPaste(Exchange exchange, @Path("id") String id) {
         Paste paste = Repo.get(Paste.class).where("key", id).first();
         if (paste == null)
@@ -116,7 +116,7 @@ public class PasteController extends HttpController {
     }
 
     @Delete("/{id}")
-    @With("auth")
+    @With({"auth", "awaiting-access-check", "blocked-check"})
     public ActionResponse deletePaste(Exchange exchange, @Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         if (authKey != null)
             authKey.checkPermission("pastes:delete");
@@ -136,7 +136,7 @@ public class PasteController extends HttpController {
     }
 
     @Post("/{id}/friend")
-    @With("auth")
+    @With({"auth", "awaiting-access-check", "blocked-check"})
     public ActionResponse addFriend(Exchange exchange, @Body AddFriendToPasteRequest request, @Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey requestAuthKey) {
         if (requestAuthKey != null)
             requestAuthKey.checkPermission("pastes.friends:edit");

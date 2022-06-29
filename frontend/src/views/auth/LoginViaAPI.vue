@@ -5,7 +5,7 @@
 </template>
 <script>
 export default {
-    mounted(){
+    mounted() {
         localStorage["session"] = this.$route.query.key
         this.pastefyAPI.bearer(localStorage["session"])
         this.$router.push("/")

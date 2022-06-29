@@ -1,8 +1,6 @@
 package de.interaapps.pastefy;
 
-import de.interaapps.pastefy.auth.AdminMiddleware;
-import de.interaapps.pastefy.auth.AuthMiddleware;
-import de.interaapps.pastefy.auth.OAuth2Callback;
+import de.interaapps.pastefy.auth.*;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.controller.PasteController;
 import de.interaapps.pastefy.exceptions.AuthenticationException;
@@ -120,6 +118,8 @@ public class Pastefy {
 
         map.put("PASTEFY_ENCRYPTION_DEFAULT", "pastefy.encryption.default");
 
+        map.put("PASTEFY_GRANT_ACCESS_REQUIRED", "pastefy.grantaccessrequired");
+
         map.put("PASTEFY_LOGIN_REQUIRED", "pastefy.loginrequired");
         map.put("PASTEFY_LOGIN_REQUIRED_CREATE", "pastefy.loginrequired.create");
         map.put("PASTEFY_LOGIN_REQUIRED_READ", "pastefy.loginrequired.read");
@@ -191,13 +191,18 @@ public class Pastefy {
         });
         httpServer.middleware("auth", new AuthMiddleware());
         httpServer.middleware("admin", new AdminMiddleware());
+
+
+        httpServer.middleware("blocked-check", new BlockedMiddleware());
+        httpServer.middleware("awaiting-access-check", new AwaitingAccessMiddleware());
+
         httpServer.middleware("auth-login-required-read", exchange -> {
-            if (loginRequiredForRead && exchange.attrib("user") == null)
+            if (loginRequiredForRead && (exchange.attrib("user") == null || !((User) exchange.attrib("user")).roleCheck()))
                 throw new AuthenticationException();
             return null;
         });
         httpServer.middleware("auth-login-required-create", exchange -> {
-            if (loginRequiredForCreate && exchange.attrib("user") == null)
+            if (loginRequiredForCreate && exchange.attrib("user") == null || !((User) exchange.attrib("user")).roleCheck())
                 throw new AuthenticationException();
             return null;
         });
