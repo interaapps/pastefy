@@ -75,7 +75,7 @@ public class PasteController extends HttpController {
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
 
-        return query.all().stream().map(PasteResponse::new).collect(Collectors.toList());
+        return query.order("created_at", true).all().stream().map(PasteResponse::new).collect(Collectors.toList());
     }
 
     @Put("/{id}")

@@ -62,7 +62,7 @@ public class FolderController extends HttpController {
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
 
-        return query.all().stream().map(f -> new FolderResponse(f, false, false, false)).collect(Collectors.toList());
+        return query.order("created_at", true).all().stream().map(f -> new FolderResponse(f, false, false, false)).collect(Collectors.toList());
     }
 
     @Get("/{id}")
