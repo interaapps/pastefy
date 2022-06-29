@@ -4,9 +4,7 @@ import de.interaapps.pastefy.model.responses.folder.FolderResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
-import org.javawebstack.orm.annotation.Column;
-import org.javawebstack.orm.annotation.Dates;
-import org.javawebstack.orm.annotation.Table;
+import org.javawebstack.orm.annotation.*;
 import org.javawebstack.passport.strategies.oauth2.OAuth2Provider;
 import org.javawebstack.passport.strategies.oauth2.providers.*;
 
@@ -21,24 +19,25 @@ public class User extends Model {
     @Column(size = 8, id = true)
     public String id;
 
-    @Column
+    @Column @Searchable
     public String name;
 
-    @Column(size = 33)
+    @Column(size = 33) @Filterable
     public String uniqueName;
 
-    @Column(name = "email")
+    @Column(name = "email") @Filterable
     public String eMail;
 
     @Column
     public String avatar;
 
-    @Column(size = 455)
+    @Column(size = 455) @Filterable
     public String authId;
-    @Column
+
+    @Column @Filterable @Searchable
     public AuthenticationProvider authProvider;
 
-    @Column
+    @Column @Filterable @Searchable
     public Type type = Type.USER;
 
     @Column

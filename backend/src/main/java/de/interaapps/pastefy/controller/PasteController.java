@@ -1,8 +1,12 @@
 package de.interaapps.pastefy.controller;
 
 import de.interaapps.accounts.apiclient.AccountsClient;
+import de.interaapps.accounts.apiclient.responses.ListResponse;
 import de.interaapps.accounts.apiclient.responses.contacts.ContactResponse;
+import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.exceptions.NotFoundException;
+import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
+import de.interaapps.pastefy.helper.RequestHelper;
 import de.interaapps.pastefy.model.database.*;
 import de.interaapps.pastefy.model.requests.paste.AddFriendToPasteRequest;
 import de.interaapps.pastefy.model.requests.paste.CreatePasteRequest;
@@ -21,7 +25,9 @@ import org.javawebstack.httpserver.router.annotation.verbs.Get;
 import org.javawebstack.httpserver.router.annotation.verbs.Post;
 import org.javawebstack.httpserver.router.annotation.verbs.Put;
 import org.javawebstack.orm.Repo;
+import org.javawebstack.orm.query.Query;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @PathPrefix("/api/v2/paste")
@@ -57,6 +63,20 @@ public class PasteController extends HttpController {
         response.paste = new PasteResponse(paste);
 
         return response;
+    }
+
+    @Get
+    public List<PasteResponse> getPastes(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey){
+        if (authKey != null)
+            authKey.checkPermission("pastes:read");
+
+        Query<Paste> query = Repo.get(Paste.class).query();
+
+        RequestHelper.userIdPastesFilter(user, query, exchange);
+        query.search(exchange.query("search"));
+        RequestHelper.queryFilter(query, exchange.getQueryParameters());
+
+        return query.all().stream().map(PasteResponse::new).collect(Collectors.toList());
     }
 
     @Put("/{id}")

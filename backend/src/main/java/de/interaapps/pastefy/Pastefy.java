@@ -1,5 +1,6 @@
 package de.interaapps.pastefy;
 
+import de.interaapps.pastefy.auth.AdminMiddleware;
 import de.interaapps.pastefy.auth.AuthMiddleware;
 import de.interaapps.pastefy.auth.OAuth2Callback;
 import de.interaapps.pastefy.controller.HttpController;
@@ -121,6 +122,7 @@ public class Pastefy {
         map.put("PASTEFY_LOGIN_REQUIRED_CREATE", "pastefy.loginrequired.create");
         map.put("PASTEFY_LOGIN_REQUIRED_READ", "pastefy.loginrequired.read");
 
+        map.put("PASTEFY_LIST_PASTES", "pastefy.listpastes");
 
         File file = new File(".env");
         if (file.exists()) {
@@ -185,6 +187,7 @@ public class Pastefy {
             return new ExceptionResponse(throwable);
         });
         httpServer.middleware("auth", new AuthMiddleware());
+        httpServer.middleware("admin", new AdminMiddleware());
         httpServer.middleware("auth-login-required-read", exchange -> {
             if (loginRequiredForRead && exchange.attrib("user") == null)
                 throw new AuthenticationException();

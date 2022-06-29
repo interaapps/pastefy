@@ -3,9 +3,7 @@ package de.interaapps.pastefy.model.database;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
-import org.javawebstack.orm.annotation.Column;
-import org.javawebstack.orm.annotation.Dates;
-import org.javawebstack.orm.annotation.Table;
+import org.javawebstack.orm.annotation.*;
 
 import java.sql.Timestamp;
 
@@ -15,28 +13,28 @@ public class Paste extends Model {
     @Column
     private int id;
 
-    @Column(size = 8)
+    @Column(size = 8) @Searchable @Filterable
     private String key;
 
-    @Column
+    @Column @Searchable
     private String title;
 
-    @Column(size = 16777215)
+    @Column(size = 16777215) @Searchable
     private String content;
 
-    @Column(size = 8)
+    @Column(size = 8) @Filterable
     private String userId;
 
-    @Column
+    @Column @Filterable
     private boolean encrypted = false;
 
-    @Column(size = 8)
+    @Column(size = 8) @Searchable @Filterable
     public String folder;
 
-    @Column
+    @Column @Searchable @Filterable
     private Type type = Type.PASTE;
 
-    @Column
+    @Column @Searchable
     public Timestamp createdAt;
 
     @Column
