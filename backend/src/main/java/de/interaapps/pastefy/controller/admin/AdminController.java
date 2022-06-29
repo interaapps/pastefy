@@ -31,7 +31,7 @@ public class AdminController extends HttpController {
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
 
-        return query.all();
+        return query.order("created_at", true).all();
     }
 
     @Get("/users/{id}")
