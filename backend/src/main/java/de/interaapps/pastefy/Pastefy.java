@@ -202,7 +202,7 @@ public class Pastefy {
             return null;
         });
         httpServer.middleware("auth-login-required-create", exchange -> {
-            if (loginRequiredForCreate && exchange.attrib("user") == null || !((User) exchange.attrib("user")).roleCheck())
+            if (loginRequiredForCreate && (exchange.attrib("user") == null || !((User) exchange.attrib("user")).roleCheck()))
                 throw new AuthenticationException();
             return null;
         });
