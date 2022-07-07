@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.responses.paste.MultiPastesElement;
 import org.javawebstack.httpserver.Exchange;
+import org.javawebstack.httpserver.router.annotation.With;
 import org.javawebstack.httpserver.router.annotation.verbs.Post;
 import org.javawebstack.webutils.util.IO;
 
@@ -16,6 +17,7 @@ import java.util.Map;
 
 public class FormDataPasteController extends HttpController {
     @Post("/")
+    @With({"rate-limiter", "auth-login-required-create", "awaiting-access-check", "blocked-check"})
     public String createPaste(Exchange exchange) throws ServletException, IOException {
         exchange.enableMultipart("/tmp", 4000000, 1048576);
         Paste paste = new Paste();

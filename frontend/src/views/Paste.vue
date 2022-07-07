@@ -220,13 +220,6 @@ export default {
                 } else
                     this.content = hljs.highlight(this.language, contents).value
 
-                const importMap = {imports: {}}
-                if (this.multiPastes) {
-                    for (const tab of this.multiPastes) {
-                        importMap.imports[`./${tab.name}`] = `data:text/javascript;base64,${btoa(tab.contents)}`
-                    }
-                }
-
                 if (this.language === "markdown") {
                     const md = require('markdown-it')({
                         html: false,
@@ -251,7 +244,6 @@ export default {
                     <script src="${window.location.protocol}//${window.location.host}/assets/js/htmlconsole.js"><` + `/script>
                     <style>* { box-sizing: border-box; margin: 0px; }</style>
                     <script>createConsole(${JSON.stringify(currentThemeVars)}, false, '200px')<` + `/script>
-                    <script type="importmap">${JSON.stringify(importMap)}<` + `/script>
                     ${contents}
                     <script>
                     document.querySelectorAll("a[href]").forEach(el => {
@@ -270,7 +262,6 @@ export default {
                     <script src="${window.location.protocol}//${window.location.host}/assets/js/htmlconsole.js"><` + `/script>
                     <style>* { box-sizing: border-box; margin: 0px; }</style>
                     <script>createConsole(${JSON.stringify(currentThemeVars)}, true, '100%')<` + `/script>
-                    <script type="importmap">${JSON.stringify(importMap)}<` + `/script>
                     ${wrappingHTML.innerHTML}
                     `
                 }
