@@ -109,7 +109,7 @@ function createConsole(theme, opened = true, height = '300px'){
     consoleInput.onkeydown = e => {
         if (e.key == 'Enter') {
             try {
-                console.log(eval(e.target.value))
+                console.log((window.evalReplace || eval)(e.target.value))
             } catch (e) {
                 console.error(e.message)
             }

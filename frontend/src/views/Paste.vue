@@ -253,7 +253,7 @@ export default {
                     `
                 } else if (this.language === "javascript") {
                     const htmlScriptElement = document.createElement("script");
-                    htmlScriptElement.innerHTML = contents
+                    htmlScriptElement.innerHTML = contents+"\nwindow.evalReplace = c => eval(c);\n"
                     htmlScriptElement.type = 'module'
                     const wrappingHTML = document.createElement("div")
                     wrappingHTML.appendChild(htmlScriptElement)
