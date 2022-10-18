@@ -87,7 +87,7 @@ public class PasteController extends HttpController {
         ActionResponse response = new ActionResponse();
         Paste paste = Repo.get(Paste.class).where("key", id).first();
         if (paste != null) {
-            if (paste.getUserId().equals(user.getId()) || user.type == User.Type.ADMIN) {
+            if ((paste.getUserId() != null && paste.getUserId().equals(user.getId())) || user.type == User.Type.ADMIN) {
                 if (request.title != null)
                     paste.setTitle(request.title);
                 if (request.content != null)
@@ -125,7 +125,7 @@ public class PasteController extends HttpController {
         Paste paste = Repo.get(Paste.class).where("key", id).first();
 
         if (paste != null) {
-            if (paste.getUserId().equals(user.getId()) || user.type == User.Type.ADMIN) {
+            if ((paste.getUserId() != null && paste.getUserId().equals(user.getId())) || user.type == User.Type.ADMIN) {
                 paste.delete();
                 response.success = true;
             } else
