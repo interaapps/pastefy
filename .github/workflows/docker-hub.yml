@@ -19,7 +19,6 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-	id: qemu
         with:
           platforms: 'amd64,arm64'
  
