@@ -19,7 +19,7 @@ public class PasteResponse {
     public String rawURL;
     public Paste.Type type;
     public String createdAt = "0000-00-00 00:00:00";
-    public String expireAt = "0000-00-00 00:00:00";
+    public String expireAt = null;
 
     public PasteResponse(Paste paste) {
         if (paste == null) {
@@ -30,8 +30,10 @@ public class PasteResponse {
         title = paste.getTitle();
         content = paste.getContent();
         createdAt = paste.createdAt.toString();
+
         if (paste.expireAt != null)
             expireAt = paste.expireAt.toString();
+
         encrypted = paste.isEncrypted();
         userId = paste.getUserId();
         forkedFrom = paste.getForkedFrom();

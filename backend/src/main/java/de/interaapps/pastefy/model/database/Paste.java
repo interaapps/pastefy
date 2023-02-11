@@ -54,7 +54,7 @@ public class Paste extends Model {
     private Visibility visibility;
 
     @Column
-    public Timestamp expireAt;
+    public Timestamp expireAt = null;
 
     @Column
     @Searchable
