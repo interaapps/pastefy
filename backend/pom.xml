@@ -26,7 +26,7 @@
         <dependency>
             <groupId>org.javawebstack</groupId>
             <artifactId>abstract-data</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.javawebstack</groupId>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>org.javawebstack</groupId>
             <artifactId>orm</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
         </dependency>
 
         <dependency>
@@ -63,7 +63,6 @@
             <version>1.0.4</version>
         </dependency>
     </dependencies>
-
     <build>
         <finalName>backend</finalName>
         <resources>

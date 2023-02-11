@@ -4,7 +4,11 @@ import de.interaapps.pastefy.model.database.Paste;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.Column;
+import org.javawebstack.orm.annotation.Dates;
 
+import java.sql.Timestamp;
+
+@Dates
 public class PublicPasteEngagement extends Model {
     @Column
     public int id;
@@ -14,6 +18,12 @@ public class PublicPasteEngagement extends Model {
 
     @Column
     public int score = 0;
+
+    @Column
+    public Timestamp createdAt;
+
+    @Column
+    public Timestamp updatedAt;
 
     public static void addInterestFromPaste(Paste paste, int score){
         new Thread(()->{

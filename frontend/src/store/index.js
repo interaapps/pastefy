@@ -24,6 +24,7 @@ let store = new Vuex.Store({
             editId: null,
             expire_at: null,
             forked_from: null,
+            visibility: '',
             multiPastes: []
         },
         app: {

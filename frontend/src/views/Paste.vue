@@ -300,6 +300,8 @@ export default {
                 this.$store.state.currentPaste.password = this.password
                 this.$store.state.currentPaste.editId = this.paste.id
                 this.$store.state.currentPaste.expire_at = this.paste.expire_at
+                console.log(this.paste.visibility)
+                this.$store.state.currentPaste.visibility = this.paste.visibility
                 if (this.paste.folder)
                     this.$store.state.currentPaste.folder = this.paste.folder
             } else {

@@ -77,18 +77,18 @@
                 <div id="options" :class="{'opened': optionsOpened}">
 
                     <h5 class="label">VISIBILITY</h5>
-                    <select v-model="visibility" class="input" style="margin-top: 10px; margin-bottom: 4px">
+                    <select v-model="$store.state.currentPaste.visibility" class="input" style="margin-top: 10px; margin-bottom: 4px">
                         <option value="UNLISTED">Unlisted</option>
                         <option v-if="$store.state.appInfo.public_pastes_enabled" value="PUBLIC">Public</option>
                         <option value="PRIVATE">Private</option>
                     </select>
                     <p style="opacity: 0.5; color: var(--text-color); margin-bottom: 8px">
-                        <template v-if="visibility === 'PUBLIC'">Public Pastes can be viewed in the public section of {{ $store.state.appInfo.custom_name || 'Pastefy' }}. Users can search, interact or fork them. Encryption and password protection is not allowed.</template>
-                        <template v-else-if="visibility === 'PRIVATE'">Only you can view the paste.</template>
+                        <template v-if="$store.state.currentPaste.visibility === 'PUBLIC'">Public Pastes can be viewed in the public section of {{ $store.state.appInfo.custom_name || 'Pastefy' }}. Users can search, interact or fork them. Encryption and password protection is not allowed.</template>
+                        <template v-else-if="$store.state.currentPaste.visibility === 'PRIVATE'">Only you can view the paste.</template>
                         <template v-else>You & everyone with the paste url</template>
                     </p>
 
-                    <template v-if="visibility !== 'PUBLIC'">
+                    <template v-if="$store.state.currentPaste.visibility !== 'PUBLIC'">
                         <h5 class="label">Password</h5>
                         <input autocomplete="new-password" v-model="$store.state.currentPaste.password" class="input"
                                type="password" placeholder="Password (Optional)">
@@ -96,7 +96,7 @@
 
                     <h5 class="label">SETTINGS</h5>
 
-                    <template v-if="visibility !== 'PUBLIC'">
+                    <template v-if="$store.state.currentPaste.visibility !== 'PUBLIC'">
                         <label for="clientencrypted">Client-Encrypted</label>
                         <input type="checkbox" v-model="clientEncrypted"
                                :readonly="$store.state.currentPaste.password != ''" name="clientencrypted">
@@ -154,7 +154,7 @@
                     >
                         <span v-if="$store.state.currentPaste.editId">SAVE</span>
                         <span v-else-if="$store.state.currentPaste.folder">SUBMIT TO FOLDER</span>
-                        <span v-else-if="visibility === 'PUBLIC'">SUBMIT (PUBLIC)</span>
+                        <span v-else-if="$store.state.currentPaste.visibility === 'PUBLIC'">SUBMIT (PUBLIC)</span>
                         <span v-else>SUBMIT</span>
                     </a>
                     <a id="settings-button" @click="optionsOpened = !optionsOpened">
@@ -230,7 +230,6 @@ export default {
         loading: false,
         clientEncrypted: false,
         expiry: false,
-        visibility: 'UNLISTED',
         friendList: [],
         multiPastesSelected: null,
         loginBaseURL: process.env.VUE_APP_API_BASE + "/api/v2/auth/oauth2/",
@@ -266,6 +265,7 @@ export default {
         //codeEditor.textAreaElement.addEventListener("paste", codeEditorInputListener)
         codeEditor.textAreaElement.placeholder = "Paste in here"
         codeEditor.create()
+        this.clearInputs()
     },
     created() {
         document.onkeyup = (e) => {
@@ -328,7 +328,7 @@ export default {
             if (this.$store.state.app.fullscreenOnHomepage && to.path !== '/')
                 this.$store.state.app.fullscreen = false
         },
-        visibility(to) {
+        '$store.state.currentPaste.visibility'(to) {
             if (to === 'PUBLIC') {
                 this.clientEncrypted = false
             }
@@ -390,7 +390,7 @@ export default {
                 content: codeEditor.value,
                 title: this.$store.state.currentPaste.title,
                 forked_from: this.$store.state.currentPaste.forked_from || undefined,
-                visibility: this.visibility
+                visibility: this.$store.state.currentPaste.visibility
             }
 
             if (this.$store.state.currentPaste.folder !== "")
@@ -493,7 +493,7 @@ export default {
             this.multiPastesSelected = null
             this.clientEncrypted = !!this.$store.state.appInfo.encryption_is_default
             this.expiry = false
-            this.visibility = 'UNLISTED'
+            this.$store.state.currentPaste.visibility = 'UNLISTED'
             codeEditor.update()
         },
         isPWA() {

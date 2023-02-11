@@ -13,8 +13,8 @@ import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.query.Query;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @PathPrefix("/api/v2/public-pastes")
@@ -24,7 +24,7 @@ public class PublicPastesController extends HttpController {
     public List<PasteResponse> getPublicPastes(Exchange exchange) {
         Query<Paste> query = Repo.get(Paste.class)
                 .query()
-                .whereExists(PublicPasteEngagement.class, engagementQuery -> engagementQuery.where(Paste.class, "id", "=", PublicPasteEngagement.class, "pasteId").order("score", true))
+                .order("createdAt", true)
                 .where("visibility", Paste.Visibility.PUBLIC);
 
         RequestHelper.pagination(query, exchange);
@@ -39,24 +39,38 @@ public class PublicPastesController extends HttpController {
 
     @Get("/trending")
     public List<PasteResponse> getTrending(Exchange exchange) {
-        Query<Paste> query = Repo.get(Paste.class)
-                .query()
-                .whereExists(PublicPasteEngagement.class, engagementQuery -> engagementQuery.where(Paste.class, "id", "=", PublicPasteEngagement.class, "pasteId").order("score", true))
-                .order("createdAt", true)
-                .where("visibility", Paste.Visibility.PUBLIC);
+        Query<PublicPasteEngagement> publicPasteEngagements = Repo.get(PublicPasteEngagement.class).query();
+
+        RequestHelper.pagination(publicPasteEngagements, exchange);
+
         if ("true".equals(exchange.rawRequest().getParameter("trending"))) {
             Date date = new Date();
-            // Check if post is not over 4 Days old
             date.setTime(System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 4));
-            query.where("createdAt", ">", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
+            publicPasteEngagements.where("createdAt", ">", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
         }
 
-        RequestHelper.pagination(query, exchange);
+        Query<Paste> query = Repo.get(Paste.class).query();
+
+        Map<Integer, Integer> scores = new ConcurrentHashMap<>();
+
+        List<PublicPasteEngagement> engagements = publicPasteEngagements.all();
+
+        for (PublicPasteEngagement engagement : engagements) {
+            scores.put(engagement.pasteId, engagement.score);
+        }
+
+        query.whereIn("id", engagements.stream().map(p -> p.pasteId).toArray());
+
+        query.where("visibility", Paste.Visibility.PUBLIC);
+
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
 
+
+
         return query
                 .stream()
+                .sorted(Comparator.comparingInt(p -> scores.get(p.getId())))
                 .map(p -> PasteResponse.create(p, exchange))
                 .collect(Collectors.toList());
     }
