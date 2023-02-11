@@ -39,8 +39,8 @@ public class UserController extends HttpController {
         if (exchange.rawRequest().getParameter("page") != null)
             page = Integer.parseInt(exchange.rawRequest().getParameter("page")) - 1;
 
-        response.pastes = Repo.get(Paste.class).where("userId", user.getId()).isNull("folder").order("updated_at", true).limit(10).offset(page * 10).all().stream().map(paste -> PasteResponse.create(paste, exchange)).collect(Collectors.toList());
-        response.folder = Repo.get(Folder.class).where("userId", user.getId()).isNull("parent").order("updated_at", true).all().stream().map(folder -> new FolderResponse(folder, exchange.rawRequest().getParameter("hide_children") == null)).collect(Collectors.toList());
+        response.pastes = Repo.get(Paste.class).where("userId", user.getId()).whereNull("folder").order("updated_at", true).limit(10).offset(page * 10).all().stream().map(paste -> PasteResponse.create(paste, exchange)).collect(Collectors.toList());
+        response.folder = Repo.get(Folder.class).where("userId", user.getId()).whereNull("parent").order("updated_at", true).all().stream().map(folder -> new FolderResponse(folder, exchange.rawRequest().getParameter("hide_children") == null)).collect(Collectors.toList());
 
         return response;
     }
@@ -61,6 +61,10 @@ public class UserController extends HttpController {
             authKey.checkPermission("pastes:read");
 
         Query<Paste> query = Repo.get(Paste.class).query().where("userId", user.id).order("createdAt", true);
+
+        if ("true".equalsIgnoreCase(exchange.query("hide_children", "false"))) {
+            query.whereNull("folder");
+        }
 
         RequestHelper.pagination(query, exchange);
         query.search(exchange.query("search"));

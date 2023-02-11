@@ -71,6 +71,7 @@ public class PublicPastesController extends HttpController {
         return query
                 .stream()
                 .sorted(Comparator.comparingInt(p -> scores.get(p.getId())))
+                .sorted(Collections.reverseOrder())
                 .map(p -> PasteResponse.create(p, exchange))
                 .collect(Collectors.toList());
     }
