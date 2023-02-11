@@ -193,7 +193,6 @@ public class Pastefy {
             if (throwable instanceof AuthenticationException) {
                 exchange.status(401);
             } else if (throwable instanceof NotFoundException) {
-                System.out.println("vörnüllvör");
                 exchange.status(404);
             } else {
                 exchange.status(500);
