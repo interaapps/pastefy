@@ -4,6 +4,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.*;
+import org.javawebstack.orm.query.Query;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -61,8 +62,16 @@ public class Folder extends Model {
         return key;
     }
 
+    public List<Paste> getPastes(boolean showPrivatePastes) {
+        Query<Paste> query = Repo.get(Paste.class).where("folder", key).order("updated_at", true);
+
+        if (!showPrivatePastes)
+            query.where("visibility", "!=", Paste.Visibility.PRIVATE);
+
+        return query.all();
+    }
     public List<Paste> getPastes() {
-        return Repo.get(Paste.class).where("folder", key).order("updated_at", true).all();
+        return getPastes(false);
     }
 
     public List<Folder> getFolders() {

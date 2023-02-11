@@ -22,6 +22,8 @@ let store = new Vuex.Store({
             folder: "",
             friends: "",
             editId: null,
+            expire_at: null,
+            forked_from: null,
             multiPastes: []
         },
         app: {

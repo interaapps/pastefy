@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "0.1.0",
+  "version": "6.6.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -12,7 +12,9 @@
     "core-js": "^3.6.5",
     "markdown-it": "^12.0.4",
     "petrel": "^1.0.7",
+    "portal-vue": "^2.1.7",
     "sass": "^1.43.4",
+    "v-animate-css": "^1.0.1",
     "vue": "^2.6.11",
     "vue-router": "^3.5.1"
   },

@@ -62,7 +62,7 @@ public class FolderController extends HttpController {
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
 
-        return query.order("created_at", true).all().stream().map(f -> new FolderResponse(f, false, false, false)).collect(Collectors.toList());
+        return query.order("created_at", true).all().stream().map(f -> new FolderResponse(f, false, false, false, false)).collect(Collectors.toList());
     }
 
     @Get("/{id}")
@@ -74,7 +74,8 @@ public class FolderController extends HttpController {
         Folder folder = Repo.get(Folder.class).where("key", id).first();
         if (folder == null)
             throw new NotFoundException();
-        return new FolderResponse(folder, true, exchange.rawRequest().getParameter("hide_children") == null);
+
+        return new FolderResponse(folder, true, exchange.rawRequest().getParameter("hide_children") == null, true, user != null && user.id.equals(folder.userId));
     }
 
     @Delete("/{id}")

@@ -2,8 +2,10 @@ export default {
 
     "--background-color": "#212531",
     "--page-background-color": "#1a1e27",
+    "--sidebar-obj-background-color": "#262b39",
     "--obj-background-color": "#262b39",
     "--obj-background-color-hover": "#1d212c",
+    "--obj-border-color": '#FFFFFF09',
     "--text-color": "#ffffff",
     "--text-color-alpha": "#ffffff88",
     "--tab-color": "#212733",

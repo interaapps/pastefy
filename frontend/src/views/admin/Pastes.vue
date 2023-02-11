@@ -1,7 +1,7 @@
 <template>
     <div>
         <Header />
-        <input v-model="search" class="input" placeholder="Search" @change="page = 1; loadPastes()" @keydown.enter="page = 1; loadPastes()" style="max-width: 840px">
+        <input v-model="search" class="input" placeholder="Search" @change="page = 1; loadPastes()" @keydown.enter="page = 1; loadPastes()" style="max-width: 1000px">
         <div>
             <div id="pastes">
                 <PasteCard v-for="paste of pastes" :key="paste.id" :paste="paste"/>
@@ -31,7 +31,11 @@ export default {
     },
     methods: {
         async loadPastes() {
-            this.pastes = await this.pastefyAPI.get("/api/v2/paste", {page: this.page, ...buildSearchAndFilterQuery(this.search)})
+            this.pastes = await this.pastefyAPI.get("/api/v2/paste", {
+                page: this.page,
+                ...buildSearchAndFilterQuery(this.search),
+                shorten_content: true
+            })
         }
     }
 }

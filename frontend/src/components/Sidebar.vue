@@ -1,8 +1,7 @@
 <template>
     <div>
         <router-link to="/" id="logo" :class="{'mobile': $store.state.mobileVersion && this.$route.path !== '/'}">
-            <img
-                :src="$store.state.appInfo.custom_logo ? $store.state.appInfo.custom_logo : require('../assets/logo.png')">
+            <img :src="$store.state.appInfo.custom_logo ? $store.state.appInfo.custom_logo : require('../assets/logo.png')">
         </router-link>
         <div id="sidebar"
              :class="{'input-scrolled': contentInputScrolled, 'fullscreen': $store.state.app.fullscreen || (($store.state.mobileVersion || $store.state.app.fullscreenOnHomepage) && this.$route.path === '/'), 'hidden': $store.state.mobileVersion && this.$route.path !== '/'}">
@@ -76,21 +75,48 @@
                 <div ref="editor" id="editor"></div>
 
                 <div id="options" :class="{'opened': optionsOpened}">
-                    <h5 class="label">Password</h5>
-                    <input autocomplete="new-password" v-model="$store.state.currentPaste.password" class="input"
-                           type="password" placeholder="Password (Optional)">
 
-                    <h5 class="label">CLIENT-ENCRYPTED</h5>
-                    <label for="clientencrypted">Client-Encrypted</label>
-                    <input type="checkbox" v-model="clientEncrypted"
-                           :readonly="$store.state.currentPaste.password != ''" name="clientencrypted">
-                    <br><span style="color: #FFFFFF88" v-if="clientEncrypted">Client-Encryption deactivates the RAW function and some more. You can't open an encrypted paste without the password (If you set one) or the link.</span><br>
+                    <h5 class="label">VISIBILITY</h5>
+                    <select v-model="visibility" class="input" style="margin-top: 10px; margin-bottom: 4px">
+                        <option value="UNLISTED">Unlisted</option>
+                        <option v-if="$store.state.appInfo.public_pastes_enabled" value="PUBLIC">Public</option>
+                        <option value="PRIVATE">Private</option>
+                    </select>
+                    <p style="opacity: 0.5; color: var(--text-color); margin-bottom: 8px">
+                        <template v-if="visibility === 'PUBLIC'">Public Pastes can be viewed in the public section of {{ $store.state.appInfo.custom_name || 'Pastefy' }}. Users can search, interact or fork them. Encryption and password protection is not allowed.</template>
+                        <template v-else-if="visibility === 'PRIVATE'">Only you can view the paste.</template>
+                        <template v-else>You & everyone with the paste url</template>
+                    </p>
+
+                    <template v-if="visibility !== 'PUBLIC'">
+                        <h5 class="label">Password</h5>
+                        <input autocomplete="new-password" v-model="$store.state.currentPaste.password" class="input"
+                               type="password" placeholder="Password (Optional)">
+                    </template>
+
+                    <h5 class="label">SETTINGS</h5>
+
+                    <template v-if="visibility !== 'PUBLIC'">
+                        <label for="clientencrypted">Client-Encrypted</label>
+                        <input type="checkbox" v-model="clientEncrypted"
+                               :readonly="$store.state.currentPaste.password != ''" name="clientencrypted">
+
+                        <span style="opacity: 0.5; color: var(--text-color)" v-if="clientEncrypted"><br>Client-Encryption deactivates the RAW function and some more. You can't open an encrypted paste without the password (If you set one) or the link.</span><br>
+                    </template>
+
+                    <label for="expiry">Paste Expires</label>
+                    <input type="checkbox" v-model="expiry" name="expiry">
+                    <input v-if="expiry" :min="new Date().toTimeString()" v-model="$store.state.currentPaste.expire_at" class="input" type="datetime-local">
+
+                    <br>
 
                     <h5 v-if="$store.state.user.logged_in" class="label">Folder</h5>
                     <select class="input" v-if="$store.state.user.logged_in" v-model="$store.state.currentPaste.folder">
                         <option selected value="">none</option>
                         <option v-for="(id, name) of folders" :key="id" :value="id">{{ name }}</option>
                     </select>
+
+
                     <div v-if="$store.state.user.logged_in && $store.state.user.auth_type == 'interaapps'">
                         <h5 class="label">Share to friend</h5>
                         <input autocomplete="off" v-model="$store.state.currentPaste.friends" class="input" type="text"
@@ -111,9 +137,26 @@
                     </svg>
                 </div>
 
+
+                <div id="edit-indicator" v-if="$store.state.currentPaste.forked_from">
+                    <span>FORKING {{ windowHost }}/{{ $store.state.currentPaste.forked_from }}</span>
+                    <svg @click="$store.state.currentPaste.forked_from = null" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                         fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                        <path
+                            d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </div>
+
                 <div id="buttons" :class="{mobile: $store.state.mobileVersion}">
-                    <a id="submit-button"
-                       @click="send">{{ $store.state.currentPaste.editId ? 'SAVE' : $store.state.currentPaste.folder ? 'SUBMIT TO FOLDER' : 'SUBMIT' }}</a>
+                    <a
+                        id="submit-button"
+                        @click="send"
+                    >
+                        <span v-if="$store.state.currentPaste.editId">SAVE</span>
+                        <span v-else-if="$store.state.currentPaste.folder">SUBMIT TO FOLDER</span>
+                        <span v-else-if="visibility === 'PUBLIC'">SUBMIT (PUBLIC)</span>
+                        <span v-else>SUBMIT</span>
+                    </a>
                     <a id="settings-button" @click="optionsOpened = !optionsOpened">
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-sliders" fill="currentColor"
                              xmlns="http://www.w3.org/2000/svg">
@@ -176,7 +219,7 @@ const AUTOCOMPLETIONS = [
 
 let codeEditor = null;
 let codeEditorInputListener;
-codeEditor;
+
 const DEFAULT_HIGHLIGHTER = v => v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;")
 
 export default {
@@ -186,6 +229,8 @@ export default {
         folders: {},
         loading: false,
         clientEncrypted: false,
+        expiry: false,
+        visibility: 'UNLISTED',
         friendList: [],
         multiPastesSelected: null,
         loginBaseURL: process.env.VUE_APP_API_BASE + "/api/v2/auth/oauth2/",
@@ -261,6 +306,20 @@ export default {
         '$store.state.currentPaste.title'() {
             this.updateEditorLang()
         },
+        '$store.state.currentPaste.expire_at'() {
+            if (this.$store.state.currentPaste.expire_at) {
+                this.expiry = true
+            }
+        },
+        'expiry'() {
+            if (this.expiry) {
+                const date = new Date()
+                date.setTime(date.getTime() + 1000 * 60 * 60 * 48)
+                this.$store.state.currentPaste.expire_at = date.toISOString().slice(0, 19).replace('T', ' ')
+            } else {
+                this.$store.state.currentPaste.expire_at = null
+            }
+        },
         '$store.state.currentPaste.content'(to) {
             codeEditor.value = to
             codeEditor.update()
@@ -269,6 +328,11 @@ export default {
             if (this.$store.state.app.fullscreenOnHomepage && to.path !== '/')
                 this.$store.state.app.fullscreen = false
         },
+        visibility(to) {
+            if (to === 'PUBLIC') {
+                this.clientEncrypted = false
+            }
+        }
 
     },
     methods: {
@@ -324,11 +388,16 @@ export default {
         async send() {
             let data = {
                 content: codeEditor.value,
-                title: this.$store.state.currentPaste.title
+                title: this.$store.state.currentPaste.title,
+                forked_from: this.$store.state.currentPaste.forked_from || undefined,
+                visibility: this.visibility
             }
 
             if (this.$store.state.currentPaste.folder !== "")
                 data.folder = this.$store.state.currentPaste.folder
+
+            if (this.expiry)
+                data.expire_at = this.$store.state.currentPaste.expire_at
 
             data.encrypted = false;
             let key;
@@ -381,7 +450,7 @@ export default {
                         this.$store.state.app.lastPastes.unshift({
                             id: paste.id,
                             title: this.$store.state.currentPaste.title,
-                            content: this.$store.state.currentPaste.content.substring(0, 50) + "...",
+                            content: codeEditor.value.substring(0, 50) + "...",
                             date: date.getMonth() + "/" + date.getDate() + "/" + date.getFullYear()
                         })
                         localStorage.setItem("created_pastes", JSON.stringify(this.$store.state.app.lastPastes))
@@ -410,7 +479,6 @@ export default {
             }
         },
         clearInputs() {
-            console.log("CLEARING");
             codeEditor.value = ""
             this.$store.state.app.fullscreen = false
             this.inputFullscreen = false
@@ -420,7 +488,12 @@ export default {
             this.$store.state.currentPaste.folder = ""
             this.$store.state.currentPaste.editId = null
             this.$store.state.currentPaste.multiPastes = []
+            this.$store.state.currentPaste.expire_at = null
+            this.$store.state.currentPaste.forked_from = null
             this.multiPastesSelected = null
+            this.clientEncrypted = !!this.$store.state.appInfo.encryption_is_default
+            this.expiry = false
+            this.visibility = 'UNLISTED'
             codeEditor.update()
         },
         isPWA() {
@@ -491,6 +564,7 @@ export default {
 }
 
 #logo {
+    user-select: none;
     position: fixed;
     top: 16px;
     left: 27px;
@@ -513,6 +587,7 @@ export default {
 }
 
 #profile-picture {
+    user-select: none;
     float: right;
     margin-right: 14px;
     margin-top: 2px;
@@ -559,6 +634,10 @@ export default {
             background: #00000033;
             border-radius: 100px;
         }
+    }
+
+    .input {
+        background: var(--sidebar-obj-background-color);
     }
 
     #create-paste {
@@ -655,7 +734,7 @@ export default {
 
         #edit-indicator {
             color: var(--text-color);
-            background: var(--obj-background-color);
+            background: var(--sidebar-obj-background-color);
             border-radius: 10px;
             padding: 10px;
             margin-top: 10px;
@@ -727,6 +806,7 @@ export default {
             }
 
             #submit-button {
+                user-select: none;
                 background: #3469FF;
                 color: #FFF;
                 width: calc(100% - 54.8px);
@@ -743,7 +823,7 @@ export default {
             #settings-button {
                 margin-left: 9.6px;
                 width: 45px;
-                background: var(--obj-background-color);
+                background: var(--sidebar-obj-background-color);
 
                 svg {
                     vertical-align: middle;
@@ -785,7 +865,7 @@ export default {
             }
 
             #friend-list {
-                background: var(--obj-background-color);
+                background: var(--sidebar-obj-background-color);
                 border-radius: 10px;
                 padding: 2px;
                 max-height: 150px;
@@ -995,12 +1075,8 @@ export default {
     }
 }
 
-/*.input-scrolled {
-    #logo {
-        top: -100px !important;
-    }
-    #footer {
-        display: none !important;
-    }
-}*/
+input[type="checkbox"] {
+    margin-left: 10px;
+    vertical-align: middle;
+}
 </style>

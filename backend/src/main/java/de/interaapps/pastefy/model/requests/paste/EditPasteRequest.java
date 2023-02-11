@@ -12,4 +12,8 @@ public class EditPasteRequest {
     public Boolean encrypted;
     public String folder;
     public Paste.Type type;
+
+    public Paste.Visibility visibility;
+
+    public String expireAt;
 }

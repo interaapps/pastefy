@@ -1,6 +1,7 @@
 package de.interaapps.pastefy.controller;
 
 import de.interaapps.pastefy.model.database.Paste;
+import de.interaapps.pastefy.model.database.algorithm.PublicPasteEngagement;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.helper.MimeType;
 import org.javawebstack.httpserver.router.annotation.With;
@@ -19,6 +20,11 @@ public class RawController extends HttpController {
             exchange.status(404);
             return "404 - Paste not found";
         }
+
+        if (paste.isPublic()) {
+            PublicPasteEngagement.addInterestFromPaste(paste, 1);
+        }
+
         return paste.getContent();
     }
 }

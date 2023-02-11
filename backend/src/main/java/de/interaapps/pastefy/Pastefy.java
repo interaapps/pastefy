@@ -4,6 +4,7 @@ import de.interaapps.pastefy.auth.*;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.controller.PasteController;
 import de.interaapps.pastefy.exceptions.AuthenticationException;
+import de.interaapps.pastefy.exceptions.FeatureDisabledException;
 import de.interaapps.pastefy.exceptions.NotFoundException;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Paste;
@@ -30,9 +31,9 @@ import org.javawebstack.webutils.middlewares.RateLimitMiddleware;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.*;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -53,6 +54,7 @@ public class Pastefy {
     private boolean loginRequired = false;
     private boolean loginRequiredForRead = false;
     private boolean loginRequiredForCreate = false;
+    private boolean publicPastesEnabled = false;
 
     public Pastefy() {
         config = new Config();
@@ -127,6 +129,8 @@ public class Pastefy {
         map.put("PASTEFY_LIST_PASTES", "pastefy.listpastes");
         map.put("PASTEFY_PUBLIC_STATS", "pastefy.publicstats");
 
+        map.put("PASTEFY_PUBLIC_PASTES", "pastefy.publicpastes");
+
         File file = new File(".env");
         if (file.exists()) {
             config.add(new EnvFile(file).withVariables(), map);
@@ -137,6 +141,7 @@ public class Pastefy {
         loginRequired = config.get("pastefy.loginrequired", "false").toLowerCase(Locale.ROOT).equals("true");
         loginRequiredForCreate = loginRequired || config.get("pastefy.loginrequired.create", "false").toLowerCase(Locale.ROOT).equals("true");
         loginRequiredForRead = loginRequired || config.get("pastefy.loginrequired.read", "false").toLowerCase(Locale.ROOT).equals("true");
+        publicPastesEnabled = config.get("pastefy.publicpastes", "true").toLowerCase(Locale.ROOT).equals("true");
     }
 
     protected void setupModels() {
@@ -180,13 +185,20 @@ public class Pastefy {
         });
 
         httpServer.exceptionHandler((exchange, throwable) -> {
+            if (throwable instanceof RuntimeException) {
+                if (throwable.getCause() != null)
+                    throwable = throwable.getCause();
+            }
+
             if (throwable instanceof AuthenticationException) {
                 exchange.status(401);
             } else if (throwable instanceof NotFoundException) {
+                System.out.println("vörnüllvör");
                 exchange.status(404);
             } else {
                 exchange.status(500);
             }
+
             return new ExceptionResponse(throwable);
         });
         httpServer.middleware("auth", new AuthMiddleware());
@@ -204,6 +216,12 @@ public class Pastefy {
         httpServer.middleware("auth-login-required-create", exchange -> {
             if (loginRequiredForCreate && (exchange.attrib("user") == null || !((User) exchange.attrib("user")).roleCheck()))
                 throw new AuthenticationException();
+            return null;
+        });
+
+        httpServer.middleware("public-pastes-endpoint", exchange -> {
+            if (!publicPastesEnabled)
+                throw new FeatureDisabledException();
             return null;
         });
 
@@ -259,6 +277,18 @@ public class Pastefy {
         });
 
         httpServer.get("/{*:path}", requestHandler);
+
+        Timer timer = new Timer();
+
+        timer.schedule(new TimerTask() {
+            public void run() {
+                // Delete expired pastes
+                Repo.get(Paste.class)
+                        .where("expireAt", "<", Timestamp.from(Instant.now()))
+                        .notNull("expireAt")
+                        .delete();
+            }
+        }, 0, 1000 * 60);
     }
 
     public void start() {
@@ -292,5 +322,10 @@ public class Pastefy {
 
     public boolean isLoginRequiredForRead() {
         return loginRequiredForRead;
+    }
+
+
+    public boolean publicPastesEnabled() {
+        return publicPastesEnabled;
     }
 }

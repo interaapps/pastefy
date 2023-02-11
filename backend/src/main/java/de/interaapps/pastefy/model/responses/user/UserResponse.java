@@ -11,6 +11,7 @@ public class UserResponse {
     public boolean loggedIn = false;
     public String id;
     public String name;
+    public String displayName;
     public String color;
     public String profilePicture;
     public String authType;
@@ -21,7 +22,8 @@ public class UserResponse {
         if (user == null)
             return;
 
-        name = user.getName();
+        name = user.getUniqueName();
+        displayName = user.getName();
         authType = user.getAuthProvider().getName();
         // color = user.getFavouriteColor();
         color = "#f52966";

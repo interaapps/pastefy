@@ -16,6 +16,11 @@ const routes = [
         component: () => import('../views/Homepage')
     },
     {
+        path: "/public",
+        name: "Public",
+        component: () => import('../views/PublicPastes')
+    },
+    {
         path: "/shared",
         name: "SharedPastes",
         component: () => import('../views/SharedPastes')

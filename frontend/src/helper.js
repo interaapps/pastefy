@@ -1,3 +1,6 @@
+import hljs from "highlight.js";
+import LANGUAGE_REPLACEMENTS from "@/assets/data/langReplacements";
+
 function copyStringToClipboard(str) {
     var el = document.createElement('textarea');
     el.value = str;
@@ -92,6 +95,28 @@ export function buildSearchAndFilterQuery(q) {
     }
 
     return query
+}
+
+const languages = [...hljs.listLanguages(), "text"];
+
+export function getLanguageByFileName(fileName) {
+    const fileNameExtension = fileName.split(".");
+    let ending = fileNameExtension[fileNameExtension.length - 1];
+
+    let language = null;
+
+    for (let replace in LANGUAGE_REPLACEMENTS) {
+        if (ending == replace) {
+            ending = LANGUAGE_REPLACEMENTS[replace];
+            break;
+        }
+    }
+
+    if (languages.includes(ending)) {
+        language = ending;
+    }
+
+    return [ending, language]
 }
 
 export default {copyStringToClipboard, showSnackBar, buildSearchAndFilterQuery, Toast}

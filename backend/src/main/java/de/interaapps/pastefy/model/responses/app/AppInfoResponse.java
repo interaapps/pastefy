@@ -16,6 +16,7 @@ public class AppInfoResponse {
     public boolean loginRequiredForCreate;
 
     public boolean encryptionIsDefault;
+    public boolean publicPastesEnabled;
 
     public AppInfoResponse(Pastefy pastefy) {
         Config config = pastefy.getConfig();
@@ -30,6 +31,8 @@ public class AppInfoResponse {
 
         loginRequiredForRead = pastefy.isLoginRequiredForRead();
         loginRequiredForCreate = pastefy.isLoginRequiredForCreate();
+
+        publicPastesEnabled = pastefy.publicPastesEnabled();
 
         String footerString = config.get("pastefy.info.custom.footer", "");
         customFooter = new HashMap<>();

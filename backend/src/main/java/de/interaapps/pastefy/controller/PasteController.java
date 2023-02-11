@@ -3,9 +3,11 @@ package de.interaapps.pastefy.controller;
 import de.interaapps.accounts.apiclient.AccountsClient;
 import de.interaapps.accounts.apiclient.responses.contacts.ContactResponse;
 import de.interaapps.pastefy.exceptions.NotFoundException;
+import de.interaapps.pastefy.exceptions.PastePrivateException;
 import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
 import de.interaapps.pastefy.helper.RequestHelper;
 import de.interaapps.pastefy.model.database.*;
+import de.interaapps.pastefy.model.database.algorithm.PublicPasteEngagement;
 import de.interaapps.pastefy.model.requests.paste.AddFriendToPasteRequest;
 import de.interaapps.pastefy.model.requests.paste.CreatePasteRequest;
 import de.interaapps.pastefy.model.requests.paste.EditPasteRequest;
@@ -25,7 +27,9 @@ import org.javawebstack.httpserver.router.annotation.verbs.Put;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.query.Query;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @PathPrefix("/api/v2/paste")
@@ -36,6 +40,7 @@ public class PasteController extends HttpController {
     public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey, @Path("id") String pasteId) {
         if (authKey != null)
             authKey.checkPermission("pastes:create", "pastes:write");
+
 
         CreatePasteResponse response = new CreatePasteResponse();
 
@@ -54,6 +59,21 @@ public class PasteController extends HttpController {
         paste.setContent(request.content);
         paste.setEncrypted(request.encrypted);
         paste.setType(request.type);
+
+        paste.setVisibility(request.visibility);
+
+        if (request.forkedFrom != null) {
+            Paste forkedFrom = Repo.get(Paste.class).where("key", request.forkedFrom).first();
+            paste.setForkedFrom(request.forkedFrom);
+            if (forkedFrom != null && forkedFrom.isPublic()) {
+                PublicPasteEngagement.addInterestFromPaste(forkedFrom, 10);
+            }
+        }
+
+
+        if (request.expireAt != null && request.expireAt.length() >= 16) {
+            paste.setExpireAt(request.expireAt);
+        }
 
         paste.save();
 
@@ -75,7 +95,7 @@ public class PasteController extends HttpController {
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
 
-        return query.order("created_at", true).all().stream().map(PasteResponse::new).collect(Collectors.toList());
+        return query.order("created_at", true).all().stream().map(p -> PasteResponse.create(p, exchange)).collect(Collectors.toList());
     }
 
     @Put("/{id}")
@@ -98,6 +118,13 @@ public class PasteController extends HttpController {
                     paste.setType(request.type);
                 if (request.encrypted != null)
                     paste.setEncrypted(request.encrypted);
+                if (request.visibility != null)
+                    paste.setVisibility(request.visibility);
+
+                if (request.expireAt != null && request.expireAt.length() >= 16) {
+                    paste.setExpireAt(request.expireAt);
+                }
+
                 paste.save();
                 response.success = true;
             } else
@@ -108,10 +135,23 @@ public class PasteController extends HttpController {
 
     @Get("/{id}")
     @With({"auth-login-required-read", "awaiting-access-check", "blocked-check"})
-    public PasteResponse getPaste(Exchange exchange, @Path("id") String id) {
+    public PasteResponse getPaste(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
         Paste paste = Repo.get(Paste.class).where("key", id).first();
         if (paste == null)
             throw new NotFoundException();
+
+        if (paste.isPrivate() && (user == null || !Objects.equals(user.id, paste.getUserId()))) {
+            throw new PastePrivateException();
+        }
+
+        if (paste.isPublic()) {
+            if (user == null || !Objects.equals(user.id, paste.getUserId())) {
+                PublicPasteEngagement.addInterestFromPaste(paste, "true".equalsIgnoreCase(exchange.query("from_frontend", "false")) ? (user == null ? 5 : 4) : 2);
+            }
+        }
+
+
+
         return new PasteResponse(paste);
     }
 

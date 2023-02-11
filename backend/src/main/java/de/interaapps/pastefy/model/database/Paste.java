@@ -30,6 +30,11 @@ public class Paste extends Model {
     @Filterable
     private String userId;
 
+
+    @Column(size = 8)
+    @Filterable
+    private String forkedFrom;
+
     @Column
     @Filterable
     private boolean encrypted = false;
@@ -43,6 +48,13 @@ public class Paste extends Model {
     @Searchable
     @Filterable
     private Type type = Type.PASTE;
+
+    @Column
+    @Filterable
+    private Visibility visibility;
+
+    @Column
+    public Timestamp expireAt;
 
     @Column
     @Searchable
@@ -83,6 +95,22 @@ public class Paste extends Model {
         return id;
     }
 
+    public Visibility getVisibility() {
+        return visibility == null ? Visibility.UNLISTED : visibility;
+    }
+
+
+    public boolean isPublic() {
+        return visibility == Visibility.PUBLIC;
+    }
+    public boolean isPrivate() {
+        return visibility == Visibility.PRIVATE;
+    }
+
+    public String getForkedFrom() {
+        return forkedFrom;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -119,12 +147,31 @@ public class Paste extends Model {
         this.type = type;
     }
 
+
+    public void setExpireAt(String timeString) {
+        this.expireAt = Timestamp.valueOf(timeString);
+    }
+
     public Type getType() {
         return type;
+    }
+
+    public void setForkedFrom(String forkedFrom) {
+        this.forkedFrom = forkedFrom;
+    }
+
+    public void setVisibility(Visibility visibility) {
+        this.visibility = visibility;
     }
 
     public enum Type {
         PASTE,
         MULTI_PASTE
+    }
+
+    public enum Visibility {
+        UNLISTED,
+        PUBLIC,
+        PRIVATE
     }
 }

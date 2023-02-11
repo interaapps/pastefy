@@ -1,7 +1,7 @@
 @import './base.scss';
 
 .petrel-code-editor {
-  background: var(--obj-background-color);
+  background: var(--sidebar-obj-background-color);
   color: var(--text-color);
   caret-color: var(--text-color);;
   font-size: 16px;
@@ -12,7 +12,7 @@
 }
 
 .petrel-code-editor::-webkit-resizer {
-  background: var(--obj-background-color);
+  background: var(--sidebar-obj-background-color);
   border-bottom-right-radius: 10px;
 }
 
@@ -23,9 +23,10 @@
 }
 
 .petrel-code-editor .petrel-code-editor-line-numbering {
-  background: var(--obj-background-color);
+  user-select: none;
+  background: var(--sidebar-obj-background-color);
   padding-right: 7px;
-  border-right: 2px solid #66666633;
+  border-right: 2px solid var(--obj-border-color);
   min-height: 100%;
 
   padding-top: 10px;
@@ -50,10 +51,10 @@
 }
 
 .petrel-code-editor .petrel-code-editor-autocompletion {
-  background: #191c25AA;
+  background: var(--sidebar-obj-background-color);
   border-radius: 10px;
   backdrop-filter: blur(7px);
-  border: 2px solid #00000055;
+  border: 2px solid var(--obj-border-color);
 
   max-height: 150px;
   overflow: auto;

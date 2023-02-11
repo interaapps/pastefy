@@ -16,7 +16,6 @@ self.addEventListener("message", (e)=>{
     session = e.data.session
     baseUrl = e.data.baseUrl
     setInterval(() => {
-      console.log("yepee");
       Prajax.get(baseUrl+"/api/v2/user/notification", {
         not_received: "true"
       }, {header: {

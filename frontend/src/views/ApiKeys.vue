@@ -1,5 +1,6 @@
 <template>
     <div>
+        <WebsiteBanner paste="pb-apike" />
         <a class="button" @click="newApiKey">ADD API-KEY</a>
         <a class="button" style="background: #FFFFFF09" href="https://github.com/interaapps/pastefy/wiki/API-v2"
            target="_blank">API-DOCS</a>
@@ -13,8 +14,10 @@
 
 <script>
 import helper from "../helper.js";
+import WebsiteBanner from "@/components/WebsiteBanner.vue";
 
 export default {
+    components: {WebsiteBanner},
     data: () => ({
         apiKeys: []
     }),

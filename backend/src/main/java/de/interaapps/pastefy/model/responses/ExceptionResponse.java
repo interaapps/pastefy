@@ -1,6 +1,7 @@
 package de.interaapps.pastefy.model.responses;
 
 import de.interaapps.pastefy.exceptions.AuthenticationException;
+import de.interaapps.pastefy.exceptions.NotFoundException;
 
 public class ExceptionResponse extends ActionResponse {
 
@@ -9,14 +10,7 @@ public class ExceptionResponse extends ActionResponse {
     public boolean exists = false;
 
     public ExceptionResponse(Throwable throwable) {
-        if (throwable instanceof RuntimeException) {
-            if (throwable.getCause() != null)
-                throwable = throwable.getCause();
-        }
-
-        if (throwable instanceof AuthenticationException)
-            System.err.println("AUTH EXCEPTION");
-        else
+        if (!(throwable instanceof AuthenticationException || throwable instanceof NotFoundException))
             throwable.printStackTrace();
         success = false;
 

@@ -1,7 +1,7 @@
 <template>
     <div style="min-height: 100%;">
         <side-bar/>
-        <router-view :class="{'mobile': $store.state.mobileVersion}" id="page"></router-view>
+        <router-view :class="{'mobile': $store.state.mobileVersion}" id="page" />
 
         <div v-if="$store.state.user.type == 'AWAITING_ACCESS'" id="fullscreen-alert">
             <div>
@@ -14,6 +14,8 @@
                 <h1>Hey, {{ $store.state.user.name }},<br>You have been blocked!</h1>
             </div>
         </div>
+
+        <portal-target name="modals" />
     </div>
 </template>
 <script>
@@ -28,9 +30,9 @@ export default {
 <style lang="scss" scoped>
 #page {
     min-height: 100%;
-    padding: 20px;
+    padding: 30px;
     color: var(--text-color);
-    padding-left: 410px;
+    padding-left: 420px;
 
     &.mobile {
         padding: 20px;

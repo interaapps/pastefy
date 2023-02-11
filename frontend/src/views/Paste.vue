@@ -20,7 +20,7 @@
             <a v-if="language == 'json'" @click="jsonPretty">{{ jsonPrettified ? 'UNPRETTY' : 'PRETTY' }}</a>
             <a href="#paste-contents" @click="readCode = true" v-if="extraContent !== ''">CODE</a>
             <a v-if="$store.state.user.logged_in && ($store.state.user.id == userid || $store.state.user.type === 'ADMIN')"
-               @click="deletePaste">DELETE</a>
+               @click="$refs.deleteConfirmation.open()">DELETE</a>
             <a @click="editPaste(true)" v-if="!$store.state.mobileVersion">FORK</a>
             <a v-if="$store.state.user.logged_in && $store.state.user.id == userid" @click="editPaste()">EDIT</a>
             <a :href="rawURL" v-if="!passwordRequired && !multiPastes">RAW</a>
@@ -69,19 +69,21 @@
                 </div>
             </div>
         </template>
+
+        <ConfirmationModal ref="deleteConfirmation" title="Delete Paste?" @confirm="deletePaste">
+            Do you really want to delete this Paste?
+        </ConfirmationModal>
     </div>
 </template>
 <script>
 import hljs from "highlight.js";
-import helper from "../helper.js";
+import helper, {getLanguageByFileName} from "../helper.js";
 import CryptoJS from "crypto-js";
-import LANGUAGE_REPLACEMENTS from '../assets/data/langReplacements'
 import {currentThemeVars} from "@/main";
-
-
-let languages = [...hljs.listLanguages(), "text"];
+import ConfirmationModal from "@/components/ConfirmationModal.vue";
 
 export default {
+    components: {ConfirmationModal},
     data: () => ({
         title: "Title",
         content: "Loading...",
@@ -189,25 +191,14 @@ export default {
             this.highlight(tab.name, tab.contents)
         },
         highlight(title, contents) {
-            const pasteTitleComponents = title.split(".");
-            let ending = pasteTitleComponents[pasteTitleComponents.length - 1];
+            const [ending, language] = getLanguageByFileName(title)
             const originalEnding = (ending || "").toLowerCase()
-            this.language = null
 
             this.extraContent = ''
             this.htmlPreview = ""
             this.htmlPreviewEnabled = false
 
-            for (let replace in LANGUAGE_REPLACEMENTS) {
-                if (ending == replace) {
-                    ending = LANGUAGE_REPLACEMENTS[replace];
-                    break;
-                }
-            }
-
-            if (languages.includes(ending)) {
-                this.language = ending;
-            }
+            this.language = language
 
             this.showLineNums = true
 
@@ -238,7 +229,7 @@ export default {
                     });
                     const EMPTY_CHAR = "‎"
                     this.extraContent = md.render(contents.replaceAll("<br>", "\n" + EMPTY_CHAR + "\n"))
-                } else if (originalEnding === "html") {
+                } else if (originalEnding === "html" || originalEnding === "htm" || originalEnding === "svg") {
                     this.htmlPreview = `
 
                     <script src="${window.location.protocol}//${window.location.host}/assets/js/htmlconsole.js"><` + `/script>
@@ -308,8 +299,11 @@ export default {
             if (!fork) {
                 this.$store.state.currentPaste.password = this.password
                 this.$store.state.currentPaste.editId = this.paste.id
+                this.$store.state.currentPaste.expire_at = this.paste.expire_at
                 if (this.paste.folder)
                     this.$store.state.currentPaste.folder = this.paste.folder
+            } else {
+                this.$store.state.currentPaste.forked_from = this.paste.id
             }
 
             if (this.paste.type == 'MULTI_PASTE') {
@@ -356,6 +350,7 @@ h1 {
     border-radius: 10px;
     padding: 10px;
     overflow-x: auto;
+    font-variant-ligatures: none;
 }
 
 
@@ -388,6 +383,14 @@ h1 {
 
 #preview {
     padding: 18px 26px;
+
+    :first-child {
+        margin-top: 7px;
+    }
+
+    :last-child {
+        margin-bottom: 10px;
+    }
 }
 
 #html-preview {
@@ -439,37 +442,42 @@ h1 {
     border-radius: 10px;
 }
 
-#action-buttons.mobile {
-    a {
-        color: #FFF;
-        background: #3469FF;
-        padding: 0px 26px;
-        border-radius: 100px;
-        position: fixed;
-        bottom: 20px;
-        display: inline-block;
-        right: 20px;
-    }
 
-    a + a {
-        bottom: 72px;
-    }
+#action-buttons {
+    user-select: none;
 
-    a + a + a {
-        bottom: 124px;
-    }
+    &.mobile {
+        a {
+            color: #FFF;
+            background: #3469FF;
+            padding: 0px 26px;
+            border-radius: 100px;
+            position: fixed;
+            bottom: 20px;
+            display: inline-block;
+            right: 20px;
+        }
 
-    a + a + a + a {
-        bottom: 176px;
-    }
+        a + a {
+            bottom: 72px;
+        }
 
-    #copy-contents {
-        padding: 13px;
-        margin-top: -3px;
-        position: static;
+        a + a + a {
+            bottom: 124px;
+        }
 
-        i {
-            display: block;
+        a + a + a + a {
+            bottom: 176px;
+        }
+
+        #copy-contents {
+            padding: 13px;
+            margin-top: -3px;
+            position: static;
+
+            i {
+                display: block;
+            }
         }
     }
 }

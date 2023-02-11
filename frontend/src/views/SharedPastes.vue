@@ -1,8 +1,9 @@
 <template>
     <div>
+        <HomeHeader />
         <div id="shared">
             <i @click="load" class="material-icons" id="copy-button" :class="{loading: loading}">cached</i>
-            <h3 style="margin-top: 20px; margin-bottom: 40px;">Shared Pastes</h3>
+            <h2 style="margin-top: 20px; margin-bottom: 30px;">Shared Pastes</h2>
             <div id="pastes">
                 <PasteCard v-for="paste of pastes" :key="paste.id" :paste="paste"/>
             </div>
@@ -15,6 +16,7 @@
 <script>
 import hljs from "highlight.js";
 import PasteCard from "../components/PasteCard.vue";
+import HomeHeader from "@/components/HomeHeader.vue";
 
 export default {
     data: () => ({
@@ -25,7 +27,7 @@ export default {
     mounted() {
         this.load()
     },
-    components: {PasteCard},
+    components: {HomeHeader, PasteCard},
     methods: {
         load() {
             this.loading = true
@@ -47,7 +49,7 @@ export default {
 <style lang="scss" scoped>
 #shared {
     position: relative;
-    max-width: 840px;
+    max-width: 1000px;
 }
 
 #copy-button {

@@ -12,5 +12,11 @@ public class CreatePasteRequest {
     public boolean encrypted = false;
     public String folder;
 
+    public String expireAt;
+
+    public String forkedFrom;
+
+    public Paste.Visibility visibility = Paste.Visibility.UNLISTED;
+
     public Paste.Type type = Paste.Type.PASTE;
 }

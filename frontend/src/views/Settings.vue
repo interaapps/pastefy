@@ -2,6 +2,8 @@
     <div>
         <h1>Settings</h1><br>
 
+        <WebsiteBanner paste="pb-setti" />
+
         Fullscreen-Paste on Homepage: <input v-model="$store.state.app.fullscreenOnHomepage" type="checkbox"><br>
         Browser-notifications: <input v-model="$store.state.app.browserNotifications" type="checkbox"><br>
         <br>
@@ -63,6 +65,7 @@
 <script>
 import helper from "../helper";
 import {setTheme} from "../main"
+import WebsiteBanner from "@/components/WebsiteBanner.vue";
 
 function createWatcher(n) {
     return {
@@ -74,6 +77,7 @@ function createWatcher(n) {
 }
 
 export default {
+    components: {WebsiteBanner},
     data: () => ({
         fullscreenOnHomepage: false,
         privacyData: {

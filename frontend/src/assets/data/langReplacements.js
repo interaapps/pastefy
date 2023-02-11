@@ -7,6 +7,7 @@ export default {
     tsm: "typescript",
     tsx: "typescript",
     html: 'xml',
+    svg: 'xml',
     htm: 'xml',
     xhtml: 'xml',
     iml: 'xml',

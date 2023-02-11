@@ -21,6 +21,7 @@ h1 {
     margin-bottom: 10px;
 }
 .tab {
+    user-select: none;
     display: inline-block;
     padding: 6px 9px;
     margin-right: 10px;

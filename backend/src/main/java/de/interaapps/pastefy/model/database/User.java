@@ -69,11 +69,11 @@ public class User extends Model {
     }
 
     public List<FolderResponse> getFolderTree(boolean fetchChildren, boolean fetchSubChildren, boolean fetchPastes) {
-        return Repo.get(Folder.class).where("userId", id).isNull("parent").all().stream().map(folder -> new FolderResponse(folder, fetchChildren, fetchSubChildren, fetchPastes)).collect(Collectors.toList());
+        return Repo.get(Folder.class).where("userId", id).isNull("parent").all().stream().map(folder -> new FolderResponse(folder, fetchChildren, fetchSubChildren, fetchPastes, true)).collect(Collectors.toList());
     }
 
     public List<FolderResponse> getFolderWithChildren() {
-        return Repo.get(Folder.class).where("userId", id).isNull("parent").all().stream().map(folder -> new FolderResponse(folder, true, true, false)).collect(Collectors.toList());
+        return Repo.get(Folder.class).where("userId", id).isNull("parent").all().stream().map(folder -> new FolderResponse(folder, true, true, false, true)).collect(Collectors.toList());
     }
 
     public void sendNotification(Notification notification) {

@@ -15,7 +15,7 @@ public class FolderResponse {
     public List<PasteResponse> pastes;
     public String created = "0000-00-00 00:00:00";
 
-    public FolderResponse(Folder folder, boolean fetchChildren, boolean fetchSubChildren, boolean fetchPastes) {
+    public FolderResponse(Folder folder, boolean fetchChildren, boolean fetchSubChildren, boolean fetchPastes, boolean showPrivate) {
         if (folder != null) {
             exists = true;
             name = folder.getName();
@@ -23,15 +23,15 @@ public class FolderResponse {
             userId = folder.getUserId();
             created = folder.createdAt.toString();
             if (fetchChildren) {
-                children = folder.getFolders().stream().map(child -> new FolderResponse(child, fetchSubChildren, fetchSubChildren, fetchPastes)).collect(Collectors.toList());
+                children = folder.getFolders().stream().map(child -> new FolderResponse(child, fetchSubChildren, fetchSubChildren, fetchPastes, showPrivate)).collect(Collectors.toList());
                 if (fetchPastes)
-                    pastes = folder.getPastes().stream().map(PasteResponse::new).collect(Collectors.toList());
+                    pastes = folder.getPastes(showPrivate).stream().map(PasteResponse::new).collect(Collectors.toList());
             }
         }
     }
 
     public FolderResponse(Folder folder, boolean showChildren, boolean fetchSubChildren) {
-        this(folder, showChildren, fetchSubChildren, true);
+        this(folder, showChildren, fetchSubChildren, true, false);
     }
 
     public FolderResponse(Folder folder, boolean showChildren) {

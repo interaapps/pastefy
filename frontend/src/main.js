@@ -4,18 +4,24 @@ import router from './router'
 import store from './store'
 import helper from "./helper"
 import {$n} from 'jdomjs'
+import PortalVue from 'portal-vue'
+import VAnimateCss from 'v-animate-css'
+
 import App from "./App";
 import {PastefyAPI} from './PastefyAPI'
 
-require("babel-polyfill");
-require("./css/app.scss")
+import "babel-polyfill"
+import "./css/app.scss"
+import './css/petrel/dark.scss'
 import eventBus from './eventBus'
 import dark from './assets/themes/dark'
 import light from './assets/themes/light'
 
 Vue.config.productionTip = false
 
-require('./css/petrel/dark.scss')
+
+Vue.use(PortalVue)
+Vue.use(VAnimateCss)
 
 let worker = null
 
@@ -198,7 +204,6 @@ const darkmodeListener = e => {
 }
 
 export function setTheme(name) {
-    console.log("AAAAAAAAAAAAAAAa", name)
     darkThemeMq.removeListener(darkmodeListener)
     if (name == 'light') {
         setThemeFrom(light)

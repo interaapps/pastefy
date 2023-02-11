@@ -1,39 +1,40 @@
 <template>
     <div>
-        <div style="max-width: 840px;">
+        <div style="max-width: 1000px;">
             <div id="action-buttons">
                 <a v-if="isPWA()" @click="copyURL">Copy URL</a>
-                <a @click="deleteFolder">DELETE</a>
+                <a v-if="isMine" @click="$refs.deleteFolderConfirmation.open()" class="button delete" style="line-height: 20px">DELETE</a>
             </div>
             <h1>{{ title }}</h1>
-            <a class="button" style="float: right; padding: 4px 16px" @click="addFolderInput = !addFolderInput">NEW</a>
-            <h3 style="margin-top: 20px; margin-bottom: 40px;">Folder</h3>
-            <div v-if="addFolderInput" style="margin-bottom: 20px">
-                <input type="text" v-model="folderName" class="input" placeholder="name">
-                <a class="button" style="width: 49%; margin-right: 1%; background: var(--obj-background-color-hover)"
-                   @click="addFolderInput = false">CANCEL</a>
-                <a class="button" style="width: 50%" @click="createFolder">ADD</a>
-            </div>
-            <div id="folders">
-                <router-link v-for="folder of folders" :to="'/folder/'+folder.id" :key="folder.id" class="paste">
-                    <span class="date">{{ folder.crated }}</span>
-                    <h3>{{ folder.name }}</h3>
-                </router-link>
-            </div>
-            <a class="button" style="float: right; padding: 4px 16px"
-               @click="$store.state.currentPaste.folder = id; $store.state.app.fullscreen = true">NEW</a>
-            <h3 style="margin-top: 20px; margin-bottom: 40px;">Pastes</h3>
+
+
+            <h2 style="margin-top: 20px; margin-bottom: 40px" v-if="folders.length > 0 || isMine">Folder</h2>
+
+            <FolderCard v-for="folder of folders" :key="`folder-${folder.id}`" :folder="folder" />
+            <NewFolderCard v-if="isMine" :parent="id" @created="load($route.params.id)" />
+
+            <div>
+
+            <a  v-if="isMine" class="button" style="float: right; padding: 4px 16px" @click="$store.state.currentPaste.folder = id; $store.state.app.fullscreen = true">NEW</a>
+            <h2 style="margin-top: 20px; margin-bottom: 40px;">Pastes</h2>
             <div id="pastes">
                 <PasteCard v-for="paste of pastes" :key="paste.id" :paste="paste"/>
-
+            </div>
             </div>
         </div>
+
+        <ConfirmationModal title="Delete folder?" ref="deleteFolderConfirmation" @confirm="deleteFolder">
+            Do you really want to delete this folder?
+        </ConfirmationModal>
     </div>
 </template>
 <script>
 import hljs from "highlight.js";
 import helper from "../helper.js";
 import PasteCard from "../components/PasteCard.vue";
+import ConfirmationModal from "@/components/ConfirmationModal.vue";
+import NewFolderCard from "@/components/NewFolderCard.vue";
+import FolderCard from "@/components/FolderCard.vue";
 
 export default {
     data: function () {
@@ -50,10 +51,13 @@ export default {
     mounted() {
         this.load(this.$route.params.id)
     },
-    components: {PasteCard},
+    components: {FolderCard, NewFolderCard, ConfirmationModal, PasteCard},
     methods: {
         load(id) {
-            this.pastefyAPI.get("/api/v2/folder/" + id, {hide_children: true})
+            this.pastefyAPI.get("/api/v2/folder/" + id, {
+                hide_children: true,
+                shorten_content: true
+            })
                 .then(res => {
                     if (res.exists) {
                         this.id = res.id

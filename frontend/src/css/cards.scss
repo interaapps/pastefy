@@ -1,0 +1,116 @@
+.folder-card {
+  display: inline-block;
+  margin: 0 15px 15px 0;
+  text-decoration: none;
+  cursor: pointer;
+
+  width: 100px;
+
+  user-select: none;
+
+  .folder-card-box {
+    border-radius: 10px;
+    height: 100px;
+    background: var(--obj-background-color);
+    border: var(--obj-border-color)  2.5px solid;
+    position: relative;
+
+    transition: 0.3s;
+
+    svg {
+      display: block;
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      top: 50%;
+      left: 50%;
+      transform: translateY(-50%) translateX(-50%);
+    }
+  }
+  span {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre;
+  }
+
+  &.new {
+    .folder-card-box {
+      border-style: dashed;
+      background: transparent;
+      svg {
+        opacity: 0.7;
+      }
+    }
+    span {
+      opacity: 0.8;
+    }
+    &:hover {
+      .folder-card-box {
+        svg {
+          opacity: 1;
+        }
+      }
+      span {
+        opacity: 1;
+      }
+    }
+  }
+
+
+  &:hover {
+    .folder-card-box {
+      background: var(--obj-background-color-hover);
+    }
+  }
+}
+
+
+.paste-card,
+.paste-card:visited {
+  border: var(--obj-border-color) 2.5px solid;
+  display: block;
+  color: var(--text-color);
+  text-decoration: none;
+  background: var(--obj-background-color);
+  border-radius: 10px;
+  padding: 17px;
+  transition: 0.3s background;
+  margin-bottom: 15px;
+  max-height: 200px;
+  overflow: hidden;
+  user-select: none;
+  position: relative;
+
+  .date {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    opacity: 0.5;
+  }
+
+  h3 {
+    font-size: 20px;
+    margin-bottom: 7px;
+  }
+
+  pre {
+    line-height: 19px;
+    font-size: 14px;
+  }
+
+  &:hover {
+    background: var(--obj-background-color-hover);
+  }
+
+  .multi-paste-size-indicator {
+    font-weight: 500;
+    padding: 0 10px;
+    background: var(--obj-border-color);
+    border-radius: 100px;
+    display: inline-block;
+    position: absolute;
+  }
+}
