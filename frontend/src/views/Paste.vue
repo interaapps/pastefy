@@ -55,7 +55,7 @@
             </code>
 
         </template>
-        <template v-if="htmlPreview != ''">
+        <template v-if="htmlPreview !== ''">
             <a class="button gray" v-if="!htmlPreviewEnabled" @click="htmlPreviewEnabled = !htmlPreviewEnabled">
                 Show Preview
             </a>
@@ -81,6 +81,7 @@ import helper, {getLanguageByFileName} from "../helper.js";
 import CryptoJS from "crypto-js";
 import {currentThemeVars} from "@/main";
 import ConfirmationModal from "@/components/ConfirmationModal.vue";
+import {$, $n} from 'jdomjs'
 
 export default {
     components: {ConfirmationModal},
@@ -174,7 +175,7 @@ export default {
                             this.validPassword = true
 
 
-                        if (paste.type == 'PASTE') {
+                        if (paste.type === 'PASTE') {
                             this.highlight(this.title, this.rawContent)
                         } else if (paste.type == 'MULTI_PASTE') {
                             this.multiPastes = JSON.parse(this.rawContent)
@@ -188,13 +189,12 @@ export default {
             this.multiPastesSelected = i
             const tab = this.multiPastes[i]
             this.rawContent = tab.contents
-            this.highlight(tab.name, tab.contents)
+            this.t(tab.name, tab.contents)
         },
-        highlight(title, contents) {
-            const [ending, language] = getLanguageByFileName(title)
-            const originalEnding = (ending || "").toLowerCase()
+        async highlight(title, contents) {
+            const [, language, originalEnding] = getLanguageByFileName(title)
 
-            this.extraContent = ''
+            this.extraChighlighontent = ''
             this.htmlPreview = ""
             this.htmlPreviewEnabled = false
 
@@ -202,20 +202,22 @@ export default {
 
             this.showLineNums = true
 
-            if (this.language === null)
+            this.content = this.escapeHtml(contents)
+
+            if (this.language === null) {
                 this.content = hljs.highlightAuto(contents).value
-            else {
-                if (this.language == 'text') {
-                    this.content = this.escapeHtml(contents)
+            } else {
+                if (this.language === 'text') {
                     this.showLineNums = false
-                } else
+                } else {
                     this.content = hljs.highlight(this.language, contents).value
+                }
 
                 if (this.language === "markdown") {
                     const md = require('markdown-it')({
                         html: false,
                         breaks: true,
-                        highlight: function (str, lang) {
+                        highlight(str, lang) {
                             if (lang && hljs.getLanguage(lang)) {
                                 try {
                                     return hljs.highlight(lang, str).value;
@@ -257,6 +259,25 @@ export default {
                     `
                 }
             }
+
+            setTimeout(() => {
+                $('#paste-contents .hljs-string, #paste-contents .hljs-number').each(el => {
+                    let val = el.textContent.trim()
+
+                    if (val.startsWith('"') && val.endsWith('"')) {
+                        val = val.substring(1, val.length-1)
+                    }
+
+                    if (
+                        (val.startsWith('#') && (val.length === 7 || val.length === 9 || val.length === 4 || val.length === 5))
+                     || (val.startsWith('rgb') && /rgb(a?)\(\s?[0-9]{1,3}\s?,\s?[0-9]{1,3}\s?,\s?[0-9]{1,3}\s?(,\s?[0-9]{1,3}\s?)?\)/.test(val))
+                    ) {
+                        const $el = $(el)
+
+                        $el.append($n('div').addClass('color-indicator').css({ background: val }))
+                    }
+                })
+            }, 500)
         },
         copy() {
             helper.copyStringToClipboard(this.rawContent)
@@ -564,5 +585,17 @@ h1 {
     ul, ol {
         padding-left: 20px;
     }
+}
+
+.color-indicator {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-bottom: 3px;
+  margin-left: 5px;
+  user-select: none;
+  border: var(--text-color-alpha) solid 2px;
 }
 </style>

@@ -18,6 +18,7 @@
 
 <script>
 import Modal from "@/components/Modal.vue";
+import eventBus from "@/eventBus";
 
 export default {
     components: {Modal},
@@ -36,6 +37,7 @@ export default {
                 this.name = ""
                 this.$refs.createFolderModal.close()
                 this.$emit('created', folder)
+                eventBus.$emit('loadFolders')
             })
         }
     }

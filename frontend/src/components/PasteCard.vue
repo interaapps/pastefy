@@ -7,7 +7,7 @@
 
             <pre v-if="paste.encrypted"><code>This paste can't be previewed. It's client-encrypted.</code></pre>
 
-            <pre v-else-if="paste.type == 'MULTI_PASTE'"><!--
+            <pre v-else-if="paste.type === 'MULTI_PASTE'"><!--
             --><code v-html="this.multiPasteParts.length > 0 ? highlight(multiPasteParts[0].name, multiPasteParts[0].contents) : ''" /><!--
             --></pre>
 

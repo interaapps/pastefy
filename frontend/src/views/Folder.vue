@@ -35,6 +35,7 @@ import PasteCard from "../components/PasteCard.vue";
 import ConfirmationModal from "@/components/ConfirmationModal.vue";
 import NewFolderCard from "@/components/NewFolderCard.vue";
 import FolderCard from "@/components/FolderCard.vue";
+import eventBus from "@/eventBus";
 
 export default {
     data: function () {
@@ -50,6 +51,11 @@ export default {
     },
     mounted() {
         this.load(this.$route.params.id)
+    },
+    watch: {
+        '$store.state.app.user.logged_in'() {
+            this.load(this.$route.params.id)
+        }
     },
     components: {FolderCard, NewFolderCard, ConfirmationModal, PasteCard},
     methods: {
@@ -82,6 +88,7 @@ export default {
                     if (res.success) {
                         helper.showSnackBar("Deleted")
                         this.$router.push("/")
+                        eventBus.$emit('loadFolders')
                     } else
                         helper.showSnackBar("Couldn't delete folder", "#EE4343")
                 })

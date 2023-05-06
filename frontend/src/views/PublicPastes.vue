@@ -68,7 +68,8 @@ export default {
             this.searchResults = await this.pastefyAPI.get("/api/v2/public-pastes/latest", {
                 search: this.search,
                 page: this.searchPage,
-                page_limit: 10
+                page_limit: 10,
+                shorten_content: true
             })
         },
         async changeSearchPage(p) {

@@ -53,6 +53,10 @@ pastefyAPI.get("/api/v2/app/info").then(res => {
     store.state.appInfo = res
     eventBus.$emit("appInfoLoaded")
 
+    if (res.custom_name) {
+        document.title = res.custom_name
+    }
+
     pastefyAPI.get("/api/v2/user").then(res => {
         store.state.user = res
         store.state.app.loadingUser = false

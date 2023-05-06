@@ -16,7 +16,7 @@ export default {
     py: 'python',
     py3: 'python',
     py2: 'python',
-    scss: 'css',
+    css: 'scss',
     sass: 'yaml',
     cs: 'csharp',
     env: 'properties',

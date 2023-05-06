@@ -29,20 +29,9 @@ public class RequestHelper {
     }
 
     public static void queryFilter(Query<?> query, AbstractObject params) {
-        Map<String, String> filters = new HashMap<>();
-        params.forEach((key, value) -> {
-            if ((key.startsWith("filter_") && key.endsWith("]")) || key.startsWith("filter%5B") && key.endsWith("%5D")) {
-                filters.put(key
-                                .replace("filter[", "")
-                                .replace("]", "")
-                                .replace("filter%5B", "")
-                                .replace("%5D", ""),
-                        value.string()
-                );
-            }
-        });
-        if (filters.size() > 0)
-            query.filter(filters);
+        if (params.has("filter")) {
+            query.filter(params.get("filter").toFormData().getMap());
+        }
     }
 
     public static void userIdPastesFilter(User user, Query<?> query, Exchange exchange) {

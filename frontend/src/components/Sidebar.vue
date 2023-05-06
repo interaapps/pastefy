@@ -80,7 +80,7 @@
                     <select v-model="$store.state.currentPaste.visibility" class="input" style="margin-top: 10px; margin-bottom: 4px">
                         <option value="UNLISTED">Unlisted</option>
                         <option v-if="$store.state.appInfo.public_pastes_enabled" value="PUBLIC">Public</option>
-                        <option value="PRIVATE">Private</option>
+                        <option v-if="$store.state.user.logged_in" value="PRIVATE">Private</option>
                     </select>
                     <p style="opacity: 0.5; color: var(--text-color); margin-bottom: 8px">
                         <template v-if="$store.state.currentPaste.visibility === 'PUBLIC'">Public Pastes can be viewed in the public section of {{ $store.state.appInfo.custom_name || 'Pastefy' }}. Users can search, interact or fork them. Encryption and password protection is not allowed.</template>
@@ -195,7 +195,7 @@
 </template>
 <script>
 import {CodeEditor} from 'petrel'
-import helper from "../helper.js";
+import helper, { estimateTitle } from '../helper.js'
 import LoadingSpinner from "./LoadingSpinner.vue";
 import CryptoJS from "crypto-js";
 import hljs from "highlight.js";
@@ -264,6 +264,12 @@ export default {
         //codeEditor.textAreaElement.addEventListener("keydown", codeEditorInputListener)
         //codeEditor.textAreaElement.addEventListener("paste", codeEditorInputListener)
         codeEditor.textAreaElement.placeholder = "Paste in here"
+        codeEditor.textAreaElement.addEventListener('paste', e => {
+            const data = (event.clipboardData || window.clipboardData).getData('text')
+            if (data && e.target.value === '' && this.$store.state.currentPaste.title === '') {
+                this.$store.state.currentPaste.title = estimateTitle(data.trim())
+            }
+        })
         codeEditor.create()
         this.clearInputs()
     },
@@ -275,19 +281,9 @@ export default {
             }
         };
 
-        this.pastefyAPI.get("/api/v2/user/folders", {hide_pastes: true}).then(folders => {
-            const recursiveAddFolder = (folder, parentName = "") => {
-                this.folders[parentName + folder.name] = folder.id
+        this.loadFolders()
 
-                folder.children.forEach(child => {
-                    recursiveAddFolder(child, folder.name + '/')
-                })
-            }
-
-            for (let folder of folders) {
-                recursiveAddFolder(folder)
-            }
-        })
+        eventBus.$on('loadFolders', this.loadFolders)
 
         try {
             if (localStorage["saved_contacts"] != null)
@@ -336,6 +332,22 @@ export default {
 
     },
     methods: {
+        loadFolders() {
+            this.folders = {}
+            this.pastefyAPI.get("/api/v2/user/folders", {hide_pastes: true}).then(folders => {
+                const recursiveAddFolder = (folder, parentName = "") => {
+                    this.folders = {[parentName + folder.name]: folder.id, ...this.folders}
+
+                    folder.children.forEach(child => {
+                        recursiveAddFolder(child, folder.name + '/')
+                    })
+                }
+
+                for (let folder of folders) {
+                    recursiveAddFolder(folder)
+                }
+            })
+        },
         updateEditorLang() {
             let language;
             const split = (Object.keys(this.$store.state.currentPaste.multiPastes).length == 0 ? this.$store.state.currentPaste.title : this.$store.state.currentPaste.multiPastes[this.multiPastesSelected].name).split(".")
@@ -423,7 +435,6 @@ export default {
             this.loading = true
 
             if (this.$store.state.currentPaste.editId) {
-
                 this.pastefyAPI.editPaste(this.$store.state.currentPaste.editId, data)
                     .then(() => {
                         this.loading = false
@@ -444,6 +455,11 @@ export default {
                         this.loading = false
                     })
             } else {
+                if (data.content === '' && data.content === '') {
+                    helper.showSnackBar("Can't create empty pastes", "#EE4343")
+                    this.loading = false
+                    return;
+                }
                 this.pastefyAPI.createPaste(data)
                     .then(paste => {
                         let date = new Date()
