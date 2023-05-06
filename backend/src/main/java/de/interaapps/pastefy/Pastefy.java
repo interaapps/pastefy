@@ -31,6 +31,7 @@ import org.javawebstack.webutils.middlewares.RateLimitMiddleware;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
@@ -258,7 +259,11 @@ public class Pastefy {
 
         RequestHandler requestHandler = exchange -> {
             try {
-                exchange.write(getClass().getClassLoader().getResourceAsStream("static/index.html"));
+                InputStream file = getClass().getClassLoader().getResourceAsStream("static/index.html");
+                if (file == null) {
+                    throw new NotFoundException();
+                }
+                exchange.write(file);
             } catch (IOException e) {
                 e.printStackTrace();
             }

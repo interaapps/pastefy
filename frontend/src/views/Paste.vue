@@ -1,73 +1,75 @@
 <template>
-    <div v-if="!validPassword">
-        <h4>Password:</h4><br><br>
-        <input placeholder="Password" v-model="password" type="password" class="input">
-        <a class="button" style="width: 100%;" @click="load($route.params.id)">ENTER PASTE</a><br>
-        <a v-if="$store.state.user.id == userid" @click="deletePaste">DELETE</a>
-    </div>
-    <div v-else-if="!found">
-        <div class="error">
-            404! Paste not found
-        </div>
-    </div>
-    <div v-else-if="$store.state.appInfo.login_required_for_read && !$store.state.user.logged_in">
-        <h2>Please log in to see this paste.</h2>
-    </div>
-    <div v-else>
-
-        <div id="action-buttons" :class="{mobile: $store.state.mobileVersion}">
-            <a v-if="isPWA()" @click="copyURL">Copy URL</a>
-            <a v-if="language == 'json'" @click="jsonPretty">{{ jsonPrettified ? 'UNPRETTY' : 'PRETTY' }}</a>
-            <a href="#paste-contents" @click="readCode = true" v-if="extraContent !== ''">CODE</a>
-            <a v-if="$store.state.user.logged_in && ($store.state.user.id == userid || $store.state.user.type === 'ADMIN')"
-               @click="$refs.deleteConfirmation.open()">DELETE</a>
-            <a @click="editPaste(true)" v-if="!$store.state.mobileVersion">FORK</a>
-            <a v-if="$store.state.user.logged_in && $store.state.user.id == userid" @click="editPaste()">EDIT</a>
-            <a :href="rawURL" v-if="!passwordRequired && !multiPastes">RAW</a>
-            <a id="copy-contents" @click="copy">
-                <i class="material-icons">content_copy</i>
-            </a>
-        </div>
-        <h1>{{ title }}<span class="language"
-                             v-if="language !== null && language == 'markdown' && !multiPastes">{{ language }}</span>
-        </h1>
-        <div id="tabs" v-if="multiPastes != null && Object.keys(multiPastes).length > 1">
-            <a v-for="(tab,i) of multiPastes" :key="i" @click="changeTab(i)"
-               :class="{selected: multiPastesSelected==i}">
-                {{ tab.name }}
-            </a>
-        </div>
-        <div id="preview" v-if="extraContent !== ''" v-html="extraContent"></div>
-        <template v-if="extraContent == '' || readCode">
-            <h1 v-if="extraContent !== ''" style="margin-top: 30px;">
-                {{ language == 'markdown' ? 'Markdown ' : '' }}Code</h1>
-            <code id="paste-contents">
-                <div id="line-nums" v-if="showLineNums">
-                    <a
-                        v-for="(line, lineNum) of rawContent.split('\n')"
-                        :key="lineNum"
-                        :href="'#ln-'+lineNum"
-                        :class='{selected: getUrlLineHash()=="#ln-"+lineNum}'>
-                        {{ lineNum + 1 }}
-                    </a>
-                </div>
-                <pre v-html="content" :style="{'white-space': this.language == 'text' ? 'break-spaces' : 'pre'}"></pre>
-            </code>
-
+    <div>
+        <template v-if="!validPassword">
+            <a class="button delete right" v-if="$store.state.user.logged_in && ($store.state.user.type === 'ADMIN' || $store.state.user.id == userid)" @click="$refs.deleteConfirmation.open()">DELETE PASTE</a>
+            <h2 style="margin-top: 10px; margin-bottom: 40px">Password:</h2>
+            <input placeholder="Password" v-model="password" type="password" class="input">
+            <a class="button" style="width: 100%;" @click="load($route.params.id)">ENTER PASTE</a><br>
         </template>
-        <template v-if="htmlPreview !== ''">
-            <a class="button gray" v-if="!htmlPreviewEnabled" @click="htmlPreviewEnabled = !htmlPreviewEnabled">
-                Show Preview
-            </a>
-            <div id="html-preview" :class="['lang-'+language]" v-else>
-                <iframe
-                    sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-scripts allow-top-navigation-by-user-activation"
-                    :srcdoc="htmlPreview"/>
-                <div>
-                    <i class="material-icons" @click="reloadHTMLPreview()">refresh</i>
-                    <i class="material-icons" @click="htmlPreviewEnabled = false">close</i>
-                </div>
+        <template v-else-if="!found">
+            <div class="error">
+                404! Paste not found
             </div>
+        </template>
+        <template v-else-if="$store.state.appInfo.login_required_for_read && !$store.state.user.logged_in">
+            <h2>Please log in to see this paste.</h2>
+        </template>
+        <template v-else>
+
+            <div id="action-buttons" :class="{mobile: $store.state.mobileVersion}">
+                <a v-if="isPWA()" @click="copyURL">Copy URL</a>
+                <a v-if="language == 'json'" @click="jsonPretty">{{ jsonPrettified ? 'UNPRETTY' : 'PRETTY' }}</a>
+                <a href="#paste-contents" @click="readCode = true" v-if="extraContent !== ''">CODE</a>
+                <a v-if="$store.state.user.logged_in && ($store.state.user.id == userid || $store.state.user.type === 'ADMIN')"
+                   @click="$refs.deleteConfirmation.open()">DELETE</a>
+                <a @click="editPaste(true)" v-if="!$store.state.mobileVersion">FORK</a>
+                <a v-if="$store.state.user.logged_in && $store.state.user.id == userid" @click="editPaste()">EDIT</a>
+                <a :href="rawURL" v-if="!passwordRequired && !multiPastes">RAW</a>
+                <a id="copy-contents" @click="copy">
+                    <i class="material-icons">content_copy</i>
+                </a>
+            </div>
+            <h1>{{ title }}<span class="language"
+                                 v-if="language !== null && language == 'markdown' && !multiPastes">{{ language }}</span>
+            </h1>
+            <div id="tabs" v-if="multiPastes != null && Object.keys(multiPastes).length > 1">
+                <a v-for="(tab,i) of multiPastes" :key="i" @click="changeTab(i)"
+                   :class="{selected: multiPastesSelected==i}">
+                    {{ tab.name }}
+                </a>
+            </div>
+            <div id="preview" v-if="extraContent !== ''" v-html="extraContent"></div>
+            <template v-if="extraContent == '' || readCode">
+                <h1 v-if="extraContent !== ''" style="margin-top: 30px;">
+                    {{ language == 'markdown' ? 'Markdown ' : '' }}Code</h1>
+                <code id="paste-contents">
+                    <div id="line-nums" v-if="showLineNums">
+                        <a
+                            v-for="(line, lineNum) of rawContent.split('\n')"
+                            :key="lineNum"
+                            :href="'#ln-'+lineNum"
+                            :class='{selected: getUrlLineHash()=="#ln-"+lineNum}'>
+                            {{ lineNum + 1 }}
+                        </a>
+                    </div>
+                    <pre v-html="content" :style="{'white-space': this.language == 'text' ? 'break-spaces' : 'pre'}"></pre>
+                </code>
+
+            </template>
+            <template v-if="htmlPreview !== ''">
+                <a class="button gray" v-if="!htmlPreviewEnabled" @click="htmlPreviewEnabled = !htmlPreviewEnabled">
+                    Show Preview
+                </a>
+                <div id="html-preview" :class="['lang-'+language]" v-else>
+                    <iframe
+                        sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-scripts allow-top-navigation-by-user-activation"
+                        :srcdoc="htmlPreview"/>
+                    <div>
+                        <i class="material-icons" @click="reloadHTMLPreview()">refresh</i>
+                        <i class="material-icons" @click="htmlPreviewEnabled = false">close</i>
+                    </div>
+                </div>
+            </template>
         </template>
 
         <ConfirmationModal ref="deleteConfirmation" title="Delete Paste?" @confirm="deletePaste">
