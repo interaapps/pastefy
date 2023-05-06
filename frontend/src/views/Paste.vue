@@ -189,7 +189,7 @@ export default {
             this.multiPastesSelected = i
             const tab = this.multiPastes[i]
             this.rawContent = tab.contents
-            this.t(tab.name, tab.contents)
+            this.highlight(tab.name, tab.contents)
         },
         async highlight(title, contents) {
             const [, language, originalEnding] = getLanguageByFileName(title)

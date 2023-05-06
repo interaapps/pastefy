@@ -60,9 +60,9 @@ export default {
         async load() {
             this.loading = true
 
-            this.trendingPastes = await this.pastefyAPI.get("/api/v2/public-pastes/trending", {trending: 'true', page_limit: 5})
-            this.newPastes = await this.pastefyAPI.get("/api/v2/public-pastes/latest", {page_limit: 5})
-            this.allTimeTrendingPastes = await this.pastefyAPI.get("/api/v2/public-pastes/trending", {page_limit: 5})
+            this.trendingPastes = await this.pastefyAPI.get("/api/v2/public-pastes/trending", {trending: 'true', page_limit: 5, shorten_content: true})
+            this.newPastes = await this.pastefyAPI.get("/api/v2/public-pastes/latest", {page_limit: 5, shorten_content: true})
+            this.allTimeTrendingPastes = await this.pastefyAPI.get("/api/v2/public-pastes/trending", {page_limit: 5, shorten_content: true})
         },
         async loadSearch() {
             this.searchResults = await this.pastefyAPI.get("/api/v2/public-pastes/latest", {
