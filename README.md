@@ -2,7 +2,7 @@
 ## Pastefy moved to a new domain:
 https://pastefy.app
 
-More information on why [here in our article](https://quotysco.eu/InteraApps/pastefy-and-punyshort-are-down---we-dont-really-know-why-either/edit)
+More information on why [here in our article](https://quotysco.eu/InteraApps/pastefy-and-punyshort-are-down---we-dont-really-know-why-either)
 
 
 <p align="center"><img src="/frontend/src/assets/logo.png" width="200"></p>
