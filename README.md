@@ -1,3 +1,10 @@
+# !! IMPORTANT !!
+## Pastefy moved to a new domain:
+https://pastefy.app
+
+More information on why [here in our article](https://quotysco.eu/InteraApps/pastefy-and-punyshort-are-down---we-dont-really-know-why-either/edit)
+
+
 <p align="center"><img src="/frontend/src/assets/logo.png" width="200"></p>
 
 Pastefy is an open source alternative to Gists or Pastebin.<br>
@@ -14,7 +21,7 @@ You want to share some code to your friends or just save it for yourself? Just p
   - Folders 
   - See your created pastes
   - delete created pastes
-- Create paste with `curl -F f=@file.txt pastefy.ga`
+- Create paste with `curl -F f=@file.txt pastefy.app`
 
 # Overview
 - [Screenshots](#Screenshots)
