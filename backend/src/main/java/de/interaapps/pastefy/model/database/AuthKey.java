@@ -57,7 +57,7 @@ public class AuthKey extends Model {
 
     /**
      * Standard: group.permission:action
-     * or pastefy.ga|paste:read (Will passthrough the request but adds a user-id header)
+     * or pastefy|paste:read (Will passthrough the request but adds a user-id header)
      */
     public void checkPermission(String... permissions) {
         for (String permission : permissions) {

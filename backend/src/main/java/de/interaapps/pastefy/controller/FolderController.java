@@ -29,8 +29,9 @@ public class FolderController extends HttpController {
     @Post
     @With({"auth", "awaiting-access-check", "blocked-check"})
     public CreateFolderResponse createFolder(Exchange exchange, @Body CreateFolderRequest request, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
-        if (authKey != null)
+        if (authKey != null) {
             authKey.checkPermission("folders:create");
+        }
 
         CreateFolderResponse response = new CreateFolderResponse();
 
@@ -40,8 +41,9 @@ public class FolderController extends HttpController {
 
         Folder parent = Repo.get(Folder.class).where("key", request.parent).first();
 
-        if (parent != null && parent.getUserId().equals(user.getId()))
+        if (parent != null && parent.getUserId().equals(user.getId())) {
             folder.setParent(parent);
+        }
 
         folder.save();
         response.success = true;
@@ -51,7 +53,7 @@ public class FolderController extends HttpController {
     }
 
     @Get
-    public List<FolderResponse> getFolder(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+    public List<FolderResponse> getFolders(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         if (authKey != null)
             authKey.checkPermission("folders:read");
 
@@ -72,8 +74,10 @@ public class FolderController extends HttpController {
             authKey.checkPermission("folders:read");
 
         Folder folder = Repo.get(Folder.class).where("key", id).first();
-        if (folder == null)
+
+        if (folder == null) {
             throw new NotFoundException();
+        }
 
         return new FolderResponse(folder, true, exchange.rawRequest().getParameter("hide_children") == null, true, user != null && user.id.equals(folder.userId));
     }
@@ -81,17 +85,20 @@ public class FolderController extends HttpController {
     @Delete("/{id}")
     @With({"auth", "awaiting-access-check", "blocked-check"})
     public ActionResponse delete(Exchange exchange, @Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
-        if (authKey != null)
+        if (authKey != null) {
             authKey.checkPermission("folders:delete");
+        }
 
         ActionResponse response = new ActionResponse();
         Folder folder = Repo.get(Folder.class).where("key", id).first();
 
-        if (folder != null) {
-            if (folder.getUserId().equals(user.getId()) || user.type == User.Type.ADMIN) {
-                folder.delete();
-                response.success = true;
-            }
+        if (folder == null) {
+            throw new NotFoundException();
+        }
+
+        if (folder.getUserId().equals(user.getId()) || user.type == User.Type.ADMIN) {
+            folder.delete();
+            response.success = true;
         }
 
         return response;

@@ -12,8 +12,9 @@ public class AdminMiddleware implements RequestHandler {
 
         User user = exchange.attrib("user");
 
-        if (user.type != User.Type.ADMIN)
+        if (user.type != User.Type.ADMIN) {
             throw new PermissionsDeniedException();
+        }
 
         return null;
     }

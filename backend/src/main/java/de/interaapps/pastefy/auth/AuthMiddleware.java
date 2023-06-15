@@ -6,8 +6,9 @@ import org.javawebstack.httpserver.handler.RequestHandler;
 
 public class AuthMiddleware implements RequestHandler {
     public Object handle(Exchange exchange) {
-        if (exchange.attrib("user") == null)
+        if (exchange.attrib("user") == null) {
             throw new AuthenticationException();
+        }
 
         return null;
     }

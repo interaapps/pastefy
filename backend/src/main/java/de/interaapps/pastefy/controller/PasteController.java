@@ -106,29 +106,33 @@ public class PasteController extends HttpController {
 
         ActionResponse response = new ActionResponse();
         Paste paste = Repo.get(Paste.class).where("key", id).first();
-        if (paste != null) {
-            if ((paste.getUserId() != null && paste.getUserId().equals(user.getId())) || user.type == User.Type.ADMIN) {
-                if (request.title != null)
-                    paste.setTitle(request.title);
-                if (request.content != null)
-                    paste.setContent(request.content);
-                if (request.folder != null)
-                    paste.setFolder(request.folder);
-                if (request.type != null)
-                    paste.setType(request.type);
-                if (request.encrypted != null)
-                    paste.setEncrypted(request.encrypted);
-                if (request.visibility != null)
-                    paste.setVisibility(request.visibility);
 
-                if (request.expireAt != null && request.expireAt.length() >= 16) {
-                    paste.setExpireAt(request.expireAt);
-                }
+        if (paste == null) {
+            throw new NotFoundException();
+        }
 
-                paste.save();
-                response.success = true;
-            } else
-                throw new PermissionsDeniedException();
+        if ((paste.getUserId() != null && paste.getUserId().equals(user.getId())) || user.type == User.Type.ADMIN) {
+            if (request.title != null)
+                paste.setTitle(request.title);
+            if (request.content != null)
+                paste.setContent(request.content);
+            if (request.folder != null)
+                paste.setFolder(request.folder);
+            if (request.type != null)
+                paste.setType(request.type);
+            if (request.encrypted != null)
+                paste.setEncrypted(request.encrypted);
+            if (request.visibility != null)
+                paste.setVisibility(request.visibility);
+
+            if (request.expireAt != null && request.expireAt.length() >= 16) {
+                paste.setExpireAt(request.expireAt);
+            }
+
+            paste.save();
+            response.success = true;
+        } else {
+            throw new PermissionsDeniedException();
         }
         return response;
     }
@@ -137,8 +141,10 @@ public class PasteController extends HttpController {
     @With({"auth-login-required-read", "awaiting-access-check", "blocked-check"})
     public PasteResponse getPaste(Exchange exchange, @Path("id") String id, @Attrib("user") User user) {
         Paste paste = Repo.get(Paste.class).where("key", id).first();
-        if (paste == null)
+
+        if (paste == null) {
             throw new NotFoundException();
+        }
 
         if (paste.isPrivate() && (user == null || !Objects.equals(user.id, paste.getUserId()))) {
             throw new PastePrivateException();
@@ -164,12 +170,15 @@ public class PasteController extends HttpController {
         ActionResponse response = new ActionResponse();
         Paste paste = Repo.get(Paste.class).where("key", id).first();
 
-        if (paste != null) {
-            if ((paste.getUserId() != null && paste.getUserId().equals(user.getId())) || user.type == User.Type.ADMIN) {
-                paste.delete();
-                response.success = true;
-            } else
-                throw new PermissionsDeniedException();
+        if (paste == null) {
+            throw new NotFoundException();
+        }
+
+        if ((paste.getUserId() != null && paste.getUserId().equals(user.getId())) || user.type == User.Type.ADMIN) {
+            paste.delete();
+            response.success = true;
+        } else{
+            throw new PermissionsDeniedException();
         }
 
         return response;
@@ -183,30 +192,37 @@ public class PasteController extends HttpController {
 
         ActionResponse response = new ActionResponse();
         Paste paste = Repo.get(Paste.class).where("key", id).first();
-        if (paste != null && paste.getUserId().equals(user.getId())) {
-            if (user.authProvider == User.AuthenticationProvider.INTERAAPPS) {
-                AuthKey authKey = Repo.get(AuthKey.class).where("userId", user.id).where("type", AuthKey.Type.USER).order("createdAt", true).first();
 
-                AccountsClient accountsClient = new AccountsClient(authKey.accessToken);
-                for (ContactResponse contact : accountsClient.getContacts().stream().filter(contact -> contact.getName().equalsIgnoreCase(request.friend)).collect(Collectors.toList())) {
-                    User friend = Repo.get(User.class).where("name", contact.getName()).where("authProvider", User.AuthenticationProvider.INTERAAPPS).first();
-                    SharedPaste sharedPaste = new SharedPaste();
-                    sharedPaste.setUser(user);
-                    sharedPaste.setTarget(friend);
-                    sharedPaste.setPaste(paste);
-                    sharedPaste.save();
-
-                    Notification notification = new Notification();
-                    notification.setMessage(user.getName() + " shared a paste with you! Click to open.");
-                    notification.url = "/" + paste.getKey();
-                    friend.sendNotification(notification);
-                    response.success = true;
-                }
-            } else {
-                throw new RuntimeException("NOT IMPLEMENTED");
-            }
-
+        if (paste == null) {
+            throw new NotFoundException();
         }
+
+        if (!paste.getUserId().equals(user.getId())) {
+            throw new PermissionsDeniedException();
+        }
+
+        if (user.authProvider == User.AuthenticationProvider.INTERAAPPS) {
+            AuthKey authKey = Repo.get(AuthKey.class).where("userId", user.id).where("type", AuthKey.Type.USER).order("createdAt", true).first();
+
+            AccountsClient accountsClient = new AccountsClient(authKey.accessToken);
+            for (ContactResponse contact : accountsClient.getContacts().stream().filter(contact -> contact.getName().equalsIgnoreCase(request.friend)).collect(Collectors.toList())) {
+                User friend = Repo.get(User.class).where("name", contact.getName()).where("authProvider", User.AuthenticationProvider.INTERAAPPS).first();
+                SharedPaste sharedPaste = new SharedPaste();
+                sharedPaste.setUser(user);
+                sharedPaste.setTarget(friend);
+                sharedPaste.setPaste(paste);
+                sharedPaste.save();
+
+                Notification notification = new Notification();
+                notification.setMessage(user.getName() + " shared a paste with you! Click to open.");
+                notification.url = "/" + paste.getKey();
+                friend.sendNotification(notification);
+                response.success = true;
+            }
+        } else {
+            throw new RuntimeException("NOT IMPLEMENTED");
+        }
+
         return response;
     }
 

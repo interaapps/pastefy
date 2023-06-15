@@ -6,6 +6,7 @@ import de.interaapps.pastefy.controller.PasteController;
 import de.interaapps.pastefy.exceptions.AuthenticationException;
 import de.interaapps.pastefy.exceptions.FeatureDisabledException;
 import de.interaapps.pastefy.exceptions.NotFoundException;
+import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
@@ -195,6 +196,8 @@ public class Pastefy {
                 exchange.status(401);
             } else if (throwable instanceof NotFoundException) {
                 exchange.status(404);
+            } else if (throwable instanceof PermissionsDeniedException) {
+                exchange.status(403);
             } else {
                 exchange.status(500);
             }

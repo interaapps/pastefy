@@ -10,8 +10,9 @@ public class BlockedMiddleware implements Middleware {
     public Object handle(Exchange exchange) {
         User user = exchange.attrib("user");
 
-        if (user != null && user.type == User.Type.BLOCKED)
+        if (user != null && user.type == User.Type.BLOCKED) {
             throw new BlockedException();
+        }
 
         return null;
     }

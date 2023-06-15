@@ -9,8 +9,6 @@ import org.javawebstack.passport.strategies.oauth2.OAuth2Profile;
 import org.javawebstack.passport.strategies.oauth2.OAuth2Strategy;
 
 public class OAuth2Callback implements OAuth2Strategy.HttpCallbackHandler {
-
-
     public Object handle(Exchange exchange, org.javawebstack.passport.strategies.oauth2.OAuth2Callback callback, String name) {
         User.AuthenticationProvider provider = de.interaapps.pastefy.model.database.User.AuthenticationProvider.getProviderByClass(callback.getProvider().getClass());
         OAuth2Profile profile = callback.getProfile();
@@ -31,6 +29,7 @@ public class OAuth2Callback implements OAuth2Strategy.HttpCallbackHandler {
             if (Pastefy.getInstance().getConfig().get("pastefy.grantaccessrequired", "false").equalsIgnoreCase("true"))
                 user.type = User.Type.AWAITING_ACCESS;
         }
+
         // On every login the username, avatar and e-mail gets updated
         user.name = profile.getName();
         user.avatar = profile.getAvatar();

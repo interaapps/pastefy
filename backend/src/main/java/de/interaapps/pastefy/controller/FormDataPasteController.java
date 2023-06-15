@@ -51,6 +51,6 @@ public class FormDataPasteController extends HttpController {
             return "https://" + exchange.header("Host") + "/" + paste.getKey() + "\n";
         }
 
-        return "No file given. curl -F 'f=@filename' pastefy.ga\n";
+        return "No file given. curl -F 'f=@filename' pastefy.app\n";
     }
 }

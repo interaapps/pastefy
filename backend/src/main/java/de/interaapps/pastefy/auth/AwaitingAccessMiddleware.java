@@ -10,8 +10,9 @@ public class AwaitingAccessMiddleware implements Middleware {
     public Object handle(Exchange exchange) {
         User user = exchange.attrib("user");
 
-        if (user != null && user.type == User.Type.AWAITING_ACCESS)
+        if (user != null && user.type == User.Type.AWAITING_ACCESS) {
             throw new AwaitingAccessException();
+        }
 
         return null;
     }
