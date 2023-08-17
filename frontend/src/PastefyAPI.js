@@ -10,7 +10,7 @@ export class PastefyAPI extends Cajax {
             const json = await res.json()
 
             if (json.error)
-                throw new Error()
+                throw json
 
             return json
         }

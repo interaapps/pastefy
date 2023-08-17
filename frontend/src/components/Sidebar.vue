@@ -106,7 +106,7 @@
 
                     <label for="expiry">Paste Expires</label>
                     <input type="checkbox" v-model="expiry" name="expiry">
-                    <input v-if="expiry" :min="new Date().toTimeString()" v-model="$store.state.currentPaste.expire_at" class="input" type="datetime-local">
+                    <input v-if="expiry" :min="new Date().toTimeString()" v-model="$store.state.currentPaste.expire_at" step="1" class="input" type="datetime-local">
 
                     <br>
 
@@ -311,7 +311,14 @@ export default {
             if (this.expiry) {
                 const date = new Date()
                 date.setTime(date.getTime() + 1000 * 60 * 60 * 48)
+                console.log(this.$store.state.currentPaste.expire_at)
                 this.$store.state.currentPaste.expire_at = date.toISOString().slice(0, 19).replace('T', ' ')
+                console.log(this.$store.state.currentPaste.expire_at)
+
+                if (this.$store.state.currentPaste.expire_at.length === 16) {
+                    this.$store.state.currentPaste.expire_at += ':00'
+                }
+                console.log(this.$store.state.currentPaste.expire_at)
             } else {
                 this.$store.state.currentPaste.expire_at = null
             }
@@ -408,8 +415,15 @@ export default {
             if (this.$store.state.currentPaste.folder !== "")
                 data.folder = this.$store.state.currentPaste.folder
 
-            if (this.expiry)
+            if (this.expiry) {
                 data.expire_at = this.$store.state.currentPaste.expire_at
+
+                data.expire_at = this.$store.state.currentPaste.expire_at.slice(0, 19).replace('T', ' ')
+
+                if (data.expire_at.length === 16) {
+                    data.expire_at += ':00'
+                }
+            }
 
             data.encrypted = false;
             let key;

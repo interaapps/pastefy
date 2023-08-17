@@ -197,6 +197,10 @@ export function setThemeFrom(vars = {}) {
         else
             document.documentElement.style.setProperty(key, vars[key])
     }
+
+    if (vars['--background-color']) {
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', vars['--background-color'])
+    }
 }
 
 const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");

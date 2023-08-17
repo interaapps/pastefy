@@ -60,7 +60,7 @@ docker run -p 8080:80 \
       --env OAUTH2_PROVIDER_CLIENT_SECRET= \
       interaapps/pastefy
 ```
-Or [Pastefy Docker in Host-Mode](https://pastefy.ga/JWLoudTI)
+Or [Pastefy Docker in Host-Mode](https://pastefy.app/JWLoudTI)
 
 ### Docker-Compose
 https://github.com/interaapps/pastefy/blob/master/docker-compose.yml
@@ -73,7 +73,7 @@ docker-compose up
 ### Custom Docker-Compose (Using Docker-Hub)
 https://pastefy.ga/Hj9N3bs2
 ```bash
-wget https://pastefy.ga/Hj9N3bs2/raw -O docker-compose.yml
+wget https://pastefy.app/Hj9N3bs2/raw -O docker-compose.yml
 nano docker-compose.yml
 docker-compose up
 ```

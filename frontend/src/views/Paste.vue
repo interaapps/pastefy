@@ -6,9 +6,17 @@
             <input placeholder="Password" v-model="password" type="password" class="input">
             <a class="button" style="width: 100%;" @click="load($route.params.id)">ENTER PASTE</a><br>
         </template>
-        <template v-else-if="!found">
+        <template v-else-if="error">
             <div class="error">
-                404! Paste not found
+                <template v-if="error.exception === 'NotFoundException'">
+                    404! Paste not found
+                </template>
+                <template v-else-if="error.exception === 'PastePrivateException'">
+                    This paste is private
+                </template>
+                <template v-else>
+                    {{ error.exception }}
+                </template>
             </div>
         </template>
         <template v-else-if="$store.state.appInfo.login_required_for_read && !$store.state.user.logged_in">
@@ -112,7 +120,8 @@ export default {
 
         multiPastes: null,
         multiPastesSelected: null,
-        readCode: false
+        readCode: false,
+        error: null
     }),
     mounted() {
         this.load(this.$route.params.id)
@@ -130,62 +139,68 @@ export default {
         next()
     },
     methods: {
-        load(id) {
+        async load(id) {
             let data = {}
-            if (this.password !== "" && this.passwordRequired)
+            this.error = null
+
+            if (this.password !== "" && this.passwordRequired) {
                 data.password = this.password
-            this.pastefyAPI.get("/api/v2/paste/" + id, data)
-                .then(res => {
-                    let paste = res
-                    if (paste.exists) {
-                        this.title = paste.title
-                        this.rawContent = paste.content
-                        this.rawURL = paste.raw_url;
-                        this.userid = paste.user_id
-                        this.paste = paste
-                        this.multiPastes = null
-                        this.multiPastesSelected = null
+            }
 
-                        this.validPassword = false
+            try {
+                const paste = await this.pastefyAPI.get("/api/v2/paste/" + id, data)
 
-                        if (paste.encrypted) {
-                            let key = this.password;
-                            if (window.location.hash != "") {
-                                key = window.location.hash.split("#")[1];
+                if (paste.exists) {
+                    this.title = paste.title
+                    this.rawContent = paste.content
+                    this.rawURL = paste.raw_url;
+                    this.userid = paste.user_id
+                    this.paste = paste
+                    this.multiPastes = null
+                    this.multiPastesSelected = null
+
+                    this.validPassword = false
+
+                    if (paste.encrypted) {
+                        let key = this.password;
+                        if (window.location.hash != "") {
+                            key = window.location.hash.split("#")[1];
+                        }
+
+                        if (key == "") {
+                            this.passwordRequired = true
+                            return;
+                        }
+
+                        this.title = CryptoJS.AES.decrypt(paste.title, key).toString(CryptoJS.enc.Utf8);
+
+                        this.rawContent = CryptoJS.AES.decrypt(paste.content, key).toString(CryptoJS.enc.Utf8);
+                        if (this.rawContent === "")
+                            this.validPassword = false
+                        else
+                            this.validPassword = true
+                    } else if (paste.using_password) {
+                        if (this.rawContent === '') {
+                            if (this.password !== "") {
+                                helper.showSnackBar("Invalid Password", "#EE4343")
                             }
-
-                            if (key == "") {
-                                this.passwordRequired = true
-                                return;
-                            }
-
-                            this.title = CryptoJS.AES.decrypt(paste.title, key).toString(CryptoJS.enc.Utf8);
-
-                            this.rawContent = CryptoJS.AES.decrypt(paste.content, key).toString(CryptoJS.enc.Utf8);
-                            if (this.rawContent === "")
-                                this.validPassword = false
-                            else
-                                this.validPassword = true
-                        } else if (paste.using_password) {
-                            if (this.rawContent === '') {
-                                if (this.password !== "") {
-                                    helper.showSnackBar("Invalid Password", "#EE4343")
-                                }
-                            } else
-                                this.validPassword = true
                         } else
                             this.validPassword = true
-
-
-                        if (paste.type === 'PASTE') {
-                            this.highlight(this.title, this.rawContent)
-                        } else if (paste.type == 'MULTI_PASTE') {
-                            this.multiPastes = JSON.parse(this.rawContent)
-                            this.changeTab(0)
-                        }
                     } else
-                        this.found = false
-                })
+                        this.validPassword = true
+
+
+                    if (paste.type === 'PASTE') {
+                        this.highlight(this.title, this.rawContent)
+                    } else if (paste.type == 'MULTI_PASTE') {
+                        this.multiPastes = JSON.parse(this.rawContent)
+                        this.changeTab(0)
+                    }
+                } else
+                    this.found = false
+            } catch (e) {
+                this.error = e
+            }
         },
         changeTab(i) {
             this.multiPastesSelected = i

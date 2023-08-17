@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
    db:
-     image: mariadb:latest
+     image: mariadb:10.11
      volumes:
        - dbvol:/var/lib/mysql
 

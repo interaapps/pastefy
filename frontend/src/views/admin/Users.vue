@@ -3,7 +3,7 @@
         <Header />
         <input v-model="search" class="input" placeholder="Search" @change="page = 1; loadUsers()" @keydown.enter="page = 1; loadUsers()" style="max-width: 1200px">
         <div id="users" >
-            <div v-for="user of users" :key="user.id">
+            <div v-for="(user, i) of users" :key="user.id">
                 <img :src="user.avatar">
                 <div class="name">
                     <h1>{{ user.unique_name }}</h1>
@@ -13,12 +13,20 @@
                     {{ user.e_mail }} ({{ user.auth_provider }})
                 </div>
                 <div class="action-buttons">
-                    <router-link :to="`/admin/pastes?q=${ encodeURIComponent(`user_id=${ user.id }`) }`" class="button small" style="margin-right: 10px" @click="removeUser(user.id)">Pastes</router-link>
+                    <router-link :to="`/admin/pastes?q=${ encodeURIComponent(`user_id=${ user.id }`) }`" class="button small" style="margin-right: 10px">Pastes</router-link>
 
                     <a v-if="user.type === 'AWAITING_ACCESS'" class="button small" style="margin-right: 10px;" @click="setUserType(user.id, 'USER')">Grant Access</a>
                     <a v-else-if="user.type === 'BLOCKED'" class="button small" style="margin-right: 10px;" @click="setUserType(user.id, 'USER')">UNBLOCK</a>
-                    <a v-else-if="user.type === 'USER'" class="button small delete" style="margin-right: 10px;" @click="setUserType(user.id, 'BLOCKED')">BLOCK</a>
-                    <a class="button small delete" @click="removeUser(user.id)">Remove</a>
+                    <a v-else-if="user.type === 'USER'" class="button small delete" style="margin-right: 10px;" @click="$refs.blockUserConfirmation[i].open()">BLOCK</a>
+                    <a class="button small delete" @click="$refs.deleteUserConfirmation[i].open()">Remove</a>
+
+
+                    <ConfirmationModal ref="deleteUserConfirmation" title="Delete user?" @confirm="removeUser(user.id)">
+                        Do you really want to delete the user '{{ user.name }}'?
+                    </ConfirmationModal>
+                    <ConfirmationModal ref="blockUserConfirmation" title="Block user?" @confirm="setUserType(user.id, 'BLOCKED')">
+                        Do you really want to block the user '{{ user.name }}'?
+                    </ConfirmationModal>
                 </div>
 
             </div>
@@ -31,9 +39,10 @@
 <script>
 import Header from "@/components/admin/Header";
 import {buildSearchAndFilterQuery} from "@/helper";
+import ConfirmationModal from '@/components/ConfirmationModal.vue'
 export default {
     name: "Users",
-    components: {Header},
+    components: {ConfirmationModal, Header},
     data: () => ({
         users: [],
         search: '',
