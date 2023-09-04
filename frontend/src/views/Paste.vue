@@ -211,7 +211,7 @@ export default {
         async highlight(title, contents) {
             const [, language, originalEnding] = getLanguageByFileName(title)
 
-            this.extraChighlighontent = ''
+            this.extraContent = ''
             this.htmlPreview = ""
             this.htmlPreviewEnabled = false
 
