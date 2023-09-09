@@ -1,16 +1,16 @@
 <template>
     <div>
         <HomeHeader />
-        <WebsiteBanner paste="pb-homep" />
-        <div v-if="$store.state.user.logged_in">
+        <WebsiteBanner paste="pb-homep"  v-animate-css="{classes: 'fadeIn', delay: 50}" />
 
-            <div id="folders">
+        <div v-if="$store.state.user.logged_in">
+            <div id="folders"  v-animate-css="{classes: 'fadeIn', delay: 100}">
                 <h3 style="margin-top: 20px; margin-bottom: 20px; font-size: 24px">Folder</h3>
 
                 <FolderCard v-for="folder of folders" :key="`folder-${folder.id}`" :folder="folder" />
                 <NewFolderCard @created="loadFolders()" />
             </div>
-            <div id="pastes">
+            <div id="pastes"  v-animate-css="{classes: 'fadeIn', delay: 150}">
                 <a class="button" @click="$store.state.currentPaste.folder = null; $store.state.app.fullscreen = true"
                    style="float: right; padding: 4px 16px; margin-top: 4px">NEW</a>
 
@@ -24,11 +24,11 @@
             </div>
         </div>
         <div v-else>
-            <p>
+            <p v-animate-css="{classes: 'fadeIn', delay: 100}">
                 Pastefy is a code-paster. Just paste your code into the input-field on the left side and voilá!<br>
             </p><br><br>
-            <h2 style="margin-bottom: 10px" v-if="$store.state.app.lastPastes.length">Your last created pastes</h2>
-            <div id="pastes">
+            <h2  v-animate-css="{classes: 'fadeIn', delay: 150}" style="margin-bottom: 10px" v-if="$store.state.app.lastPastes.length">Your last created pastes</h2>
+            <div id="pastes"  v-animate-css="{classes: 'fadeIn', delay: 200}">
                 <PasteCard v-for="paste of $store.state.app.lastPastes" :key="paste.id" :paste="paste" />
             </div>
         </div>

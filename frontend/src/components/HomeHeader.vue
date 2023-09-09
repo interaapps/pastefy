@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1 v-if="$store.state.user.logged_in">Welcome, {{ $store.state.user.name }}</h1>
+        <h1 v-if="$store.state.user.logged_in">Welcome, <span v-animate-css="{classes: 'fadeIn', delay: 0}">{{ $store.state.user.name }}</span></h1>
         <h1 v-else>Welcome to {{ $store.state.appInfo.custom_name || 'Pastefy' }}!</h1><br>
 
         <div>

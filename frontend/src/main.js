@@ -21,7 +21,7 @@ Vue.config.productionTip = false
 
 
 Vue.use(PortalVue)
-Vue.use(VAnimateCss)
+Vue.use(VAnimateCss);
 
 let worker = null
 

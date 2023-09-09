@@ -23,34 +23,36 @@
             <h2>Please log in to see this paste.</h2>
         </template>
         <template v-else>
+            <div :class="{'lightened-top': language === 'markdown' && !multiPastes}">
+                <div id="action-buttons" :class="{mobile: $store.state.mobileVersion}" v-animate-css="{classes: 'fadeIn', delay: 50}">
+                    <a v-if="isPWA()" @click="copyURL">Copy URL</a>
+                    <a v-if="language == 'json'" @click="jsonPretty">{{ jsonPrettified ? 'UNPRETTY' : 'PRETTY' }}</a>
+                    <a href="#paste-contents" @click="readCode = true" v-if="extraContent !== ''">CODE</a>
+                    <a v-if="$store.state.user.logged_in && ($store.state.user.id == userid || $store.state.user.type === 'ADMIN')"
+                       @click="$refs.deleteConfirmation.open()">DELETE</a>
+                    <a @click="editPaste(true)" v-if="!$store.state.mobileVersion">FORK</a>
+                    <a v-if="$store.state.user.logged_in && $store.state.user.id == userid" @click="editPaste()">EDIT</a>
+                    <a :href="rawURL" v-if="!passwordRequired && !multiPastes">RAW</a>
+                    <a id="copy-contents" @click="copy">
+                        <i class="material-icons">content_copy</i>
+                    </a>
+                </div>
 
-            <div id="action-buttons" :class="{mobile: $store.state.mobileVersion}">
-                <a v-if="isPWA()" @click="copyURL">Copy URL</a>
-                <a v-if="language == 'json'" @click="jsonPretty">{{ jsonPrettified ? 'UNPRETTY' : 'PRETTY' }}</a>
-                <a href="#paste-contents" @click="readCode = true" v-if="extraContent !== ''">CODE</a>
-                <a v-if="$store.state.user.logged_in && ($store.state.user.id == userid || $store.state.user.type === 'ADMIN')"
-                   @click="$refs.deleteConfirmation.open()">DELETE</a>
-                <a @click="editPaste(true)" v-if="!$store.state.mobileVersion">FORK</a>
-                <a v-if="$store.state.user.logged_in && $store.state.user.id == userid" @click="editPaste()">EDIT</a>
-                <a :href="rawURL" v-if="!passwordRequired && !multiPastes">RAW</a>
-                <a id="copy-contents" @click="copy">
-                    <i class="material-icons">content_copy</i>
-                </a>
+                <h1 v-animate-css="{classes: 'fadeIn', delay: 50}">{{ title }}</h1>
+
             </div>
-            <h1>{{ title }}<span class="language"
-                                 v-if="language !== null && language == 'markdown' && !multiPastes">{{ language }}</span>
-            </h1>
-            <div id="tabs" v-if="multiPastes != null && Object.keys(multiPastes).length > 1">
+
+            <div v-animate-css="{classes: 'fadeIn', delay: 100}" id="tabs" v-if="multiPastes != null && Object.keys(multiPastes).length > 1">
                 <a v-for="(tab,i) of multiPastes" :key="i" @click="changeTab(i)"
                    :class="{selected: multiPastesSelected==i}">
                     {{ tab.name }}
                 </a>
             </div>
-            <div id="preview" v-if="extraContent !== ''" v-html="extraContent"></div>
+            <div v-animate-css="{classes: 'fadeIn', delay: 150}" id="preview" v-if="extraContent !== ''" v-html="extraContent"></div>
             <template v-if="extraContent == '' || readCode">
-                <h1 v-if="extraContent !== ''" style="margin-top: 30px;">
+                <h1 v-if="extraContent !== ''" style="margin-top: 30px;" v-animate-css="{classes: 'fadeIn', delay: 50}">
                     {{ language == 'markdown' ? 'Markdown ' : '' }}Code</h1>
-                <code id="paste-contents">
+                <code id="paste-contents"  v-animate-css="{classes: 'fadeIn', delay: 100}">
                     <div id="line-nums" v-if="showLineNums">
                         <a
                             v-for="(line, lineNum) of rawContent.split('\n')"
@@ -65,10 +67,10 @@
 
             </template>
             <template v-if="htmlPreview !== ''">
-                <a class="button gray" v-if="!htmlPreviewEnabled" @click="htmlPreviewEnabled = !htmlPreviewEnabled">
+                <a class="button gray" v-if="!htmlPreviewEnabled" @click="htmlPreviewEnabled = !htmlPreviewEnabled" v-animate-css="{classes: 'fadeIn', delay: 200}">
                     Show Preview
                 </a>
-                <div id="html-preview" :class="['lang-'+language]" v-else>
+                <div id="html-preview" :class="['lang-'+language]" v-animate-css="{classes: 'fadeIn'}" v-else>
                     <iframe
                         sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-scripts allow-top-navigation-by-user-activation"
                         :srcdoc="htmlPreview"/>
@@ -541,31 +543,74 @@ h1 {
 <style lang="scss">
 #preview {
 
-    font-size: 17.5px;
+    font-size: 18px;
 
-    h1, h2, h3, h4, h5 {
-        margin-top: 30px;
-        margin-bottom: 15px;
+    * {
+        font-family: "DM Sans";
+    }
+    h1, h2, h3 {
+        font-family: "DM Serif Text";
     }
 
     h1 {
-        padding-bottom: 18px;
+        font-size: 36px;
+        margin-top: 36px;
+        margin-bottom: 18px;
     }
 
     h2 {
         font-size: 28px;
+        margin-top: 28px;
+        margin-bottom: 14px;
     }
 
     h3 {
         font-size: 23px;
+        margin-top: 23px;
+        margin-bottom: 11px;
     }
 
     h4 {
         font-size: 20px;
+        margin-top: 20px;
+        margin-bottom: 10px;
     }
 
     h5 {
         font-size: 18px;
+        margin-top: 18px;
+        margin-bottom: 9px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        td, th {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
     }
 
     img {
@@ -614,5 +659,13 @@ h1 {
   margin-left: 5px;
   user-select: none;
   border: var(--text-color-alpha) solid 2px;
+}
+
+.lightened-top {
+    opacity: 0.3;
+    transition: 0.3s;
+    &:hover {
+        opacity: 1;
+    }
 }
 </style>

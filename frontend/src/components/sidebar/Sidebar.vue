@@ -1,6 +1,6 @@
 <template>
     <div>
-        <router-link to="/" id="logo" :class="{'mobile': $store.state.mobileVersion && this.$route.path !== '/'}">
+        <router-link to="/" id="logo" :class="{'mobile': $store.state.mobileVersion && this.$route.path !== '/'}" >
             <img :src="$store.state.appInfo.custom_logo ? $store.state.appInfo.custom_logo : require('../../assets/logo.png')">
         </router-link>
         <div id="sidebar"

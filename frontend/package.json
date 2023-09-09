@@ -14,7 +14,7 @@
     "petrel": "^1.0.7",
     "portal-vue": "^2.1.7",
     "sass": "^1.43.4",
-    "v-animate-css": "^1.0.1",
+    "v-animate-css": "0.0.5",
     "vue": "^2.6.11",
     "vue-router": "^3.5.1"
   },

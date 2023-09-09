@@ -3,7 +3,7 @@
         <HomeHeader />
         <div id="public">
 
-            <input @input="loadSearch()" v-model="search" type="text" placeholder="Search" class="input">
+            <input @input="loadSearch()" v-model="search" type="text" placeholder="Search" class="input" v-animate-css="{classes: 'fadeIn', delay: 0}">
 
             <div v-if="search !== ''" :key="`search-${search}`">
 
@@ -18,19 +18,25 @@
             <div v-else>
                 <WebsiteBanner paste="pb-trend" />
 
-                <h2 style="margin-top: 20px; margin-bottom: 10px;">Trending</h2>
-                <div id="pastes">
-                    <PasteCard v-for="paste of trendingPastes" :key="`trending-${paste.id}`" :paste="paste"/>
+                <div v-animate-css="{classes: 'fadeIn', delay: 50}">
+                    <h2 style="margin-top: 20px; margin-bottom: 10px;">Trending</h2>
+                    <div id="pastes">
+                        <PasteCard v-for="paste of trendingPastes" :key="`trending-${paste.id}`" :paste="paste"/>
+                    </div>
                 </div>
 
-                <h2 style="margin-top: 40px; margin-bottom: 10px;">Latest</h2>
-                <div id="pastes">
-                    <PasteCard v-for="paste of newPastes" :key="`new-${paste.id}`" :paste="paste"/>
+                <div v-animate-css="{classes: 'fadeIn', delay: 100}">
+                    <h2 style="margin-top: 40px; margin-bottom: 10px;">Latest</h2>
+                    <div id="pastes">
+                        <PasteCard v-for="paste of newPastes" :key="`new-${paste.id}`" :paste="paste"/>
+                    </div>
                 </div>
 
-                <h2 style="margin-top: 40px; margin-bottom: 10px;">Alltime Trending</h2>
-                <div id="pastes">
-                    <PasteCard v-for="paste of allTimeTrendingPastes" :key="`alt-trending-${paste.id}`" :paste="paste"/>
+                <div v-animate-css="{classes: 'fadeIn', delay: 150}">
+                    <h2 style="margin-top: 40px; margin-bottom: 10px;">Alltime Trending</h2>
+                    <div id="pastes">
+                        <PasteCard v-for="paste of allTimeTrendingPastes" :key="`alt-trending-${paste.id}`" :paste="paste"/>
+                    </div>
                 </div>
             </div>
         </div>

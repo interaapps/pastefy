@@ -1,6 +1,6 @@
 <template>
     <div style="min-height: 100%;">
-        <side-bar/>
+        <side-bar />
         <router-view :class="{'mobile': $store.state.mobileVersion}" id="page" />
 
         <div v-if="$store.state.user.type == 'AWAITING_ACCESS'" id="fullscreen-alert">
