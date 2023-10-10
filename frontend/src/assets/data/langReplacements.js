@@ -14,13 +14,11 @@ export default {
     vue: 'xml',
     yml: 'yaml',
     py: 'python',
-    py3: 'python',
-    py2: 'python',
     css: 'scss',
     sass: 'yaml',
     cs: 'csharp',
     env: 'properties',
     txt: "text",
     h: "c",
-    ino: "c"
+    ino: "c",
 }

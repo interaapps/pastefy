@@ -218,6 +218,63 @@ export function estimateTitle(contents) {
         return `data.json`
     }
 
+    try {
+        if (contents.length < 10000) {
+            const auto = hljs.highlightAuto(contents)
+
+            const languages = {
+                javascript: 'script.js',
+                typescript: 'script.ts',
+                coffeescript: 'script.js',
+                java: 'Program.java',
+                groovy: 'Program.groovy',
+                kotlin: 'Program.kt',
+                'php-template': 'component.php',
+                php: 'index.php',
+                lua: 'extension.lua',
+                r: 'file.r',
+                ini: 'config.ini',
+                toml: 'config.toml',
+                diff: 'changes.diff',
+                properties: '.env',
+                json: 'data.json',
+                scss: 'styles.scss',
+                css: 'styles.css',
+                less: 'styles.less',
+                shell: 'script.sh',
+                bash: 'script.bash',
+                apache: '.htaccess',
+                rust: 'program.rs',
+                yaml: 'data.yml',
+                'python-repl': 'app.py',
+                python: 'app.py',
+                dockerfile: 'Dockerfile',
+                sql: 'db.sql',
+                markdown: 'document.md',
+                vbscript: 'program.vbs',
+                swift: 'app.swift',
+                cpp: 'app.cpp',
+                c: 'app.c',
+                csharp: 'App.cs',
+                http: 'request.http',
+                perl: 'app.pl',
+                nginx: 'config.nginx',
+                objectivec: 'program.m',
+                go: 'app.go',
+                dart: 'component.dart',
+            }
+
+            if (auto.language in languages) {
+                return languages[auto.language]
+            }
+            if (auto.secondBest?.language && auto.secondBest.language in languages) {
+                return languages[auto.secondBest?.language]
+            }
+        }
+    } catch (e) {
+        //
+    }
+
     return ''
 }
 

@@ -548,6 +548,11 @@ h1 {
     * {
         font-family: "DM Sans";
     }
+
+    pre, pre * {
+        font-family: "DM Mono";
+    }
+
     h1, h2, h3 {
         font-family: "DM Serif Text";
     }

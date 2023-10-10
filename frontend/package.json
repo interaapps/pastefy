@@ -10,6 +10,7 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "core-js": "^3.6.5",
+    "highlight.js": "^11.9.0",
     "markdown-it": "^12.0.4",
     "petrel": "^1.0.7",
     "portal-vue": "^2.1.7",
