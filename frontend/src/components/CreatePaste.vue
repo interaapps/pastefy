@@ -144,7 +144,7 @@
     </div>
 </template>
 <script>
-import {CodeEditor} from 'petrel'
+import { CodeEditor } from 'petrel'
 import CryptoJS from "crypto-js";
 import hljs from "highlight.js";
 import LANGUAGE_REPLACEMENTS from '../assets/data/langReplacements'

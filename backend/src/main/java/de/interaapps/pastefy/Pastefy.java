@@ -11,8 +11,10 @@ import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.responses.ExceptionResponse;
+import org.eclipse.jetty.util.IO;
 import org.javawebstack.httpserver.HTTPServer;
 import org.javawebstack.httpserver.handler.RequestHandler;
+import org.javawebstack.httpserver.handler.StaticFileHandler;
 import org.javawebstack.orm.ORM;
 import org.javawebstack.orm.ORMConfig;
 import org.javawebstack.orm.Repo;
@@ -260,12 +262,15 @@ public class Pastefy {
             return false;
         });
 
+
         RequestHandler requestHandler = exchange -> {
             try {
                 InputStream file = getClass().getClassLoader().getResourceAsStream("static/index.html");
                 if (file == null) {
                     throw new NotFoundException();
                 }
+
+                exchange.header("Content-Type", "text/html; charset=UTF-8");
                 exchange.write(file);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -279,6 +284,7 @@ public class Pastefy {
 
         httpServer.get("/", requestHandler);
         httpServer.staticResourceDirectory("/", "static");
+
         httpServer.get("/api/{*:path}", e -> {
             throw new NotFoundException();
         });
