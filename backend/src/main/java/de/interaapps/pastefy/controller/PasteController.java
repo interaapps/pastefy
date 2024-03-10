@@ -79,9 +79,7 @@ public class PasteController extends HttpController {
 
 
         if (request.tags != null) {
-            System.out.println("Adding tags");
             for (String tag : request.tags) {
-                System.out.println("Adding"+tag);
                 PasteTag pTag = new PasteTag();
                 pTag.paste = paste.getKey();
                 pTag.tag = tag;
