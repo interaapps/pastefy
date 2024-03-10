@@ -2,6 +2,8 @@ package de.interaapps.pastefy.helper;
 
 import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
+import de.interaapps.pastefy.model.database.Paste;
+import de.interaapps.pastefy.model.database.PasteTag;
 import de.interaapps.pastefy.model.database.User;
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.httpserver.Exchange;
@@ -31,6 +33,16 @@ public class RequestHelper {
     public static void queryFilter(Query<?> query, AbstractObject params) {
         if (params.has("filter")) {
             query.filter(params.get("filter").toFormData().getMap());
+        }
+    }
+
+    public static void filterTags(Query<Paste> query, AbstractObject params) {
+        if (params.has("filter_tags")) {
+            String[] filterTags = params.get("filter_tags").string().split(",");
+
+            for (String filterTag : filterTags) {
+                query.whereExists(PasteTag.class, (pasteTagQuery) -> pasteTagQuery.where("tag", filterTag).where(PasteTag.class, "paste", "=", Paste.class, "key"));
+            }
         }
     }
 

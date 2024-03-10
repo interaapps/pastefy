@@ -37,7 +37,7 @@ public class PasteController extends HttpController {
 
     @Post
     @With({"rate-limiter", "auth-login-required-create", "awaiting-access-check", "blocked-check"})
-    public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey, @Path("id") String pasteId) {
+    public CreatePasteResponse create(Exchange exchange, @Body CreatePasteRequest request, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         if (authKey != null)
             authKey.checkPermission("pastes:create", "pastes:write");
 
@@ -77,6 +77,18 @@ public class PasteController extends HttpController {
 
         paste.save();
 
+
+        if (request.tags != null) {
+            System.out.println("Adding tags");
+            for (String tag : request.tags) {
+                System.out.println("Adding"+tag);
+                PasteTag pTag = new PasteTag();
+                pTag.paste = paste.getKey();
+                pTag.tag = tag;
+                pTag.save();
+            }
+        }
+
         response.success = true;
         response.paste = new PasteResponse(paste);
 
@@ -94,6 +106,7 @@ public class PasteController extends HttpController {
         RequestHelper.pagination(query, exchange);
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
+        RequestHelper.filterTags(query, exchange.getQueryParameters());
 
         return query.order("created_at", true).all().stream().map(p -> PasteResponse.create(p, exchange)).collect(Collectors.toList());
     }
@@ -127,6 +140,19 @@ public class PasteController extends HttpController {
 
             if (request.expireAt != null && request.expireAt.length() >= 16) {
                 paste.setExpireAt(request.expireAt);
+            }
+
+            if (request.tags != null) {
+                List<String> tags = paste.getTags();
+                request.tags.stream().filter(t -> !tags.contains(t)).forEach(tag -> {
+                    PasteTag pTag = new PasteTag();
+                    pTag.paste = paste.getKey();
+                    pTag.tag = tag;
+                    pTag.save();
+                });
+                tags.stream().filter(t -> !request.tags.contains(t)).forEach(t -> {
+                    Repo.get(PasteTag.class).where("paste", paste.getKey()).where("tag", t).delete();
+                });
             }
 
             paste.save();

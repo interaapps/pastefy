@@ -4,8 +4,10 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.*;
+import java.util.List;
 
 import java.sql.Timestamp;
+import java.util.stream.Collectors;
 
 @Dates
 @Table("pastes")
@@ -154,6 +156,10 @@ public class Paste extends Model {
 
     public Type getType() {
         return type;
+    }
+
+    public List<String> getTags() {
+        return Repo.get(PasteTag.class).where("paste", key).get().stream().map(t -> t.tag).collect(Collectors.toList());
     }
 
     public void setForkedFrom(String forkedFrom) {

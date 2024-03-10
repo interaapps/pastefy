@@ -3,7 +3,13 @@ package de.interaapps.pastefy.model.responses.paste;
 import com.google.gson.annotations.SerializedName;
 import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.model.database.Paste;
+import de.interaapps.pastefy.model.database.PasteTag;
 import org.javawebstack.httpserver.Exchange;
+import org.javawebstack.orm.Repo;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PasteResponse {
     public boolean exists = false;
@@ -20,6 +26,7 @@ public class PasteResponse {
     public Paste.Type type;
     public String createdAt = "0000-00-00 00:00:00";
     public String expireAt = null;
+    public List<String> tags;
 
     public PasteResponse(Paste paste) {
         if (paste == null) {
@@ -42,6 +49,8 @@ public class PasteResponse {
             folder = paste.getFolderId();
         type = paste.getType();
         exists = true;
+
+        tags = paste.getTags();
     }
 
     public PasteResponse shortenContent() {

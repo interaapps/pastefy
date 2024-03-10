@@ -16,6 +16,8 @@ public class CreatePasteRequest {
 
     public String forkedFrom;
 
+    public String[] tags = null;
+
     public Paste.Visibility visibility = Paste.Visibility.UNLISTED;
 
     public Paste.Type type = Paste.Type.PASTE;

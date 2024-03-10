@@ -8,6 +8,8 @@ import de.interaapps.pastefy.model.responses.folder.FolderResponse;
 import de.interaapps.pastefy.model.responses.paste.PasteResponse;
 import de.interaapps.pastefy.model.responses.user.UserPastesResponse;
 import de.interaapps.pastefy.model.responses.user.UserResponse;
+import org.javawebstack.abstractdata.AbstractElement;
+import org.javawebstack.abstractdata.AbstractNull;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.router.annotation.PathPrefix;
 import org.javawebstack.httpserver.router.annotation.With;
@@ -36,11 +38,11 @@ public class UserController extends HttpController {
 
         UserPastesResponse response = new UserPastesResponse();
         int page = 0;
-        if (exchange.rawRequest().getParameter("page") != null)
-            page = Integer.parseInt(exchange.rawRequest().getParameter("page")) - 1;
+        if (exchange.getQueryParameters().has("page"))
+            page = Integer.parseInt(exchange.getQueryParameters().get("page").string()) - 1;
 
         response.pastes = Repo.get(Paste.class).where("userId", user.getId()).whereNull("folder").order("updated_at", true).limit(10).offset(page * 10).all().stream().map(paste -> PasteResponse.create(paste, exchange)).collect(Collectors.toList());
-        response.folder = Repo.get(Folder.class).where("userId", user.getId()).whereNull("parent").order("updated_at", true).all().stream().map(folder -> new FolderResponse(folder, exchange.rawRequest().getParameter("hide_children") == null)).collect(Collectors.toList());
+        response.folder = Repo.get(Folder.class).where("userId", user.getId()).whereNull("parent").order("updated_at", true).all().stream().map(folder -> new FolderResponse(folder, !exchange.getQueryParameters().has("hide_children"))).collect(Collectors.toList());
 
         return response;
     }
@@ -51,7 +53,11 @@ public class UserController extends HttpController {
         if (authKey != null)
             authKey.checkPermission("folders:read");
 
-        return user.getFolderTree(exchange.rawRequest().getParameter("hide_children") == null, exchange.rawRequest().getParameter("hide_sub_children") == null, exchange.rawRequest().getParameter("hide_pastes") == null);
+        return user.getFolderTree(
+                !exchange.getQueryParameters().has("hide_children"),
+                !exchange.getQueryParameters().has("hide_sub_children"),
+                !exchange.getQueryParameters().has("hide_pastes")
+        );
     }
 
     @Get("/pastes")
@@ -69,6 +75,7 @@ public class UserController extends HttpController {
         RequestHelper.pagination(query, exchange);
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
+        RequestHelper.filterTags(query, exchange.getQueryParameters());
 
 
         return query.all().stream().map(p -> PasteResponse.create(p, exchange)).collect(Collectors.toList());
@@ -82,8 +89,8 @@ public class UserController extends HttpController {
 
         List<PasteResponse> pastes = new ArrayList<>();
         int page = 0;
-        if (exchange.rawRequest().getParameter("page") != null)
-            page = Integer.parseInt(exchange.rawRequest().getParameter("page")) - 1;
+        if (exchange.getQueryParameters().has("page"))
+            page = Integer.parseInt(exchange.getQueryParameters().get("page").string()) - 1;
 
         pastes = Repo.get(SharedPaste.class)
                 .where("targetId", user.getId())

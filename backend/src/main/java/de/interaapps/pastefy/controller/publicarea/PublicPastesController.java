@@ -30,6 +30,7 @@ public class PublicPastesController extends HttpController {
         RequestHelper.pagination(query, exchange);
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
+        RequestHelper.filterTags(query, exchange.getQueryParameters());
 
         return query
                 .stream()
@@ -43,7 +44,7 @@ public class PublicPastesController extends HttpController {
 
         RequestHelper.pagination(publicPasteEngagements, exchange);
 
-        if ("true".equals(exchange.rawRequest().getParameter("trending"))) {
+        if (equals(exchange.getQueryParameters().has("trending"))) {
             Date date = new Date();
             date.setTime(System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 4));
             publicPasteEngagements.where("createdAt", ">", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
@@ -65,8 +66,7 @@ public class PublicPastesController extends HttpController {
 
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
-
-
+        RequestHelper.filterTags(query, exchange.getQueryParameters());
 
         return query
                 .stream()
@@ -85,6 +85,7 @@ public class PublicPastesController extends HttpController {
         RequestHelper.pagination(query, exchange);
         query.search(exchange.query("search"));
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
+        RequestHelper.filterTags(query, exchange.getQueryParameters());
 
         return query
                 .stream()

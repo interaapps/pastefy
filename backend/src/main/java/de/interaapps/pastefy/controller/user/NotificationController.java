@@ -48,11 +48,11 @@ public class NotificationController extends HttpController {
 
         Query<Notification> query = Repo.get(Notification.class).where("userId", user.getId());
 
-        if (exchange.rawRequest().getParameter("not_received") != null)
+        if (exchange.getQueryParameters().has("not_received"))
             query.where("received", false);
 
 
-        if (exchange.rawRequest().getParameter("not_read") != null)
+        if (exchange.getQueryParameters().has("not_read"))
             query.where("alreadyRead", false);
 
         List<Notification> notifications = query.all();

@@ -3,6 +3,8 @@ package de.interaapps.pastefy.model.requests.paste;
 import de.interaapps.pastefy.model.database.Paste;
 import org.javawebstack.validator.Rule;
 
+import java.util.List;
+
 public class EditPasteRequest {
     @Rule("string")
     public String title;
@@ -12,6 +14,8 @@ public class EditPasteRequest {
     public Boolean encrypted;
     public String folder;
     public Paste.Type type;
+
+    public List<String> tags;
 
     public Paste.Visibility visibility;
 
