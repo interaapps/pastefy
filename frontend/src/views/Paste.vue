@@ -42,6 +42,19 @@
 
             </div>
 
+            <a
+               :href="`https://box.pastefy.app/${paste.id}`"
+               target="_blank" v-animate-css="{classes: 'fadeIn', delay: 100}"
+               v-if="isPublicPastefyServer() && paste.tags?.includes('codebox')"
+               class="codebox-info"
+            >
+                <img src="@/assets/img/codebox-logo.svg" alt="">
+                <div>
+                    <h2>This Paste seems to be a Codebox Project</h2>
+                    <h3>Click to open in Pastefy Codebox</h3>
+                </div>
+            </a>
+
             <div v-animate-css="{classes: 'fadeIn', delay: 100}" id="tabs" v-if="multiPastes != null && Object.keys(multiPastes).length > 1">
                 <a v-for="(tab,i) of multiPastes" :key="i" @click="changeTab(i)"
                    :class="{selected: multiPastesSelected==i}">
@@ -381,6 +394,42 @@ h1 {
     font-size: 30px;
     margin-bottom: 30px;
     min-height: 30px;
+}
+
+.codebox-info {
+    margin-bottom: 30px;
+    padding: 20px;
+    padding-right: 30px;
+    display: inline-block;
+    color: var(--text-color);
+    text-decoration: none;
+    background: var(--obj-background-color);
+    border: var(--obj-border-color) 2.5px solid;
+    border-radius: 10px;
+    transition: 0.3s;
+
+    img {
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 20px;
+        width: 40px;
+        height: 40px;
+    }
+    > div {
+        display: inline-block;
+        vertical-align: middle;
+
+        h2 {
+            font-size: 18px;
+        }
+        h3 {
+            font-size: 15px;
+            opacity: 0.4;
+        }
+    }
+    &:hover {
+        background: var(--obj-background-color-hover);
+    }
 }
 
 #paste-contents,

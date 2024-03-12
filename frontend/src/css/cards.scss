@@ -117,5 +117,13 @@
     border-radius: 100px;
     display: inline-block;
     position: absolute;
+
+    img {
+      width: 16px;
+      height: 16px;
+      display: inline;
+      vertical-align: middle;
+      margin-bottom: 5px;
+    }
   }
 }

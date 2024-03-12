@@ -155,7 +155,7 @@ Vue.mixin({
     },
     methods: {
         isPublicPastefyServer() {
-            return window.location.host == 'pastefy.ga' || window.location.host.endsWith('.pastefy.ga')
+            return window.location.host == 'pastefy.app' || window.location.host.endsWith('.pastefy.app')
         }
     }
 })

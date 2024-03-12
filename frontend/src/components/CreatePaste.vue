@@ -65,7 +65,7 @@
             </p>
 
             <template v-if="currentPaste.visibility !== 'PUBLIC'">
-                <h5 class="label">Password</h5>
+                <h5 class="label">PASSWORD</h5>
                 <input autocomplete="new-password" v-model="currentPaste.password" class="input"
                        type="password" placeholder="Password (Optional)">
             </template>
@@ -80,7 +80,7 @@
                 <span style="opacity: 0.5; color: var(--text-color)" v-if="clientEncrypted"><br>Client-Encryption deactivates the RAW function and some more. You can't open an encrypted paste without the password (If you set one) or the link.</span><br>
             </template>
 
-            <label for="expiry">Paste Expires</label>
+            <label for="expiry">Paste expires</label>
             <input type="checkbox" v-model="expiry" name="expiry">
             <input v-if="expiry" :min="new Date().toTimeString()" v-model="currentPaste.expire_at" step="1" class="input" type="datetime-local">
 
@@ -94,7 +94,7 @@
 
 
             <div v-if="$store.state.user.logged_in && $store.state.user.auth_type == 'interaapps'">
-                <h5 class="label">Share to friend</h5>
+                <h5 class="label">SHARE TO FRIEND</h5>
                 <input autocomplete="off" v-model="currentPaste.friends" class="input" type="text"
                        placeholder="Friends (By username, split with ,)">
                 <div id="friend-list" v-if="friendList.length > 0">

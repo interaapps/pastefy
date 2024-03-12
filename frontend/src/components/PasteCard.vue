@@ -20,8 +20,9 @@
                 v-if="paste.type == 'MULTI_PASTE'"
                 style="right: 15px; top: 15px"
             >
+                <img v-if="paste.tags?.includes('codebox')" src="@/assets/img/codebox-logo.svg" alt="">
                 {{
-                    paste.tags.includes('codebox')
+                    paste.tags?.includes('codebox')
                     ? 'Codebox'
                     : multiPasteParts.length > 1
                       && this.multiPasteParts[0].contents.split('\n').length >= 2

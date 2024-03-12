@@ -79,7 +79,7 @@ public class User extends Model {
     }
 
     public List<FolderResponse> getFolderWithChildren() {
-        return Repo.get(Folder.class).where("userId", id).whereNotNull("parent").all().stream().map(folder -> new FolderResponse(folder, true, true, false, true)).collect(Collectors.toList());
+        return Repo.get(Folder.class).where("userId", id).whereNull("parent").all().stream().map(folder -> new FolderResponse(folder, true, true, false, true)).collect(Collectors.toList());
     }
 
     public void sendNotification(Notification notification) {
