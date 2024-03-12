@@ -17,12 +17,18 @@
 
             <h4
                 class="multi-paste-size-indicator"
-                v-if="paste.type == 'MULTI_PASTE' && multiPasteParts.length > 1 && this.multiPasteParts[0].contents.split('\n').length >= 2"
+                v-if="paste.type == 'MULTI_PASTE'"
                 style="right: 15px; top: 15px"
             >
-                +{{ multiPasteParts.length - 1 }} Files
+                {{
+                    paste.tags.includes('codebox')
+                    ? 'Codebox'
+                    : multiPasteParts.length > 1
+                      && this.multiPasteParts[0].contents.split('\n').length >= 2
+                        ? `+${multiPasteParts.length - 1} Files`
+                        : 'Multi-Paste'
+                }}
             </h4>
-
         </router-link>
     </div>
 </template>
