@@ -6,7 +6,7 @@
                id="title-input">
 
         <svg @click="
-                    if (Object.keys(currentPaste.multiPastes).length == 0) addTab(currentPaste.title ? currentPaste.title : 'new');
+                    Object.keys(currentPaste.multiPastes).length == 0 ? addTab(currentPaste.title ? currentPaste.title : 'new') : null;
                     addTab()
                 " :style="{right: $store.state.mobileVersion ? '15px' : ''}" id="create-new-tab-button"
              xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg"
@@ -33,13 +33,7 @@
                      @click="selectTab(i, multiPastesSelected)" :class="{selected:i==multiPastesSelected}">
                     <input @input="updateEditorLang" v-model="currentPaste.multiPastes[i].name"
                            type="text" placeholder="Name">
-                    <svg @click="
-                            if (i==multiPastesSelected)
-                                selectTab(0)
-                            currentPaste.multiPastes.splice(i, 1);
-                            if (multiPastesSelected > i)
-                                selectTab(multiPastesSelected-1)
-                            " xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    <svg @click="closeTab(i)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                          class="bi bi-x" viewBox="0 0 16 16">
                         <path
                             d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
@@ -278,6 +272,13 @@ export default {
                     recursiveAddFolder(folder)
                 }
             })
+        },
+        closeTab(i) {
+            if (i === this.multiPastesSelected)
+                this.selectTab(0)
+            this.currentPaste.multiPastes.splice(i, 1);
+            if (this.multiPastesSelected > i)
+                this.selectTab(this.multiPastesSelected-1)
         },
         clearInputs() {
             codeEditor.value = ""
