@@ -1,7 +1,7 @@
-package org.javawebstack.passport.strategies;
+package de.interaapps.pastefy.auth.strategies;
 
 import org.javawebstack.http.router.HTTPRouter;
-import org.javawebstack.passport.Passport;
+import de.interaapps.pastefy.auth.Passport;
 
 public abstract class Strategy {
 

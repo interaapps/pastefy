@@ -9,15 +9,15 @@ import de.interaapps.pastefy.model.requests.CreateFolderRequest;
 import de.interaapps.pastefy.model.responses.ActionResponse;
 import de.interaapps.pastefy.model.responses.folder.CreateFolderResponse;
 import de.interaapps.pastefy.model.responses.folder.FolderResponse;
-import org.javawebstack.httpserver.Exchange;
-import org.javawebstack.httpserver.router.annotation.PathPrefix;
-import org.javawebstack.httpserver.router.annotation.With;
-import org.javawebstack.httpserver.router.annotation.params.Attrib;
-import org.javawebstack.httpserver.router.annotation.params.Body;
-import org.javawebstack.httpserver.router.annotation.params.Path;
-import org.javawebstack.httpserver.router.annotation.verbs.Delete;
-import org.javawebstack.httpserver.router.annotation.verbs.Get;
-import org.javawebstack.httpserver.router.annotation.verbs.Post;
+import org.javawebstack.http.router.Exchange;
+import org.javawebstack.http.router.router.annotation.PathPrefix;
+import org.javawebstack.http.router.router.annotation.With;
+import org.javawebstack.http.router.router.annotation.params.Attrib;
+import org.javawebstack.http.router.router.annotation.params.Body;
+import org.javawebstack.http.router.router.annotation.params.Path;
+import org.javawebstack.http.router.router.annotation.verbs.Delete;
+import org.javawebstack.http.router.router.annotation.verbs.Get;
+import org.javawebstack.http.router.router.annotation.verbs.Post;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.query.Query;
 
@@ -79,7 +79,7 @@ public class FolderController extends HttpController {
             throw new NotFoundException();
         }
 
-        return new FolderResponse(folder, true, exchange.rawRequest().getParameter("hide_children") == null, true, user != null && user.id.equals(folder.userId));
+        return new FolderResponse(folder, true, !exchange.getQueryParameters().has("hide_children"), true, user != null && user.id.equals(folder.userId));
     }
 
     @Delete("/{id}")

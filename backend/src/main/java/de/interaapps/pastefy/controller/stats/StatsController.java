@@ -6,9 +6,9 @@ import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.responses.app.StatsResponse;
-import org.javawebstack.httpserver.router.annotation.PathPrefix;
-import org.javawebstack.httpserver.router.annotation.params.Attrib;
-import org.javawebstack.httpserver.router.annotation.verbs.Get;
+import org.javawebstack.http.router.router.annotation.PathPrefix;
+import org.javawebstack.http.router.router.annotation.params.Attrib;
+import org.javawebstack.http.router.router.annotation.verbs.Get;
 
 @PathPrefix("/api/v2/app/stats")
 public class StatsController extends HttpController {

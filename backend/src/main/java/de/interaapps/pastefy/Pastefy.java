@@ -11,26 +11,27 @@ import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.responses.ExceptionResponse;
-import org.eclipse.jetty.util.IO;
-import org.javawebstack.httpserver.HTTPServer;
-import org.javawebstack.httpserver.handler.RequestHandler;
-import org.javawebstack.httpserver.handler.StaticFileHandler;
+import org.javawebstack.http.router.HTTPRouter;
+import org.javawebstack.http.router.handler.RequestHandler;
+import org.javawebstack.http.router.transformer.response.SerializedResponseTransformer;
+import org.javawebstack.http.router.undertow.UndertowHTTPSocketServer;
 import org.javawebstack.orm.ORM;
 import org.javawebstack.orm.ORMConfig;
 import org.javawebstack.orm.Repo;
+import org.javawebstack.orm.connection.MySQL;
+import org.javawebstack.orm.connection.SQL;
+import org.javawebstack.orm.connection.SQLite;
+import org.javawebstack.orm.connection.pool.MinMaxScaler;
+import org.javawebstack.orm.connection.pool.SQLPool;
 import org.javawebstack.orm.exception.ORMConfigurationException;
 import org.javawebstack.orm.mapper.AbstractDataTypeMapper;
-import org.javawebstack.orm.wrapper.SQLDriverFactory;
-import org.javawebstack.orm.wrapper.SQLDriverNotFoundException;
-import org.javawebstack.passport.Passport;
-import org.javawebstack.passport.strategies.oauth2.OAuth2Strategy;
-import org.javawebstack.passport.strategies.oauth2.providers.*;
-import org.javawebstack.webutils.config.Config;
-import org.javawebstack.webutils.config.EnvFile;
+import de.interaapps.pastefy.auth.Passport;
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Strategy;
+import de.interaapps.pastefy.auth.strategies.oauth2.providers.*;
+import org.javawebstack.webutils.config.*;
 import org.javawebstack.webutils.middleware.CORSPolicy;
 import org.javawebstack.webutils.middleware.MultipartPolicy;
-import org.javawebstack.webutils.middleware.SerializedResponseTransformer;
-import org.javawebstack.webutils.middlewares.RateLimitMiddleware;
+import org.javawebstack.webutils.middleware.RateLimitMiddleware;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +39,7 @@ import java.io.InputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -54,7 +56,7 @@ public class Pastefy {
     private Config config;
     private Passport passport;
     private OAuth2Strategy oAuth2Strategy;
-    private HTTPServer httpServer;
+    private HTTPRouter httpRouter;
     private boolean loginRequired = false;
     private boolean loginRequiredForRead = false;
     private boolean loginRequiredForCreate = false;
@@ -62,10 +64,84 @@ public class Pastefy {
 
     public Pastefy() {
         config = new Config();
-        httpServer = new HTTPServer();
-        passport = new Passport("/api/v2/auth");
+        httpRouter = new HTTPRouter(new UndertowHTTPSocketServer());
+
 
         setupConfig();
+        setupPassport();
+        setupModels();
+        setupServer();
+    }
+
+    protected void setupConfig() {
+        Mapping mapping = new Mapping()
+                .map("OAUTH2_INTERAAPPS_CLIENT_ID", "oauth2.interaapps.id")
+                .map("OAUTH2_INTERAAPPS_CLIENT_SECRET", "oauth2.interaapps.secret")
+                .map("OAUTH2_TWITCH_CLIENT_ID", "oauth2.twitch.id")
+                .map("OAUTH2_TWITCH_CLIENT_SECRET", "oauth2.twitch.secret")
+                .map("OAUTH2_GITHUB_CLIENT_ID", "oauth2.github.id")
+                .map("OAUTH2_GITHUB_CLIENT_SECRET", "oauth2.github.secret")
+                .map("OAUTH2_GOOGLE_CLIENT_ID", "oauth2.google.id")
+                .map("OAUTH2_GOOGLE_CLIENT_SECRET", "oauth2.google.secret")
+                .map("OAUTH2_DISCORD_CLIENT_ID", "oauth2.discord.id")
+                .map("OAUTH2_DISCORD_CLIENT_SECRET", "oauth2.discord.secret")
+                .map("PASTEFY_GRANT_ACCESS_REQUIRED", "pastefy.grantaccessrequired")
+                .map("PASTEFY_LOGIN_REQUIRED", "pastefy.loginrequired")
+                .map("PASTEFY_LOGIN_REQUIRED_CREATE", "pastefy.loginrequired.create")
+                .map("PASTEFY_LOGIN_REQUIRED_READ", "pastefy.loginrequired.read")
+                .map("PASTEFY_LIST_PASTES", "pastefy.listpastes")
+                .map("PASTEFY_PUBLIC_STATS", "pastefy.publicstats")
+                .map("PASTEFY_PUBLIC_PASTES", "pastefy.publicpastes");
+
+        config.add(new EnvFile(new File(".env")).withVariables(), new MappingTryout(mapping, Config::basicEnvMapping));
+
+        loginRequired = config.get("pastefy.loginrequired", "false").toLowerCase(Locale.ROOT).equals("true");
+        loginRequiredForCreate = loginRequired || config.get("pastefy.loginrequired.create", "false").toLowerCase(Locale.ROOT).equals("true");
+        loginRequiredForRead = loginRequired || config.get("pastefy.loginrequired.read", "false").toLowerCase(Locale.ROOT).equals("true");
+        publicPastesEnabled = config.get("pastefy.publicpastes", "true").toLowerCase(Locale.ROOT).equals("true");
+    }
+
+    protected void setupModels() {
+        try {
+            Supplier<SQL> factory;
+            String driverName = config.get("database.driver", "none");
+            switch (driverName) {
+                case "mysql": {
+                    factory = () -> new MySQL(
+                            config.get("database.host", "localhost"),
+                            config.getInt("database.port", 3306),
+                            config.get("database.name", "app"),
+                            config.get("database.user", "root"),
+                            config.get("database.password", "")
+                    );
+                    break;
+                }
+                case "sqlite": {
+                    factory = () -> new SQLite(config.get("database.file", "sb.sqlite"));
+                    break;
+                }
+                default: {
+                    throw new ORMConfigurationException("Unknown database driver " + driverName);
+                }
+            }
+            SQLPool sqlPool = new SQLPool(new MinMaxScaler(10, 10), factory);
+            Handler handler = new ConsoleHandler();
+            handler.setLevel(Level.ALL);
+            Logger.getLogger("ORM").addHandler(handler);
+            Logger.getLogger("ORM").setLevel(Level.ALL);
+            ORMConfig ormConfig = new ORMConfig()
+                    .setTablePrefix("pastefy_")
+                    .addTypeMapper(new AbstractDataTypeMapper());
+
+            ORM.register(Paste.class.getPackage(), sqlPool, ormConfig);
+            ORM.autoMigrate();
+        } catch (ORMConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void setupPassport() {
+        passport = new Passport("/api/v2/auth");
         oAuth2Strategy = new OAuth2Strategy(getConfig().get("server.name", "http://localhost"));
         oAuth2Strategy.setHttpCallbackHandler(new OAuth2Callback());
 
@@ -81,114 +157,23 @@ public class Pastefy {
             oAuth2Strategy.use("twitch", new TwitchOAuth2Provider(getConfig().get("oauth2.twitch.id"), getConfig().get("oauth2.twitch.secret")));
 
         passport.use("oauth2", oAuth2Strategy);
-
-        setupModels();
-        setupServer();
-    }
-
-    protected void setupConfig() {
-        Map<String, String> map = new HashMap<>();
-        map.put("HTTP_SERVER_PORT", "http.server.port");
-        map.put("HTTP_SERVER_CORS", "http.server.cors");
-
-        map.put("DATABASE_DRIVER", "database.driver");
-        map.put("DATABASE_NAME", "database.name");
-        map.put("DATABASE_USER", "database.user");
-        map.put("DATABASE_PASSWORD", "database.password");
-        map.put("DATABASE_HOST", "database.host");
-        map.put("DATABASE_PORT", "database.port");
-
-        map.put("INTERAAPPS_AUTH_KEY", "interaapps.auth.key");
-        map.put("INTERAAPPS_AUTH_ID", "interaapps.auth.id");
-        map.put("AUTH_PROVIDER", "auth.provider");
-
-        map.put("SERVER_NAME", "server.name");
-
-        map.put("RATELIMITER_MILLIS", "ratelimiter.millis");
-        map.put("RATELIMITER_LIMIT", "ratelimiter.limit");
-
-        map.put("OAUTH2_INTERAAPPS_CLIENT_ID", "oauth2.interaapps.id");
-        map.put("OAUTH2_INTERAAPPS_CLIENT_SECRET", "oauth2.interaapps.secret");
-        map.put("OAUTH2_TWITCH_CLIENT_ID", "oauth2.twitch.id");
-        map.put("OAUTH2_TWITCH_CLIENT_SECRET", "oauth2.twitch.secret");
-        map.put("OAUTH2_GITHUB_CLIENT_ID", "oauth2.github.id");
-        map.put("OAUTH2_GITHUB_CLIENT_SECRET", "oauth2.github.secret");
-        map.put("OAUTH2_GOOGLE_CLIENT_ID", "oauth2.google.id");
-        map.put("OAUTH2_GOOGLE_CLIENT_SECRET", "oauth2.google.secret");
-        map.put("OAUTH2_DISCORD_CLIENT_ID", "oauth2.discord.id");
-        map.put("OAUTH2_DISCORD_CLIENT_SECRET", "oauth2.discord.secret");
-
-        map.put("PASTEFY_INFO_CUSTOM_LOGO", "pastefy.info.custom.logo");
-        map.put("PASTEFY_INFO_CUSTOM_NAME", "pastefy.info.custom.name");
-        map.put("PASTEFY_INFO_CUSTOM_FOOTER", "pastefy.info.custom.footer");
-
-        map.put("PASTEFY_ENCRYPTION_DEFAULT", "pastefy.encryption.default");
-
-        map.put("PASTEFY_GRANT_ACCESS_REQUIRED", "pastefy.grantaccessrequired");
-
-        map.put("PASTEFY_LOGIN_REQUIRED", "pastefy.loginrequired");
-        map.put("PASTEFY_LOGIN_REQUIRED_CREATE", "pastefy.loginrequired.create");
-        map.put("PASTEFY_LOGIN_REQUIRED_READ", "pastefy.loginrequired.read");
-
-        map.put("PASTEFY_LIST_PASTES", "pastefy.listpastes");
-        map.put("PASTEFY_PUBLIC_STATS", "pastefy.publicstats");
-
-        map.put("PASTEFY_PUBLIC_PASTES", "pastefy.publicpastes");
-
-        File file = new File(".env");
-        if (file.exists()) {
-            config.add(new EnvFile(file).withVariables(), map);
-        } else {
-            config.add(new EnvFile().withVariables(), map);
-        }
-
-        loginRequired = config.get("pastefy.loginrequired", "false").toLowerCase(Locale.ROOT).equals("true");
-        loginRequiredForCreate = loginRequired || config.get("pastefy.loginrequired.create", "false").toLowerCase(Locale.ROOT).equals("true");
-        loginRequiredForRead = loginRequired || config.get("pastefy.loginrequired.read", "false").toLowerCase(Locale.ROOT).equals("true");
-        publicPastesEnabled = config.get("pastefy.publicpastes", "true").toLowerCase(Locale.ROOT).equals("true");
-    }
-
-    protected void setupModels() {
-        try {
-            SQLDriverFactory sqlDriverFactory = new SQLDriverFactory(new HashMap<String, String>() {{
-                put("file", config.get("database.file", "sb.sqlite"));
-                put("host", config.get("database.host", "localhost"));
-                put("port", config.get("database.port", "3306"));
-                put("name", config.get("database.name", "app"));
-                put("user", config.get("database.user", "root"));
-                put("password", config.get("database.password", ""));
-            }});
-
-            Handler handler = new ConsoleHandler();
-            handler.setLevel(Level.ALL);
-            Logger.getLogger("ORM").addHandler(handler);
-            Logger.getLogger("ORM").setLevel(Level.ALL);
-            ORMConfig ormConfig = new ORMConfig()
-                    .setTablePrefix("pastefy_")
-                    .addTypeMapper(new AbstractDataTypeMapper());
-
-            ORM.register(Paste.class.getPackage(), sqlDriverFactory.getDriver(config.get("database.driver", "none")), ormConfig);
-            ORM.autoMigrate();
-        } catch (SQLDriverNotFoundException | ORMConfigurationException e) {
-            e.printStackTrace();
-        }
     }
 
     protected void setupServer() {
-        httpServer.port(config.getInt("http.server.port", 80));
+        httpRouter.port(config.getInt("http.server.port", 80));
 
         if (config.has("http.server.cors")) {
-            httpServer.beforeInterceptor(new CORSPolicy(config.get("http.server.cors")));
+            httpRouter.beforeInterceptor(new CORSPolicy(config.get("http.server.cors")));
         }
 
-        httpServer.beforeInterceptor(new MultipartPolicy(config.get("http.server.tmp", null)));
-        httpServer.responseTransformer(new SerializedResponseTransformer().ignoreStrings());
+        httpRouter.beforeInterceptor(new MultipartPolicy(config.get("http.server.tmp", null)));
+        httpRouter.responseTransformer(new SerializedResponseTransformer().ignoreStrings());
 
         oAuth2Strategy.getProviders().forEach((name, authService) -> {
             System.out.println("ADDED " + name + " as auth provider");
         });
 
-        httpServer.exceptionHandler((exchange, throwable) -> {
+        httpRouter.exceptionHandler((exchange, throwable) -> {
             if (throwable instanceof RuntimeException) {
                 if (throwable.getCause() != null)
                     throwable = throwable.getCause();
@@ -206,36 +191,36 @@ public class Pastefy {
 
             return new ExceptionResponse(throwable);
         });
-        httpServer.middleware("auth", new AuthMiddleware());
-        httpServer.middleware("admin", new AdminMiddleware());
+        httpRouter.middleware("auth", new AuthMiddleware());
+        httpRouter.middleware("admin", new AdminMiddleware());
 
 
-        httpServer.middleware("blocked-check", new BlockedMiddleware());
-        httpServer.middleware("awaiting-access-check", new AwaitingAccessMiddleware());
+        httpRouter.middleware("blocked-check", new BlockedMiddleware());
+        httpRouter.middleware("awaiting-access-check", new AwaitingAccessMiddleware());
 
-        httpServer.middleware("auth-login-required-read", exchange -> {
+        httpRouter.middleware("auth-login-required-read", exchange -> {
             if (loginRequiredForRead && (exchange.attrib("user") == null || !((User) exchange.attrib("user")).roleCheck()))
                 throw new AuthenticationException();
             return null;
         });
-        httpServer.middleware("auth-login-required-create", exchange -> {
+        httpRouter.middleware("auth-login-required-create", exchange -> {
             if (loginRequiredForCreate && (exchange.attrib("user") == null || !((User) exchange.attrib("user")).roleCheck()))
                 throw new AuthenticationException();
             return null;
         });
 
-        httpServer.middleware("public-pastes-endpoint", exchange -> {
+        httpRouter.middleware("public-pastes-endpoint", exchange -> {
             if (!publicPastesEnabled)
                 throw new FeatureDisabledException();
             return null;
         });
 
         if (getConfig().has("ratelimiter.millis"))
-            httpServer.middleware("rate-limiter", new RateLimitMiddleware(getConfig().getInt("ratelimiter.millis", 5000), getConfig().getInt("ratelimiter.limit", 5)).createAutoDeadRateLimitsRemover(1000 * 60 * 10));
+            httpRouter.middleware("rate-limiter", new RateLimitMiddleware(getConfig().getInt("ratelimiter.millis", 5000), getConfig().getInt("ratelimiter.limit", 5)).createAutoDeadRateLimitsRemover(1000 * 60 * 10));
         else
-            httpServer.middleware("rate-limiter", e -> null);
+            httpRouter.middleware("rate-limiter", e -> null);
 
-        httpServer.beforeInterceptor(exchange -> {
+        httpRouter.beforeInterceptor(exchange -> {
             exchange.header("Server", "InteraApps-Pastefy");
 
             exchange.attrib("loggedIn", false);
@@ -278,18 +263,18 @@ public class Pastefy {
             return "";
         };
 
-        httpServer.controller(HttpController.class, PasteController.class.getPackage());
+        httpRouter.controller(HttpController.class, PasteController.class.getPackage());
 
-        passport.createRoutes(httpServer);
+        passport.createRoutes(httpRouter);
 
-        httpServer.get("/", requestHandler);
-        httpServer.staticResourceDirectory("/", "static");
+        httpRouter.get("/", requestHandler);
+        httpRouter.staticResourceDirectory("/", "static");
 
-        httpServer.get("/api/{*:path}", e -> {
+        httpRouter.get("/api/{*:path}", e -> {
             throw new NotFoundException();
         });
 
-        httpServer.get("/{*:path}", requestHandler);
+        httpRouter.get("/{*:path}", requestHandler);
 
         Timer timer = new Timer();
 
@@ -305,7 +290,7 @@ public class Pastefy {
     }
 
     public void start() {
-        httpServer.start();
+        httpRouter.start();
     }
 
     public static void main(String[] args) {

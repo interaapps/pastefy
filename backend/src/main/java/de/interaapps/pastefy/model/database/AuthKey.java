@@ -1,12 +1,12 @@
 package de.interaapps.pastefy.model.database;
 
 import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.javawebstack.abstractdata.AbstractArray;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.annotation.Column;
 import org.javawebstack.orm.annotation.Dates;
 import org.javawebstack.orm.annotation.Table;
+import org.javawebstack.webutils.util.RandomUtil;
 
 import java.sql.Timestamp;
 
@@ -41,7 +41,7 @@ public class AuthKey extends Model {
     public Timestamp updatedAt;
 
     public AuthKey() {
-        key = RandomStringUtils.random(60, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890");
+        key = RandomUtil.string(60);
     }
 
     public String getKey() {

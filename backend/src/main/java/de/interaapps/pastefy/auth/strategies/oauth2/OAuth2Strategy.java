@@ -1,8 +1,8 @@
-package org.javawebstack.passport.strategies.oauth2;
+package de.interaapps.pastefy.auth.strategies.oauth2;
 
 import org.javawebstack.http.router.Exchange;
 import org.javawebstack.http.router.HTTPRouter;
-import org.javawebstack.passport.strategies.Strategy;
+import de.interaapps.pastefy.auth.strategies.Strategy;
 
 import java.util.HashMap;
 import java.util.Map;

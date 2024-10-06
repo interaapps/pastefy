@@ -1,4 +1,4 @@
-package org.javawebstack.passport.strategies.oauth2;
+package de.interaapps.pastefy.auth.strategies.oauth2;
 
 import org.javawebstack.httpclient.HTTPClient;
 

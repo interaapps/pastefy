@@ -1,9 +1,10 @@
 package de.interaapps.pastefy.model.database;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.*;
+import org.javawebstack.webutils.util.RandomUtil;
+
 import java.util.List;
 
 import java.sql.Timestamp;
@@ -66,7 +67,7 @@ public class Paste extends Model {
     public Timestamp updatedAt;
 
     public Paste() {
-        key = RandomStringUtils.random(8, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890");
+        key = RandomUtil.string(8);
     }
 
     public String getContent() {

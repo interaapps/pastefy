@@ -5,10 +5,10 @@ import de.interaapps.pastefy.helper.RequestHelper;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.algorithm.PublicPasteEngagement;
 import de.interaapps.pastefy.model.responses.paste.PasteResponse;
-import org.javawebstack.httpserver.Exchange;
-import org.javawebstack.httpserver.router.annotation.PathPrefix;
-import org.javawebstack.httpserver.router.annotation.With;
-import org.javawebstack.httpserver.router.annotation.verbs.Get;
+import org.javawebstack.http.router.Exchange;
+import org.javawebstack.http.router.router.annotation.PathPrefix;
+import org.javawebstack.http.router.router.annotation.With;
+import org.javawebstack.http.router.router.annotation.verbs.Get;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.query.Query;
 

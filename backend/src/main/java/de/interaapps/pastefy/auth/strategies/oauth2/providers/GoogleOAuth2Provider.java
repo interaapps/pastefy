@@ -1,4 +1,4 @@
-package org.javawebstack.passport.strategies.oauth2.providers;
+package de.interaapps.pastefy.auth.strategies.oauth2.providers;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -10,8 +10,8 @@ import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.oauth2.model.Userinfo;
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.httpclient.HTTPClient;
-import org.javawebstack.passport.strategies.oauth2.OAuth2Profile;
-import org.javawebstack.passport.strategies.oauth2.OAuth2Provider;
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Profile;
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -65,7 +65,7 @@ public class GoogleOAuth2Provider implements OAuth2Provider {
                 .build();
     }
 
-    public static class OAuth2Callback extends org.javawebstack.passport.strategies.oauth2.OAuth2Callback {
+    public static class OAuth2Callback extends de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Callback {
         private String clientId;
         private String secret;
 

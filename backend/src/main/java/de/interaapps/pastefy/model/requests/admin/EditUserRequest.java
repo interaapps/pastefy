@@ -2,12 +2,14 @@ package de.interaapps.pastefy.model.requests.admin;
 
 import de.interaapps.pastefy.model.database.User;
 import org.javawebstack.validator.Rule;
+import org.javawebstack.validator.rule.StringRule;
 
 public class EditUserRequest {
-    @Rule("string(2,255)")
+
+    @StringRule(min = 2, max = 255)
     public String name;
 
-    @Rule("string(2,33)")
+    @StringRule(min = 2, max = 33)
     public String uniqueName;
 
     public User.Type type;

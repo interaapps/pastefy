@@ -1,11 +1,11 @@
-package org.javawebstack.passport.strategies.oauth2.providers;
+package de.interaapps.pastefy.auth.strategies.oauth2.providers;
 
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.abstractdata.util.QueryString;
 import org.javawebstack.http.router.util.MimeType;
 import org.javawebstack.httpclient.HTTPClient;
-import org.javawebstack.passport.strategies.oauth2.OAuth2Profile;
-import org.javawebstack.passport.strategies.oauth2.OAuth2Provider;
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Profile;
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -51,7 +51,7 @@ public class GitHubOAuth2Provider implements OAuth2Provider {
         return "";
     }
 
-    public static class OAuth2Callback extends org.javawebstack.passport.strategies.oauth2.OAuth2Callback {
+    public static class OAuth2Callback extends de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Callback {
         public OAuth2Callback(OAuth2Provider provider, String accessToken, String refreshToken) {
             super(provider, accessToken, refreshToken);
         }
