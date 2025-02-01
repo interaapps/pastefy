@@ -1,12 +1,12 @@
 package de.interaapps.pastefy.model.database;
 
 import de.interaapps.pastefy.model.responses.folder.FolderResponse;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.*;
-import org.javawebstack.passport.strategies.oauth2.OAuth2Provider;
-import org.javawebstack.passport.strategies.oauth2.providers.*;
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
+import de.interaapps.pastefy.auth.strategies.oauth2.providers.*;
+import org.javawebstack.webutils.util.RandomUtil;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -55,9 +55,9 @@ public class User extends Model {
     public Timestamp updatedAt;
 
     public User() {
-        id = RandomStringUtils.random(8, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890");
-        while (Repo.get(User.class).where("id", id).first() != null)
-            id = RandomStringUtils.random(8, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890");
+        do {
+            id = RandomUtil.string(8);
+        } while (Repo.get(User.class).where("id", id).isNotEmpty());
     }
 
     public List<Paste> getPastes() {

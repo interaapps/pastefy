@@ -3,13 +3,9 @@ package de.interaapps.pastefy.model.responses.paste;
 import com.google.gson.annotations.SerializedName;
 import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.model.database.Paste;
-import de.interaapps.pastefy.model.database.PasteTag;
-import org.javawebstack.httpserver.Exchange;
-import org.javawebstack.orm.Repo;
+import org.javawebstack.http.router.Exchange;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PasteResponse {
     public boolean exists = false;

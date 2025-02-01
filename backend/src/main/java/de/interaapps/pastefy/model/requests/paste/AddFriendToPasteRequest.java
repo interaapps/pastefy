@@ -1,8 +1,10 @@
 package de.interaapps.pastefy.model.requests.paste;
 
-import org.javawebstack.validator.Rule;
+import org.javawebstack.validator.rule.RequiredRule;
 
 public class AddFriendToPasteRequest {
-    @Rule({"required", "string"})
+
+    @RequiredRule
     public String friend;
+
 }
