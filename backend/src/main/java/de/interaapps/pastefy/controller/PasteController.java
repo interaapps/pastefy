@@ -14,20 +14,19 @@ import de.interaapps.pastefy.model.requests.paste.EditPasteRequest;
 import de.interaapps.pastefy.model.responses.ActionResponse;
 import de.interaapps.pastefy.model.responses.paste.CreatePasteResponse;
 import de.interaapps.pastefy.model.responses.paste.PasteResponse;
-import org.javawebstack.httpserver.Exchange;
-import org.javawebstack.httpserver.router.annotation.PathPrefix;
-import org.javawebstack.httpserver.router.annotation.With;
-import org.javawebstack.httpserver.router.annotation.params.Attrib;
-import org.javawebstack.httpserver.router.annotation.params.Body;
-import org.javawebstack.httpserver.router.annotation.params.Path;
-import org.javawebstack.httpserver.router.annotation.verbs.Delete;
-import org.javawebstack.httpserver.router.annotation.verbs.Get;
-import org.javawebstack.httpserver.router.annotation.verbs.Post;
-import org.javawebstack.httpserver.router.annotation.verbs.Put;
+import org.javawebstack.http.router.Exchange;
+import org.javawebstack.http.router.router.annotation.PathPrefix;
+import org.javawebstack.http.router.router.annotation.With;
+import org.javawebstack.http.router.router.annotation.params.Attrib;
+import org.javawebstack.http.router.router.annotation.params.Body;
+import org.javawebstack.http.router.router.annotation.params.Path;
+import org.javawebstack.http.router.router.annotation.verbs.Delete;
+import org.javawebstack.http.router.router.annotation.verbs.Get;
+import org.javawebstack.http.router.router.annotation.verbs.Post;
+import org.javawebstack.http.router.router.annotation.verbs.Put;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.query.Query;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -181,7 +180,6 @@ public class PasteController extends HttpController {
         }
 
 
-
         return new PasteResponse(paste);
     }
 
@@ -201,7 +199,7 @@ public class PasteController extends HttpController {
         if ((paste.getUserId() != null && paste.getUserId().equals(user.getId())) || user.type == User.Type.ADMIN) {
             paste.delete();
             response.success = true;
-        } else{
+        } else {
             throw new PermissionsDeniedException();
         }
 

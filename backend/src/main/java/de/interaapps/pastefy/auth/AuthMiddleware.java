@@ -1,8 +1,8 @@
 package de.interaapps.pastefy.auth;
 
 import de.interaapps.pastefy.exceptions.AuthenticationException;
-import org.javawebstack.httpserver.Exchange;
-import org.javawebstack.httpserver.handler.RequestHandler;
+import org.javawebstack.http.router.Exchange;
+import org.javawebstack.http.router.handler.RequestHandler;
 
 public class AuthMiddleware implements RequestHandler {
     public Object handle(Exchange exchange) {

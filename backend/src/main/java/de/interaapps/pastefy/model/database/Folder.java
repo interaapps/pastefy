@@ -1,10 +1,10 @@
 package de.interaapps.pastefy.model.database;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.*;
 import org.javawebstack.orm.query.Query;
+import org.javawebstack.webutils.util.RandomUtil;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -39,7 +39,7 @@ public class Folder extends Model {
     public Timestamp updatedAt;
 
     public Folder() {
-        key = RandomStringUtils.random(8, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890");
+        key = RandomUtil.string(8);
     }
 
     public String getUserId() {
@@ -70,6 +70,7 @@ public class Folder extends Model {
 
         return query.all();
     }
+
     public List<Paste> getPastes() {
         return getPastes(false);
     }

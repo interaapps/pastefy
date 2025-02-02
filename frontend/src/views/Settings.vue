@@ -106,14 +106,15 @@ export default {
             this.h += "#"
         },
         isTheme(theme) {
-            if ((!localStorage["theme"] || localStorage["theme"] == "dark") && theme == 'dark')
+            if ((!localStorage["theme"] || localStorage["theme"] === "dark") && theme === 'dark')
                 return true
 
-            if (localStorage["theme"] == 'auto' && theme == 'auto')
+            if (localStorage["theme"] === 'auto' && theme === 'auto')
                 return true
 
-            if (localStorage["theme"] == 'light' && theme == 'light')
+            if (localStorage["theme"] === 'light' && theme === 'light')
                 return true
+
             return false
         }
     },

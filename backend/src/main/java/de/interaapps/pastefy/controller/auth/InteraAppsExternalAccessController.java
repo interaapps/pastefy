@@ -1,18 +1,18 @@
 package de.interaapps.pastefy.controller.auth;
 
 import de.interaapps.pastefy.Pastefy;
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.exceptions.AuthenticationException;
 import de.interaapps.pastefy.exceptions.NotFoundException;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.requests.auth.InteraAppsExternalAccessRequest;
-import org.javawebstack.httpserver.Exchange;
-import org.javawebstack.httpserver.router.annotation.PathPrefix;
-import org.javawebstack.httpserver.router.annotation.params.Body;
-import org.javawebstack.httpserver.router.annotation.verbs.Post;
+import org.javawebstack.http.router.Exchange;
+import org.javawebstack.http.router.router.annotation.PathPrefix;
+import org.javawebstack.http.router.router.annotation.params.Body;
+import org.javawebstack.http.router.router.annotation.verbs.Post;
 import org.javawebstack.orm.Repo;
-import org.javawebstack.passport.strategies.oauth2.OAuth2Provider;
 import org.javawebstack.webutils.config.Config;
 
 import java.util.Map;

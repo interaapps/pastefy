@@ -2,8 +2,8 @@ package de.interaapps.pastefy.auth;
 
 import de.interaapps.pastefy.exceptions.BlockedException;
 import de.interaapps.pastefy.model.database.User;
-import org.javawebstack.httpserver.Exchange;
-import org.javawebstack.httpserver.handler.Middleware;
+import org.javawebstack.http.router.Exchange;
+import org.javawebstack.http.router.handler.Middleware;
 
 public class BlockedMiddleware implements Middleware {
     @Override

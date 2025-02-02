@@ -1,12 +1,12 @@
 package de.interaapps.pastefy.model.database;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.*;
-import java.util.List;
+import org.javawebstack.webutils.util.RandomUtil;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Dates
@@ -65,8 +65,11 @@ public class Paste extends Model {
     @Column
     public Timestamp updatedAt;
 
+    @Column
+    private StorageType storageType = StorageType.DATABASE;
+
     public Paste() {
-        key = RandomStringUtils.random(8, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890");
+        key = RandomUtil.string(8);
     }
 
     public String getContent() {
@@ -105,6 +108,7 @@ public class Paste extends Model {
     public boolean isPublic() {
         return visibility == Visibility.PUBLIC;
     }
+
     public boolean isPrivate() {
         return visibility == Visibility.PRIVATE;
     }
@@ -170,6 +174,11 @@ public class Paste extends Model {
         this.visibility = visibility;
     }
 
+    @Override
+    public void save() {
+        super.save();
+    }
+
     public enum Type {
         PASTE,
         MULTI_PASTE
@@ -179,5 +188,11 @@ public class Paste extends Model {
         UNLISTED,
         PUBLIC,
         PRIVATE
+    }
+
+    public enum StorageType {
+        DATABASE,
+        S3,
+        HTTP
     }
 }

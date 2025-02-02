@@ -4,12 +4,12 @@ import de.interaapps.pastefy.exceptions.PastePrivateException;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.database.algorithm.PublicPasteEngagement;
-import org.javawebstack.httpserver.Exchange;
-import org.javawebstack.httpserver.helper.MimeType;
-import org.javawebstack.httpserver.router.annotation.With;
-import org.javawebstack.httpserver.router.annotation.params.Attrib;
-import org.javawebstack.httpserver.router.annotation.params.Path;
-import org.javawebstack.httpserver.router.annotation.verbs.Get;
+import org.javawebstack.http.router.Exchange;
+import org.javawebstack.http.router.router.annotation.With;
+import org.javawebstack.http.router.router.annotation.params.Attrib;
+import org.javawebstack.http.router.router.annotation.params.Path;
+import org.javawebstack.http.router.router.annotation.verbs.Get;
+import org.javawebstack.http.router.util.MimeType;
 import org.javawebstack.orm.Repo;
 
 import java.util.Objects;

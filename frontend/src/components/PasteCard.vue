@@ -17,7 +17,7 @@
 
             <h4
                 class="multi-paste-size-indicator"
-                v-if="paste.type == 'MULTI_PASTE'"
+                v-if="paste.type === 'MULTI_PASTE'"
                 style="right: 15px; top: 15px"
             >
                 <img v-if="paste.tags?.includes('codebox')" src="@/assets/img/codebox-logo.svg" alt="">
@@ -44,7 +44,7 @@ export default {
     props: ['paste'],
     created() {
         try {
-            if (this.paste.type == 'MULTI_PASTE') {
+            if (this.paste.type === 'MULTI_PASTE') {
                 this.multiPasteParts = JSON.parse(this.paste.content)
             }
         } catch (e) {

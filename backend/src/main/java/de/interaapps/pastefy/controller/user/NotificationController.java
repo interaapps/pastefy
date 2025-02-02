@@ -5,12 +5,12 @@ import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Notification;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.responses.ActionResponse;
-import org.javawebstack.httpserver.Exchange;
-import org.javawebstack.httpserver.router.annotation.PathPrefix;
-import org.javawebstack.httpserver.router.annotation.With;
-import org.javawebstack.httpserver.router.annotation.params.Attrib;
-import org.javawebstack.httpserver.router.annotation.verbs.Get;
-import org.javawebstack.httpserver.router.annotation.verbs.Post;
+import org.javawebstack.http.router.Exchange;
+import org.javawebstack.http.router.router.annotation.PathPrefix;
+import org.javawebstack.http.router.router.annotation.With;
+import org.javawebstack.http.router.router.annotation.params.Attrib;
+import org.javawebstack.http.router.router.annotation.verbs.Get;
+import org.javawebstack.http.router.router.annotation.verbs.Post;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.query.Query;
 
@@ -56,8 +56,8 @@ public class NotificationController extends HttpController {
             query.where("alreadyRead", false);
 
         List<Notification> notifications = query.all();
-        if (notifications.size() > 0)
-            query.update(new HashMap() {{
+        if (!notifications.isEmpty())
+            query.update(new HashMap<String, Object>() {{
                 put("received", true);
             }});
 
@@ -70,7 +70,7 @@ public class NotificationController extends HttpController {
         if (authKey != null)
             authKey.checkPermission("notifications:edit");
 
-        Repo.get(Notification.class).query().where("userId", user.getId()).where("already_read", false).update(new HashMap() {{
+        Repo.get(Notification.class).query().where("userId", user.getId()).where("already_read", false).update(new HashMap<String, Object>() {{
             put("received", true);
             put("already_read", true);
         }});

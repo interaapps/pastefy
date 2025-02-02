@@ -6,11 +6,8 @@ import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.PasteTag;
 import de.interaapps.pastefy.model.database.User;
 import org.javawebstack.abstractdata.AbstractObject;
-import org.javawebstack.httpserver.Exchange;
+import org.javawebstack.http.router.Exchange;
 import org.javawebstack.orm.query.Query;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class RequestHelper {
 
