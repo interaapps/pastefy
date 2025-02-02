@@ -1,6 +1,7 @@
 package de.interaapps.pastefy.controller.auth;
 
 import de.interaapps.pastefy.Pastefy;
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.exceptions.AuthenticationException;
 import de.interaapps.pastefy.exceptions.NotFoundException;
@@ -12,7 +13,6 @@ import org.javawebstack.http.router.router.annotation.PathPrefix;
 import org.javawebstack.http.router.router.annotation.params.Body;
 import org.javawebstack.http.router.router.annotation.verbs.Post;
 import org.javawebstack.orm.Repo;
-import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
 import org.javawebstack.webutils.config.Config;
 
 import java.util.Map;

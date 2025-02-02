@@ -1,10 +1,10 @@
 package de.interaapps.pastefy.auth.strategies.oauth2.providers;
 
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Profile;
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
 import org.javawebstack.abstractdata.AbstractElement;
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.httpclient.HTTPClient;
-import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Profile;
-import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -17,7 +17,7 @@ public class InteraAppsOAuth2Provider implements OAuth2Provider {
     private String[] scopes = {"user:read"};
     private HTTPClient interaAppsAccountsClient;
 
-    public InteraAppsOAuth2Provider(String clientId, String secret){
+    public InteraAppsOAuth2Provider(String clientId, String secret) {
         this.clientId = clientId;
         this.secret = secret;
         interaAppsAccountsClient = new HTTPClient("https://accounts.interaapps.de/api/v2");
@@ -57,7 +57,7 @@ public class InteraAppsOAuth2Provider implements OAuth2Provider {
 
     public String redirect(String callbackUrl) {
         try {
-            return "https://accounts.interaapps.de/auth/oauth2?client_id="+clientId+"&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(callbackUrl, "UTF-8");
+            return "https://accounts.interaapps.de/auth/oauth2?client_id=" + clientId + "&scope=" + URLEncoder.encode(String.join(" ", scopes), "UTF-8") + "&redirect_uri=" + URLEncoder.encode(callbackUrl, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

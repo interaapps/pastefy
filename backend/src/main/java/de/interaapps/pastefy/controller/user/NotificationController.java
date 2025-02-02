@@ -56,8 +56,8 @@ public class NotificationController extends HttpController {
             query.where("alreadyRead", false);
 
         List<Notification> notifications = query.all();
-        if (notifications.size() > 0)
-            query.update(new HashMap() {{
+        if (!notifications.isEmpty())
+            query.update(new HashMap<String, Object>() {{
                 put("received", true);
             }});
 
@@ -70,7 +70,7 @@ public class NotificationController extends HttpController {
         if (authKey != null)
             authKey.checkPermission("notifications:edit");
 
-        Repo.get(Notification.class).query().where("userId", user.getId()).where("already_read", false).update(new HashMap() {{
+        Repo.get(Notification.class).query().where("userId", user.getId()).where("already_read", false).update(new HashMap<String, Object>() {{
             put("received", true);
             put("already_read", true);
         }});

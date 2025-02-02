@@ -1,11 +1,11 @@
 package de.interaapps.pastefy.model.database;
 
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
+import de.interaapps.pastefy.auth.strategies.oauth2.providers.*;
 import de.interaapps.pastefy.model.responses.folder.FolderResponse;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.*;
-import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
-import de.interaapps.pastefy.auth.strategies.oauth2.providers.*;
 import org.javawebstack.webutils.util.RandomUtil;
 
 import java.sql.Timestamp;

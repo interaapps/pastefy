@@ -1,11 +1,11 @@
 package de.interaapps.pastefy.auth.strategies.oauth2.providers;
 
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Profile;
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.abstractdata.util.QueryString;
 import org.javawebstack.http.router.util.MimeType;
 import org.javawebstack.httpclient.HTTPClient;
-import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Profile;
-import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -18,7 +18,7 @@ public class TwitchOAuth2Provider implements OAuth2Provider {
     private boolean forceVerify = false;
     private String state;
 
-    public TwitchOAuth2Provider(String clientId, String secret){
+    public TwitchOAuth2Provider(String clientId, String secret) {
         this.clientId = clientId;
         this.secret = secret;
     }
@@ -67,7 +67,7 @@ public class TwitchOAuth2Provider implements OAuth2Provider {
 
     public String redirect(String callbackUrl) {
         try {
-            return "https://id.twitch.tv/oauth2/authorize?client_id="+clientId+"&response_type=code&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(callbackUrl, "UTF-8")+"&force_verify="+forceVerify+"&state="+state;
+            return "https://id.twitch.tv/oauth2/authorize?client_id=" + clientId + "&response_type=code&scope=" + URLEncoder.encode(String.join(" ", scopes), "UTF-8") + "&redirect_uri=" + URLEncoder.encode(callbackUrl, "UTF-8") + "&force_verify=" + forceVerify + "&state=" + state;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

@@ -1,11 +1,11 @@
 package de.interaapps.pastefy.auth.strategies.oauth2.providers;
 
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Profile;
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.abstractdata.util.QueryString;
 import org.javawebstack.http.router.util.MimeType;
 import org.javawebstack.httpclient.HTTPClient;
-import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Profile;
-import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -13,8 +13,9 @@ import java.net.URLEncoder;
 public class GitHubOAuth2Provider implements OAuth2Provider {
     private String clientId;
     private String secret;
-    private String[] scopes = {"read:user","user:email"};
-    public GitHubOAuth2Provider(String clientId, String secret){
+    private String[] scopes = {"read:user", "user:email"};
+
+    public GitHubOAuth2Provider(String clientId, String secret) {
         this.clientId = clientId;
         this.secret = secret;
     }
@@ -44,7 +45,7 @@ public class GitHubOAuth2Provider implements OAuth2Provider {
 
     public String redirect(String callbackUrl) {
         try {
-            return "https://github.com/login/oauth/authorize?client_id="+clientId+"&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(callbackUrl, "UTF-8");
+            return "https://github.com/login/oauth/authorize?client_id=" + clientId + "&scope=" + URLEncoder.encode(String.join(" ", scopes), "UTF-8") + "&redirect_uri=" + URLEncoder.encode(callbackUrl, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -65,7 +66,7 @@ public class GitHubOAuth2Provider implements OAuth2Provider {
             OAuth2Profile profile = new OAuth2Profile();
 
             AbstractObject userData = apiClient.get("/user")
-                    .header("Authorization", "token "+accessToken)
+                    .header("Authorization", "token " + accessToken)
                     .data().object();
 
             if (userData.has("id"))

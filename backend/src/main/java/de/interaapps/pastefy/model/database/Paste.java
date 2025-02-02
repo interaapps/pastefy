@@ -5,9 +5,8 @@ import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.*;
 import org.javawebstack.webutils.util.RandomUtil;
 
-import java.util.List;
-
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Dates
@@ -109,6 +108,7 @@ public class Paste extends Model {
     public boolean isPublic() {
         return visibility == Visibility.PUBLIC;
     }
+
     public boolean isPrivate() {
         return visibility == Visibility.PRIVATE;
     }

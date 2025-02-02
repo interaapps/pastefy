@@ -8,10 +8,10 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.oauth2.model.Userinfo;
-import org.javawebstack.abstractdata.AbstractObject;
-import org.javawebstack.httpclient.HTTPClient;
 import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Profile;
 import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
+import org.javawebstack.abstractdata.AbstractObject;
+import org.javawebstack.httpclient.HTTPClient;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ public class GoogleOAuth2Provider implements OAuth2Provider {
     private String secret;
     private GoogleAuthorizationCodeFlow googleAuthorizationCodeFlow;
 
-    public GoogleOAuth2Provider(String clientId, String secret){
+    public GoogleOAuth2Provider(String clientId, String secret) {
         this.clientId = clientId;
         this.secret = secret;
 
@@ -47,7 +47,7 @@ public class GoogleOAuth2Provider implements OAuth2Provider {
 
     public OAuth2Callback callback(AbstractObject queryParameters, String callbackUrl) {
         try {
-            GoogleTokenResponse code =googleAuthorizationCodeFlow.newTokenRequest(queryParameters.string("code"))
+            GoogleTokenResponse code = googleAuthorizationCodeFlow.newTokenRequest(queryParameters.string("code"))
                     .setRedirectUri(callbackUrl)
                     .execute();
             return new OAuth2Callback(this, code.getAccessToken(), code.getRefreshToken(), clientId, secret);
@@ -94,11 +94,11 @@ public class GoogleOAuth2Provider implements OAuth2Provider {
             try {
                 OAuth2Profile profile = new OAuth2Profile();
                 Userinfo userinfo = oauth2.userinfo().get().execute();
-                profile.id     = userinfo.getId();
-                profile.name   = userinfo.getName();
+                profile.id = userinfo.getId();
+                profile.name = userinfo.getName();
                 profile.avatar = userinfo.getPicture();
-                profile.mail   = userinfo.getEmail();
-                userinfo.forEach((key, val)->{
+                profile.mail = userinfo.getEmail();
+                userinfo.forEach((key, val) -> {
                     profile.set(key, val.toString());
                 });
                 return profile;

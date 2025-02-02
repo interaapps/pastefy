@@ -9,9 +9,6 @@ import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.http.router.Exchange;
 import org.javawebstack.orm.query.Query;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class RequestHelper {
 
     public static void pagination(Query<?> query, Exchange exchange) {

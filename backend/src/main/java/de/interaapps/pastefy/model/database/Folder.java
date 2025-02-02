@@ -70,6 +70,7 @@ public class Folder extends Model {
 
         return query.all();
     }
+
     public List<Paste> getPastes() {
         return getPastes(false);
     }

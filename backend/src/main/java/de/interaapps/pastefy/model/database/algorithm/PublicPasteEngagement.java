@@ -25,8 +25,8 @@ public class PublicPasteEngagement extends Model {
     @Column
     public Timestamp updatedAt;
 
-    public static void addInterestFromPaste(Paste paste, int score){
-        new Thread(()->{
+    public static void addInterestFromPaste(Paste paste, int score) {
+        new Thread(() -> {
             PublicPasteEngagement interestInteraction = Repo.get(PublicPasteEngagement.class).where("pasteId", paste.getId()).first();
             if (interestInteraction == null) {
                 interestInteraction = new PublicPasteEngagement();

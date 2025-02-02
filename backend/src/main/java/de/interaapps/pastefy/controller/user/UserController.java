@@ -8,8 +8,6 @@ import de.interaapps.pastefy.model.responses.folder.FolderResponse;
 import de.interaapps.pastefy.model.responses.paste.PasteResponse;
 import de.interaapps.pastefy.model.responses.user.UserPastesResponse;
 import de.interaapps.pastefy.model.responses.user.UserResponse;
-import org.javawebstack.abstractdata.AbstractElement;
-import org.javawebstack.abstractdata.AbstractNull;
 import org.javawebstack.http.router.Exchange;
 import org.javawebstack.http.router.router.annotation.PathPrefix;
 import org.javawebstack.http.router.router.annotation.With;

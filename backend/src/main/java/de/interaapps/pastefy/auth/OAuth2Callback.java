@@ -1,12 +1,12 @@
 package de.interaapps.pastefy.auth;
 
 import de.interaapps.pastefy.Pastefy;
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Profile;
+import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Strategy;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.User;
 import org.javawebstack.http.router.Exchange;
 import org.javawebstack.orm.Repo;
-import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Profile;
-import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Strategy;
 
 public class OAuth2Callback implements OAuth2Strategy.HttpCallbackHandler {
     public Object handle(Exchange exchange, de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Callback callback, String name) {

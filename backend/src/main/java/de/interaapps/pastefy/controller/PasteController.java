@@ -27,7 +27,6 @@ import org.javawebstack.http.router.router.annotation.verbs.Put;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.query.Query;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -181,7 +180,6 @@ public class PasteController extends HttpController {
         }
 
 
-
         return new PasteResponse(paste);
     }
 
@@ -201,7 +199,7 @@ public class PasteController extends HttpController {
         if ((paste.getUserId() != null && paste.getUserId().equals(user.getId())) || user.type == User.Type.ADMIN) {
             paste.delete();
             response.success = true;
-        } else{
+        } else {
             throw new PermissionsDeniedException();
         }
 
