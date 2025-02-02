@@ -1,5 +1,6 @@
 package de.interaapps.pastefy;
 
+import com.google.gson.Gson;
 import de.interaapps.pastefy.auth.*;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.controller.PasteController;
@@ -53,10 +54,10 @@ public class Pastefy {
         return instance;
     }
 
-    private Config config;
+    private final Config config;
     private Passport passport;
     private OAuth2Strategy oAuth2Strategy;
-    private HTTPRouter httpRouter;
+    private final HTTPRouter httpRouter;
     private boolean loginRequired = false;
     private boolean loginRequiredForRead = false;
     private boolean loginRequiredForCreate = false;
@@ -65,7 +66,6 @@ public class Pastefy {
     public Pastefy() {
         config = new Config();
         httpRouter = new HTTPRouter(new UndertowHTTPSocketServer());
-
 
         setupConfig();
         setupPassport();
@@ -91,7 +91,14 @@ public class Pastefy {
                 .map("PASTEFY_LOGIN_REQUIRED_READ", "pastefy.loginrequired.read")
                 .map("PASTEFY_LIST_PASTES", "pastefy.listpastes")
                 .map("PASTEFY_PUBLIC_STATS", "pastefy.publicstats")
-                .map("PASTEFY_PUBLIC_PASTES", "pastefy.publicpastes");
+                .map("PASTEFY_PUBLIC_PASTES", "pastefy.publicpastes")
+                .map("DATABASE_CUSTOMPARAMS_CACHE_PREP_STMTS", "database.customparams.cachePrepStmts")
+                .map("DATABASE_CUSTOMPARAMS_PREP_STMT_CACHE_SIZE", "database.customparams.prepStmtCacheSize")
+                .map("DATABASE_CUSTOMPARAMS_PREP_STMT_CACHE_SQL_LIMIT", "database.customparams.prepStmtCacheSqlLimit")
+                .map("DATABASE_CUSTOMPARAMS_USE_SERVER_PREP_STMTS", "database.customparams.useServerPrepStmts")
+                .map("DATABASE_CUSTOMPARAMS_CACHE_RESULT_SET_METADATA", "database.customparams.cacheResultSetMetadata")
+                .map("DATABASE_CUSTOMPARAMS_CACHE_SERVER_CONFIGURATION", "database.customparams.cacheServerConfiguration")
+                .map("DATABASE_CUSTOMPARAMS_MAINTAIN_TIME_STATS", "database.customparams.maintainTimeStats");
 
         config.add(new EnvFile(new File(".env")).withVariables(), new MappingTryout(mapping, Config::basicEnvMapping));
 
@@ -107,13 +114,28 @@ public class Pastefy {
             String driverName = config.get("database.driver", "none");
             switch (driverName) {
                 case "mysql": {
-                    factory = () -> new MySQL(
-                            config.get("database.host", "localhost"),
-                            config.getInt("database.port", 3306),
-                            config.get("database.name", "app"),
-                            config.get("database.user", "root"),
-                            config.get("database.password", "")
-                    );
+                    factory = () -> {
+                        MySQL sql = new MySQL(
+                                config.get("database.host", "localhost"),
+                                config.getInt("database.port", 3306),
+                                config.get("database.name", "app"),
+                                config.get("database.user", "root"),
+                                config.get("database.password", "")
+                        );
+
+
+                        if (config.getObject("database.customparams") != null) {
+                            config.getObject("database.customparams").forEach((key, value) -> {
+
+                                System.out.println(key);
+                                System.out.println(value.string());
+                                sql.setCustomParam(key, value.string());
+                            });
+                        }
+                        return sql;
+                    };
+
+
                     break;
                 }
                 case "sqlite": {
@@ -124,7 +146,9 @@ public class Pastefy {
                     throw new ORMConfigurationException("Unknown database driver " + driverName);
                 }
             }
-            SQLPool sqlPool = new SQLPool(new MinMaxScaler(10, 10), factory);
+
+
+            SQLPool sqlPool = new SQLPool(new MinMaxScaler(config.getInt("database.pool.min", 10), config.getInt("database.pool.max", 10)), factory);
             Handler handler = new ConsoleHandler();
             handler.setLevel(Level.ALL);
             Logger.getLogger("ORM").addHandler(handler);
@@ -134,6 +158,7 @@ public class Pastefy {
                     .addTypeMapper(new AbstractDataTypeMapper());
 
             ORM.register(Paste.class.getPackage(), sqlPool, ormConfig);
+
             ORM.autoMigrate();
         } catch (ORMConfigurationException e) {
             e.printStackTrace();
@@ -233,7 +258,7 @@ public class Pastefy {
 
             if (accessToken != null) {
                 AuthKey authKey = Repo.get(AuthKey.class).where("key", accessToken).first();
-                if (oAuth2Strategy.getProviders().size() > 0 && authKey != null) {
+                if (!oAuth2Strategy.getProviders().isEmpty() && authKey != null) {
                     User user = Repo.get(User.class).get(authKey.userId);
 
                     if (user != null) {
@@ -283,7 +308,7 @@ public class Pastefy {
                 // Delete expired pastes
                 Repo.get(Paste.class)
                         .where("expireAt", "<", Timestamp.from(Instant.now()))
-                        .notNull("expireAt")
+                        .whereNotNull("expireAt")
                         .delete();
             }
         }, 0, 1000 * 60);

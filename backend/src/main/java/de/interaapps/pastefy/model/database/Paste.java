@@ -66,6 +66,9 @@ public class Paste extends Model {
     @Column
     public Timestamp updatedAt;
 
+    @Column
+    private StorageType storageType = StorageType.DATABASE;
+
     public Paste() {
         key = RandomUtil.string(8);
     }
@@ -171,6 +174,11 @@ public class Paste extends Model {
         this.visibility = visibility;
     }
 
+    @Override
+    public void save() {
+        super.save();
+    }
+
     public enum Type {
         PASTE,
         MULTI_PASTE
@@ -180,5 +188,11 @@ public class Paste extends Model {
         UNLISTED,
         PUBLIC,
         PRIVATE
+    }
+
+    public enum StorageType {
+        DATABASE,
+        S3,
+        HTTP
     }
 }
