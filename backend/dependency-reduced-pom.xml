@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.interaapps.pastefy</groupId>
   <artifactId>core</artifactId>
-  <version>6.0</version>
+  <version>6.0.1</version>
   <build>
     <resources>
       <resource>
@@ -63,6 +63,10 @@
     <repository>
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
+    </repository>
+    <repository>
+      <id>ossrh-snapshots</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
     </repository>
   </repositories>
 </project>

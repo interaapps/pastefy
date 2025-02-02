@@ -38,7 +38,7 @@
         <dependency>
             <groupId>org.javawebstack</groupId>
             <artifactId>http-client</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.javawebstack</groupId>
