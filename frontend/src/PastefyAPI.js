@@ -3,7 +3,7 @@ import {Cajax} from "cajaxjs";
 // import store from './store'
 
 export class PastefyAPI extends Cajax {
-    constructor(baseURL = "https://pastefy.ga") {
+    constructor(baseURL = "https://pastefy.app") {
         super(baseURL)
 
         this.promiseInterceptor = async res => {

@@ -126,9 +126,6 @@ public class Pastefy {
 
                         if (config.getObject("database.customparams") != null) {
                             config.getObject("database.customparams").forEach((key, value) -> {
-
-                                System.out.println(key);
-                                System.out.println(value.string());
                                 sql.setCustomParam(key, value.string());
                             });
                         }
