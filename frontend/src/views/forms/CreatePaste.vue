@@ -182,7 +182,7 @@ watch(
 )
 </script>
 <template>
-  <div v-if="appInfo.appInfo?.login_required_for_create">
+  <div v-if="appInfo.appInfo?.login_required_for_create && !currentUserStore.user">
     <span class="block text-center text-sm text-neutral-500">
       Login is required to create pastes
     </span>

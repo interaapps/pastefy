@@ -74,6 +74,10 @@
     @apply bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 px-1 rounded-sm border-neutral-300 border dark:border-neutral-700 text-sm;
   }
 
+  pre:has(code) {
+    @apply mb-8;
+  }
+
 
   blockquote {
     @apply border-l-2 border-neutral-300 dark:border-neutral-700 pl-4 my-6;
@@ -91,5 +95,8 @@
   }
   :last-child {
     @apply mb-0;
+  }
+  :first-child {
+    @apply mt-0;
   }
 }

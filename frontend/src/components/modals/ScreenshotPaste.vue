@@ -35,7 +35,7 @@ const background = ref(backgrounds[0].value)
 const width = ref(800)
 
 const download = () => {
-  domtoimage.toSvg(screenshotAreaRef.value!).then(function (dataUrl: string) {
+  domtoimage.toPng(screenshotAreaRef.value!).then(function (dataUrl: string) {
     const link = document.createElement('a')
     link.download = `${props.fileName?.replace(/\./g, '-') || 'paste-screenshot'}.png`
     link.href = dataUrl
