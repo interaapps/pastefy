@@ -222,6 +222,18 @@ const config = useConfig()
             @shortkey="copy"
             aria-label="Copy"
           />
+          <Button
+            v-if="paste.tags?.includes('codebox')"
+            target="_blank"
+            as="a"
+            :href="`https://box.pastefy.app/${paste.id}`"
+            severity="contrast"
+            text
+            rounded
+            :icon="`ti ti-box text-xl`"
+            v-tooltip="{ value: 'Open in Codebox', showDelay: 500 }"
+            aria-label="Open in Codebox"
+          />
           <!-- <Button severity="contrast" text rounded icon="ti ti-bookmark text-xl" /> -->
           <Button
             @click="() => currentPasteStore.forkFrom(paste!)"

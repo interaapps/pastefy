@@ -5,6 +5,7 @@ import Checkbox from 'primevue/checkbox'
 import DatePicker from 'primevue/datepicker'
 import Select from 'primevue/select'
 import Button from 'primevue/button'
+import Message from 'primevue/message'
 import ButtonGroup from 'primevue/buttongroup'
 import { computed, ref, watch } from 'vue'
 
@@ -72,7 +73,7 @@ const isFullscreen = ref(false)
 
 const currentTitle = computed(() =>
   currentPaste.type === 'MULTI_PASTE'
-    ? currentPaste.getCurrentMultiPart().name
+    ? currentPaste.getCurrentMultiPart()?.name || currentPaste.title
     : currentPaste.title,
 )
 
@@ -151,13 +152,34 @@ const pasteEvent = async (e: unknown) => {
       if (!title) return
 
       if (currentPaste.type === 'MULTI_PASTE') {
-        currentPaste.getCurrentMultiPart().name = title
-        return
+        const currentPart = currentPaste.getCurrentMultiPart()
+
+        if (currentPart) {
+          currentPart.name = title
+          return
+        }
       }
       currentPaste.title = title
     }
   }
 }
+
+const isUrl = ref(false)
+const ignoreUrlCheck = ref(false)
+const checkUrl = useDebounceFn(() => {
+  if (currentPaste.contents) {
+    isUrl.value = !!currentPaste.contents.match(
+      /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/,
+    )
+  }
+}, 500)
+
+watch(
+  () => currentPaste.contents,
+  () => {
+    if (!ignoreUrlCheck.value) checkUrl()
+  },
+)
 </script>
 <template>
   <div v-if="appInfo.appInfo?.login_required_for_create">
@@ -413,5 +435,13 @@ const pasteEvent = async (e: unknown) => {
         />
       </div>
     </div>
+
+    <Message v-if="isUrl" size="small" severity="info" closable @close="ignoreUrlCheck = true">
+      <span class="text-sm">
+        Detected URL. You may wanna use
+        <a target="_blank" href="https://puny.be" class="underline">punyshort</a> for shortening
+        urls.
+      </span>
+    </Message>
   </form>
 </template>
