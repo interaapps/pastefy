@@ -109,7 +109,11 @@ const { execute: submitPaste, isLoading: isPasting } = useAsyncState(
       params: {
         paste: paste.id,
       },
-      hash: passwordBefore ? undefined : `#${currentPaste.password}`,
+      hash: passwordBefore
+        ? undefined
+        : currentPaste.password
+          ? `#${currentPaste.password}`
+          : undefined,
     })
     currentPaste.clear()
   },

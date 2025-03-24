@@ -8,7 +8,7 @@ useTitle(`Home | Pastefy`)
 <template>
   <div class="flex flex-col gap-14">
     <div>
-      <h2 class="mb-4 text-2xl font-bold">Folder</h2>
+      <h2 class="mb-4 text-2xl font-bold">Folders</h2>
 
       <FolderList route="/api/v2/user/folders" />
     </div>
@@ -16,7 +16,7 @@ useTitle(`Home | Pastefy`)
     <div>
       <h2 class="mb-4 text-2xl font-bold">Pastes</h2>
 
-      <PasteList route="/api/v2/user/pastes" :params="{ page_limit: 15 }" />
+      <PasteList route="/api/v2/user/pastes" :params="{ page_limit: 15, hide_children: 'true' }" />
     </div>
   </div>
 </template>
