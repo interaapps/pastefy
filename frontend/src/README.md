@@ -1,3 +1,0 @@
-# JS
-
-For NPM users.

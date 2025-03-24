@@ -1,0 +1,95 @@
+@import '@tabler/icons-webfont/dist/tabler-icons.css';
+@import 'tailwindcss';
+@import 'tailwindcss-primeui';
+
+@import '@fontsource-variable/jetbrains-mono';
+@import '@fontsource-variable/plus-jakarta-sans';
+@import './petrel/base.css';
+@import './codemirror/theme.css';
+
+
+@tailwind utilities;
+@layer tailwind-base, primevue, tailwind-utilities;
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  font-family: 'Plus Jakarta Sans Variable', sans-serif;
+}
+
+
+.mono, .highlighted * {
+  font-family: 'JetBrains Mono Variable', monospace;
+}
+
+.markdown-prev {
+  @apply p-5;
+
+  p {
+    @apply mb-7;
+  }
+
+  a {
+    @apply inline text-primary-700 dark:text-primary-200 underline;
+    img {
+      @apply inline;
+    }
+  }
+
+  h1 {
+    @apply text-2xl font-bold mb-8;
+  }
+
+  h2 {
+    @apply text-xl font-bold mb-4;
+  }
+
+  h3 {
+    @apply text-lg font-bold mb-6;
+  }
+
+  h4 {
+    @apply font-bold mb-5;
+  }
+  h5 {
+    @apply text-sm font-bold mb-5;
+  }
+  h6 {
+    @apply text-xs font-bold mb-5;
+  }
+
+  ul {
+    @apply list-disc ml-5 mb-8;
+    ul, ol {
+      @apply mb-0;
+    }
+  }
+  ol {
+    @apply list-decimal ml-5 mb-8;
+    ol, ul {
+      @apply mb-0;
+    }
+  }
+
+  code:not(:has(pre)) {
+    @apply bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 px-1 rounded-sm border-neutral-300 border dark:border-neutral-700 text-sm;
+  }
+
+
+  blockquote {
+    @apply border-l-2 border-neutral-300 dark:border-neutral-700 pl-4 my-6;
+  }
+
+  hr {
+    @apply my-8 border-t border-neutral-300 dark:border-neutral-700;
+  }
+
+  table {
+    @apply w-full mb-10;
+    th, td {
+      @apply border border-neutral-300 dark:border-neutral-700 p-1 px-2;
+    }
+  }
+  :last-child {
+    @apply mb-0;
+  }
+}

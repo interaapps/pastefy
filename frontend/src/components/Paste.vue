@@ -1,0 +1,387 @@
+<script lang="ts" setup>
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+import { useAsyncState, useClipboard, useTitle } from '@vueuse/core'
+import { client } from '@/main.ts'
+
+import { computed, ref } from 'vue'
+import Highlighted from '@/components/Highlighted.vue'
+import { useCurrentPasteStore } from '@/stores/current-paste.ts'
+import ScreenshotPaste from '@/components/modals/ScreenshotPaste.vue'
+import PasteVisibilityIcon from '@/components/PasteVisibilityIcon.vue'
+import type { MultiPastePart, Paste } from '@/types/paste.ts'
+import { getIconByFileName } from '@/utils/lang-information.ts'
+import EmbedPasteModal from '@/components/modals/EmbedPasteModal.vue'
+import CryptoJS from 'crypto-js'
+import { findFromFileName } from '@/utils/lang-replacements.ts'
+import { useConfirm } from 'primevue/useconfirm'
+import router from '@/router'
+import { useAppInfoStore } from '@/stores/app-info.ts'
+import ErrorContainer from '@/components/ErrorContainer.vue'
+import LoadingContainer from '@/components/LoadingContainer.vue'
+import { useCurrentUserStore } from '@/stores/current-user.ts'
+import PastePreview from '@/components/PastePreview.vue'
+import { useConfig } from '@/composables/config.ts'
+
+const props = defineProps<{
+  pasteId: string
+  asEmbed?: boolean
+}>()
+
+const password = ref<string | undefined>(undefined)
+
+const currentPasteStore = useCurrentPasteStore()
+
+const clipboard = useClipboard()
+
+const pasteScreenshotOpened = ref(false)
+const pasteEmbedOpened = ref(false)
+
+const content = ref<string | undefined>()
+const title = ref<string | undefined>()
+
+const currentFileName = ref<string | undefined>()
+
+const multiPasteParts = ref<MultiPastePart[] | undefined>(undefined)
+const multiPartIndex = ref(0)
+
+const emit = defineEmits(['update-height'])
+
+const selectMultiPart = (index: number) => {
+  content.value = multiPasteParts.value![index]?.contents ?? ''
+  currentFileName.value = multiPasteParts.value![index]?.name ?? ''
+  multiPartIndex.value = index
+  emit('update-height')
+}
+const origin = window.location.origin
+
+const paste = ref<Paste | undefined>(undefined)
+
+const { isLoading, error } = useAsyncState(async () => {
+  const pasteRes = (await client.get(`/api/v2/paste/${props.pasteId}`)).data as Paste
+
+  paste.value = pasteRes
+  if (password.value) {
+    decrypt()
+  } else {
+    setValues()
+  }
+
+  const hashPw = window.location.hash?.replace('#', '')
+  if (hashPw) {
+    password.value = hashPw
+    decrypt()
+  }
+}, undefined)
+
+const setValues = () => {
+  if (!paste.value) return
+
+  content.value = paste.value.content
+  title.value = paste.value.title
+
+  currentFileName.value = paste.value.title
+
+  useTitle(`${title.value || 'Untitled Paste'} | Pastefy`)
+
+  if (paste.value.type === 'MULTI_PASTE') {
+    multiPasteParts.value = JSON.parse(content.value!) as MultiPastePart[]
+    selectMultiPart(0)
+  }
+
+  emit('update-height')
+}
+
+const copied = ref(false)
+
+const decrypted = ref(false)
+
+const decrypt = () => {
+  if (!paste.value) return
+
+  const decryptedContent = CryptoJS.AES.decrypt(paste.value.content, password.value!).toString(
+    CryptoJS.enc.Utf8,
+  )
+  if (decryptedContent === '') return
+
+  paste.value.title = CryptoJS.AES.decrypt(paste.value.title, password.value!).toString(
+    CryptoJS.enc.Utf8,
+  )
+  paste.value.content = decryptedContent
+  setValues()
+  decrypted.value = true
+}
+
+const copy = () => {
+  clipboard.copy(content.value!)
+  copied.value = true
+  setTimeout(() => {
+    copied.value = false
+  }, 2000)
+}
+
+const confirm = useConfirm()
+const deletePaste = () => {
+  confirm.require({
+    message: 'Are you sure you want to delete this paste?',
+    header: 'Delete paste',
+    accept: async () => {
+      await client.delete(`/api/v2/paste/${props.pasteId}`)
+      router.push({ name: 'home-page' })
+    },
+  })
+}
+
+const download = () => {
+  const element = document.createElement('a')
+  element.setAttribute(
+    'href',
+    `data:text/plain;charset=utf-8,${encodeURIComponent(content.value!)}`,
+  )
+  element.setAttribute('download', currentFileName.value!)
+  element.style.display = 'none'
+  document.body.appendChild(element)
+  element.click()
+  document.body.removeChild(element)
+}
+
+const currentLang = computed(() => findFromFileName(currentFileName.value!) as string)
+const appInfo = useAppInfoStore()
+
+const currentUser = useCurrentUserStore()
+
+const permission = computed(() => ({
+  canDelete: paste.value?.user_id && currentUser.user?.id === paste.value?.user_id,
+  canEdit: paste.value?.user_id && currentUser.user?.id === paste.value?.user_id,
+  showVisibility: paste.value?.user_id && currentUser.user?.id === paste.value?.user_id,
+}))
+
+const newTab = (u: string) => window.open(u)
+
+const config = useConfig()
+</script>
+<template>
+  <div v-if="appInfo.appInfo?.login_required_for_read">
+    <span class="block text-center text-neutral-500"> Login is required to view pastes </span>
+  </div>
+  <ErrorContainer v-else-if="error" :error="error as any" />
+  <LoadingContainer v-else-if="isLoading" />
+  <main v-else-if="paste?.encrypted && !decrypted" class="flex flex-col items-center gap-3">
+    <form
+      class="mx-auto flex w-[24rem] max-w-full flex-col items-center gap-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-700"
+      @submit.prevent="decrypt"
+    >
+      <i class="ti ti-lock text-5xl opacity-60" />
+      <h2>Paste is password protected</h2>
+      <InputText
+        autofocus
+        fluid
+        size="small"
+        placeholder="password"
+        v-model="password"
+        type="password"
+      />
+      <Button type="submit" label="decrypt" fluid size="small" outlined severity="contrast" />
+    </form>
+
+    <Button
+      severity="danger"
+      @click="deletePaste"
+      text
+      rounded
+      v-if="!asEmbed && permission.canDelete"
+      label="delete"
+      size="small"
+      v-shortkey="['ctrl', 'd']"
+      @shortkey="deletePaste"
+    />
+  </main>
+  <div v-else-if="paste" class="flex h-full w-full justify-center">
+    <div class="flex w-full flex-col gap-2" :class="config.sideBarShown ? '' : 'xl:pl-[3.75rem]'">
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-bold" id="paste-title" v-if="title">{{ title }}</h1>
+        <div
+          class="flex items-center gap-1 rounded-md bg-neutral-100 px-1 py-0.5 dark:bg-neutral-800"
+          v-if="permission.showVisibility"
+        >
+          <PasteVisibilityIcon :visibility="paste.visibility" />
+          <span class="text-sm font-normal">{{ paste.visibility }}</span>
+        </div>
+      </div>
+      <div id="below-title" />
+      <div class="relative flex w-full flex-col gap-3 md:flex-row-reverse">
+        <div class="top-0 flex h-fit flex-wrap items-center md:sticky md:w-[3rem] md:flex-col">
+          <Button
+            @click="copy"
+            severity="contrast"
+            text
+            rounded
+            :icon="`ti ${copied ? 'ti-check text-green-500' : 'ti-copy'} text-xl`"
+            v-tooltip="{ value: 'Copy (⌘+⇧+C)', showDelay: 500 }"
+            v-shortkey.click="['meta', 'shift', 'c']"
+            @shortkey="copy"
+            aria-label="Copy"
+          />
+          <!-- <Button severity="contrast" text rounded icon="ti ti-bookmark text-xl" /> -->
+          <Button
+            @click="() => currentPasteStore.forkFrom(paste!)"
+            severity="contrast"
+            text
+            rounded
+            v-if="!asEmbed"
+            icon="ti ti-git-fork text-xl"
+            v-tooltip="{ value: 'Fork (ctrl+F)', showDelay: 500 }"
+            v-shortkey.click="['ctrl', 'f']"
+            @shortkey="() => currentPasteStore.forkFrom(paste!)"
+            aria-label="Fork"
+          />
+          <Button
+            @click="() => currentPasteStore.editFrom(paste!, password)"
+            class="hidden md:flex"
+            severity="contrast"
+            text
+            rounded
+            v-if="!asEmbed && permission.canEdit"
+            icon="ti ti-pencil text-xl"
+            v-tooltip="{ value: 'Edit (ctrl+E)', showDelay: 500 }"
+            v-shortkey.click="['ctrl', 'e']"
+            @shortkey="() => currentPasteStore.editFrom(paste!, password)"
+            aria-label="Edit"
+          />
+          <Button
+            @click="pasteScreenshotOpened = true"
+            v-if="!asEmbed"
+            severity="contrast"
+            text
+            rounded
+            icon="ti ti-camera text-xl"
+            v-tooltip="{ value: 'Screenshot (ctrl+shift+S)', showDelay: 500 }"
+            v-shortkey.click="['ctrl', 'shift', 's']"
+            @shortkey="pasteScreenshotOpened = true"
+            aria-label="Create Screenshot"
+          />
+          <Button
+            @click="pasteEmbedOpened = true"
+            v-if="!asEmbed"
+            severity="contrast"
+            text
+            rounded
+            icon="ti ti-code text-xl"
+            v-tooltip="{ value: 'Embed', showDelay: 500 }"
+            aria-label="Embed"
+          />
+          <Button
+            as="a"
+            v-if="!paste.encrypted && paste.type !== 'MULTI_PASTE'"
+            :href="paste.raw_url"
+            target="_blank"
+            severity="contrast"
+            class="px-1"
+            label="RAW"
+            text
+            rounded
+            style="letter-spacing: -1.5px"
+            :pt="{
+              label: 'text-sm font-bold',
+            }"
+            v-tooltip="{ value: 'Show raw code (ctrl+R)', showDelay: 500 }"
+            v-shortkey.click="['ctrl', 'r']"
+            @shortkey="newTab(paste.raw_url!)"
+            aria-label="Show Raw"
+          />
+          <Button
+            @click="download"
+            severity="contrast"
+            text
+            rounded
+            icon="ti ti-download text-xl"
+            v-tooltip="{ value: 'Download (ctrl+S)', showDelay: 500 }"
+            v-shortkey.click="['ctrl', 's']"
+            @shortkey="download"
+            aria-label="Download"
+          />
+          <Button
+            severity="contrast"
+            @click="deletePaste"
+            text
+            rounded
+            v-if="!asEmbed && permission.canDelete"
+            icon="ti ti-trash text-xl"
+            v-tooltip="{ value: 'Delete (ctrl+⌫)', showDelay: 500 }"
+            v-shortkey="['ctrl', 'backspace']"
+            @shortkey="deletePaste"
+            aria-label="Delete"
+          />
+        </div>
+        <div class="w-full overflow-hidden">
+          <div
+            class="w-full rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
+          >
+            <div
+              v-if="multiPasteParts"
+              class="flex overflow-auto border-b border-neutral-200 dark:border-neutral-700"
+            >
+              <div
+                v-for="(part, index) of multiPasteParts"
+                class="border-r border-neutral-200 dark:border-neutral-700"
+                :key="part.name"
+              >
+                <Button
+                  :label="part.name"
+                  size="small"
+                  :icon="`ti ti-${getIconByFileName(part.name)}`"
+                  class="rounded-none"
+                  text
+                  :severity="multiPartIndex === index ? 'primary' : 'contrast'"
+                  @click="selectMultiPart(index)"
+                />
+              </div>
+            </div>
+
+            <template v-if="content">
+              <PastePreview
+                v-if="['markdown', 'csv'].includes(currentLang)"
+                :contents="content"
+                :file-name="currentFileName"
+                :type="currentLang"
+              />
+              <Highlighted
+                v-else
+                :file-name="currentFileName"
+                :key="multiPartIndex"
+                :contents="content"
+              />
+            </template>
+
+            <div
+              v-if="asEmbed"
+              class="flex overflow-auto border-t border-neutral-200 p-0.5 dark:border-neutral-700"
+            >
+              <Button
+                label="view on pastefy"
+                as="a"
+                :href="`${origin}/${paste.id}`"
+                target="_blank"
+                text
+                size="small"
+                severity="contrast"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="below-code" />
+    </div>
+  </div>
+
+  <ScreenshotPaste
+    :id="paste?.id"
+    :title="currentFileName"
+    v-if="paste && !asEmbed"
+    :file-name="currentFileName"
+    :content="content!"
+    v-model:visible="pasteScreenshotOpened"
+  />
+  <EmbedPasteModal v-model:visible="pasteEmbedOpened" :paste-id="pasteId" />
+</template>

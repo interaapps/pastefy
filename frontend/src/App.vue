@@ -1,63 +1,66 @@
-<template>
-    <div style="min-height: 100%;">
-        <side-bar />
-        <router-view :class="{'mobile': $store.state.mobileVersion}" id="page" />
+<script setup lang="ts">
+import Toast from 'primevue/toast'
+import Button from 'primevue/button'
+import ConfirmDialog from 'primevue/confirmdialog'
+import Dialog from 'primevue/dialog'
+import { useCurrentUserStore } from '@/stores/current-user.ts'
 
-        <div v-if="$store.state.user.type == 'AWAITING_ACCESS'" id="fullscreen-alert">
-            <div>
-                <h1>Hey, {{ $store.state.user.name }}!<br>Please wait until an admin activates your account.</h1>
-                <a class="button gray" @click="pastefyAPI.logout()">Logout</a>
-            </div>
-        </div>
-        <div v-else-if="$store.state.user.type == 'BLOCKED'" id="fullscreen-alert">
-            <div>
-                <h1>Hey, {{ $store.state.user.name }},<br>You have been blocked!</h1>
-            </div>
-        </div>
-
-        <portal-target name="modals" />
-    </div>
-</template>
-<script>
-import Sidebar from "./components/sidebar/Sidebar.vue";
-
-export default {
-    components: {
-        "side-bar": Sidebar
-    }
-}
+const currentUserStore = useCurrentUserStore()
 </script>
-<style lang="scss" scoped>
-#page {
-    min-height: 100%;
-    padding: 30px;
-    color: var(--text-color);
-    padding-left: 420px;
 
-    &.mobile {
-        padding: 20px;
-        padding-top: 80px;
-    }
-}
+<template>
+  <router-view />
+  <Toast />
+  <ConfirmDialog>
+    <template #container="{ message, acceptCallback, rejectCallback }">
+      <div class="flex flex-col items-center rounded p-8">
+        <span class="mb-3 block text-xl font-bold">{{ message.header }}</span>
+        <p class="mb-0">{{ message.message }}</p>
+        <div class="mt-6 flex items-center gap-2">
+          <Button
+            severity="contrast"
+            label="confirm"
+            @click="acceptCallback"
+            class="w-32 max-w-full"
+            size="small"
+          />
+          <Button
+            label="cancel"
+            outlined
+            @click="rejectCallback"
+            class="w-32 max-w-full"
+            severity="contrast"
+            size="small"
+          />
+        </div>
+      </div>
+    </template>
+  </ConfirmDialog>
 
-#fullscreen-alert {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background: var(--obj-background-color);
-    color: var(--text-color);
-    z-index: 10000000;
-    div {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translateX(-50%) translateY(-50%);
-        text-align: center;
-        .button {
-            margin-top: 40px;
-        }
-    }
-}
-</style>
+  <Dialog
+    v-if="currentUserStore.user?.type === 'AWAITING_ACCESS'"
+    :visible="currentUserStore.user?.type === 'AWAITING_ACCESS'"
+    header="Awaiting Access"
+    modal
+    :closable="false"
+    class="w-[20rem] max-w-full"
+  >
+    <div class="flex flex-col gap-4">
+      <p>
+        Hello {{ currentUserStore.user.name }}, please wait until an admin activates your account.
+      </p>
+
+      <Button @click="currentUserStore.logout()" label="Logout" outlined size="small" />
+    </div>
+  </Dialog>
+  <Dialog
+    v-if="currentUserStore.user?.type === 'BLOCKED'"
+    :visible="currentUserStore.user?.type === 'BLOCKED'"
+    header="Blocked"
+    modal
+    :closable="false"
+    class="w-[20rem] max-w-full"
+  >
+    Hello {{ currentUserStore.user.name }}, ou have been blocked!
+  </Dialog>
+</template>

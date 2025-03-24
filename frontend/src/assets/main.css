@@ -1,0 +1,6 @@
+@import './base.css';
+
+body, html, #app {
+  height: 100%;
+}
+

@@ -44,7 +44,7 @@ public class PublicPastesController extends HttpController {
 
         RequestHelper.pagination(publicPasteEngagements, exchange);
 
-        if (equals(exchange.getQueryParameters().has("trending"))) {
+        if (exchange.getQueryParameters().has("trending")) {
             Date date = new Date();
             date.setTime(System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 4));
             publicPasteEngagements.where("createdAt", ">", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));

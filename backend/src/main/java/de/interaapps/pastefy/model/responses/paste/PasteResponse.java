@@ -17,6 +17,7 @@ public class PasteResponse {
     public String userId;
     public Paste.Visibility visibility;
     public String forkedFrom;
+
     @SerializedName("raw_url")
     public String rawURL;
     public Paste.Type type;

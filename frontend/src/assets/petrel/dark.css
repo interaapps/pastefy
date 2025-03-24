@@ -1,0 +1,71 @@
+@import './base.css';
+.dark {
+  .petrel-code-editor {
+    @apply  text-white caret-white;
+    font-size: 16px;
+    line-height: 23px;
+    resize: vertical;
+    min-height: 160px;
+    border-radius: 10px;
+  }
+
+  .petrel-code-editor::-webkit-resizer {
+    @apply bg-neutral-700;
+    border-bottom-right-radius: 10px;
+  }
+
+
+  .petrel-code-editor textarea, .petrel-code-editor pre {
+    left: 10px;
+    top: 10px;
+  }
+
+  .petrel-code-editor .petrel-code-editor-line-numbering {
+    @apply border-r border-neutral-500;
+    user-select: none;
+    padding-right: 7px;
+    min-height: 100%;
+
+    padding-top: 10px;
+    padding-left: 13px;
+  }
+
+
+  .petrel-code-editor::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+    background: #00000022;
+    border-radius: 20px;
+    border: 7px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .petrel-code-editor::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, .3);
+    border-radius: 20px;
+    border: 7px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .petrel-code-editor .petrel-code-editor-autocompletion {
+    @apply bg-neutral-800 border-r border-neutral-500;
+    border-radius: 10px;
+    backdrop-filter: blur(7px);
+
+    max-height: 150px;
+    overflow: auto;
+
+    margin-top: 10px;
+  }
+
+  .petrel-code-editor .petrel-code-editor-autocompletion a {
+    padding: 4px 6px;
+    margin: 5px;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+
+  .petrel-code-editor .petrel-code-editor-autocompletion a:hover {
+    background: #FFFFFF21;
+  }
+}
