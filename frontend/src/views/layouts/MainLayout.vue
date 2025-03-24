@@ -100,6 +100,7 @@ const appInfo = useAppInfoStore()
           alt="Profile Picture"
         />
       </button>
+      <Button v-else class="cursor-default opacity-0" icon="ti ti-login text-xl" text />
     </div>
     <div v-if="config.sideBarShown" />
     <div v-if="!isHomeMobile" class="w-full overflow-auto p-4 pt-18 md:p-8 md:pt-20">

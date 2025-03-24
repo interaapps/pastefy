@@ -1,11 +1,11 @@
-FROM node:19.9.0-alpine3.17 as frontend
+FROM node:20.13-alpine as frontend
 
 WORKDIR /
 COPY frontend/package*.json ./app/
 
-RUN npm --legacy-peer-deps --prefix app install
+RUN npm --prefix app install
 COPY frontend app
-RUN npm run --prefix app build --prod
+RUN npm run --prefix app build
 
 
 FROM maven:3.6.0-jdk-8-slim AS build
