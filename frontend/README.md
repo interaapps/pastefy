@@ -2,8 +2,8 @@
 - [x] Authentication
 - [x] Search (Private + Global)
 - [x] Folders
-- [ ] Admin panel
-- [ ] Api-Keys
+- [x] Admin panel
+- [x] Api-Keys
 - [x] Meta Headers
 - [ ] Settings
   - [x] Theme
