@@ -249,7 +249,6 @@ const config = useConfig()
           />
           <Button
             @click="() => currentPasteStore.editFrom(paste!, password)"
-            class="hidden md:flex"
             severity="contrast"
             text
             rounded

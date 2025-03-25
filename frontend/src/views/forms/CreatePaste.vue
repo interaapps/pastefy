@@ -117,6 +117,7 @@ const { execute: submitPaste, isLoading: isPasting } = useAsyncState(
           : undefined,
     })
     currentPaste.clear()
+    isFullscreen.value = false
   },
   undefined,
   {

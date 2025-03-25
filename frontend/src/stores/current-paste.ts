@@ -3,6 +3,8 @@ import { defineStore } from 'pinia'
 import type { MultiPastePart, Paste, PasteType, PasteVisibility } from '@/types/paste.ts'
 import CryptoJS from 'crypto-js'
 import { useAppInfoStore } from '@/stores/app-info.ts'
+import { useConfig } from '@/composables/config.ts'
+import router from '@/router'
 
 export const useCurrentPasteStore = defineStore('current-paste', () => {
   const title = ref('')
@@ -22,6 +24,7 @@ export const useCurrentPasteStore = defineStore('current-paste', () => {
   const folder = ref<string | undefined>(undefined)
 
   const appInfo = useAppInfoStore()
+  const config = useConfig()
 
   function forkFrom(paste: Paste) {
     title.value = paste.title
@@ -32,6 +35,12 @@ export const useCurrentPasteStore = defineStore('current-paste', () => {
       multiPastes.value = JSON.parse(paste.content)
       type.value = 'MULTI_PASTE'
       selectMultiPart(0)
+    }
+
+    if (window.innerWidth < 768) {
+      router.push({ name: 'home' })
+    } else {
+      config.value.sideBarShown = true
     }
   }
 

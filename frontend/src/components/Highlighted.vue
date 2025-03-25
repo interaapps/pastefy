@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import hljs from 'highlight.js'
 import { onMounted, ref } from 'vue'
 import { findFromFileName } from '@/utils/lang-replacements.ts'
+import { highlight } from '@/utils/highlight.ts'
+import highlightWorker from '@/utils/workers/highlight.worker.ts?worker'
 
 const props = defineProps<{
   contents: string
@@ -12,28 +13,11 @@ const props = defineProps<{
   hideColorPreview?: boolean
 }>()
 
-const contents = ref(props.contents)
+const highlightedContents = ref<string | undefined>(undefined)
 
 const id = Math.random().toString(36).substring(7)
 
-onMounted(async () => {
-  const lang = findFromFileName(props.fileName || props.lang || '')
-
-  if (!props.contents) {
-    contents.value = ''
-    return
-  }
-
-  if (props.contents.length < 15000) {
-    if (lang && hljs.listLanguages().includes(lang)) {
-      contents.value = hljs.highlight(props.contents, {
-        language: lang,
-      }).value
-    } else {
-      contents.value = hljs.highlightAuto(props.contents).value
-    }
-  }
-
+const addColorIndicators = () => {
   setTimeout(() => {
     document
       .querySelectorAll(`.higlighted-${id} .hljs-number, .higlighted-${id} .hljs-string`)
@@ -74,6 +58,38 @@ onMounted(async () => {
         }
       })
   }, 500)
+}
+
+const initHighlight = () => {
+  const lang = findFromFileName(props.fileName || props.lang || '')
+
+  if (!props.contents) {
+    highlightedContents.value = ''
+    return
+  }
+
+  if ('Worker' in window && props.contents.length > 10000) {
+    const worker = new highlightWorker()
+
+    worker.onmessage = (e) => {
+      const { highlighted } = e.data
+      highlightedContents.value = highlighted
+      worker.terminate()
+      addColorIndicators()
+    }
+
+    worker.postMessage({
+      contents: props.contents,
+      lang,
+    })
+  } else {
+    highlightedContents.value = highlight(props.contents, lang)
+    addColorIndicators()
+  }
+}
+
+onMounted(async () => {
+  initHighlight()
 })
 </script>
 <template>
@@ -85,13 +101,17 @@ onMounted(async () => {
     >
       <span
         class="block opacity-30"
-        v-for="(_, line) of contents?.split('\n') || []"
+        v-for="(_, line) of (highlightedContents !== undefined
+          ? highlightedContents
+          : contents
+        )?.split('\n') || []"
         :key="line + 1"
         >{{ line + 1 }}</span
       >
     </div>
     <code class="w-full p-3">
-      <pre v-html="contents" />
+      <pre v-if="highlightedContents !== undefined" v-html="highlightedContents" />
+      <pre v-else>{{ contents }}</pre>
     </code>
   </div>
 </template>
