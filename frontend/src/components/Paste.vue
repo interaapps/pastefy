@@ -161,7 +161,7 @@ const newTab = (u: string) => window.open(u)
 const config = useConfig()
 </script>
 <template>
-  <div v-if="appInfo.appInfo?.login_required_for_read">
+  <div v-if="appInfo.appInfo?.login_required_for_read && !currentUser.user">
     <span class="block text-center text-neutral-500"> Login is required to view pastes </span>
   </div>
   <ErrorContainer v-else-if="error" :error="error as any" />
