@@ -1,16 +1,18 @@
-# !! IMPORTANT !!
-## Pastefy moved to a new domain:
-https://pastefy.app
+<p align="center">
+    <a>
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="/.github/logo-white.svg">
+        <source media="(prefers-color-scheme: light)" srcset="/.github/logo-black.svg" />
+        <img src="/.github/logo-black.svg" width="200px" />
+    </picture>
+    </a>
+</p>
 
-More information on why [here in our article](https://quotysco.eu/InteraApps/pastefy-and-punyshort-are-down---we-dont-really-know-why-either)
-
-
-<p align="center"><img src="/frontend/src/assets/logo.png" width="200"></p>
 
 Pastefy is an open source alternative to Gists or Pastebin.<br>
 You want to share some code to your friends or just save it for yourself? Just paste it.
 
-<img src="./.github/screenshots/vid.gif" width="100%" >
+<img src="./.github/screenshots/paste.png" width="100%" >
 
 ## Features
 - Raw-Preview
@@ -22,6 +24,9 @@ You want to share some code to your friends or just save it for yourself? Just p
   - See your created pastes
   - delete created pastes
 - Create paste with `curl -F f=@file.txt pastefy.app`
+- Extensions:
+  - VS-Code
+  - Raycast
 
 # Overview
 - [Screenshots](#Screenshots)

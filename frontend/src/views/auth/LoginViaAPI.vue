@@ -12,7 +12,7 @@ const router = useRouter()
 
 onMounted(() => {
   config.value.apiKey = route.query.key as string
-  client.defaults.headers.common = { Authorization: `Bearer ${config.value.apiKey}` }
+  client.defaults.headers.common.Authorization = `Bearer ${config.value.apiKey}`
   currentUserStore.fetchUser()
   router.replace({ name: 'home-page' })
 })

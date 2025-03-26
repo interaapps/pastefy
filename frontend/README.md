@@ -1,4 +1,5 @@
 # New Frontend checklist
+- [ ] Transparent Background for iframe embed
 - [x] Authentication
 - [x] Search (Private + Global)
 - [x] Folders

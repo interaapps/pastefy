@@ -65,8 +65,21 @@ app.mount('#app')
 
 const currentUserStore = useCurrentUserStore()
 const config = useConfig()
+
+client.interceptors.response.use((response) => {
+  if (typeof response.data === 'string') {
+    try {
+      response.data = JSON.parse(response.data)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+  return response
+})
+
+client.defaults.headers.common = { Accept: `application/json` }
 if (config.value?.apiKey) {
-  client.defaults.headers.common = { Authorization: `Bearer ${config.value.apiKey}` }
+  client.defaults.headers.common.Authorization = `Bearer ${config.value.apiKey}`
 }
 currentUserStore.fetchUser()
 

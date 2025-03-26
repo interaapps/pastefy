@@ -17,7 +17,7 @@ export const useCurrentUserStore = defineStore('current-user', () => {
   function logout() {
     user.value = undefined
     config.value.apiKey = undefined
-    client.defaults.headers.common = { Authorization: undefined }
+    client.defaults.headers.common.Authorization = undefined
   }
 
   function setUser(newUser: User) {
