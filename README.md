@@ -9,10 +9,12 @@
 </p>
 
 
+<img src="./.github/screenshots/paste.png" width="100%" >
+
 Pastefy is an open source alternative to Gists or Pastebin.<br>
 You want to share some code to your friends or just save it for yourself? Just paste it.
 
-<img src="./.github/screenshots/paste.png" width="100%" >
+Try out the public instance https://pastefy.app
 
 ## Features
 - Raw-Preview
@@ -41,10 +43,10 @@ You want to share some code to your friends or just save it for yourself? Just p
 - [API](#API)
 
 # Screenshots
-<img src="./.github/screenshots/home.png" width="49%" >
-<img src="./.github/screenshots/paste.png" width="49%" >
-<img src="./.github/screenshots/new.png" width="49%" >
-<img src="./.github/screenshots/fullscreen.png" width="49%" >
+<img src="./.github/screenshots/home.png" width="46%" >
+<img src="./.github/screenshots/paste.png" width="46%" >
+<img src="./.github/screenshots/new.png" width="46%" >
+<img src="./.github/screenshots/fullscreen.png" width="46%" >
 
 ## Deploy
 ### Docker
