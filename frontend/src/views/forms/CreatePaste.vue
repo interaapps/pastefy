@@ -96,7 +96,7 @@ watch(
       currentPaste.tags.length === 0 ||
       currentPaste.tags[0].startsWith('lang-')
     ) {
-      lang = (!['clike'].includes(lang) && lang?.replace('htmlmixed', 'html')) || ext
+      lang = (!['clike'].includes(lang || 'clike') && lang?.replace('htmlmixed', 'html')) || ext
 
       if (lang && currentTitle.value.includes('.')) {
         currentPaste.tags = [`lang-${lang}`]
@@ -395,7 +395,9 @@ watch(
         fluid
         size="small"
         :model-value="(currentPaste.tags || []).join(',')"
-        @update:model-value="(t) => (currentPaste.tags = t.split(',').map((tag) => tag.trim()))"
+        @update:model-value="
+          (t) => (currentPaste.tags = t?.split(',').map((tag) => tag.trim()) || [])
+        "
       />
     </div>
 

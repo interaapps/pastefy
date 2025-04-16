@@ -50,7 +50,7 @@ const {
     </div>
 
     <div class="mb-14">
-      <ErrorContainer v-if="error" :error="tagsError as any" />
+      <ErrorContainer v-if="tagsError" :error="tagsError as any" />
       <LoadingContainer v-else-if="tagsLoading" />
       <div v-else-if="tags" class="flex flex-col gap-3 md:flex-row">
         <TagCard v-for="tag of tags" :tag="tag" :key="tag.tag" />

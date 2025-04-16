@@ -25,6 +25,7 @@ import PastePreview from '@/components/PastePreview.vue'
 import { useConfig } from '@/composables/config.ts'
 import type { Tag } from '@/types/tags.ts'
 import { useTagsStore } from '@/stores/tags-store.ts'
+import type { PopoverMethods } from 'primevue'
 
 const props = defineProps<{
   pasteId: string
@@ -63,14 +64,14 @@ const paste = ref<Paste | undefined>(undefined)
 const tagsStore = useTagsStore()
 
 const { isLoading: starLoading, execute: star } = useAsyncState(async () => {
-  if (paste.value.starred) {
+  if (paste.value?.starred) {
     await client.delete(`/api/v2/paste/${props.pasteId}/star`)
     paste.value.starred = false
   } else {
     await client.post(`/api/v2/paste/${props.pasteId}/star`)
-    paste.value.starred = true
+    paste.value!.starred = true
   }
-})
+}, undefined)
 
 const { isLoading, error } = useAsyncState(async () => {
   const pasteRes = (
@@ -183,7 +184,7 @@ const newTab = (u: string) => window.open(u)
 
 const config = useConfig()
 
-const tagsPopover = useTemplateRef('tagsPopover')
+const tagsPopover = useTemplateRef<PopoverMethods>('tagsPopover')
 </script>
 <template>
   <div v-if="appInfo.appInfo?.login_required_for_read && !currentUser.user">
@@ -348,8 +349,8 @@ const tagsPopover = useTemplateRef('tagsPopover')
             aria-label="Download"
           />
           <Button
-            v-if="paste.tags?.length"
-            @click="(e) => tagsPopover.toggle(e)"
+            v-if="paste?.tags?.length"
+            @click="(e) => tagsPopover?.toggle(e)"
             severity="contrast"
             text
             rounded
@@ -455,7 +456,7 @@ const tagsPopover = useTemplateRef('tagsPopover')
   <EmbedPasteModal v-model:visible="pasteEmbedOpened" :paste-id="pasteId" />
 
   <Popover ref="tagsPopover">
-    <div v-if="paste.tags?.length" class="flex flex-wrap gap-2">
+    <div v-if="paste?.tags?.length" class="flex flex-wrap gap-2">
       <router-link
         v-for="tag of paste.tags"
         :to="{ name: 'tag', params: { tag } }"
