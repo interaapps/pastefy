@@ -3,7 +3,10 @@ package de.interaapps.pastefy.model.responses.paste;
 import com.google.gson.annotations.SerializedName;
 import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.model.database.Paste;
+import de.interaapps.pastefy.model.database.User;
+import de.interaapps.pastefy.model.responses.user.PublicUserResponse;
 import org.javawebstack.http.router.Exchange;
+import org.javawebstack.orm.Repo;
 
 import java.util.List;
 
@@ -25,7 +28,11 @@ public class PasteResponse {
     public String expireAt = null;
     public List<String> tags;
 
-    public PasteResponse(Paste paste) {
+    public PublicUserResponse user;
+
+    public Boolean starred = null;
+
+    public PasteResponse(Paste paste, User currentUser, boolean fetchStar, boolean fetchUser) {
         if (paste == null) {
             return;
         }
@@ -48,6 +55,17 @@ public class PasteResponse {
         exists = true;
 
         tags = paste.getTags();
+
+        if (fetchUser && paste.isPublic() && paste.getUserId() != null) {
+            User pasteUser = paste.getUser();
+            if (pasteUser != null) {
+                user = new PublicUserResponse(pasteUser);
+            }
+        }
+
+        if (currentUser != null && fetchStar) {
+            starred = currentUser.hasStarred(paste);
+        }
     }
 
     public PasteResponse shortenContent() {
@@ -56,11 +74,19 @@ public class PasteResponse {
         return this;
     }
 
-    public static PasteResponse create(Paste paste, Exchange exchange) {
-        PasteResponse pasteResponse = new PasteResponse(paste);
-        if ("true".equalsIgnoreCase(exchange.query("shorten_content", "false"))) {
-            pasteResponse.shortenContent();
+    public static PasteResponse create(Paste paste, Exchange exchange, User currentUser, boolean fetchStar, boolean fetchUser) {
+        PasteResponse pasteResponse = new PasteResponse(paste, currentUser, fetchStar, fetchUser);
+        if (exchange != null) {
+            if ("true".equalsIgnoreCase(exchange.query("shorten_content", "false"))) {
+                pasteResponse.shortenContent();
+            }
         }
         return pasteResponse;
+    }
+    public static PasteResponse create(Paste paste, Exchange exchange, User currentUser, boolean fetchStar) {
+        return create(paste, exchange, currentUser, fetchStar, true);
+    }
+    public static PasteResponse create(Paste paste, Exchange exchange, User currentUser) {
+        return create(paste, exchange, currentUser, true);
     }
 }

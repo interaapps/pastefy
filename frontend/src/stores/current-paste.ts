@@ -168,5 +168,6 @@ export const useCurrentPasteStore = defineStore('current-paste', () => {
     forkedFrom,
     expiresAt,
     expiresAtEnabled,
+    tags,
   }
 })

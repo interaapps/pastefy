@@ -81,12 +81,28 @@ watch(
   currentTitle,
   useDebounceFn(async () => {
     const ext = currentTitle.value.split('.').pop()
+    let lang: string | undefined = undefined
     if (ext) {
       const cmExt = CodeMirror.findModeByExtension(ext)
       if (cmExt) {
         await codemirrorLanguageImports[cmExt.mode]?.()
       }
       cmOptions.value.mode = cmExt?.mode
+      lang = cmExt?.mode?.replace('htmlmixed', 'html') || ext
+    }
+
+    if (
+      !currentPaste.tags ||
+      currentPaste.tags.length === 0 ||
+      currentPaste.tags[0].startsWith('lang-')
+    ) {
+      lang = (!['clike'].includes(lang) && lang?.replace('htmlmixed', 'html')) || ext
+
+      if (lang && currentTitle.value.includes('.')) {
+        currentPaste.tags = [`lang-${lang}`]
+      } else {
+        currentPaste.tags = []
+      }
     }
   }, 200),
 )
@@ -362,7 +378,7 @@ watch(
         :loading="userFoldersStore.isLoading"
         :model-value="currentPaste.folder ? { [currentPaste.folder]: true } : undefined"
         :options="userFolders"
-        placeholder="folder"
+        placeholder="folder (optional)"
         filter
         filter-by="label"
         fluid
@@ -372,6 +388,14 @@ watch(
         @update:model-value="
           (value) => (currentPaste.folder = (value && Object.keys(value)[0]) || undefined)
         "
+      />
+
+      <InputText
+        placeholder="tags (optional, comma-seperated)"
+        fluid
+        size="small"
+        :model-value="(currentPaste.tags || []).join(',')"
+        @update:model-value="(t) => (currentPaste.tags = t.split(',').map((tag) => tag.trim()))"
       />
     </div>
 

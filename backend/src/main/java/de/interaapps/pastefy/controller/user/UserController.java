@@ -39,7 +39,7 @@ public class UserController extends HttpController {
         if (exchange.getQueryParameters().has("page"))
             page = Integer.parseInt(exchange.getQueryParameters().get("page").string()) - 1;
 
-        response.pastes = Repo.get(Paste.class).where("userId", user.getId()).whereNull("folder").order("updated_at", true).limit(10).offset(page * 10).all().stream().map(paste -> PasteResponse.create(paste, exchange)).collect(Collectors.toList());
+        response.pastes = Repo.get(Paste.class).where("userId", user.getId()).whereNull("folder").order("updated_at", true).limit(10).offset(page * 10).all().stream().map(paste -> PasteResponse.create(paste, exchange, user, false, false)).collect(Collectors.toList());
         response.folder = Repo.get(Folder.class).where("userId", user.getId()).whereNull("parent").order("updated_at", true).all().stream().map(folder -> new FolderResponse(folder, !exchange.getQueryParameters().has("hide_children"))).collect(Collectors.toList());
 
         return response;
@@ -76,7 +76,7 @@ public class UserController extends HttpController {
         RequestHelper.filterTags(query, exchange.getQueryParameters());
 
 
-        return query.all().stream().map(p -> PasteResponse.create(p, exchange)).collect(Collectors.toList());
+        return query.all().stream().map(p -> PasteResponse.create(p, exchange, user, false, false)).collect(Collectors.toList());
     }
 
     @Get("/sharedpastes")
@@ -100,11 +100,29 @@ public class UserController extends HttpController {
                     Paste paste = sharedPaste.getPaste();
                     if (paste == null)
                         sharedPaste.delete();
-                    return new PasteResponse(paste);
+                    return PasteResponse.create(paste, exchange, user, false, false);
                 })
                 .collect(Collectors.toList());
 
         return pastes;
+    }
+
+    @Get("/starred-pastes")
+    @With({"auth", "awaiting-access-check", "blocked-check"})
+    public List<PasteResponse> getStarredPastes(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        if (authKey != null)
+            authKey.checkPermission("stars:read");
+
+        Query<Paste> query = Repo.get(Paste.class)
+                .query()
+                .whereExists(PasteStar.class, (q) -> q.where(PasteStar.class, "paste", "=", Paste.class, "key"));
+
+        RequestHelper.pagination(query, exchange);
+        query.search(exchange.query("search"));
+        RequestHelper.queryFilter(query, exchange.getQueryParameters());
+        RequestHelper.filterTags(query, exchange.getQueryParameters());
+
+        return query.order("created_at", true).all().stream().map(p -> PasteResponse.create(p, exchange, user, false, true)).collect(Collectors.toList());
     }
 
 

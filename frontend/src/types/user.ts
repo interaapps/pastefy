@@ -10,3 +10,9 @@ export type User = {
   auth_types: string[]
   type: UserType
 }
+export type PublicUser = {
+  id: string
+  name: string
+  display_name: string
+  avatar: string
+}

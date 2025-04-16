@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
+import Popover from 'primevue/popover'
 import { useAsyncState, useClipboard, useTitle } from '@vueuse/core'
 import { client } from '@/main.ts'
 
-import { computed, ref } from 'vue'
+import { computed, ref, useTemplateRef } from 'vue'
 import Highlighted from '@/components/Highlighted.vue'
 import { useCurrentPasteStore } from '@/stores/current-paste.ts'
 import ScreenshotPaste from '@/components/modals/ScreenshotPaste.vue'
@@ -22,6 +23,8 @@ import LoadingContainer from '@/components/LoadingContainer.vue'
 import { useCurrentUserStore } from '@/stores/current-user.ts'
 import PastePreview from '@/components/PastePreview.vue'
 import { useConfig } from '@/composables/config.ts'
+import type { Tag } from '@/types/tags.ts'
+import { useTagsStore } from '@/stores/tags-store.ts'
 
 const props = defineProps<{
   pasteId: string
@@ -57,8 +60,26 @@ const origin = window.location.origin
 
 const paste = ref<Paste | undefined>(undefined)
 
+const tagsStore = useTagsStore()
+
+const { isLoading: starLoading, execute: star } = useAsyncState(async () => {
+  if (paste.value.starred) {
+    await client.delete(`/api/v2/paste/${props.pasteId}/star`)
+    paste.value.starred = false
+  } else {
+    await client.post(`/api/v2/paste/${props.pasteId}/star`)
+    paste.value.starred = true
+  }
+})
+
 const { isLoading, error } = useAsyncState(async () => {
-  const pasteRes = (await client.get(`/api/v2/paste/${props.pasteId}`)).data as Paste
+  const pasteRes = (
+    await client.get(`/api/v2/paste/${props.pasteId}`, {
+      params: {
+        from_frontend: 'true',
+      },
+    })
+  ).data as Paste
 
   paste.value = pasteRes
   if (password.value) {
@@ -72,6 +93,8 @@ const { isLoading, error } = useAsyncState(async () => {
     password.value = hashPw
     decrypt()
   }
+
+  pasteRes.tags?.forEach(tagsStore.fetchIfNeeded)
 }, undefined)
 
 const setValues = () => {
@@ -159,6 +182,8 @@ const permission = computed(() => ({
 const newTab = (u: string) => window.open(u)
 
 const config = useConfig()
+
+const tagsPopover = useTemplateRef('tagsPopover')
 </script>
 <template>
   <div v-if="appInfo.appInfo?.login_required_for_read && !currentUser.user">
@@ -223,6 +248,17 @@ const config = useConfig()
             aria-label="Copy"
           />
           <Button
+            v-if="currentUser.user?.logged_in"
+            @click="() => star()"
+            severity="contrast"
+            text
+            rounded
+            :icon="`ti ti-star text-xl ${paste.starred ? 'text-yellow-500' : ''}`"
+            v-tooltip="{ value: 'Star', showDelay: 500 }"
+            :loading="starLoading"
+            aria-label="Star"
+          />
+          <Button
             v-if="paste.tags?.includes('codebox')"
             target="_blank"
             as="a"
@@ -283,8 +319,8 @@ const config = useConfig()
           />
           <Button
             as="a"
-            v-if="!paste.encrypted && paste.type !== 'MULTI_PASTE'"
-            :href="paste.raw_url"
+            v-if="!paste.encrypted"
+            :href="`${paste.raw_url}${paste.type === 'MULTI_PASTE' ? `?part=${currentFileName}` : ''}`"
             target="_blank"
             severity="contrast"
             class="px-1"
@@ -312,6 +348,16 @@ const config = useConfig()
             aria-label="Download"
           />
           <Button
+            v-if="paste.tags?.length"
+            @click="(e) => tagsPopover.toggle(e)"
+            severity="contrast"
+            text
+            rounded
+            icon="ti ti-label text-xl rotate-[-45deg]"
+            v-tooltip="{ value: 'Labels', showDelay: 500 }"
+            aria-label="Labels"
+          />
+          <Button
             severity="contrast"
             @click="deletePaste"
             text
@@ -323,6 +369,18 @@ const config = useConfig()
             @shortkey="deletePaste"
             aria-label="Delete"
           />
+          <router-link
+            v-if="paste?.user?.avatar"
+            :to="{ name: 'user', params: { user: paste.user.name } }"
+            class="ml-2 block md:mt-2 md:ml-0"
+            v-tooltip="{ value: paste.user.name || paste.user.display_name, showDelay: 500 }"
+          >
+            <img
+              class="block h-[1.8rem] w-[1.8rem] rounded-full border border-neutral-200 object-cover dark:border-neutral-700"
+              :src="paste?.user?.avatar"
+              alt="profile picture"
+            />
+          </router-link>
         </div>
         <div class="w-full overflow-hidden">
           <div
@@ -395,4 +453,21 @@ const config = useConfig()
     v-model:visible="pasteScreenshotOpened"
   />
   <EmbedPasteModal v-model:visible="pasteEmbedOpened" :paste-id="pasteId" />
+
+  <Popover ref="tagsPopover">
+    <div v-if="paste.tags?.length" class="flex flex-wrap gap-2">
+      <router-link
+        v-for="tag of paste.tags"
+        :to="{ name: 'tag', params: { tag } }"
+        :key="tag"
+        class="flex items-center gap-1 rounded-md border border-neutral-200 bg-neutral-100 p-0.5 px-1 text-sm hover:bg-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700"
+      >
+        <i
+          v-if="tagsStore.tagsCache[tag]?.icon"
+          :class="`ti ti-${tagsStore.tagsCache[tag]?.icon}`"
+        />
+        <span>{{ tagsStore.tagsCache[tag]?.display_name || tag }}</span>
+      </router-link>
+    </div>
+  </Popover>
 </template>

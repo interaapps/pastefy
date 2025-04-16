@@ -58,7 +58,14 @@ export function estimateTitle(contents: string) {
   }
 
   // Match Lua
-  if (contents.startsWith('loadstring(')) {
+  if (
+    contents.includes('loadstring(') ||
+    contents.includes('game.Players') ||
+    contents.includes('game:GetService') ||
+    contents.includes('game:HttpGet') ||
+    contents.includes('--[[') ||
+    contents.startsWith('local ')
+  ) {
     return `addon.lua`
   }
 

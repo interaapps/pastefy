@@ -3,11 +3,13 @@ package de.interaapps.pastefy.controller.publicarea;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.helper.RequestHelper;
 import de.interaapps.pastefy.model.database.Paste;
+import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.database.algorithm.PublicPasteEngagement;
 import de.interaapps.pastefy.model.responses.paste.PasteResponse;
 import org.javawebstack.http.router.Exchange;
 import org.javawebstack.http.router.router.annotation.PathPrefix;
 import org.javawebstack.http.router.router.annotation.With;
+import org.javawebstack.http.router.router.annotation.params.Attrib;
 import org.javawebstack.http.router.router.annotation.verbs.Get;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.query.Query;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 @With("public-pastes-endpoint")
 public class PublicPastesController extends HttpController {
     @Get
-    public List<PasteResponse> getPublicPastes(Exchange exchange) {
+    public List<PasteResponse> getPublicPastes(Exchange exchange, @Attrib("user") User user) {
         Query<Paste> query = Repo.get(Paste.class)
                 .query()
                 .order("createdAt", true)
@@ -34,12 +36,12 @@ public class PublicPastesController extends HttpController {
 
         return query
                 .stream()
-                .map(p -> PasteResponse.create(p, exchange))
+                .map(p -> PasteResponse.create(p, exchange, user))
                 .collect(Collectors.toList());
     }
 
     @Get("/trending")
-    public List<PasteResponse> getTrending(Exchange exchange) {
+    public List<PasteResponse> getTrending(Exchange exchange, @Attrib("user") User user) {
         Query<PublicPasteEngagement> publicPasteEngagements = Repo.get(PublicPasteEngagement.class).query();
 
         RequestHelper.pagination(publicPasteEngagements, exchange);
@@ -71,12 +73,12 @@ public class PublicPastesController extends HttpController {
         return query
                 .stream()
                 .sorted(Collections.reverseOrder(Comparator.comparingInt(p -> scores.get(p.getId()))))
-                .map(p -> PasteResponse.create(p, exchange))
+                .map(p -> PasteResponse.create(p, exchange, user))
                 .collect(Collectors.toList());
     }
 
     @Get("/latest")
-    public List<PasteResponse> getLatest(Exchange exchange) {
+    public List<PasteResponse> getLatest(Exchange exchange, @Attrib("user") User user) {
         Query<Paste> query = Repo.get(Paste.class)
                 .query()
                 .order("createdAt", true)
@@ -89,7 +91,7 @@ public class PublicPastesController extends HttpController {
 
         return query
                 .stream()
-                .map(p -> PasteResponse.create(p, exchange))
+                .map(p -> PasteResponse.create(p, exchange, user))
                 .collect(Collectors.toList());
     }
 }

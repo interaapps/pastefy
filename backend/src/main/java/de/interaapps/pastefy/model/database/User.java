@@ -2,6 +2,7 @@ package de.interaapps.pastefy.model.database;
 
 import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
 import de.interaapps.pastefy.auth.strategies.oauth2.providers.*;
+import de.interaapps.pastefy.model.database.algorithm.PublicPasteEngagement;
 import de.interaapps.pastefy.model.responses.folder.FolderResponse;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
@@ -89,6 +90,38 @@ public class User extends Model {
 
     public boolean roleCheck() {
         return type != Type.AWAITING_ACCESS && type != Type.BLOCKED;
+    }
+
+    public static User get(String id) {
+        return Repo.get(User.class).get(id);
+    }
+    public static User getByName(String name) {
+        return Repo.get(User.class).where("uniqueName", name).first();
+    }
+
+    public void star(Paste paste) {
+        if (!hasStarred(paste)) {
+            PasteStar pasteStar = new PasteStar();
+            pasteStar.paste = paste.getKey();
+            pasteStar.userId = id;
+            pasteStar.save();
+        }
+        PublicPasteEngagement.addInterestFromPaste(paste, 20);
+    }
+
+    public void unstar(Paste paste) {
+        Repo.get(PasteStar.class)
+            .where("paste", paste.getKey())
+            .where("userId", id)
+            .delete();
+        PublicPasteEngagement.addInterestFromPaste(paste, -20);
+    }
+
+    public boolean hasStarred(Paste paste) {
+        return Repo.get(PasteStar.class)
+            .where("paste", paste.getKey())
+            .where("userId", id)
+            .count() > 0;
     }
 
     public enum AuthenticationProvider {

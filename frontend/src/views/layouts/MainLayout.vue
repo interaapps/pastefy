@@ -11,7 +11,7 @@ import { useRoute } from 'vue-router'
 import { useWindowSize } from '@vueuse/core'
 import LoginModal from '@/components/modals/LoginModal.vue'
 import { useAppInfoStore } from '@/stores/app-info.ts'
-import GlobalSearch from '@/views/GlobalSearch.vue'
+import GlobalSearch from '@/components/GlobalSearch.vue'
 import UserMenu from '@/components/popovers/UserMenu.vue'
 const loginModalVisible = ref(false)
 

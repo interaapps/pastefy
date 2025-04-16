@@ -16,7 +16,7 @@ useTitle(`Home | Pastefy`)
     <div>
       <h2 class="mb-4 text-2xl font-bold">Pastes</h2>
 
-      <PasteList route="/api/v2/user/pastes" :params="{ page_limit: 15, hide_children: 'true' }" />
+      <PasteList route="/api/v2/user/pastes" :params="{ page_limit: 8, hide_children: 'true' }" />
     </div>
   </div>
 </template>

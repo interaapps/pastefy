@@ -8,6 +8,7 @@ import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
 import de.interaapps.pastefy.helper.RequestHelper;
 import de.interaapps.pastefy.model.database.*;
 import de.interaapps.pastefy.model.database.algorithm.PublicPasteEngagement;
+import de.interaapps.pastefy.model.database.algorithm.TagListing;
 import de.interaapps.pastefy.model.requests.paste.AddFriendToPasteRequest;
 import de.interaapps.pastefy.model.requests.paste.CreatePasteRequest;
 import de.interaapps.pastefy.model.requests.paste.EditPasteRequest;
@@ -83,11 +84,12 @@ public class PasteController extends HttpController {
                 pTag.paste = paste.getKey();
                 pTag.tag = tag;
                 pTag.save();
+                TagListing.updateCount(pTag.tag);
             }
         }
 
         response.success = true;
-        response.paste = new PasteResponse(paste);
+        response.paste = PasteResponse.create(paste, exchange, user);
 
         return response;
     }
@@ -105,7 +107,7 @@ public class PasteController extends HttpController {
         RequestHelper.queryFilter(query, exchange.getQueryParameters());
         RequestHelper.filterTags(query, exchange.getQueryParameters());
 
-        return query.order("created_at", true).all().stream().map(p -> PasteResponse.create(p, exchange)).collect(Collectors.toList());
+        return query.order("created_at", true).all().stream().map(p -> PasteResponse.create(p, exchange, user, true)).collect(Collectors.toList());
     }
 
     @Put("/{id}")
@@ -146,6 +148,7 @@ public class PasteController extends HttpController {
                     pTag.paste = paste.getKey();
                     pTag.tag = tag;
                     pTag.save();
+                    TagListing.updateCount(pTag.tag);
                 });
                 tags.stream().filter(t -> !request.tags.contains(t)).forEach(t -> {
                     Repo.get(PasteTag.class).where("paste", paste.getKey()).where("tag", t).delete();
@@ -179,8 +182,7 @@ public class PasteController extends HttpController {
             }
         }
 
-
-        return new PasteResponse(paste);
+        return PasteResponse.create(paste, exchange, user);
     }
 
     @Delete("/{id}")
@@ -204,6 +206,24 @@ public class PasteController extends HttpController {
         }
 
         return response;
+    }
+
+    @Post("/{id}/star")
+    @With({"auth-login-required-read", "awaiting-access-check", "blocked-check", "auth"})
+    public ActionResponse starPaste(@Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        authKey.checkPermission("stars:create");
+        Paste paste = Paste.getAccessiblePasteOrFail(id, user);
+        user.star(paste);
+        return new ActionResponse(true);
+    }
+
+    @Delete("/{id}/star")
+    @With({"auth-login-required-read", "awaiting-access-check", "blocked-check", "auth"})
+    public ActionResponse unstarPaste(@Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
+        authKey.checkPermission("stars:delete");
+        Paste paste = Paste.getAccessiblePasteOrFail(id, user);
+        user.unstar(paste);
+        return new ActionResponse(true);
     }
 
     @Post("/{id}/friend")

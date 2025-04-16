@@ -29,6 +29,18 @@ const currentUserStore = useCurrentUserStore()
   />
   <Button
     as="router-link"
+    :to="{ name: 'stars' }"
+    v-if="currentUserStore.user?.logged_in"
+    text
+    icon="ti ti-star text-lg"
+    label="Stars"
+    severity="contrast"
+    size="small"
+    fluid
+    class="justify-start"
+  />
+  <Button
+    as="router-link"
     :to="{ name: 'api-keys' }"
     text
     icon="ti ti-key text-lg"

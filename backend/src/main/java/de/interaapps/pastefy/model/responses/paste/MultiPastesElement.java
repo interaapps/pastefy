@@ -9,5 +9,4 @@ public class MultiPastesElement {
         this.name = name;
         this.contents = contents;
     }
-
 }

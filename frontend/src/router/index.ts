@@ -33,6 +33,11 @@ const router = createRouter({
           component: () => import('@/views/ExploreView.vue'),
         },
         {
+          path: '/stars',
+          name: 'stars',
+          component: () => import('@/views/StarsView.vue'),
+        },
+        {
           path: '/apikeys',
           name: 'api-keys',
           component: () => import('@/views/developers/ApiKeysPage.vue'),
@@ -65,6 +70,18 @@ const router = createRouter({
           name: 'folder',
           component: () => import('@/views/FolderView.vue'),
         },
+
+        {
+          path: '/@:user',
+          name: 'user',
+          component: () => import('@/views/PublicUserView.vue'),
+        },
+        {
+          path: '/tags/:tag',
+          name: 'tag',
+          component: () => import('@/views/TagView.vue'),
+        },
+
         {
           path: '/:paste',
           name: 'paste',

@@ -78,7 +78,7 @@ const pasteContents = computed(() => {
       />
     </div>
 
-    <div class="absolute right-0 bottom-0 m-1 flex gap-1">
+    <div class="absolute right-0 bottom-0 m-1 flex items-center gap-2">
       <span
         v-if="paste.tags?.includes('codebox')"
         class="flex items-center gap-1 rounded-md border border-black/10 bg-black/5 px-1.5 backdrop-blur-2xl"
@@ -92,6 +92,17 @@ const pasteContents = computed(() => {
       >
         Multi-Paste
       </span>
+
+      <img
+        v-if="paste.user"
+        :src="paste.user.avatar"
+        alt="profile picture"
+        class="h-[1.4rem] w-[1.4rem] rounded-full border border-neutral-200 object-cover dark:border-neutral-700"
+        v-tooltip.bottom="{
+          value: `${paste.user.display_name} - @${paste.user.name}`,
+          showDelay: 500,
+        }"
+      />
     </div>
   </router-link>
 </template>

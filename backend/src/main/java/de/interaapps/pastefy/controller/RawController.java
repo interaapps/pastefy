@@ -4,6 +4,9 @@ import de.interaapps.pastefy.exceptions.PastePrivateException;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.database.algorithm.PublicPasteEngagement;
+import de.interaapps.pastefy.model.responses.paste.MultiPastesElement;
+import org.javawebstack.abstractdata.AbstractElement;
+import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.http.router.Exchange;
 import org.javawebstack.http.router.router.annotation.With;
 import org.javawebstack.http.router.router.annotation.params.Attrib;
@@ -33,6 +36,18 @@ public class RawController extends HttpController {
 
         if (paste.isPublic()) {
             PublicPasteEngagement.addInterestFromPaste(paste, 1);
+        }
+
+        if (exchange.query("part") != null && paste.getType() == Paste.Type.MULTI_PASTE) {
+            AbstractObject part = paste.getMultiPasteParts()
+                    .stream()
+                    .map(AbstractElement::object)
+                    .filter(p -> exchange.query("part").equals(p.string("name")))
+                    .findFirst()
+                    .get();
+            if (part.has("contents")) {
+                return part.get("contents").string();
+            }
         }
 
         return paste.getContent();

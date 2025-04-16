@@ -1,12 +1,19 @@
 package de.interaapps.pastefy.model.database;
 
+import de.interaapps.pastefy.exceptions.NotFoundException;
+import de.interaapps.pastefy.exceptions.PastePrivateException;
+import de.interaapps.pastefy.model.responses.paste.MultiPastesElement;
+import org.javawebstack.abstractdata.AbstractArray;
+import org.javawebstack.abstractdata.AbstractElement;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.*;
 import org.javawebstack.webutils.util.RandomUtil;
 
 import java.sql.Timestamp;
+import java.util.AbstractList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Dates
@@ -91,6 +98,9 @@ public class Paste extends Model {
     public String getUserId() {
         return userId;
     }
+    public User getUser() {
+        return User.get(userId);
+    }
 
     public void setUserId(String userId) {
         this.userId = userId;
@@ -172,6 +182,31 @@ public class Paste extends Model {
 
     public void setVisibility(Visibility visibility) {
         this.visibility = visibility;
+    }
+
+    public int getStarCounts() {
+        return Repo.get(PasteStar.class)
+                .where("paste", key)
+                .count();
+    }
+
+    public AbstractArray getMultiPasteParts() {
+        return AbstractElement.fromJson(content).array();
+    }
+
+    public static Paste get(String pasteKey) {
+        return Repo.get(Paste.class).where("key", pasteKey).first();
+    }
+
+    public static Paste getAccessiblePasteOrFail(String pasteKey, User user) {
+        Paste paste = Repo.get(Paste.class).where("key", pasteKey).first();
+        if (paste == null) throw new NotFoundException();
+
+        if (paste.isPrivate() && (user == null || !Objects.equals(user.id, paste.getUserId()))) {
+            throw new PastePrivateException();
+        }
+
+        return paste;
     }
 
     @Override

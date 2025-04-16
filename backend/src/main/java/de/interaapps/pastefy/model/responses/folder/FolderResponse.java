@@ -25,7 +25,7 @@ public class FolderResponse {
             if (fetchChildren) {
                 children = folder.getFolders().stream().map(child -> new FolderResponse(child, fetchSubChildren, fetchSubChildren, fetchPastes, showPrivate)).collect(Collectors.toList());
                 if (fetchPastes)
-                    pastes = folder.getPastes(showPrivate).stream().map(PasteResponse::new).collect(Collectors.toList());
+                    pastes = folder.getPastes(showPrivate).stream().map(p -> new PasteResponse(p, null, false, false)).collect(Collectors.toList());
             }
         }
     }
