@@ -63,15 +63,19 @@ const paste = ref<Paste | undefined>(undefined)
 
 const tagsStore = useTagsStore()
 
-const { isLoading: starLoading, execute: star } = useAsyncState(async () => {
-  if (paste.value?.starred) {
-    await client.delete(`/api/v2/paste/${props.pasteId}/star`)
-    paste.value.starred = false
-  } else {
-    await client.post(`/api/v2/paste/${props.pasteId}/star`)
-    paste.value!.starred = true
-  }
-}, undefined)
+const { isLoading: starLoading, execute: star } = useAsyncState(
+  async () => {
+    if (paste.value?.starred) {
+      await client.delete(`/api/v2/paste/${props.pasteId}/star`)
+      paste.value.starred = false
+    } else {
+      await client.post(`/api/v2/paste/${props.pasteId}/star`)
+      paste.value!.starred = true
+    }
+  },
+  undefined,
+  { immediate: false },
+)
 
 const { isLoading, error } = useAsyncState(async () => {
   const pasteRes = (
