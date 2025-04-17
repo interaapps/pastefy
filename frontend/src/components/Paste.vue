@@ -23,7 +23,6 @@ import LoadingContainer from '@/components/LoadingContainer.vue'
 import { useCurrentUserStore } from '@/stores/current-user.ts'
 import PastePreview from '@/components/PastePreview.vue'
 import { useConfig } from '@/composables/config.ts'
-import type { Tag } from '@/types/tags.ts'
 import { useTagsStore } from '@/stores/tags-store.ts'
 import type { PopoverMethods } from 'primevue'
 
@@ -98,9 +97,9 @@ const { isLoading, error } = useAsyncState(async () => {
     password.value = hashPw
     decrypt()
   }
-
-  pasteRes.tags?.forEach(tagsStore.fetchIfNeeded)
 }, undefined)
+
+const fetchTags = () => paste.value?.tags?.forEach(tagsStore.fetchIfNeeded)
 
 const setValues = () => {
   if (!paste.value) return
@@ -354,13 +353,18 @@ const tagsPopover = useTemplateRef<PopoverMethods>('tagsPopover')
           />
           <Button
             v-if="paste?.tags?.length"
-            @click="(e) => tagsPopover?.toggle(e)"
+            @click="
+              (e) => {
+                fetchTags()
+                tagsPopover?.toggle(e)
+              }
+            "
             severity="contrast"
             text
             rounded
             icon="ti ti-label text-xl rotate-[-45deg]"
-            v-tooltip="{ value: 'Labels', showDelay: 500 }"
-            aria-label="Labels"
+            v-tooltip="{ value: 'Tags', showDelay: 500 }"
+            aria-label="Tags"
           />
           <Button
             severity="contrast"

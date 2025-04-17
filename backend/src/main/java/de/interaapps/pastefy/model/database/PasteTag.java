@@ -15,7 +15,15 @@ public class PasteTag extends Model {
     @Filterable
     public String paste;
 
-    @Column
+    @Column(size = 30)
     @Filterable
     public String tag;
+
+    @Override
+    public void save() {
+        if (tag.length() > 30)
+            tag = tag.substring(0, 30);
+
+        super.save();
+    }
 }

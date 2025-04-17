@@ -62,6 +62,11 @@ export default {
             color: '{neutral.400}',
           },
         },
+        dark: {
+          border: {
+            color: '{neutral.600}',
+          },
+        },
       },
     },
     select: {
@@ -73,6 +78,11 @@ export default {
             color: '{neutral.400}',
           },
         },
+        dark: {
+          border: {
+            color: '{neutral.600}',
+          },
+        },
       },
     },
     treeselect: {
@@ -82,6 +92,11 @@ export default {
           background: 'transparent',
           border: {
             color: '{neutral.400}',
+          },
+          dark: {
+            border: {
+              color: '{neutral.600}',
+            },
           },
         },
       },

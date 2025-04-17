@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, useTemplateRef, watch } from 'vue'
+import { computed, ref, useTemplateRef, watch } from 'vue'
 import Button from 'primevue/button'
 import PasteCard from '@/components/lists/PasteCard.vue'
 import { useAsyncState, useDebounceFn } from '@vueuse/core'
@@ -10,12 +10,39 @@ import LoadingContainer from '@/components/LoadingContainer.vue'
 import { useAppStore } from '@/stores/app.ts'
 import router from '@/router'
 import { useCurrentUserStore } from '@/stores/current-user.ts'
+import TagCard from '@/components/TagCard.vue'
+import type { Tag } from '@/types/tags.ts'
+
+const TAG_REGEX = /(@[a-zA-z0-9\n-]*(\s)?)/
 
 const currentUserStore = useCurrentUserStore()
 
-const search = ref('')
+const searchInputValue = ref('')
+const search = computed(() => searchInputValue.value.replace(TAG_REGEX, ''))
 
 const currentIndex = ref(1)
+const currentTagIndex = ref(0)
+
+const currentFilterTag = computed(() =>
+  searchInputValue.value.match(TAG_REGEX)?.[0]?.replace('@', '').trim(),
+)
+
+const { state: tags, execute: loadTags } = useAsyncState(async () => {
+  if (currentFilterTag.value) return
+
+  const tags = (
+    await client.get('/api/v2/public/tags', {
+      params: {
+        search: search.value,
+        page_limit: 4,
+      },
+    })
+  ).data as Tag[]
+
+  currentTagIndex.value = 0
+
+  return tags
+}, undefined)
 
 const {
   isLoading,
@@ -24,8 +51,9 @@ const {
   execute: loadMyPastes,
 } = useAsyncState(
   async () => {
-    const pastes: (Paste | string)[] = []
+    const pastes: (Paste | string)[] = ['TAGS']
 
+    await loadTags()
     if (appStore.searchShownEndpoints.myPastes && currentUserStore.user) {
       const myPastes = (
         await client.get('/api/v2/user/pastes', {
@@ -33,6 +61,7 @@ const {
             page_limit: 5,
             shorten_content: 'true',
             search: search.value,
+            filter_tags: currentFilterTag.value,
           },
         })
       ).data
@@ -48,6 +77,7 @@ const {
             page_limit: 5,
             shorten_content: 'true',
             search: search.value,
+            filter_tags: currentFilterTag.value,
           },
         })
       ).data
@@ -57,7 +87,7 @@ const {
       }
     }
 
-    currentIndex.value = 1
+    currentIndex.value = currentTagIndex.value !== undefined ? 2 : 1
 
     return pastes
   },
@@ -87,24 +117,49 @@ watch(currentIndex, () => {
   })
 })
 
-const down = () => {
+const down = (e: KeyboardEvent) => {
   currentIndex.value++
 
-  while (pastes.value && typeof pastes.value[currentIndex.value] === 'string') {
+  while (
+    pastes.value &&
+    typeof pastes.value[currentIndex.value] === 'string' &&
+    pastes.value[currentIndex.value] !== 'TAGS'
+  ) {
     currentIndex.value++
   }
 
   if (pastes.value && currentIndex.value >= pastes.value.length) {
     currentIndex.value = 0
   }
+  e.preventDefault()
 }
-const up = () => {
+const up = (e: KeyboardEvent) => {
   currentIndex.value--
-  while (pastes.value && typeof pastes.value[currentIndex.value] === 'string') {
+  while (
+    pastes.value &&
+    typeof pastes.value[currentIndex.value] === 'string' &&
+    pastes.value[currentIndex.value] !== 'TAGS'
+  ) {
     currentIndex.value--
   }
   if (pastes.value && currentIndex.value < 0) {
     currentIndex.value = pastes.value.length - 1
+  }
+  e.preventDefault()
+}
+
+const left = () => {
+  if (currentIndex.value !== 0) return
+  currentTagIndex.value--
+  if (tags.value && currentTagIndex.value < 0) {
+    currentTagIndex.value = tags.value.length - 1
+  }
+}
+const right = () => {
+  if (currentIndex.value !== 0) return
+  currentTagIndex.value++
+  if (tags.value && currentTagIndex.value >= tags.value.length) {
+    currentTagIndex.value = 0
   }
 }
 
@@ -118,6 +173,17 @@ watch(
     }
   },
 )
+
+const enter = () => {
+  if (currentIndex.value === 0 && currentTagIndex.value !== undefined) {
+    if (tags.value && tags.value[currentTagIndex.value]) {
+      searchInputValue.value = `@${tags.value[currentTagIndex.value].tag} `
+      loadMyPastes()
+    }
+    return
+  }
+  entriesRef.value?.[currentIndex.value]?.click()
+}
 </script>
 <template>
   <div
@@ -132,7 +198,7 @@ watch(
       <div class="flex items-center border-b border-neutral-200 dark:border-neutral-700">
         <input
           autofocus
-          v-model="search"
+          v-model="searchInputValue"
           class="block w-full p-3 focus:outline-none"
           placeholder="search"
           :ref="(e) => focusInput(e as HTMLInputElement)"
@@ -140,12 +206,9 @@ watch(
           @keydown.esc="appStore.searchShown = false"
           @keydown.up="up"
           @keydown.down="down"
-          @keydown.enter="
-            () => {
-              entriesRef?.[currentIndex]?.click()
-              console.log('CLCIK', entriesRef?.[currentIndex])
-            }
-          "
+          @keydown.left="left"
+          @keydown.right="right"
+          @keydown.enter="enter"
         />
         <div class="flex gap-1 px-2">
           <Button
@@ -181,9 +244,22 @@ watch(
       <div class="flex flex-col gap-1 overflow-auto p-3 pt-0">
         <ErrorContainer v-if="error" :error="error as any" />
         <LoadingContainer v-else-if="isLoading" class="h-full" />
-
         <template v-for="(paste, index) of pastes" :key="index">
-          <label class="mt-3 text-sm opacity-60" v-if="typeof paste === 'string'">
+          <div class="mt-3 grid grid-cols-4 gap-3" v-if="paste === 'TAGS'" v-show="tags?.length">
+            <template v-if="tags?.length">
+              <TagCard
+                v-for="(tag, i) of tags"
+                :tag="tag"
+                :key="tag.tag"
+                small
+                :selected="index === currentIndex && currentTagIndex === i"
+                class="min-w-[7rem]"
+                @click="appStore.searchShown = false"
+              />
+            </template>
+          </div>
+
+          <label class="mt-3 text-sm opacity-60" v-else-if="typeof paste === 'string'">
             {{ paste }}
           </label>
 

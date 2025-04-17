@@ -5,6 +5,7 @@ import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.Column;
 import org.javawebstack.orm.annotation.Filterable;
+import org.javawebstack.orm.annotation.Searchable;
 import org.javawebstack.orm.annotation.Table;
 
 
@@ -12,6 +13,7 @@ import org.javawebstack.orm.annotation.Table;
 public class TagListing extends Model {
     @Column(id = true, size = 30)
     @Filterable
+    @Searchable
     public String tag;
 
     @Column

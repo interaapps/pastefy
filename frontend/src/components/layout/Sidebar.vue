@@ -20,7 +20,7 @@ const appStore = useAppStore()
         <Button
           as="router-link"
           :to="{ name: 'home-page' }"
-          class="border-neutral-400 bg-gradient-to-b from-[transparent] to-neutral-100 dark:to-neutral-800"
+          class="border-neutral-400 bg-gradient-to-b from-[transparent] to-neutral-100 dark:border-neutral-600 dark:to-neutral-900"
           size="small"
           icon="ti ti-home text-lg"
           label="home"
@@ -32,7 +32,7 @@ const appStore = useAppStore()
           v-if="appInfo.appInfo?.public_pastes_enabled"
           as="router-link"
           :to="{ name: 'explore' }"
-          class="border-neutral-400 bg-gradient-to-b from-[transparent] to-neutral-100 dark:to-neutral-800"
+          class="border-neutral-400 bg-gradient-to-b from-[transparent] to-neutral-100 dark:border-neutral-600 dark:to-neutral-900"
           size="small"
           icon="ti ti-world text-lg"
           label="explore"
@@ -42,7 +42,7 @@ const appStore = useAppStore()
         />
         <Button
           @click="appStore.searchShown = true"
-          class="border-neutral-400 bg-gradient-to-b from-[transparent] to-neutral-100 dark:to-neutral-800"
+          class="border-neutral-400 bg-gradient-to-b from-[transparent] to-neutral-100 dark:border-neutral-600 dark:to-neutral-900"
           size="small"
           icon="ti ti-search text-lg"
           label="search"

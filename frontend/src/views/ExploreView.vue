@@ -8,6 +8,7 @@ import type { Tag } from '@/types/tags.ts'
 import ErrorContainer from '@/components/ErrorContainer.vue'
 import LoadingContainer from '@/components/LoadingContainer.vue'
 import TagCard from '@/components/TagCard.vue'
+import Pagination from '@/components/Pagination.vue'
 
 useTitle(`Explore | Pastefy`)
 
@@ -49,7 +50,7 @@ const {
       </div>
     </div>
 
-    <div class="mb-14">
+    <div class="mb-14 flex flex-col">
       <ErrorContainer v-if="tagsError" :error="tagsError as any" />
       <LoadingContainer v-else-if="tagsLoading" />
       <div v-else-if="tags" class="flex flex-col gap-3 md:flex-row">

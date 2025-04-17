@@ -205,13 +205,41 @@ watch(
     </span>
   </div>
   <form @submit.prevent="() => submitPaste()" v-else class="flex w-full flex-col gap-2">
-    <InputText
-      size="small"
-      v-model="currentPaste.title"
-      fluid
-      :placeholder="currentPaste.type === 'MULTI_PASTE' ? 'title' : 'file.js'"
-      variant="outlined"
-    />
+    <div class="relative">
+      <InputText
+        size="small"
+        v-model="currentPaste.title"
+        fluid
+        :placeholder="currentPaste.type === 'MULTI_PASTE' ? 'title' : 'file.js'"
+        variant="outlined"
+        class="pr-[2.3rem]"
+      />
+      <Select
+        :options="[
+          'UNLISTED',
+          ...(currentPaste.password || currentPaste.encrypted ? [] : ['PUBLIC']),
+          ...(currentUserStore.user ? ['PRIVATE'] : []),
+        ]"
+        class="absolute top-[50%] right-[0.3rem] translate-y-[-50%] border-none"
+        v-model="currentPaste.visibility"
+        size="small"
+        :pt="{
+          dropdown: 'hidden',
+        }"
+      >
+        <template #value="{ value: option }">
+          <div class="flex items-center gap-1">
+            <PasteVisibilityIcon :visibility="option" class="text-lg" />
+          </div>
+        </template>
+        <template #option="{ option }">
+          <div class="flex items-center gap-1">
+            <PasteVisibilityIcon :visibility="option" class="text-lg" />
+            <span>{{ option }}</span>
+          </div>
+        </template>
+      </Select>
+    </div>
 
     <div class="mt-4 mb-3" v-if="currentPaste.type === 'MULTI_PASTE'">
       <div class="mb-2 flex w-full items-center justify-between gap-4">
@@ -259,7 +287,11 @@ watch(
       >
         <Codemirror
           class="w-full"
-          :class="isFullscreen ? 'rounded-none' : 'rounded-md border border-neutral-400'"
+          :class="
+            isFullscreen
+              ? 'rounded-none'
+              : 'rounded-md border border-neutral-400 dark:border-neutral-600'
+          "
           v-model:value="currentPaste.contents"
           :options="cmOptions"
           placeholder="Paste here"
