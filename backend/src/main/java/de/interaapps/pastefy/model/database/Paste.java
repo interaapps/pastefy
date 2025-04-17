@@ -2,6 +2,7 @@ package de.interaapps.pastefy.model.database;
 
 import de.interaapps.pastefy.exceptions.NotFoundException;
 import de.interaapps.pastefy.exceptions.PastePrivateException;
+import de.interaapps.pastefy.model.database.algorithm.TagListing;
 import de.interaapps.pastefy.model.responses.paste.MultiPastesElement;
 import org.javawebstack.abstractdata.AbstractArray;
 import org.javawebstack.abstractdata.AbstractElement;
@@ -108,6 +109,14 @@ public class Paste extends Model {
 
     public int getId() {
         return id;
+    }
+
+    public void addTag(String tag) {
+        PasteTag pTag = new PasteTag();
+        pTag.paste = key;
+        pTag.tag = tag;
+        pTag.save();
+        TagListing.updateCount(pTag.tag);
     }
 
     public Visibility getVisibility() {

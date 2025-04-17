@@ -1,5 +1,11 @@
 package de.interaapps.pastefy;
 
+import com.anthropic.client.AnthropicClient;
+import com.anthropic.client.okhttp.AnthropicOkHttpClient;
+import com.anthropic.models.messages.Message;
+import com.anthropic.models.messages.MessageCreateParams;
+import com.anthropic.models.messages.Model;
+import de.interaapps.pastefy.ai.PasteAI;
 import de.interaapps.pastefy.auth.*;
 import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Strategy;
 import de.interaapps.pastefy.auth.strategies.oauth2.providers.*;
@@ -48,6 +54,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class Pastefy {
 
@@ -66,6 +73,8 @@ public class Pastefy {
     private boolean loginRequiredForCreate = false;
     private boolean publicPastesEnabled = false;
 
+    private PasteAI pasteAI;
+
     public Pastefy() {
         config = new Config();
         httpRouter = new HTTPRouter(new UndertowHTTPSocketServer());
@@ -74,6 +83,10 @@ public class Pastefy {
         setupPassport();
         setupModels();
         setupServer();
+
+        if (config.has("ai.antrophic.token")) {
+            pasteAI = new PasteAI(this);
+        }
     }
 
     protected void setupConfig() {
@@ -95,6 +108,9 @@ public class Pastefy {
                 .map("PASTEFY_LIST_PASTES", "pastefy.listpastes")
                 .map("PASTEFY_PUBLIC_STATS", "pastefy.publicstats")
                 .map("PASTEFY_PUBLIC_PASTES", "pastefy.publicpastes")
+
+                .map("AI_ANTHROPIC_TOKEN", "ai.antrophic.token")
+
                 .map("DATABASE_CUSTOMPARAMS_CACHE_PREP_STMTS", "database.customparams.cachePrepStmts")
                 .map("DATABASE_CUSTOMPARAMS_PREP_STMT_CACHE_SIZE", "database.customparams.prepStmtCacheSize")
                 .map("DATABASE_CUSTOMPARAMS_PREP_STMT_CACHE_SQL_LIMIT", "database.customparams.prepStmtCacheSqlLimit")
@@ -320,6 +336,7 @@ public class Pastefy {
 
     public static void main(String[] args) {
         instance = new Pastefy();
+
         instance.start();
     }
 
@@ -350,5 +367,12 @@ public class Pastefy {
 
     public boolean publicPastesEnabled() {
         return publicPastesEnabled;
+    }
+
+    public PasteAI getPasteAI() {
+        return pasteAI;
+    }
+    public boolean aiEnabled() {
+        return pasteAI != null;
     }
 }

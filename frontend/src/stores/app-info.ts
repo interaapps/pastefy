@@ -10,6 +10,7 @@ export type Config = {
   encryption_is_default?: boolean
   public_pastes_enabled?: boolean
   custom_name?: string
+  ai_enabled: boolean
 }
 
 export const useAppInfoStore = defineStore('app-info', () => {

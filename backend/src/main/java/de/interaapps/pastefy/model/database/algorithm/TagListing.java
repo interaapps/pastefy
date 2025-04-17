@@ -1,5 +1,7 @@
 package de.interaapps.pastefy.model.database.algorithm;
 
+import de.interaapps.pastefy.Pastefy;
+import de.interaapps.pastefy.ai.PasteAI;
 import de.interaapps.pastefy.model.database.PasteTag;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
@@ -44,6 +46,16 @@ public class TagListing extends Model {
             tagListing = new TagListing();
             tagListing.tag = tag;
             tagListing.save();
+
+            if (Pastefy.getInstance().aiEnabled()) {
+                try {
+                    final TagListing finalTagListing = tagListing;
+                    new Thread(() -> {
+                        finalTagListing.description = Pastefy.getInstance().getPasteAI().generateTagDescription(finalTagListing);
+                        finalTagListing.save();
+                    }).start();
+                } catch (Exception ignored) {}
+            }
         }
         return tagListing;
     }

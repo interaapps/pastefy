@@ -431,6 +431,11 @@ watch(
           (t) => (currentPaste.tags = t?.split(',').map((tag) => tag.trim()) || [])
         "
       />
+
+      <div class="flex items-center gap-2" v-if="appInfo.appInfo?.ai_enabled">
+        <Checkbox id="ai-checkbox" v-model="currentPaste.ai" binary size="small" />
+        <label for="ai-checkbox" class="text-sm"> Add file extension and tags with AI </label>
+      </div>
     </div>
 
     <div

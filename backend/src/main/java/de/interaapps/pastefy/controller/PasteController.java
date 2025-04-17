@@ -2,6 +2,8 @@ package de.interaapps.pastefy.controller;
 
 import de.interaapps.accounts.apiclient.AccountsClient;
 import de.interaapps.accounts.apiclient.responses.contacts.ContactResponse;
+import de.interaapps.pastefy.Pastefy;
+import de.interaapps.pastefy.ai.PasteAI;
 import de.interaapps.pastefy.exceptions.NotFoundException;
 import de.interaapps.pastefy.exceptions.PastePrivateException;
 import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
@@ -15,6 +17,8 @@ import de.interaapps.pastefy.model.requests.paste.EditPasteRequest;
 import de.interaapps.pastefy.model.responses.ActionResponse;
 import de.interaapps.pastefy.model.responses.paste.CreatePasteResponse;
 import de.interaapps.pastefy.model.responses.paste.PasteResponse;
+import org.javawebstack.abstractdata.AbstractElement;
+import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.http.router.Exchange;
 import org.javawebstack.http.router.router.annotation.PathPrefix;
 import org.javawebstack.http.router.router.annotation.With;
@@ -80,16 +84,37 @@ public class PasteController extends HttpController {
 
         if (request.tags != null) {
             for (String tag : request.tags) {
-                PasteTag pTag = new PasteTag();
-                pTag.paste = paste.getKey();
-                pTag.tag = tag;
-                pTag.save();
-                TagListing.updateCount(pTag.tag);
+                paste.addTag(tag);
             }
         }
 
         response.success = true;
         response.paste = PasteResponse.create(paste, exchange, user);
+
+
+        if (request.ai && !request.encrypted && Pastefy.getInstance().aiEnabled()) {
+            new Thread(() -> {
+                try {
+                    AbstractObject aiResponse = Pastefy.getInstance().getPasteAI().generateTags(paste);
+                    aiResponse.array("tags")
+                            .stream()
+                            .map(AbstractElement::string)
+                            .filter(t -> request.tags == null || !request.tags.contains(t))
+                            .forEach(paste::addTag);
+
+                    if (paste.getType() != Paste.Type.PASTE) return;
+
+                    if ("".equals(paste.getTitle())) {
+                        paste.setTitle(aiResponse.string("file_name"));
+                        paste.save();
+                    }
+                    if (!paste.getTitle().contains(".")) {
+                        paste.setTitle(paste.getTitle() + "." + aiResponse.string("file_extension"));
+                        paste.save();
+                    }
+                } catch (Exception ignored) {}
+            }).start();
+        }
 
         return response;
     }

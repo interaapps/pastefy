@@ -22,6 +22,7 @@ export const useCurrentPasteStore = defineStore('current-paste', () => {
   const tags = ref<string[]>([])
   const forkedFrom = ref<string | undefined>(undefined)
   const folder = ref<string | undefined>(undefined)
+  const ai = ref<boolean>(true)
 
   const appInfo = useAppInfoStore()
   const config = useConfig()
@@ -104,6 +105,7 @@ export const useCurrentPasteStore = defineStore('current-paste', () => {
       forked_from: forkedFrom.value,
       folder: folder.value,
       expire_at: (expiresAtEnabled.value && expiresAt.value) || undefined,
+      ai: ai.value,
     }
 
     if (type.value === 'MULTI_PASTE') {
@@ -169,5 +171,6 @@ export const useCurrentPasteStore = defineStore('current-paste', () => {
     expiresAt,
     expiresAtEnabled,
     tags,
+    ai,
   }
 })

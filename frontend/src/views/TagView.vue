@@ -35,6 +35,7 @@ const {
           :src="tag.image_url"
           class="w-[21rem] max-w-full rounded-md border border-neutral-200 object-cover md:h-[7rem] md:w-[14rem] dark:border-neutral-700"
         />
+        <div v-else />
         <div class="flex flex-col items-center gap-2 pl-2 text-center md:items-start md:text-left">
           <h1 class="flex items-center gap-2 text-xl font-bold">
             <span>{{ tag.display_name || tag.tag }}</span>

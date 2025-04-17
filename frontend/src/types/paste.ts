@@ -18,7 +18,10 @@ export type Paste = {
   folder?: string
   user?: PublicUser
   starred?: boolean
+
+  ai?: boolean
 }
+
 export type MultiPastePart = {
   name: string
   contents: string
