@@ -104,11 +104,11 @@ public class PasteController extends HttpController {
 
                     if (paste.getType() != Paste.Type.PASTE) return;
 
-                    if ("".equals(paste.getTitle())) {
+                    if ("".equals(paste.getTitle()) && !aiResponse.string("file_name", "").isEmpty()) {
                         paste.setTitle(aiResponse.string("file_name"));
                         paste.save();
                     }
-                    if (!paste.getTitle().contains(".")) {
+                    if (!paste.getTitle().contains(".") && !aiResponse.string("file_extension", "").isEmpty()) {
                         paste.setTitle(paste.getTitle() + "." + aiResponse.string("file_extension"));
                         paste.save();
                     }

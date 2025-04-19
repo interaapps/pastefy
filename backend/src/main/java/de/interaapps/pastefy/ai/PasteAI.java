@@ -56,7 +56,7 @@ public class PasteAI {
             contents = contents.substring(0, 500);
 
         MessageCreateParams params = builder()
-                .system("Generate tags (max. 10 and max length 30 chars), a file_name (with extension) and file_extension (without dot) for this code" +
+                .system("Generate tags (max. 10 and max length 30 chars), a file_name (with extension) and file_extension (without dot) for this code. You can ignore file_name and file_extension if you can't find anything obvious you can leave it empty." +
                         "There are some default tags like lang-{programming_language}\n"+
                         "Respond ONLY with a JSON object in this format: \n" +
                         "{\n" +

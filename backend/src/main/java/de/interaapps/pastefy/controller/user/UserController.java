@@ -115,7 +115,10 @@ public class UserController extends HttpController {
 
         Query<Paste> query = Repo.get(Paste.class)
                 .query()
-                .whereExists(PasteStar.class, (q) -> q.where(PasteStar.class, "paste", "=", Paste.class, "key"));
+                .whereExists(PasteStar.class, (q) -> q
+                        .where(PasteStar.class, "paste", "=", Paste.class, "key")
+                        .where("userId", user.id)
+                );
 
         RequestHelper.pagination(query, exchange);
         query.search(exchange.query("search"));
