@@ -256,7 +256,7 @@ public class Pastefy {
         else
             httpRouter.middleware("rate-limiter", e -> null);
 
-       // httpRouter.middleware("image-rate-limiter", new RateLimitMiddleware(5000, 2).createAutoDeadRateLimitsRemover(1000 * 60 * 10));
+        httpRouter.middleware("image-rate-limiter", new RateLimitMiddleware(5000, 3).createAutoDeadRateLimitsRemover(1000 * 60 * 10));
 
         httpRouter.beforeInterceptor(exchange -> {
             exchange.header("Server", "InteraApps-Pastefy");
