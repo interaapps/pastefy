@@ -1,9 +1,9 @@
-package de.interaapps.pastefy.controller;
+package de.interaapps.pastefy.controller.pastes;
 
 import de.interaapps.accounts.apiclient.AccountsClient;
 import de.interaapps.accounts.apiclient.responses.contacts.ContactResponse;
 import de.interaapps.pastefy.Pastefy;
-import de.interaapps.pastefy.ai.PasteAI;
+import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.exceptions.NotFoundException;
 import de.interaapps.pastefy.exceptions.PastePrivateException;
 import de.interaapps.pastefy.exceptions.PermissionsDeniedException;

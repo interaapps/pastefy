@@ -45,7 +45,7 @@ const pasteContents = computed(() => {
         <i class="ti ti-lock" />
         <span class="font-bold"> Encrypted paste </span>
       </div>
-      <span class="font-bold" v-else-if="paste.title.trim()">
+      <span class="overflow-hidden font-bold overflow-ellipsis" v-else-if="paste.title.trim()">
         {{ paste.title }}
       </span>
       <span class="italic opacity-40" v-else> no title </span>

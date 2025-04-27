@@ -2,6 +2,7 @@
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Popover from 'primevue/popover'
+import InputGroup from 'primevue/inputgroup'
 import { useAsyncState, useClipboard, useTitle } from '@vueuse/core'
 import { client } from '@/main.ts'
 
@@ -188,6 +189,17 @@ const newTab = (u: string) => window.open(u)
 const config = useConfig()
 
 const tagsPopover = useTemplateRef<PopoverMethods>('tagsPopover')
+const sharePopover = useTemplateRef<PopoverMethods>('sharePopover')
+
+const pasteUrl = computed(() => `${origin}/${paste.value?.id}`)
+
+const share = () => {
+  navigator.share({
+    title: paste.value?.title,
+    text: 'Here is a paste I want to share with you',
+    url: pasteUrl.value,
+  })
+}
 </script>
 <template>
   <div v-if="appInfo.appInfo?.login_required_for_read && !currentUser.user">
@@ -228,7 +240,7 @@ const tagsPopover = useTemplateRef<PopoverMethods>('tagsPopover')
   <div v-else-if="paste" class="flex h-full w-full justify-center">
     <div class="flex w-full flex-col gap-2" :class="config.sideBarShown ? '' : 'xl:pl-[3.75rem]'">
       <div class="flex items-center gap-3">
-        <h1 class="text-2xl font-bold" id="paste-title" v-if="title">{{ title }}</h1>
+        <h1 class="text-2xl font-bold break-all" id="paste-title" v-if="title">{{ title }}</h1>
         <div
           class="flex items-center gap-1 rounded-md bg-neutral-100 px-1 py-0.5 dark:bg-neutral-800"
           v-if="permission.showVisibility"
@@ -300,26 +312,15 @@ const tagsPopover = useTemplateRef<PopoverMethods>('tagsPopover')
             aria-label="Edit"
           />
           <Button
-            @click="pasteScreenshotOpened = true"
+            @click="(e) => sharePopover!.toggle(e)"
             v-if="!asEmbed"
             severity="contrast"
             text
             rounded
-            icon="ti ti-camera text-xl"
-            v-tooltip="{ value: 'Screenshot (ctrl+shift+S)', showDelay: 500 }"
-            v-shortkey.click="['ctrl', 'shift', 's']"
+            icon="ti ti-share-3 text-xl"
+            v-tooltip="{ value: 'Share', showDelay: 500 }"
             @shortkey="pasteScreenshotOpened = true"
-            aria-label="Create Screenshot"
-          />
-          <Button
-            @click="pasteEmbedOpened = true"
-            v-if="!asEmbed"
-            severity="contrast"
-            text
-            rounded
-            icon="ti ti-code text-xl"
-            v-tooltip="{ value: 'Embed', showDelay: 500 }"
-            aria-label="Embed"
+            aria-label="Share"
           />
           <Button
             as="a"
@@ -463,6 +464,88 @@ const tagsPopover = useTemplateRef<PopoverMethods>('tagsPopover')
   />
   <EmbedPasteModal v-model:visible="pasteEmbedOpened" :paste-id="pasteId" />
 
+  <Popover ref="sharePopover">
+    <div class="flex w-[16rem] max-w-full flex-col gap-2" v-if="paste">
+      <div class="flex gap-2 rounded-lg border border-neutral-200 p-1 dark:border-neutral-700">
+        <div class="flex w-[7rem] flex-col overflow-hidden rounded-md bg-black text-white">
+          <span class="p-1 px-2 text-[8px]">{{ paste.title }}</span>
+          <div class="flex w-full items-end justify-between">
+            <div class="pb-1 pl-2">
+              <img src="/icons/logo-dark.svg" class="w-[2.6rem]" />
+            </div>
+
+            <div class="mono h-[2rem] w-[3.3rem] rounded-tl-md bg-neutral-700 p-1 text-[6px]">
+              {{ paste.content.substring(0, 100) }}}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <span class="overflow-hidden text-sm">{{ paste.title }}</span> <br />
+          <span class="text-[10px] opacity-60">Share code with Pastefy.</span>
+        </div>
+      </div>
+      <InputGroup>
+        <InputText size="small" :value="pasteUrl" class="select-all" readonly />
+        <Button
+          size="small"
+          icon="ti ti-copy"
+          severity="contrast"
+          @click="clipboard.copy(pasteUrl)"
+        />
+      </InputGroup>
+
+      <div class="flex w-full flex-col">
+        <Button
+          @click="share"
+          severity="contrast"
+          text
+          fluid
+          size="small"
+          class="justify-start"
+          icon="ti ti-share-2 text-lg"
+          aria-label="Share"
+          label="share"
+        />
+        <Button
+          @click="
+            () => {
+              pasteScreenshotOpened = true
+              sharePopover!.hide()
+            }
+          "
+          severity="contrast"
+          text
+          fluid
+          size="small"
+          class="justify-start"
+          icon="ti ti-camera text-lg"
+          v-tooltip="{ value: 'Screenshot (ctrl+shift+S)', showDelay: 500 }"
+          v-shortkey.click="['ctrl', 'shift', 's']"
+          @shortkey="pasteScreenshotOpened = true"
+          aria-label="Create Screenshot"
+          label="screenshot"
+        />
+        <Button
+          @click="
+            () => {
+              pasteEmbedOpened = true
+              sharePopover!.hide()
+            }
+          "
+          severity="contrast"
+          size="small"
+          class="justify-start"
+          text
+          fluid
+          icon="ti ti-code text-lg"
+          v-tooltip="{ value: 'Embed', showDelay: 500 }"
+          aria-label="Embed"
+          label="embed"
+        />
+      </div>
+    </div>
+  </Popover>
   <Popover ref="tagsPopover">
     <div v-if="paste?.tags?.length" class="flex flex-wrap gap-2">
       <router-link

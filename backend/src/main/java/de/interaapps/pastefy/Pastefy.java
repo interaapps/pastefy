@@ -1,16 +1,12 @@
 package de.interaapps.pastefy;
 
-import com.anthropic.client.AnthropicClient;
-import com.anthropic.client.okhttp.AnthropicOkHttpClient;
-import com.anthropic.models.messages.Message;
-import com.anthropic.models.messages.MessageCreateParams;
-import com.anthropic.models.messages.Model;
 import de.interaapps.pastefy.ai.PasteAI;
 import de.interaapps.pastefy.auth.*;
 import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Strategy;
 import de.interaapps.pastefy.auth.strategies.oauth2.providers.*;
+import de.interaapps.pastefy.controller.AppController;
 import de.interaapps.pastefy.controller.HttpController;
-import de.interaapps.pastefy.controller.PasteController;
+import de.interaapps.pastefy.controller.pastes.PasteController;
 import de.interaapps.pastefy.exceptions.AuthenticationException;
 import de.interaapps.pastefy.exceptions.FeatureDisabledException;
 import de.interaapps.pastefy.exceptions.NotFoundException;
@@ -54,7 +50,6 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class Pastefy {
 
@@ -261,6 +256,8 @@ public class Pastefy {
         else
             httpRouter.middleware("rate-limiter", e -> null);
 
+       // httpRouter.middleware("image-rate-limiter", new RateLimitMiddleware(5000, 2).createAutoDeadRateLimitsRemover(1000 * 60 * 10));
+
         httpRouter.beforeInterceptor(exchange -> {
             exchange.header("Server", "InteraApps-Pastefy");
 
@@ -304,7 +301,7 @@ public class Pastefy {
             return "";
         };
 
-        httpRouter.controller(HttpController.class, PasteController.class.getPackage());
+        httpRouter.controller(HttpController.class, AppController.class.getPackage());
 
         passport.createRoutes(httpRouter);
 

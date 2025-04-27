@@ -57,8 +57,8 @@ public class PasteAI {
 
         MessageCreateParams params = builder()
                 .system("Generate tags (max. 10 and max length 30 chars), a file_name (with extension) and file_extension (without dot) for this code. You can ignore file_name and file_extension if you can't find anything obvious you can leave it empty." +
-                        "There are some default tags like lang-{programming_language}\n"+
-                        "Respond ONLY with a JSON object in this format: \n" +
+                        "There are some default tags like lang-{programming_language}. Tags only contain a-z 1-9 and -.\n"+
+                        "Respond ONLY with a JSON object in this format. Never generate anything else than JSON!: \n" +
                         "{\n" +
                         "    \"tags\": [string],\n" +
                         "    \"file_name\": string" +
@@ -73,7 +73,7 @@ public class PasteAI {
 
     public String generateTagDescription(TagListing tagListing) {
         MessageCreateParams params = builder()
-                .system("Generate a description for the tag given by the user. Max 150 chars. Respond ONLY with the description.")
+                .system("Generate a description for the tag given by the user. Max 150 chars. Respond ONLY with the description. Never generate anything else than JSON!")
                 .addUserMessage(tagListing.tag)
                 .build();
 

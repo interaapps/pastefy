@@ -1,10 +1,10 @@
-package de.interaapps.pastefy.controller;
+package de.interaapps.pastefy.controller.pastes;
 
+import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.exceptions.PastePrivateException;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.database.algorithm.PublicPasteEngagement;
-import de.interaapps.pastefy.model.responses.paste.MultiPastesElement;
 import org.javawebstack.abstractdata.AbstractElement;
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.http.router.Exchange;
