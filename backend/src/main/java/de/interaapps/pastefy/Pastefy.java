@@ -103,6 +103,7 @@ public class Pastefy {
                 .map("PASTEFY_LIST_PASTES", "pastefy.listpastes")
                 .map("PASTEFY_PUBLIC_STATS", "pastefy.publicstats")
                 .map("PASTEFY_PUBLIC_PASTES", "pastefy.publicpastes")
+                .map("PASTEFY_META_TAGS", "pastefy.metatags")
 
                 .map("AI_ANTHROPIC_TOKEN", "ai.antrophic.token")
 

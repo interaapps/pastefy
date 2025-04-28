@@ -4,6 +4,7 @@ import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.model.database.Paste;
 import org.apache.commons.text.StringEscapeUtils;
+import org.javawebstack.http.router.Exchange;
 import org.javawebstack.http.router.router.annotation.params.Path;
 import org.javawebstack.http.router.router.annotation.verbs.Get;
 import org.javawebstack.orm.Repo;
@@ -41,8 +42,11 @@ public class PasteMetaController extends HttpController {
     }
 
     @Get("/{paste}")
-    public String pasteTags(@Path("paste") String pasteId) {
+    public String pasteTags(Exchange exchange, @Path("paste") String pasteId) {
+        if (Pastefy.getInstance().getConfig().get("pastefy.metatags", "false").equalsIgnoreCase("true")) return null;
         if (html == null || pasteId.length() != 8) return null;
+
+        if (!isSocialMediaBot(exchange.header("User-Agent"))) return null;
 
         Paste paste = Paste.get(pasteId);
 
@@ -79,5 +83,28 @@ public class PasteMetaController extends HttpController {
             out.append("<meta property=\"").append(name).append("\" name=\"").append(name).append("\" content=\"").append(StringEscapeUtils.escapeHtml4(value)).append("\" />");
         });
         return out.toString();
+    }
+
+    public static boolean isSocialMediaBot(String userAgent) {
+        if (userAgent == null) return false;
+
+        String[] socialMediaBots = {
+                "Twitterbot",  // Twitter
+                "facebookexternalhit",  // Facebook
+                "Instagram",  // Instagram
+                "Googlebot",  // Google
+                "LinkedInBot",  // LinkedIn
+                "Pinterest",  // Pinterest
+                "Slackbot",  // Slack
+                "WhatsApp"  // WhatsApp
+        };
+
+        // Check if userAgent contains any social media bot signature
+        for (String bot : socialMediaBots) {
+            if (userAgent.contains(bot)) {
+                return true;  // Bot found
+            }
+        }
+        return false;  // No bot found
     }
 }
