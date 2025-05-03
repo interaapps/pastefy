@@ -5,6 +5,7 @@ import CreatePaste from '@/views/forms/CreatePaste.vue'
 import { useAppInfoStore } from '@/stores/app-info.ts'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import { useAppStore } from '@/stores/app.ts'
+import ComponentInjection from '@/components/ComponentInjection.vue'
 
 const appInfo = useAppInfoStore()
 const appStore = useAppStore()
@@ -57,9 +58,11 @@ const appStore = useAppStore()
     </div>
 
     <div id="sidenav-center" />
+    <ComponentInjection type="sidebar-center" />
 
     <footer>
       <div id="sidenav-bottom" />
+      <ComponentInjection type="sidebar-bottom" />
 
       <div class="flex w-full items-center justify-between gap-2">
         <div class="flex w-full items-center">
@@ -84,6 +87,8 @@ const appStore = useAppStore()
               severity="contrast"
             />
           </template>
+
+          <ComponentInjection type="sidebar-footer-links" />
         </div>
         <ThemeSwitcher />
       </div>

@@ -26,6 +26,7 @@ import PastePreview from '@/components/PastePreview.vue'
 import { useConfig } from '@/composables/config.ts'
 import { useTagsStore } from '@/stores/tags-store.ts'
 import type { PopoverMethods } from 'primevue'
+import ComponentInjection from '@/components/ComponentInjection.vue'
 
 const props = defineProps<{
   pasteId: string
@@ -250,8 +251,10 @@ const share = () => {
         </div>
       </div>
       <div id="below-title" />
+      <ComponentInjection type="paste-below-title" :value="paste" />
       <div class="relative flex w-full flex-col gap-3 md:flex-row-reverse">
         <div class="top-0 flex h-fit flex-wrap items-center md:sticky md:w-[3rem] md:flex-col">
+          <ComponentInjection type="paste-actions-first" :value="paste" />
           <Button
             @click="copy"
             severity="contrast"
@@ -379,6 +382,7 @@ const share = () => {
             @shortkey="deletePaste"
             aria-label="Delete"
           />
+          <ComponentInjection type="paste-actions-before-profile" :value="paste" />
           <router-link
             v-if="paste?.user?.avatar"
             :to="{ name: 'user', params: { user: paste.user.name } }"
@@ -391,6 +395,7 @@ const share = () => {
               alt="profile picture"
             />
           </router-link>
+          <ComponentInjection type="paste-actions-last" :value="paste" />
         </div>
         <div class="w-full overflow-hidden">
           <div
@@ -451,6 +456,7 @@ const share = () => {
       </div>
 
       <div id="below-code" />
+      <ComponentInjection type="paste-below-code" :value="paste" />
     </div>
   </div>
 
@@ -560,6 +566,7 @@ const share = () => {
         />
         <span>{{ tagsStore.tagsCache[tag]?.display_name || tag }}</span>
       </router-link>
+      <ComponentInjection type="paste-tags-popover-inner-after" :value="paste" />
     </div>
   </Popover>
 </template>

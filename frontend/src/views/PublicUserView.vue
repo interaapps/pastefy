@@ -7,6 +7,7 @@ import type { PublicUser } from '@/types/user.ts'
 import ErrorContainer from '@/components/ErrorContainer.vue'
 import LoadingContainer from '@/components/LoadingContainer.vue'
 import PasteList from '@/components/lists/PasteList.vue'
+import ComponentInjection from '@/components/ComponentInjection.vue'
 
 useTitle(`User | Pastefy`)
 
@@ -34,6 +35,7 @@ const {
     <ErrorContainer v-if="error" :error="error as any" />
     <LoadingContainer v-else-if="isLoading" class="flex items-center justify-center p-3" />
     <div v-else-if="user">
+      <ComponentInjection type="public-user-top" />
       <div
         class="mb-9 flex flex-col items-center gap-3 rounded-md border border-neutral-200 object-cover p-3 md:flex-row dark:border-neutral-700"
       >

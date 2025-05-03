@@ -13,6 +13,7 @@ import LoginModal from '@/components/modals/LoginModal.vue'
 import { useAppInfoStore } from '@/stores/app-info.ts'
 import GlobalSearch from '@/components/GlobalSearch.vue'
 import UserMenu from '@/components/popovers/UserMenu.vue'
+import ComponentInjection from '@/components/ComponentInjection.vue'
 const loginModalVisible = ref(false)
 
 const userMenu = useTemplateRef<PopoverMethods>('userMenu')
@@ -104,8 +105,10 @@ const appInfo = useAppInfoStore()
     </div>
     <div v-if="config.sideBarShown" />
     <div v-if="!isHomeMobile" class="w-full overflow-auto p-4 pt-18 md:p-8 md:pt-20">
+      <ComponentInjection type="main-layout-main-top" />
       <div id="full-screen-content"></div>
       <router-view :key="route.fullPath" />
+      <ComponentInjection type="main-layout-main-bottom" />
     </div>
   </div>
   <Popover ref="userMenu" class="w-[14rem]" :pt="{ content: 'p-0' }">

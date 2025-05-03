@@ -1,5 +1,6 @@
 package de.interaapps.pastefy;
 
+import com.google.gson.Gson;
 import de.interaapps.pastefy.ai.PasteAI;
 import de.interaapps.pastefy.auth.*;
 import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Strategy;
@@ -14,7 +15,12 @@ import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
+import de.interaapps.pastefy.model.plugins.PastefyBackendPlugin;
+import de.interaapps.pastefy.model.plugins.PastefyPlugin;
+import de.interaapps.pastefy.model.plugins.PastefyPluginConfig;
 import de.interaapps.pastefy.model.responses.ExceptionResponse;
+import io.undertow.util.FileUtils;
+import org.javawebstack.abstractdata.AbstractElement;
 import org.javawebstack.http.router.HTTPRouter;
 import org.javawebstack.http.router.handler.RequestHandler;
 import org.javawebstack.http.router.transformer.response.SerializedResponseTransformer;
@@ -39,12 +45,9 @@ import org.javawebstack.webutils.middleware.RateLimitMiddleware;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -70,9 +73,15 @@ public class Pastefy {
 
     private PasteAI pasteAI;
 
+    private String homeHTML;
+
+    private final Map<String, PastefyPlugin> plugins = new HashMap<>();
+
     public Pastefy() {
         config = new Config();
         httpRouter = new HTTPRouter(new UndertowHTTPSocketServer());
+
+        initPlugins();
 
         setupConfig();
         setupPassport();
@@ -104,6 +113,8 @@ public class Pastefy {
                 .map("PASTEFY_PUBLIC_STATS", "pastefy.publicstats")
                 .map("PASTEFY_PUBLIC_PASTES", "pastefy.publicpastes")
                 .map("PASTEFY_META_TAGS", "pastefy.metatags")
+                .map("PASTEFY_CUSTOM_BODY", "pastefy.custombody")
+                .map("PASTEFY_CUSTOM_HEADER", "pastefy.customheader")
 
                 .map("AI_ANTHROPIC_TOKEN", "ai.antrophic.token")
 
@@ -115,12 +126,35 @@ public class Pastefy {
                 .map("DATABASE_CUSTOMPARAMS_CACHE_SERVER_CONFIGURATION", "database.customparams.cacheServerConfiguration")
                 .map("DATABASE_CUSTOMPARAMS_MAINTAIN_TIME_STATS", "database.customparams.maintainTimeStats");
 
+        getBackendPlugins().forEach(p -> p.customConfigMapping(mapping));
+
         config.add(new EnvFile(new File(".env")).withVariables(), new MappingTryout(mapping, Config::basicEnvMapping));
 
         loginRequired = config.get("pastefy.loginrequired", "false").toLowerCase(Locale.ROOT).equals("true");
         loginRequiredForCreate = loginRequired || config.get("pastefy.loginrequired.create", "false").toLowerCase(Locale.ROOT).equals("true");
         loginRequiredForRead = loginRequired || config.get("pastefy.loginrequired.read", "false").toLowerCase(Locale.ROOT).equals("true");
         publicPastesEnabled = config.get("pastefy.publicpastes", "true").toLowerCase(Locale.ROOT).equals("true");
+    }
+
+    protected void initPlugins() {
+        // Go through plugins folder and register everything
+        File pluginsFolder = new File("plugins");
+        if (!pluginsFolder.exists() || !pluginsFolder.isDirectory())
+            return;
+
+        for (File file : pluginsFolder.listFiles()) {
+            File pluginFolder = new File(file.getPath());
+            if (!pluginsFolder.exists() || !pluginsFolder.isDirectory())
+                continue;
+
+            try {
+                PastefyPlugin pastefyPlugin = new PastefyPlugin(pluginFolder.getPath());
+                System.out.println("Registered plugin " + pastefyPlugin.config.name);
+                plugins.put(pastefyPlugin.config.name, pastefyPlugin);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     protected void setupModels() {
@@ -175,6 +209,8 @@ public class Pastefy {
         } catch (ORMConfigurationException e) {
             e.printStackTrace();
         }
+
+        getBackendPlugins().forEach(PastefyBackendPlugin::setupModels);
     }
 
     protected void setupPassport() {
@@ -193,6 +229,7 @@ public class Pastefy {
         if (!getConfig().get("oauth2.twitch.id", "NONE").equalsIgnoreCase("NONE"))
             oAuth2Strategy.use("twitch", new TwitchOAuth2Provider(getConfig().get("oauth2.twitch.id"), getConfig().get("oauth2.twitch.secret")));
 
+        getBackendPlugins().forEach(PastefyBackendPlugin::setupPassport);
         passport.use("oauth2", oAuth2Strategy);
     }
 
@@ -286,25 +323,62 @@ public class Pastefy {
             return false;
         });
 
+        List<PastefyPlugin> list = plugins.values().stream().filter(p -> p.config.frontend != null).toList();
+        list.forEach(p -> {
+            if (p.config.frontend.folder != null && p.config.frontend.entrypoint != null) {
+                System.out.println("Registered plugin " + p.config.name + " frontend directory");
+                System.out.println("- Public: " + p.getPublicFolder());
+                System.out.println("- Path: " + p.path + "/" + p.config.frontend.folder);
+                httpRouter.staticDirectory(p.getPublicFolder(), p.path + "/" + p.config.frontend.folder);
+            }
+        });
+
+
+        try {
+            homeHTML = FileUtils.readFile(getClass().getClassLoader().getResourceAsStream("static/index.html"));
+
+            StringBuilder registerPlugins = new StringBuilder();
+            list.forEach(p -> {
+                if (p.config.frontend != null && p.config.frontend.folder != null && p.config.frontend.entrypoint != null) {
+                    registerPlugins
+                            .append("{")
+                            .append("\"config\": ")
+                            .append(new Gson().toJson(p.config))
+                            .append(", \"entrypoint\": \"")
+                            .append(p.getPublicFolder())
+                            .append("/")
+                            .append(p.config.frontend.entrypoint)
+                            .append('"')
+                            .append("},\n");
+                }
+            });
+
+            String customHeaders = config.get("pastefy.customheader", "");
+            String customBody = config.get("pastefy.custombody", "");
+
+            homeHTML = homeHTML
+                    .replace("/*PASTEFY_PLUGINS*/", registerPlugins.toString())
+                    .replaceAll("<!--CUSTOM_HEADERS-->", customHeaders)
+                    .replaceAll("<!--CUSTOM_BODY-->", customBody);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
 
         RequestHandler requestHandler = exchange -> {
-            try {
-                InputStream file = getClass().getClassLoader().getResourceAsStream("static/index.html");
-                if (file == null) {
-                    throw new NotFoundException();
-                }
-
-                exchange.header("Content-Type", "text/html; charset=UTF-8");
-                exchange.write(file);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (homeHTML == null) {
+                throw new NotFoundException();
             }
+
+            exchange.header("Content-Type", "text/html; charset=UTF-8");
+            exchange.write(homeHTML);
             return "";
         };
 
         httpRouter.controller(HttpController.class, AppController.class.getPackage());
 
         passport.createRoutes(httpRouter);
+
+        getBackendPlugins().forEach(PastefyBackendPlugin::beforeRoutes);
 
         httpRouter.get("/", requestHandler);
         httpRouter.staticResourceDirectory("/", "static");
@@ -326,6 +400,7 @@ public class Pastefy {
                         .delete();
             }
         }, 0, 1000 * 60);
+        getBackendPlugins().forEach(PastefyBackendPlugin::setupServer);
     }
 
     public void start() {
@@ -372,5 +447,16 @@ public class Pastefy {
     }
     public boolean aiEnabled() {
         return pasteAI != null;
+    }
+
+    public String getHomeHTML() {
+        return homeHTML;
+    }
+
+    public List<PastefyBackendPlugin> getBackendPlugins() {
+        return plugins.values().stream()
+                .filter(p -> p.backendPlugin != null)
+                .map(p -> p.backendPlugin)
+                .toList();
     }
 }

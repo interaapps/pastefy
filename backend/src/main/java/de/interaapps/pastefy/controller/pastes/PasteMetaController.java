@@ -7,10 +7,8 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.javawebstack.http.router.Exchange;
 import org.javawebstack.http.router.router.annotation.params.Path;
 import org.javawebstack.http.router.router.annotation.verbs.Get;
-import org.javawebstack.orm.Repo;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +16,7 @@ import java.util.Map;
 public class PasteMetaController extends HttpController {
     private String html = null;
 
-    {
+    public PasteMetaController() {
         try {
             InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("static/index.html");
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

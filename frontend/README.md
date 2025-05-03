@@ -19,3 +19,15 @@
   - [x] CSV
 - [ ] Comments on pastes (Also on lines)
 - [ ] Paste List Entry copy button (fetches full paste first)
+
+
+## Frontend Plugins
+```js
+const myPlugin = createPastefyPlugin('my-plugin')
+// ...
+```
+
+.env
+```properties
+PASTEFY_PLUGINS_FRONTEND=https://.../built_file.js
+```

@@ -1,11 +1,22 @@
 import './assets/main.css'
 
-import { createApp, defineCustomElement } from 'vue'
+import {
+  createApp,
+  defineCustomElement,
+  type App as VueApp,
+  h,
+  ref,
+  shallowRef,
+  defineComponent,
+} from 'vue'
+import * as vueFunctions from 'vue'
 import { createPinia } from 'pinia'
 import theme from '@/theme.ts'
 
 import App from './App.vue'
 import router from './router'
+
+import mitt, { type Emitter } from 'mitt'
 
 import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
@@ -25,6 +36,26 @@ import { useCurrentUserStore } from '@/stores/current-user.ts'
 import { useConfig } from '@/composables/config.ts'
 import Highlighted from '@/components/Highlighted.vue'
 import { registerEventHandlers } from '@/utils/theme-logic.ts'
+import type { Router } from 'vue-router'
+import { createPlugin, plugins } from '@/plugins.ts'
+import { useComponentInjectionStore } from '@/stores/component-injections.ts'
+
+declare global {
+  interface Window {
+    pastefy: {
+      app: VueApp
+      router: Router
+      appInfoStore: typeof appInfoStore
+      config: typeof config
+      eventBus: Emitter<Events>
+      createPlugin: typeof createPlugin
+      client: typeof client
+      componentInjections: typeof componentInjections
+      vueFunctions: typeof vueFunctions
+    }
+    registerPastefyPlugin: { config: unknown; entrypoint: string }[]
+  }
+}
 
 export const client = axios.create({
   baseURL: (import.meta.env.VITE_APP_BASE_URL as string) || undefined,
@@ -84,6 +115,36 @@ if (config.value?.apiKey) {
 currentUserStore.fetchUser()
 
 const appInfoStore = useAppInfoStore()
+const componentInjections = useComponentInjectionStore()
 appInfoStore.fetchAppInfo()
 
 registerEventHandlers()
+
+export type Events = {
+  pasteCreate: string
+}
+
+export const eventBus = mitt<Events>()
+
+window.pastefy = {
+  app,
+  router,
+  appInfoStore,
+  config,
+  eventBus,
+  createPlugin,
+  client,
+  componentInjections,
+  vueFunctions,
+}
+;(async () => {
+  if ('registerPastefyPlugin' in window && Array.isArray(window.registerPastefyPlugin)) {
+    for (const { entrypoint } of window.registerPastefyPlugin) {
+      await import(entrypoint)
+    }
+  }
+
+  plugins.forEach((plugin) => {
+    plugin.init?.()
+  })
+})()
