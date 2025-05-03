@@ -1,5 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import { startViewTransition } from 'vue-view-transitions'
+import { eventBus } from '@/main.ts'
+import { useConfig } from '@/composables/config.ts'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -95,6 +99,36 @@ const router = createRouter({
       ],
     },
   ],
+})
+
+const config = useConfig()
+
+router.beforeResolve(async (to, from) => {
+  if (config.value.animations) {
+    const viewTransition = startViewTransition(async () => {
+      console.log(to.name)
+      if (
+        (to.name === 'paste' ||
+          to.name === 'folder' ||
+          to.name === 'home' ||
+          to.name === 'home-page') &&
+        from.name !== undefined
+      ) {
+        let ev = undefined
+        await new Promise<void>((res) => {
+          let resolved = false
+          ev = () => {
+            if (!resolved) res()
+            resolved = true
+          }
+          eventBus.on('pageLoaded', ev)
+          setTimeout(ev, 300)
+        })
+        if (ev) eventBus.off('pageLoaded', ev)
+      }
+    })
+    await viewTransition.captured
+  }
 })
 
 export default router

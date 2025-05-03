@@ -7,9 +7,10 @@ import { useConfig } from '@/composables/config.ts'
 import router from '@/router'
 
 export const useCurrentPasteStore = defineStore('current-paste', () => {
+  const config = useConfig()
   const title = ref('')
   const contents = ref('')
-  const visibility = ref<PasteVisibility>('UNLISTED')
+  const visibility = ref<PasteVisibility>(config.value.defaultVisibility || 'UNLISTED')
 
   const currentId = ref<string | undefined>(undefined)
   const expiresAt = ref<string | undefined>(undefined)
@@ -25,7 +26,6 @@ export const useCurrentPasteStore = defineStore('current-paste', () => {
   const ai = ref<boolean>(true)
 
   const appInfo = useAppInfoStore()
-  const config = useConfig()
 
   function forkFrom(paste: Paste) {
     title.value = paste.title
@@ -140,7 +140,7 @@ export const useCurrentPasteStore = defineStore('current-paste', () => {
     currentMultiPasteIndex.value = undefined
     encrypted.value = appInfo.appInfo?.encryption_is_default || false
     password.value = ''
-    visibility.value = 'UNLISTED'
+    visibility.value = config.value.defaultVisibility || 'UNLISTED'
     currentId.value = undefined
     tags.value = []
     forkedFrom.value = undefined

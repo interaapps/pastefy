@@ -36,24 +36,32 @@ const iframeEmbedCode = computed(
 )
 </script>
 <template>
-  <Dialog v-model:visible="visible" modal header="Embed" class="w-[60rem] max-w-full">
-    <h2 class="mb-2 text-lg font-bold">Embed via script</h2>
-    <div
-      class="mb-5 rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
-    >
-      <Highlighted file-name=".html" :contents="embedCode" />
-    </div>
+  <Dialog v-model:visible="visible" modal header="Embed" class="w-[80rem] max-w-full">
+    <div class="gap-4 md:grid md:grid-cols-2">
+      <div class="md:h-full md:overflow-auto">
+        <h2 class="mb-2 text-lg font-bold">Embed via script</h2>
+        <div
+          class="mb-5 rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
+        >
+          <Highlighted show-copy-button file-name=".html" :contents="embedCode" />
+        </div>
 
-    <h2 class="mb-2 text-lg font-bold">Embed via iframe tag</h2>
-    <div
-      class="mb-6 rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
-    >
-      <Highlighted file-name=".html" :contents="iframeEmbedCode" />
-    </div>
+        <h2 class="mb-2 text-lg font-bold">Embed via iframe tag</h2>
+        <div
+          class="mb-6 rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
+        >
+          <Highlighted show-copy-button file-name=".html" :contents="iframeEmbedCode" />
+        </div>
+      </div>
 
-    <h2 class="mb-2 text-lg font-bold">Preview</h2>
-    <div class="h-[20rem] rounded-xl border border-neutral-200 p-6 dark:border-neutral-700">
-      <iframe :src="`/${pasteId}/embed`" class="h-full w-full" />
+      <div class="md:h-full md:overflow-auto">
+        <h2 class="mb-2 text-lg font-bold">Preview</h2>
+        <div
+          class="h-[20rem] rounded-xl border border-neutral-200 p-6 md:h-full dark:border-neutral-700"
+        >
+          <iframe :src="`/${pasteId}/embed`" class="h-full w-full" />
+        </div>
+      </div>
     </div>
   </Dialog>
 </template>

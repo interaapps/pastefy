@@ -34,6 +34,7 @@ import org.javawebstack.orm.query.Query;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @PathPrefix("/api/v2/paste")
@@ -95,11 +96,13 @@ public class PasteController extends HttpController {
         if (request.ai && !request.encrypted && Pastefy.getInstance().aiEnabled()) {
             new Thread(() -> {
                 try {
+                    AtomicInteger count = new AtomicInteger();
                     AbstractObject aiResponse = Pastefy.getInstance().getPasteAI().generateTags(paste);
                     aiResponse.array("tags")
                             .stream()
                             .map(AbstractElement::string)
                             .filter(t -> request.tags == null || !request.tags.contains(t))
+                            .filter(t -> count.incrementAndGet() < 6)
                             .forEach(paste::addTag);
 
                     if (paste.getType() != Paste.Type.PASTE) return;

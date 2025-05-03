@@ -2,18 +2,15 @@
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Popover from 'primevue/popover'
-import InputGroup from 'primevue/inputgroup'
 import { useAsyncState, useClipboard, useTitle } from '@vueuse/core'
-import { client } from '@/main.ts'
+import { client, eventBus } from '@/main.ts'
 
-import { computed, ref, useTemplateRef } from 'vue'
+import { computed, onMounted, ref, useTemplateRef } from 'vue'
 import Highlighted from '@/components/Highlighted.vue'
 import { useCurrentPasteStore } from '@/stores/current-paste.ts'
-import ScreenshotPaste from '@/components/modals/ScreenshotPaste.vue'
 import PasteVisibilityIcon from '@/components/PasteVisibilityIcon.vue'
 import type { MultiPastePart, Paste } from '@/types/paste.ts'
 import { getIconByFileName } from '@/utils/lang-information.ts'
-import EmbedPasteModal from '@/components/modals/EmbedPasteModal.vue'
 import CryptoJS from 'crypto-js'
 import { findFromFileName } from '@/utils/lang-replacements.ts'
 import { useConfirm } from 'primevue/useconfirm'
@@ -27,6 +24,7 @@ import { useConfig } from '@/composables/config.ts'
 import { useTagsStore } from '@/stores/tags-store.ts'
 import type { PopoverMethods } from 'primevue'
 import ComponentInjection from '@/components/ComponentInjection.vue'
+import PasteSharingPopover from '@/components/popovers/PasteSharingPopover.vue'
 
 const props = defineProps<{
   pasteId: string
@@ -38,9 +36,6 @@ const password = ref<string | undefined>(undefined)
 const currentPasteStore = useCurrentPasteStore()
 
 const clipboard = useClipboard()
-
-const pasteScreenshotOpened = ref(false)
-const pasteEmbedOpened = ref(false)
 
 const content = ref<string | undefined>()
 const title = ref<string | undefined>()
@@ -99,9 +94,13 @@ const { isLoading, error } = useAsyncState(async () => {
     password.value = hashPw
     decrypt()
   }
+  eventBus.emit('pageLoaded', 'paste')
 }, undefined)
 
-const fetchTags = () => paste.value?.tags?.forEach(tagsStore.fetchIfNeeded)
+const fetchTags = () => {
+  let i = 0
+  return paste.value?.tags?.filter(() => ++i < 8).forEach(tagsStore.fetchIfNeeded)
+}
 
 const setValues = () => {
   if (!paste.value) return
@@ -191,16 +190,6 @@ const config = useConfig()
 
 const tagsPopover = useTemplateRef<PopoverMethods>('tagsPopover')
 const sharePopover = useTemplateRef<PopoverMethods>('sharePopover')
-
-const pasteUrl = computed(() => `${origin}/${paste.value?.id}`)
-
-const share = () => {
-  navigator.share({
-    title: paste.value?.title,
-    text: 'Here is a paste I want to share with you',
-    url: pasteUrl.value,
-  })
-}
 </script>
 <template>
   <div v-if="appInfo.appInfo?.login_required_for_read && !currentUser.user">
@@ -241,10 +230,18 @@ const share = () => {
   <div v-else-if="paste" class="flex h-full w-full justify-center">
     <div class="flex w-full flex-col gap-2" :class="config.sideBarShown ? '' : 'xl:pl-[3.75rem]'">
       <div class="flex items-center gap-3">
-        <h1 class="text-2xl font-bold break-all" id="paste-title" v-if="title">{{ title }}</h1>
+        <h1
+          class="text-2xl font-bold break-all"
+          id="paste-title"
+          v-if="title"
+          v-view-transition-name="`paste-${paste.id}-title`"
+        >
+          {{ title }}
+        </h1>
         <div
           class="flex items-center gap-1 rounded-md bg-neutral-100 px-1 py-0.5 dark:bg-neutral-800"
           v-if="permission.showVisibility"
+          v-animate-css="{ classes: 'fadeIn', delay: 500 }"
         >
           <PasteVisibilityIcon :visibility="paste.visibility" />
           <span class="text-sm font-normal">{{ paste.visibility }}</span>
@@ -253,7 +250,10 @@ const share = () => {
       <div id="below-title" />
       <ComponentInjection type="paste-below-title" :value="paste" />
       <div class="relative flex w-full flex-col gap-3 md:flex-row-reverse">
-        <div class="top-0 flex h-fit flex-wrap items-center md:sticky md:w-[3rem] md:flex-col">
+        <div
+          class="top-0 flex h-fit flex-wrap items-center md:sticky md:w-[3rem] md:flex-col"
+          v-animate-css="'fadeIn'"
+        >
           <ComponentInjection type="paste-actions-first" :value="paste" />
           <Button
             @click="copy"
@@ -322,7 +322,6 @@ const share = () => {
             rounded
             icon="ti ti-share-3 text-xl"
             v-tooltip="{ value: 'Share', showDelay: 500 }"
-            @shortkey="pasteScreenshotOpened = true"
             aria-label="Share"
           />
           <Button
@@ -400,6 +399,9 @@ const share = () => {
         <div class="w-full overflow-hidden">
           <div
             class="w-full rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
+            :style="{
+              'view-transition-name': `paste-${paste.id}-highlighted`,
+            }"
           >
             <div
               v-if="multiPasteParts"
@@ -460,100 +462,18 @@ const share = () => {
     </div>
   </div>
 
-  <ScreenshotPaste
-    :id="paste?.id"
-    :title="currentFileName"
-    v-if="paste && !asEmbed"
-    :file-name="currentFileName"
-    :content="content!"
-    v-model:visible="pasteScreenshotOpened"
+  <PasteSharingPopover
+    ref="sharePopover"
+    v-if="paste"
+    :paste="paste"
+    :content
+    :asEmbed
+    :currentFileName="currentFileName!"
+    :pasteId
   />
-  <EmbedPasteModal v-model:visible="pasteEmbedOpened" :paste-id="pasteId" />
 
-  <Popover ref="sharePopover">
-    <div class="flex w-[16rem] max-w-full flex-col gap-2" v-if="paste">
-      <div class="flex gap-2 rounded-lg border border-neutral-200 p-1 dark:border-neutral-700">
-        <div class="flex w-[7rem] flex-col overflow-hidden rounded-md bg-black text-white">
-          <span class="p-1 px-2 text-[8px]">{{ paste.title }}</span>
-          <div class="flex w-full items-end justify-between">
-            <div class="pb-1 pl-2">
-              <img src="/icons/logo-dark.svg" class="w-[2.6rem]" />
-            </div>
-
-            <div class="mono h-[2rem] w-[3.3rem] rounded-tl-md bg-neutral-700 p-1 text-[6px]">
-              {{ paste.content.substring(0, 100) }}}
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <span class="overflow-hidden text-sm">{{ paste.title }}</span> <br />
-          <span class="text-[10px] opacity-60">Share code with Pastefy.</span>
-        </div>
-      </div>
-      <InputGroup>
-        <InputText size="small" :value="pasteUrl" class="select-all" readonly />
-        <Button
-          size="small"
-          icon="ti ti-copy"
-          severity="contrast"
-          @click="clipboard.copy(pasteUrl)"
-        />
-      </InputGroup>
-
-      <div class="flex w-full flex-col">
-        <Button
-          @click="share"
-          severity="contrast"
-          text
-          fluid
-          size="small"
-          class="justify-start"
-          icon="ti ti-share-2 text-lg"
-          aria-label="Share"
-          label="share"
-        />
-        <Button
-          @click="
-            () => {
-              pasteScreenshotOpened = true
-              sharePopover!.hide()
-            }
-          "
-          severity="contrast"
-          text
-          fluid
-          size="small"
-          class="justify-start"
-          icon="ti ti-camera text-lg"
-          v-tooltip="{ value: 'Screenshot (ctrl+shift+S)', showDelay: 500 }"
-          v-shortkey.click="['ctrl', 'shift', 's']"
-          @shortkey="pasteScreenshotOpened = true"
-          aria-label="Create Screenshot"
-          label="screenshot"
-        />
-        <Button
-          @click="
-            () => {
-              pasteEmbedOpened = true
-              sharePopover!.hide()
-            }
-          "
-          severity="contrast"
-          size="small"
-          class="justify-start"
-          text
-          fluid
-          icon="ti ti-code text-lg"
-          v-tooltip="{ value: 'Embed', showDelay: 500 }"
-          aria-label="Embed"
-          label="embed"
-        />
-      </div>
-    </div>
-  </Popover>
   <Popover ref="tagsPopover">
-    <div v-if="paste?.tags?.length" class="flex flex-wrap gap-2">
+    <div v-if="paste?.tags?.length" class="flex max-w-[20rem] flex-wrap gap-2">
       <router-link
         v-for="tag of paste.tags"
         :to="{ name: 'tag', params: { tag } }"

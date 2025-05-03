@@ -2,7 +2,6 @@
 import { useAsyncState } from '@vueuse/core'
 import { client } from '@/main.ts'
 import type { Paste } from '@/types/paste.ts'
-import Button from 'primevue/button'
 import PasteCard from '@/components/lists/PasteCard.vue'
 import ErrorContainer from '@/components/ErrorContainer.vue'
 import LoadingContainer from '@/components/LoadingContainer.vue'
@@ -19,6 +18,8 @@ const props = defineProps<
 
 const page = ref(1)
 
+const emit = defineEmits(['loaded'])
+
 const {
   isLoading,
   state: pastes,
@@ -29,7 +30,7 @@ const {
 
   if (!('route' in props) || !props.route) return []
 
-  return (
+  const res = (
     await client.get(props.route, {
       params: {
         page_limit: 5,
@@ -39,6 +40,8 @@ const {
       },
     })
   ).data as Paste[]
+  emit('loaded')
+  return res
 }, undefined)
 </script>
 

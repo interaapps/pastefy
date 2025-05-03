@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { findFromFileName } from '@/utils/lang-replacements.ts'
 import { highlight } from '@/utils/highlight.ts'
 import highlightWorker from '@/utils/workers/highlight.worker.ts?worker'
+import CopyButton from '@/components/CopyButton.vue'
 
 const props = defineProps<{
   contents: string
@@ -11,6 +12,8 @@ const props = defineProps<{
   hideDivider?: boolean
   hideLineNumbering?: boolean
   hideColorPreview?: boolean
+  showCopyButton?: boolean
+  getCopyContents?: () => Promise<string>
 }>()
 
 const highlightedContents = ref<string | undefined>(undefined)
@@ -93,7 +96,16 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <div class="highlighted flex w-full overflow-auto text-sm" :class="`higlighted-${id}`">
+  <div
+    class="highlighted group relative flex w-full overflow-auto text-sm"
+    :class="`higlighted-${id}`"
+  >
+    <CopyButton
+      v-if="showCopyButton"
+      :contents
+      class="absolute top-2 right-2 opacity-0 transition-all group-hover:opacity-100"
+      :getCopyContents
+    />
     <div
       v-if="!hideLineNumbering"
       class="p-3 text-right select-none"

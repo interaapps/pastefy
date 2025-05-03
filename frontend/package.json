@@ -23,6 +23,7 @@
     "@types/crypto-js": "^4.2.2",
     "@types/dom-to-image": "^2.6.7",
     "@types/markdown-it": "^14.1.2",
+    "@types/qrcode": "^1.5.5",
     "@vueuse/core": "^13.0.0",
     "axios": "^1.8.4",
     "codemirror": "^5.65.19",
@@ -34,10 +35,13 @@
     "petrel": "^1.1.2",
     "pinia": "^3.0.1",
     "primevue": "^4.3.2",
+    "qrcode": "^1.5.4",
     "tailwindcss": "^4.0.14",
     "tailwindcss-primeui": "^0.5.1",
+    "v-animate-css": "^1.0.1",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
+    "vue-view-transitions": "^1.2.1",
     "vue3-shortkey": "^4.0.0"
   },
   "devDependencies": {

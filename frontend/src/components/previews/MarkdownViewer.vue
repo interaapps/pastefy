@@ -21,6 +21,7 @@ const md = markdownit({
 
     pastefyHighlighted.setAttribute('language', `.${lang}`)
     pastefyHighlighted.setAttribute('contents', str?.trim() || '')
+    pastefyHighlighted.setAttribute('show-copy-button', 'true')
 
     container.appendChild(pastefyHighlighted)
     return container.outerHTML

@@ -3,6 +3,8 @@ import type { Paste } from '@/types/paste.ts'
 import Highlighted from '@/components/Highlighted.vue'
 import { computed } from 'vue'
 import CSVViewer from '@/components/previews/CSVViewer.vue'
+import { client } from '@/main.ts'
+import { useConfig } from '@/composables/config.ts'
 
 const props = defineProps<{
   paste: Paste
@@ -29,6 +31,18 @@ const pasteContents = computed(() => {
 
   return props.paste.content
 })
+
+const config = useConfig()
+const getCopyContents = async () => {
+  return await fetch(
+    `${(import.meta.env.VITE_APP_BASE_URL as string) || ''}/${props.paste.id}/raw`,
+    {
+      headers: {
+        Authorization: `Bearer ${config.value.apiKey}`,
+      },
+    },
+  ).then((t) => t.text())
+}
 </script>
 <template>
   <router-link
@@ -45,7 +59,11 @@ const pasteContents = computed(() => {
         <i class="ti ti-lock" />
         <span class="font-bold"> Encrypted paste </span>
       </div>
-      <span class="overflow-hidden font-bold overflow-ellipsis" v-else-if="paste.title.trim()">
+      <span
+        class="overflow-hidden font-bold overflow-ellipsis"
+        v-else-if="paste.title.trim()"
+        v-view-transition-name="`paste-${paste.id}-title`"
+      >
         {{ paste.title }}
       </span>
       <span class="italic opacity-40" v-else> no title </span>
@@ -56,7 +74,11 @@ const pasteContents = computed(() => {
         </span>
       </div>
     </div>
-    <div>
+    <div
+      :style="{
+        'view-transition-name': `paste-${paste.id}-highlighted`,
+      }"
+    >
       <div class="p-3" v-if="paste.encrypted">
         <span class="font-italic text-sm opacity-60">No preview available</span>
       </div>
@@ -75,6 +97,8 @@ const pasteContents = computed(() => {
         :key="pasteContents"
         :file-name="paste.title"
         :contents="pasteContents"
+        :show-copy-button="paste.type !== 'MULTI_PASTE'"
+        :getCopyContents
       />
     </div>
 

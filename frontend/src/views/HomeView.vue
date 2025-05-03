@@ -9,6 +9,7 @@ import Button from 'primevue/button'
 import { useAppInfoStore } from '@/stores/app-info.ts'
 import LoginModal from '@/components/modals/LoginModal.vue'
 import { ref } from 'vue'
+import { eventBus } from '@/main.ts'
 
 useTitle(`Pastefy • Share your code snippets`)
 
@@ -39,7 +40,7 @@ await axios.post('/paste', {
 <template>
   <main class="mx-auto w-full max-w-[1200px]">
     <UserHome v-if="currentUserStore.user" />
-    <div v-else>
+    <div v-else :ref="() => eventBus.emit('pageLoaded', 'home')">
       <div class="mx-auto mb-10 max-w-[1000px]">
         <div class="mb-5 flex items-center justify-between">
           <h1 class="text-3xl font-bold">Pastefy</h1>

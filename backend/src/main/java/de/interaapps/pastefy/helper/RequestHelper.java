@@ -21,6 +21,12 @@ public class RequestHelper {
         if (exchange.query("page_limit") != null)
             limit = exchange.query("page_limit", Integer.class);
 
+        if (Pastefy.getInstance().getConfig().has("pastefy.paginaton.pagelimit")) {
+            int configLimit = Pastefy.getInstance().getConfig().getInt("pastefy.paginaton.pagelimit", 50);
+            if (limit > configLimit)
+                limit = configLimit;
+        }
+
         query.limit(limit).offset(page * limit);
 
         exchange.header("PAGINATION_LIMIT", String.valueOf(limit));
@@ -44,7 +50,7 @@ public class RequestHelper {
     }
 
     public static void userIdPastesFilter(User user, Query<?> query, Exchange exchange) {
-        boolean isAdmin = user != null && user.type == User.Type.ADMIN;
+        boolean isAdmin = user != null && user.isAdmin();
         String filterUserId = null;
 
         if (user == null && !Pastefy.getInstance().getConfig().get("pastefy.listpastes", "false").equalsIgnoreCase("true"))

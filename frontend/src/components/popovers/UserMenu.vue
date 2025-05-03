@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
 import { useCurrentUserStore } from '@/stores/current-user.ts'
+import SettingsModal from '@/components/modals/settings/SettingsModal.vue'
+import { ref } from 'vue'
 
 const currentUserStore = useCurrentUserStore()
+
+const settingsOpened = ref(false)
 </script>
 <template>
   <Button
@@ -51,6 +55,16 @@ const currentUserStore = useCurrentUserStore()
     class="justify-start"
   />
   <Button
+    text
+    @click="settingsOpened = true"
+    icon="ti ti-settings text-lg"
+    label="Settings"
+    severity="contrast"
+    size="small"
+    fluid
+    class="justify-start"
+  />
+  <Button
     as="router-link"
     :to="{ name: 'admin-home' }"
     v-if="currentUserStore.user?.type === 'ADMIN'"
@@ -72,4 +86,6 @@ const currentUserStore = useCurrentUserStore()
     class="justify-start"
     @click="currentUserStore.logout()"
   />
+
+  <SettingsModal v-model:visible="settingsOpened" />
 </template>

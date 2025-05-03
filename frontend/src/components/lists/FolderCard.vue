@@ -17,7 +17,7 @@ defineProps<{
     >
       <i class="ti ti-folder text-4xl" />
     </div>
-    <span class="text-sm">
+    <span class="text-sm" v-view-transition-name="`folder-${folder.id}-title`">
       {{ folder.name }}
     </span>
   </component>

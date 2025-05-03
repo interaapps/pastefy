@@ -191,4 +191,8 @@ public class User extends Model {
     public String getUniqueName() {
         return uniqueName;
     }
+
+    public boolean isAdmin() {
+        return type == Type.ADMIN;
+    }
 }

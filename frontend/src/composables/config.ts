@@ -1,11 +1,15 @@
 import { useStorage } from '@vueuse/core'
 import type { SelectedTheme } from '@/utils/theme-logic.ts'
+import type { PasteVisibility } from '@/types/paste.ts'
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
 
 export function useConfig() {
   return useStorage<{
     apiKey?: string
     sideBarShown?: boolean
     theme?: SelectedTheme
+    animations?: boolean
+    defaultVisibility?: PasteVisibility
   }>(
     'config',
     // Default values:
@@ -13,6 +17,8 @@ export function useConfig() {
       apiKey: localStorage['session'] || undefined,
       sideBarShown: window.innerWidth > 1024,
       theme: 'system',
+      animations: prefersReducedMotion.matches,
+      defaultVisibility: 'UNLISTED',
     },
     localStorage,
     {

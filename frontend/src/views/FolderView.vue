@@ -4,7 +4,7 @@ import Button from 'primevue/button'
 import FolderList from '@/components/lists/FolderList.vue'
 import { useAsyncState, useTitle } from '@vueuse/core'
 import type { Folder } from '@/types/folder.ts'
-import { client } from '@/main.ts'
+import { client, eventBus } from '@/main.ts'
 import { useRoute } from 'vue-router'
 import ErrorContainer from '@/components/ErrorContainer.vue'
 import LoadingContainer from '@/components/LoadingContainer.vue'
@@ -29,6 +29,7 @@ const {
   ).data as Folder
 
   useTitle(`${folder.name} | Pastefy`)
+  eventBus.emit('pageLoaded', 'folder')
   return folder
 }, undefined)
 
@@ -51,7 +52,9 @@ const deleteFolder = () => {
     <LoadingContainer v-else-if="isLoading" class="flex items-center justify-center p-3" />
     <div v-else-if="folder">
       <div class="mb-6 flex items-center justify-between">
-        <h1 class="text-2xl font-bold">{{ folder.name }}</h1>
+        <h1 class="text-2xl font-bold" v-view-transition-name="`folder-${folder.id}-title`">
+          {{ folder.name }}
+        </h1>
 
         <Button icon="ti ti-trash text-lg" text severity="contrast" @click="deleteFolder" />
       </div>

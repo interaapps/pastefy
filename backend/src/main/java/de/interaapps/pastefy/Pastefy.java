@@ -7,7 +7,6 @@ import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Strategy;
 import de.interaapps.pastefy.auth.strategies.oauth2.providers.*;
 import de.interaapps.pastefy.controller.AppController;
 import de.interaapps.pastefy.controller.HttpController;
-import de.interaapps.pastefy.controller.pastes.PasteController;
 import de.interaapps.pastefy.exceptions.AuthenticationException;
 import de.interaapps.pastefy.exceptions.FeatureDisabledException;
 import de.interaapps.pastefy.exceptions.NotFoundException;
@@ -17,10 +16,8 @@ import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.plugins.PastefyBackendPlugin;
 import de.interaapps.pastefy.model.plugins.PastefyPlugin;
-import de.interaapps.pastefy.model.plugins.PastefyPluginConfig;
 import de.interaapps.pastefy.model.responses.ExceptionResponse;
 import io.undertow.util.FileUtils;
-import org.javawebstack.abstractdata.AbstractElement;
 import org.javawebstack.http.router.HTTPRouter;
 import org.javawebstack.http.router.handler.RequestHandler;
 import org.javawebstack.http.router.transformer.response.SerializedResponseTransformer;
@@ -116,6 +113,7 @@ public class Pastefy {
                 .map("PASTEFY_META_TAGS", "pastefy.metatags")
                 .map("PASTEFY_CUSTOM_BODY", "pastefy.custombody")
                 .map("PASTEFY_CUSTOM_HEADER", "pastefy.customheader")
+                .map("PASTEFY_PAGINATION_PAGE_LIMIT", "pastefy.paginaton.pagelimit")
 
                 .map("AI_ANTHROPIC_TOKEN", "ai.antrophic.token")
 
@@ -172,7 +170,6 @@ public class Pastefy {
                                 config.get("database.user", "root"),
                                 config.get("database.password", "")
                         );
-
 
                         if (config.getObject("database.customparams") != null) {
                             config.getObject("database.customparams").forEach((key, value) -> {

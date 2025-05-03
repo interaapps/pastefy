@@ -1,14 +1,6 @@
 import './assets/main.css'
 
-import {
-  createApp,
-  defineCustomElement,
-  type App as VueApp,
-  h,
-  ref,
-  shallowRef,
-  defineComponent,
-} from 'vue'
+import { createApp, defineCustomElement, type App as VueApp } from 'vue'
 import * as vueFunctions from 'vue'
 import { createPinia } from 'pinia'
 import theme from '@/theme.ts'
@@ -25,6 +17,9 @@ import axios from 'axios'
 import ToastService from 'primevue/toastservice'
 import Tooltip from 'primevue/tooltip'
 import ConfirmationService from 'primevue/confirmationservice'
+import { ViewTransitionsPlugin } from 'vue-view-transitions'
+// @ts-ignore
+import VAnimateCss from 'v-animate-css'
 
 // eslint-disable-next-line
 // @ts-ignore
@@ -65,6 +60,8 @@ export const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(InstallCodeMirror)
+app.use(VAnimateCss)
+app.use(ViewTransitionsPlugin())
 
 const preset = definePreset(Aura, theme)
 
@@ -122,6 +119,7 @@ registerEventHandlers()
 
 export type Events = {
   pasteCreate: string
+  pageLoaded: string
 }
 
 export const eventBus = mitt<Events>()
