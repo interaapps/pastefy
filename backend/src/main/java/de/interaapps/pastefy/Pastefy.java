@@ -53,6 +53,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class Pastefy {
 
@@ -323,7 +324,7 @@ public class Pastefy {
             return false;
         });
 
-        List<PastefyPlugin> list = plugins.values().stream().filter(p -> p.config.frontend != null).toList();
+        List<PastefyPlugin> list = plugins.values().stream().filter(p -> p.config.frontend != null).collect(Collectors.toList());
         list.forEach(p -> {
             if (p.config.frontend.folder != null && p.config.frontend.entrypoint != null) {
                 System.out.println("Registered plugin " + p.config.name + " frontend directory");
@@ -457,6 +458,6 @@ public class Pastefy {
         return plugins.values().stream()
                 .filter(p -> p.backendPlugin != null)
                 .map(p -> p.backendPlugin)
-                .toList();
+                .collect(Collectors.toList());
     }
 }
