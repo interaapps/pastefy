@@ -78,7 +78,7 @@ docker-compose up
 ```
 
 ### Custom Docker-Compose (Using Docker-Hub)
-https://pastefy.ga/Hj9N3bs2
+https://pastefy.app/Hj9N3bs2
 ```bash
 wget https://pastefy.app/Hj9N3bs2/raw -O docker-compose.yml
 nano docker-compose.yml
