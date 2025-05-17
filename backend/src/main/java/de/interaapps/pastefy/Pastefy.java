@@ -9,10 +9,7 @@ import de.interaapps.pastefy.auth.strategies.oauth2.providers.*;
 import de.interaapps.pastefy.cli.PastefyCLI;
 import de.interaapps.pastefy.controller.AppController;
 import de.interaapps.pastefy.controller.HttpController;
-import de.interaapps.pastefy.exceptions.AuthenticationException;
-import de.interaapps.pastefy.exceptions.FeatureDisabledException;
-import de.interaapps.pastefy.exceptions.NotFoundException;
-import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
+import de.interaapps.pastefy.exceptions.*;
 import de.interaapps.pastefy.helper.elastic.ElasticMigrator;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Paste;
@@ -44,12 +41,16 @@ import org.javawebstack.webutils.middleware.CORSPolicy;
 import org.javawebstack.webutils.middleware.MultipartPolicy;
 import org.javawebstack.webutils.middleware.RateLimitMiddleware;
 import picocli.CommandLine;
+import redis.clients.jedis.Jedis;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -60,6 +61,7 @@ import java.util.stream.Collectors;
 public class Pastefy {
 
     private static Pastefy instance;
+    private Jedis redisClient;
 
     public static Pastefy getInstance() {
         return instance;
@@ -86,6 +88,8 @@ public class Pastefy {
     public final String[] INDEXES = new String[]{"pastefy_pastes"};
     private ArrayList<String> availableIndexes = new ArrayList<>();
 
+    private ExecutorService executor = Executors.newFixedThreadPool(30);
+
     public Pastefy() {
         config = new Config();
         httpRouter = new HTTPRouter(new UndertowHTTPSocketServer());
@@ -97,10 +101,20 @@ public class Pastefy {
         setupModels();
         setupElastic();
         setupMinio();
+        setupRedis();
 
         if (config.has("ai.antrophic.token")) {
             pasteAI = new PasteAI(this);
         }
+    }
+
+    private void setupRedis() {
+        if (!config.has("redis.host")) return;
+
+        String host = config.get("redis.host");
+        int port = config.getInt("redis.port", 6379);
+
+        this.redisClient = new Jedis(host, port);
     }
 
     private void setupMinio() {
@@ -109,6 +123,7 @@ public class Pastefy {
         }
 
         minioClient = MinioClient.builder()
+            .region(config.get("minio.region"))
             .endpoint(config.get("minio.server"))
             .credentials(config.get("minio.access.key"), config.get("minio.secret.key"))
             .build();
@@ -145,6 +160,9 @@ public class Pastefy {
                 .map("ELASTICSEARCH_USER", "elasticsearch.user")
                 .map("ELASTICSEARCH_PASSWORD", "elasticsearch.password")
                 .map("ELASTICSEARCH_API_KEY", "elasticsearch.apikey")
+
+                .map("REDIS_HOST", "redis.host")
+                .map("REDIS_PORT", "redis.port")
 
                 .map("MINIO_SERVER", "minio.server")
                 .map("MINIO_BUCKET", "minio.bucket")
@@ -333,14 +351,11 @@ public class Pastefy {
                     throwable = throwable.getCause();
             }
 
-            if (throwable instanceof AuthenticationException) {
-                exchange.status(401);
-            } else if (throwable instanceof NotFoundException) {
-                exchange.status(404);
-            } else if (throwable instanceof PermissionsDeniedException) {
-                exchange.status(403);
-            } else {
-                exchange.status(500);
+            exchange.status(500);
+
+            if (throwable instanceof HTTPException) {
+                HTTPException httpException = (HTTPException) throwable;
+                exchange.status(httpException.status);
             }
 
             return new ExceptionResponse(throwable);
@@ -573,5 +588,20 @@ public class Pastefy {
 
     public boolean isDevMode() {
         return config.get("pastefy.dev", "false").toLowerCase(Locale.ROOT).equals("true");
+    }
+
+    public Jedis getRedisClient() {
+        return redisClient;
+    }
+    public boolean isRedisEnabled() {
+        return redisClient != null;
+    }
+
+    public ExecutorService getExecutor() {
+        return executor;
+    }
+
+    public void executeAsync(Runnable task) {
+        executor.submit(task);
     }
 }

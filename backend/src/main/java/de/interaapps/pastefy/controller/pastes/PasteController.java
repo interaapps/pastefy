@@ -73,7 +73,7 @@ public class PasteController extends HttpController {
             Paste forkedFrom = Repo.get(Paste.class).where("key", request.forkedFrom).first();
             paste.setForkedFrom(request.forkedFrom);
             if (forkedFrom != null && forkedFrom.isPublic()) {
-                PublicPasteEngagement.addInterestFromPaste(forkedFrom, 10);
+                Pastefy.getInstance().executeAsync(() -> PublicPasteEngagement.addInterestFromPaste(forkedFrom, 10));
             }
         }
 
@@ -96,7 +96,7 @@ public class PasteController extends HttpController {
 
 
         if (request.ai && !request.encrypted && Pastefy.getInstance().aiEnabled()) {
-            new Thread(() -> {
+            Pastefy.getInstance().executeAsync(() -> {
                 try {
                     AtomicInteger count = new AtomicInteger();
                     AbstractObject aiResponse = Pastefy.getInstance().getPasteAI().generateTags(paste);
@@ -118,7 +118,7 @@ public class PasteController extends HttpController {
                         paste.save();
                     }
                 } catch (Exception ignored) {}
-            }).start();
+            });
         }
 
         return response;
@@ -204,7 +204,8 @@ public class PasteController extends HttpController {
 
         if (paste.isPublic()) {
             if (user == null || !Objects.equals(user.id, paste.getUserId())) {
-                PublicPasteEngagement.addInterestFromPaste(paste, "true".equalsIgnoreCase(exchange.query("from_frontend", "false")) ? (user == null ? 5 : 4) : 2);
+                Pastefy.getInstance().executeAsync(() ->
+                        PublicPasteEngagement.addInterestFromPaste(paste, "true".equalsIgnoreCase(exchange.query("from_frontend", "false")) ? (user == null ? 5 : 4) : 2));
             }
         }
 

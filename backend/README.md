@@ -1,5 +1,10 @@
 # Pastefy Backend
 
+# Minio & Elastic
+When MinIO is enabled, elastic search is used to index the files. 
+When not using both, the search and previews won't work.
+
+
 ## Querying pastes
 
 ### HTTP
@@ -9,7 +14,7 @@
 
 ### More complex queries
 ```js
-/paste?filters={"visibility": "PUBLIC"}
+/paste?filters={"visibility": "PUBLIC", $or: [{userId: "34e2ddc"}, {userId: {"$ne": "d42ewde"}]}
 ```
 
 

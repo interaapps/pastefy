@@ -112,7 +112,7 @@ const setValues = () => {
 
   useTitle(`${title.value || 'Untitled Paste'} | Pastefy`)
 
-  if (paste.value.type === 'MULTI_PASTE') {
+  if (paste.value.type === 'MULTI_PASTE' && decrypted.value) {
     multiPasteParts.value = JSON.parse(content.value!) as MultiPastePart[]
     selectMultiPart(0)
   }
@@ -136,8 +136,8 @@ const decrypt = () => {
     CryptoJS.enc.Utf8,
   )
   paste.value.content = decryptedContent
-  setValues()
   decrypted.value = true
+  setValues()
 }
 
 const copy = () => {

@@ -227,7 +227,7 @@ public abstract class ListQueryTransformer<K extends Model, T, E> {
                                 });
                             }
 
-                            System.out.println(s.build().toString());
+                            // System.out.println(s.build().toString());
                             return s;
                         }
                         , elasticClass).hits().hits().stream().map(Hit::source).collect(Collectors.toList());

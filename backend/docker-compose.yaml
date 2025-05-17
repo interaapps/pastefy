@@ -10,25 +10,25 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
-
-  elasticsearch:
-    image: elasticsearch:9.0.1
-    container_name: dev-elasticsearch
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - bootstrap.memory_lock=true
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g
-      - ELASTIC_PASSWORD=changeme
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
+#
+#  elasticsearch:
+#    image: elasticsearch:9.0.1
+#    container_name: dev-elasticsearch
+#    environment:
+#      - discovery.type=single-node
+#      - xpack.security.enabled=false
+#      - bootstrap.memory_lock=true
+#      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+#      - ELASTIC_PASSWORD=changeme
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#    ports:
+#      - "9200:9200"
+#      - "9300:9300"
+#    volumes:
+#      - elasticsearch-data:/usr/share/elasticsearch/data
 
 volumes:
   redis-data:

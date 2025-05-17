@@ -25,7 +25,7 @@ public class SyncToMinioCommand implements Callable<Integer> {
     private int iterations = 2000;
 
     @CommandLine.Option(names = {"-t", "--threads"}, description = "Number of threads")
-    private int threadCount = 16;
+    private int threadCount = 10;
 
 
 

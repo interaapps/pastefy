@@ -114,9 +114,11 @@ public class User extends Model {
             pasteStar.userId = id;
             pasteStar.save();
 
-            ElasticStars.addStarCount(paste, this);
+            Pastefy.getInstance().executeAsync(() -> {
+                ElasticStars.addStarCount(paste, this);
+                PublicPasteEngagement.addInterestFromPaste(paste, 20);
+            });
         }
-        PublicPasteEngagement.addInterestFromPaste(paste, 20);
     }
 
     public void unstar(Paste paste) {
@@ -125,8 +127,10 @@ public class User extends Model {
                 .where("userId", id)
                 .delete();
 
-        ElasticStars.removeStarCount(paste, this);
-        PublicPasteEngagement.addInterestFromPaste(paste, -20);
+        Pastefy.getInstance().executeAsync(() -> {
+            ElasticStars.removeStarCount(paste, this);
+            PublicPasteEngagement.addInterestFromPaste(paste, -20);
+        });
     }
 
     public boolean hasStarred(Paste paste) {

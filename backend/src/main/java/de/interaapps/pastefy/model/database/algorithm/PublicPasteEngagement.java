@@ -27,16 +27,14 @@ public class PublicPasteEngagement extends Model {
     public Timestamp updatedAt;
 
     public static void addInterestFromPaste(Paste paste, int score) {
-        new Thread(() -> {
-            PublicPasteEngagement interestInteraction = Repo.get(PublicPasteEngagement.class).where("pasteId", paste.getId()).first();
-            if (interestInteraction == null) {
-                interestInteraction = new PublicPasteEngagement();
-                interestInteraction.pasteId = paste.getId();
-            }
-            interestInteraction.score += score;
-            interestInteraction.save();
+        PublicPasteEngagement interestInteraction = Repo.get(PublicPasteEngagement.class).where("pasteId", paste.getId()).first();
+        if (interestInteraction == null) {
+            interestInteraction = new PublicPasteEngagement();
+            interestInteraction.pasteId = paste.getId();
+        }
+        interestInteraction.score += score;
+        interestInteraction.save();
 
-            ElasticPaste.updateEngagement(paste);
-        }).start();
+        ElasticPaste.updateEngagement(paste);
     }
 }

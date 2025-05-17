@@ -40,7 +40,7 @@ public class ElasticPaste {
         elasticPaste.id = paste.getId();
         elasticPaste.key = paste.getKey();
         elasticPaste.title = paste.getTitle();
-        elasticPaste.content = paste.getContent();
+        elasticPaste.content = paste.getContent(false);
         elasticPaste.userId = paste.getUserId();
         elasticPaste.forkedFrom = paste.getForkedFrom();
         elasticPaste.encrypted = paste.isEncrypted();
@@ -118,6 +118,25 @@ public class ElasticPaste {
                                 .script(s -> s
                                         .source(su -> su.scriptString("ctx._source.engagementScore = params.engagementScore"))
                                         .params("engagementScore", JsonData.of(paste.getEngagementScore()))
+                                )
+                        );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void updateTags(Paste paste) {
+        if (Pastefy.getInstance().isElasticsearchEnabled()) {
+            try {
+                Pastefy.getInstance()
+                        .getElasticsearchClient()
+                        .updateByQuery(u -> u
+                            .index("pastefy_pastes")
+                                .query(q -> q.term(t -> t.field("id").value(String.valueOf(paste.getId()))))
+                                .script(s -> s
+                                    .source(su -> su.scriptString("ctx._source.tags = params.tags"))
+                                    .params("engagementScore", JsonData.of(paste.getTags()))
                                 )
                         );
             } catch (Exception e) {
