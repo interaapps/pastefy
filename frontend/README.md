@@ -16,9 +16,19 @@
   - [ ] XML
   - [ ] HTML
   - [ ] Plain Text
+  - [ ] Latex
+  - [ ] Mermaid
   - [x] CSV
+  - [ ] SQL
+    - [ ] MySQL Emulator https://github.com/i-van/mysql-emulator
+    - [ ] Postgres Emulator https://www.npmjs.com/package/pgmock
+    - [ ] SQLite Emulator https://sql.js.org/
 - [ ] Comments on pastes (Also on lines)
 - [ ] Paste List Entry copy button (fetches full paste first)
+- [ ] File Upload
+  - [ ] Image
+  - [ ] Audio
+  - [ ] PDF
 
 
 ## Frontend Plugins

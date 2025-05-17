@@ -44,12 +44,6 @@ public class AdminController extends HttpController {
     public ActionResponse removeUser(@Path("id") String id, @Attrib("authkey") AuthKey authKey) {
         authKey.checkPermission("admin.users:delete");
 
-        Repo.get(Paste.class).where("userId", id).delete();
-        Repo.get(Folder.class).where("userId", id).delete();
-        Repo.get(AuthKey.class).where("userId", id).delete();
-        Repo.get(Notification.class).where("userId", id).delete();
-        Repo.get(SharedPaste.class).where("targetId", id).orWhere("userId", id).delete();
-
         Repo.get(User.class).get(id).delete();
 
         return new ActionResponse(true);

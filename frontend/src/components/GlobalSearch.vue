@@ -241,7 +241,7 @@ const enter = () => {
           />
         </div>
       </div>
-      <div class="flex flex-col gap-1 overflow-auto p-3 pt-0">
+      <div class="flex flex-col gap-1 overflow-auto overflow-x-hidden p-3 pt-0">
         <ErrorContainer v-if="error" :error="error as any" />
         <LoadingContainer v-else-if="isLoading" class="h-full" />
         <template v-for="(paste, index) of pastes" :key="index">

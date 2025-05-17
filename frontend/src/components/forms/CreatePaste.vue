@@ -319,14 +319,14 @@ watch(
           <Button
             icon="ti ti-plus"
             v-if="currentPaste.type !== 'MULTI_PASTE'"
-            class="bg-neutral-300 p-0 dark:bg-neutral-800"
+            class="border border-r-0 border-neutral-300 bg-neutral-200 p-0 dark:border-neutral-700 dark:bg-neutral-800"
             severity="contrast"
             text
             @click="currentPaste.addMultiPart()"
           />
           <Button
             :icon="`ti ${isFullscreen ? 'ti-minimize' : 'ti-maximize'}`"
-            class="hidden bg-neutral-300 p-0 md:flex dark:bg-neutral-800"
+            class="hidden border border-neutral-300 bg-neutral-200 p-0 md:flex dark:border-neutral-700 dark:bg-neutral-800"
             severity="contrast"
             text
             :size="isFullscreen ? 'large' : ''"
@@ -491,7 +491,7 @@ watch(
       <div>
         <Button
           size="small"
-          class="border-neutral-400"
+          class="border-neutral-400 dark:border-neutral-600"
           icon="ti ti-settings text-lg"
           severity="contrast"
           outlined

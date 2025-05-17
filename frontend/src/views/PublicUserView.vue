@@ -52,7 +52,7 @@ const {
 
       <div>
         <h2 class="mb-3 text-2xl font-bold">Public Pastes</h2>
-        <PasteList route="/api/v2/public-pastes/latest" :params="{ 'filter[user_id]': user.id }" />
+        <PasteList route="/api/v2/public-pastes/latest" :params="{ 'filter[userId]': user.id }" />
       </div>
     </div>
   </main>

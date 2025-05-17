@@ -1,6 +1,7 @@
 package de.interaapps.pastefy.model.database.algorithm;
 
 import de.interaapps.pastefy.model.database.Paste;
+import de.interaapps.pastefy.model.elastic.ElasticPaste;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.Column;
@@ -34,6 +35,8 @@ public class PublicPasteEngagement extends Model {
             }
             interestInteraction.score += score;
             interestInteraction.save();
+
+            ElasticPaste.updateEngagement(paste);
         }).start();
     }
 }

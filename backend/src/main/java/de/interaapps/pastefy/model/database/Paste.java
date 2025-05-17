@@ -1,23 +1,34 @@
 package de.interaapps.pastefy.model.database;
 
+import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.exceptions.NotFoundException;
 import de.interaapps.pastefy.exceptions.PastePrivateException;
+import de.interaapps.pastefy.model.database.algorithm.PublicPasteEngagement;
 import de.interaapps.pastefy.model.database.algorithm.TagListing;
-import de.interaapps.pastefy.model.responses.paste.MultiPastesElement;
+import de.interaapps.pastefy.model.elastic.ElasticPaste;
+import de.interaapps.pastefy.model.minio.MinioPaste;
+import io.minio.GetObjectArgs;
+import io.minio.GetObjectResponse;
+import io.minio.errors.*;
 import org.javawebstack.abstractdata.AbstractArray;
 import org.javawebstack.abstractdata.AbstractElement;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
 import org.javawebstack.orm.annotation.*;
+import org.javawebstack.webutils.util.IO;
 import org.javawebstack.webutils.util.RandomUtil;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
-import java.util.AbstractList;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Dates
+// @Dates
 @Table("pastes")
 public class Paste extends Model {
     @Column
@@ -61,7 +72,7 @@ public class Paste extends Model {
 
     @Column
     @Filterable
-    private Visibility visibility;
+    private Visibility visibility = Visibility.UNLISTED;
 
     @Column
     public Timestamp expireAt = null;
@@ -76,16 +87,49 @@ public class Paste extends Model {
     @Column
     private StorageType storageType = StorageType.DATABASE;
 
+    @Column
+    private Integer version = 0;
+
+    @Column
+    private Boolean indexedInElastic = false;
+
+
+    protected String cachedContents = null;
+
     public Paste() {
         key = RandomUtil.string(8);
     }
 
+    public String getRawContent() {
+        return content;
+    }
+
     public String getContent() {
+        if (Pastefy.getInstance().isMinioEnabled() && storageType == StorageType.S3) {
+            if (cachedContents == null) {
+                try {
+                    GetObjectResponse object = Pastefy.getInstance().getMinioClient().getObject(
+                            GetObjectArgs.builder()
+                                    .bucket(Pastefy.getInstance().getMinioBucket())
+                                    .object(String.valueOf(id))
+                                    .build()
+                    );
+                    cachedContents = IO.readTextStream(object);
+                } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
+                         InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
+                         XmlParserException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return cachedContents;
+        }
+
         return content;
     }
 
     public void setContent(String content) {
         this.content = content;
+        this.storageType = StorageType.DATABASE;
     }
 
     public String getTitle() {
@@ -122,7 +166,6 @@ public class Paste extends Model {
     public Visibility getVisibility() {
         return visibility == null ? Visibility.UNLISTED : visibility;
     }
-
 
     public boolean isPublic() {
         return visibility == Visibility.PUBLIC;
@@ -199,6 +242,19 @@ public class Paste extends Model {
                 .count();
     }
 
+    public List<PasteStar> getStarUsers() {
+        return Repo.get(PasteStar.class)
+                .where("paste", key)
+                .all();
+    }
+
+    public int getEngagementScore() {
+        PublicPasteEngagement pasteEngagement = Repo.get(PublicPasteEngagement.class)
+                .where("pasteId", id).first();
+        if (pasteEngagement == null) return 0;
+        return pasteEngagement.score;
+    }
+
     public AbstractArray getMultiPasteParts() {
         return AbstractElement.fromJson(content).array();
     }
@@ -218,9 +274,47 @@ public class Paste extends Model {
         return paste;
     }
 
+    public Boolean isIndexedInElastic() {
+        return indexedInElastic != null && indexedInElastic;
+    }
+
+    public void setIndexedInElastic(Boolean indexedInElastic) {
+        this.indexedInElastic = indexedInElastic;
+    }
+
     @Override
     public void save() {
+        if (version == null) version = 1;
+        version++;
+
+        if (createdAt == null) {
+            System.out.println("Setting " + createdAt);
+            createdAt = Timestamp.from(Instant.now());
+        }
+
+        updatedAt = Timestamp.from(Instant.now());
+
         super.save();
+
+        MinioPaste.store(this);
+        if (Pastefy.getInstance().isElasticsearchEnabled()) {
+            (new Thread(() -> ElasticPaste.fromPaste(this))).start();
+        }
+    }
+
+    public void superSave() {
+        super.save();
+    }
+
+    @Override
+    public void delete() {
+        Repo.get(PasteTag.class).where("paste", key).delete();
+        Repo.get(PublicPasteEngagement.class).where("pasteId", id).delete();
+
+        if (storageType == StorageType.S3) MinioPaste.delete(this);
+        if (indexedInElastic != null && indexedInElastic) ElasticPaste.delete(this);
+
+        super.delete();
     }
 
     public enum Type {
@@ -238,5 +332,30 @@ public class Paste extends Model {
         DATABASE,
         S3,
         HTTP
+    }
+
+    public StorageType getStorageType() {
+        return storageType;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public String createMinioName() {
+        return String.valueOf(id);
+    }
+
+    public void setCachedContents(String cachedContents) {
+        this.cachedContents = cachedContents;
+    }
+
+
+    public void setStorageType(StorageType storageType) {
+        this.storageType = storageType;
+    }
+
+    public String getCachedContents() {
+        return cachedContents;
     }
 }

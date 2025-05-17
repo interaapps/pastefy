@@ -5,8 +5,7 @@ import Popover from 'primevue/popover'
 import { useAsyncState, useClipboard, useTitle } from '@vueuse/core'
 import { client, eventBus } from '@/main.ts'
 
-import { computed, onMounted, ref, useTemplateRef } from 'vue'
-import Highlighted from '@/components/Highlighted.vue'
+import { computed, defineAsyncComponent, ref, useTemplateRef } from 'vue'
 import { useCurrentPasteStore } from '@/stores/current-paste.ts'
 import PasteVisibilityIcon from '@/components/PasteVisibilityIcon.vue'
 import type { MultiPastePart, Paste } from '@/types/paste.ts'
@@ -25,6 +24,7 @@ import { useTagsStore } from '@/stores/tags-store.ts'
 import type { PopoverMethods } from 'primevue'
 import ComponentInjection from '@/components/ComponentInjection.vue'
 import PasteSharingPopover from '@/components/popovers/PasteSharingPopover.vue'
+const Highlighted = defineAsyncComponent(() => import('@/components/Highlighted.vue'))
 
 const props = defineProps<{
   pasteId: string
@@ -426,7 +426,7 @@ const sharePopover = useTemplateRef<PopoverMethods>('sharePopover')
 
             <template v-if="content">
               <PastePreview
-                v-if="['markdown', 'csv'].includes(currentLang)"
+                v-if="['markdown', 'csv', 'tex'].includes(currentLang)"
                 :contents="content"
                 :file-name="currentFileName"
                 :type="currentLang"

@@ -11,12 +11,14 @@ import de.interaapps.pastefy.helper.RequestHelper;
 import de.interaapps.pastefy.model.database.*;
 import de.interaapps.pastefy.model.database.algorithm.PublicPasteEngagement;
 import de.interaapps.pastefy.model.database.algorithm.TagListing;
+import de.interaapps.pastefy.model.queryparams.PasteQueryParameters;
 import de.interaapps.pastefy.model.requests.paste.AddFriendToPasteRequest;
 import de.interaapps.pastefy.model.requests.paste.CreatePasteRequest;
 import de.interaapps.pastefy.model.requests.paste.EditPasteRequest;
 import de.interaapps.pastefy.model.responses.ActionResponse;
 import de.interaapps.pastefy.model.responses.paste.CreatePasteResponse;
 import de.interaapps.pastefy.model.responses.paste.PasteResponse;
+import de.interaapps.pastefy.services.PasteService;
 import org.javawebstack.abstractdata.AbstractElement;
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.http.router.Exchange;
@@ -130,12 +132,8 @@ public class PasteController extends HttpController {
         Query<Paste> query = Repo.get(Paste.class).query();
 
         RequestHelper.userIdPastesFilter(user, query, exchange);
-        RequestHelper.pagination(query, exchange);
-        query.search(exchange.query("search"));
-        RequestHelper.queryFilter(query, exchange.getQueryParameters());
-        RequestHelper.filterTags(query, exchange.getQueryParameters());
 
-        return query.order("created_at", true).all().stream().map(p -> PasteResponse.create(p, exchange, user, true)).collect(Collectors.toList());
+        return PasteService.getAllPastes(exchange, PasteQueryParameters.from(exchange));
     }
 
     @Put("/{id}")

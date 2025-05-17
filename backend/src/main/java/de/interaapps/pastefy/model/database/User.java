@@ -1,8 +1,14 @@
 package de.interaapps.pastefy.model.database;
 
+import co.elastic.clients.elasticsearch._types.Script;
+import co.elastic.clients.elasticsearch.core.UpdateRequest;
+import co.elastic.clients.json.JsonData;
+import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider;
 import de.interaapps.pastefy.auth.strategies.oauth2.providers.*;
 import de.interaapps.pastefy.model.database.algorithm.PublicPasteEngagement;
+import de.interaapps.pastefy.model.elastic.ElasticPaste;
+import de.interaapps.pastefy.model.elastic.ElasticStars;
 import de.interaapps.pastefy.model.responses.folder.FolderResponse;
 import org.javawebstack.orm.Model;
 import org.javawebstack.orm.Repo;
@@ -10,6 +16,7 @@ import org.javawebstack.orm.annotation.*;
 import org.javawebstack.webutils.util.RandomUtil;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -95,6 +102,7 @@ public class User extends Model {
     public static User get(String id) {
         return Repo.get(User.class).get(id);
     }
+
     public static User getByName(String name) {
         return Repo.get(User.class).where("uniqueName", name).first();
     }
@@ -105,23 +113,27 @@ public class User extends Model {
             pasteStar.paste = paste.getKey();
             pasteStar.userId = id;
             pasteStar.save();
+
+            ElasticStars.addStarCount(paste, this);
         }
         PublicPasteEngagement.addInterestFromPaste(paste, 20);
     }
 
     public void unstar(Paste paste) {
         Repo.get(PasteStar.class)
-            .where("paste", paste.getKey())
-            .where("userId", id)
-            .delete();
+                .where("paste", paste.getKey())
+                .where("userId", id)
+                .delete();
+
+        ElasticStars.removeStarCount(paste, this);
         PublicPasteEngagement.addInterestFromPaste(paste, -20);
     }
 
     public boolean hasStarred(Paste paste) {
         return Repo.get(PasteStar.class)
-            .where("paste", paste.getKey())
-            .where("userId", id)
-            .count() > 0;
+                .where("paste", paste.getKey())
+                .where("userId", id)
+                .count() > 0;
     }
 
     public enum AuthenticationProvider {
@@ -194,5 +206,15 @@ public class User extends Model {
 
     public boolean isAdmin() {
         return type == Type.ADMIN;
+    }
+
+
+    public void delete() {
+        Repo.get(Paste.class).where("userId", id).get().forEach(Paste::delete);
+        Repo.get(Folder.class).where("userId", id).delete();
+        Repo.get(AuthKey.class).where("userId", id).delete();
+        Repo.get(Notification.class).where("userId", id).delete();
+        Repo.get(SharedPaste.class).where("targetId", id).orWhere("userId", id).delete();
+        super.delete();
     }
 }

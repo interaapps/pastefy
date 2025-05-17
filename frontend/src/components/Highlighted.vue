@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { findFromFileName } from '@/utils/lang-replacements.ts'
 import { highlight } from '@/utils/highlight.ts'
+import '@/utils/highlight-imports.ts'
 import highlightWorker from '@/utils/workers/highlight.worker.ts?worker'
 import CopyButton from '@/components/CopyButton.vue'
 

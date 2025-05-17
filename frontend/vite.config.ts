@@ -18,6 +18,14 @@ export default defineConfig({
   build: {
     outDir: '../backend/src/main/resources/static',
     emptyOutDir: true,
+    minify: true,
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      loader: {
+        '.keep': 'empty',
+      },
+    },
   },
   resolve: {
     alias: {

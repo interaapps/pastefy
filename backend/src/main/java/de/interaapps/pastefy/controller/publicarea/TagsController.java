@@ -1,7 +1,6 @@
 package de.interaapps.pastefy.controller.publicarea;
 
 import de.interaapps.pastefy.controller.HttpController;
-import de.interaapps.pastefy.exceptions.NotFoundException;
 import de.interaapps.pastefy.helper.RequestHelper;
 import de.interaapps.pastefy.model.database.algorithm.TagListing;
 import org.javawebstack.http.router.Exchange;

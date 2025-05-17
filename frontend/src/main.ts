@@ -1,6 +1,6 @@
 import './assets/main.css'
 
-import { createApp, defineCustomElement, type App as VueApp } from 'vue'
+import { createApp, defineCustomElement, type App as VueApp, defineAsyncComponent } from 'vue'
 import * as vueFunctions from 'vue'
 import { createPinia } from 'pinia'
 import theme from '@/theme.ts'
@@ -25,15 +25,14 @@ import VAnimateCss from 'v-animate-css'
 // @ts-ignore
 import vue3Shortkey from 'vue3-shortkey'
 
-import { InstallCodeMirror } from 'codemirror-editor-vue3'
 import { useAppInfoStore } from '@/stores/app-info.ts'
 import { useCurrentUserStore } from '@/stores/current-user.ts'
 import { useConfig } from '@/composables/config.ts'
-import Highlighted from '@/components/Highlighted.vue'
 import { registerEventHandlers } from '@/utils/theme-logic.ts'
 import type { Router } from 'vue-router'
 import { createPlugin, plugins } from '@/plugins.ts'
 import { useComponentInjectionStore } from '@/stores/component-injections.ts'
+import { useAppStore } from '@/stores/app.ts'
 
 declare global {
   interface Window {
@@ -59,7 +58,12 @@ export const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
-app.use(InstallCodeMirror)
+
+import('codemirror-editor-vue3').then(({ InstallCodeMirror }) => {
+  app.use(InstallCodeMirror)
+  useAppStore().codeMirrorAvailable = true
+})
+
 app.use(VAnimateCss)
 app.use(ViewTransitionsPlugin())
 
@@ -84,9 +88,12 @@ app.use(vue3Shortkey, { prevent: ['input', 'textarea'] })
 
 customElements.define(
   'pastefy-highlighted',
-  defineCustomElement(Highlighted, {
-    shadowRoot: false,
-  }),
+  defineCustomElement(
+    defineAsyncComponent(() => import('@/components/Highlighted.vue')),
+    {
+      shadowRoot: false,
+    },
+  ),
 )
 
 app.mount('#app')

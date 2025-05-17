@@ -12,7 +12,7 @@ public class StatsResponse {
         StatsResponse response = new StatsResponse();
 
         response.createdPastes = Repo.get(Paste.class).count();
-        response.loggedInPastes = Repo.get(Paste.class).query().notNull("userId").count();
+        response.loggedInPastes = Repo.get(Paste.class).query().whereNotNull("userId").count();
 
         return response;
     }

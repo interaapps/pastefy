@@ -1,4 +1,6 @@
-import hljs from 'highlight.js'
+import { hljs } from '@/utils/highlight.ts'
+import '@/utils/highlight-imports.ts'
+
 export function estimateTitle(contents: string) {
   let matched = contents.match(/^#(#?)(#?)(#?)(#?) ([^\n]*)(\n.*)?/s)
   if (matched !== null) {

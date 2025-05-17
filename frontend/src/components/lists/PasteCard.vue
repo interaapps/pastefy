@@ -3,7 +3,6 @@ import type { Paste } from '@/types/paste.ts'
 import Highlighted from '@/components/Highlighted.vue'
 import { computed } from 'vue'
 import CSVViewer from '@/components/previews/CSVViewer.vue'
-import { client } from '@/main.ts'
 import { useConfig } from '@/composables/config.ts'
 
 const props = defineProps<{

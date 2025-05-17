@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
+import de.interaapps.pastefy.model.elastic.ElasticPaste;
 import de.interaapps.pastefy.model.responses.user.PublicUserResponse;
 import org.javawebstack.http.router.Exchange;
 import org.javawebstack.orm.Repo;
@@ -32,6 +33,33 @@ public class PasteResponse {
 
     public Boolean starred = null;
 
+    public PasteResponse(ElasticPaste paste) {
+        if (paste == null) {
+            return;
+        }
+        id = paste.key;
+        rawURL = Pastefy.getInstance().getConfig().get("server.name", "http://localhost") + "/" + id + "/raw";
+        title = paste.title;
+        content = paste.content;
+        createdAt = paste.createdAt.toString();
+
+        if (paste.expireAt != null)
+            expireAt = paste.expireAt.toString();
+
+        encrypted = paste.encrypted;
+        userId = paste.userId;
+        forkedFrom = paste.forkedFrom;
+        visibility = paste.visibility;
+        if (paste.folder != null)
+            folder = paste.folder;
+        type = paste.type;
+        exists = true;
+
+        //tags = List.of(paste.tags);
+        if (paste.user != null) {
+            user = new PublicUserResponse(paste.user);
+        }
+    }
     public PasteResponse(Paste paste, User currentUser, boolean fetchStar, boolean fetchUser) {
         if (paste == null) {
             return;
@@ -56,7 +84,7 @@ public class PasteResponse {
 
         tags = paste.getTags();
 
-        if (fetchUser && paste.isPublic() && paste.getUserId() != null) {
+        if (fetchUser && paste.getUserId() != null) {
             User pasteUser = paste.getUser();
             if (pasteUser != null) {
                 user = new PublicUserResponse(pasteUser);

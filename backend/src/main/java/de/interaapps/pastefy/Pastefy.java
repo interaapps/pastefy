@@ -1,22 +1,26 @@
 package de.interaapps.pastefy;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.google.gson.Gson;
 import de.interaapps.pastefy.ai.PasteAI;
 import de.interaapps.pastefy.auth.*;
 import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Strategy;
 import de.interaapps.pastefy.auth.strategies.oauth2.providers.*;
+import de.interaapps.pastefy.cli.PastefyCLI;
 import de.interaapps.pastefy.controller.AppController;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.exceptions.AuthenticationException;
 import de.interaapps.pastefy.exceptions.FeatureDisabledException;
 import de.interaapps.pastefy.exceptions.NotFoundException;
 import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
+import de.interaapps.pastefy.helper.elastic.ElasticMigrator;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.plugins.PastefyBackendPlugin;
 import de.interaapps.pastefy.model.plugins.PastefyPlugin;
 import de.interaapps.pastefy.model.responses.ExceptionResponse;
+import io.minio.MinioClient;
 import io.undertow.util.FileUtils;
 import org.javawebstack.http.router.HTTPRouter;
 import org.javawebstack.http.router.handler.RequestHandler;
@@ -39,6 +43,7 @@ import org.javawebstack.webutils.config.MappingTryout;
 import org.javawebstack.webutils.middleware.CORSPolicy;
 import org.javawebstack.webutils.middleware.MultipartPolicy;
 import org.javawebstack.webutils.middleware.RateLimitMiddleware;
+import picocli.CommandLine;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,11 +74,17 @@ public class Pastefy {
     private boolean loginRequiredForCreate = false;
     private boolean publicPastesEnabled = false;
 
+    private ElasticsearchClient elasticsearchClient;
+    private MinioClient minioClient;
+
     private PasteAI pasteAI;
 
     private String homeHTML;
 
     private final Map<String, PastefyPlugin> plugins = new HashMap<>();
+
+    public final String[] INDEXES = new String[]{"pastefy_pastes"};
+    private ArrayList<String> availableIndexes = new ArrayList<>();
 
     public Pastefy() {
         config = new Config();
@@ -84,11 +95,23 @@ public class Pastefy {
         setupConfig();
         setupPassport();
         setupModels();
-        setupServer();
+        setupElastic();
+        setupMinio();
 
         if (config.has("ai.antrophic.token")) {
             pasteAI = new PasteAI(this);
         }
+    }
+
+    private void setupMinio() {
+        if (!config.has("minio.server") || !config.has("minio.access.key") || !config.has("minio.secret.key")) {
+            return;
+        }
+
+        minioClient = MinioClient.builder()
+            .endpoint(config.get("minio.server"))
+            .credentials(config.get("minio.access.key"), config.get("minio.secret.key"))
+            .build();
     }
 
     protected void setupConfig() {
@@ -114,6 +137,19 @@ public class Pastefy {
                 .map("PASTEFY_CUSTOM_BODY", "pastefy.custombody")
                 .map("PASTEFY_CUSTOM_HEADER", "pastefy.customheader")
                 .map("PASTEFY_PAGINATION_PAGE_LIMIT", "pastefy.paginaton.pagelimit")
+                .map("PASTEFY_DEV", "pastefy.dev")
+
+                .map("PASTEFY_AUTOMIGRATE", "pastefy.automigrate")
+
+                .map("ELASTICSEARCH_URL", "elasticsearch.url")
+                .map("ELASTICSEARCH_USER", "elasticsearch.user")
+                .map("ELASTICSEARCH_PASSWORD", "elasticsearch.password")
+                .map("ELASTICSEARCH_API_KEY", "elasticsearch.apikey")
+
+                .map("MINIO_SERVER", "minio.server")
+                .map("MINIO_BUCKET", "minio.bucket")
+                .map("MINIO_ACCESS_KEY", "minio.access.key")
+                .map("MINIO_SECRET_KEY", "minio.secret.key")
 
                 .map("AI_ANTHROPIC_TOKEN", "ai.antrophic.token")
 
@@ -192,7 +228,13 @@ public class Pastefy {
             }
 
 
-            SQLPool sqlPool = new SQLPool(new MinMaxScaler(config.getInt("database.pool.min", 10), config.getInt("database.pool.max", 10)), factory);
+            SQLPool sqlPool = new SQLPool(new MinMaxScaler(config.getInt("database.pool.min", 20), config.getInt("database.pool.max", 50)), factory);
+
+
+            if (this.isDevMode()) sqlPool.addQueryLogger((query, parameters) -> {
+                System.out.println(query + " | " + Arrays.toString(parameters));
+            });
+
             Handler handler = new ConsoleHandler();
             handler.setLevel(Level.ALL);
             Logger.getLogger("ORM").addHandler(handler);
@@ -203,12 +245,52 @@ public class Pastefy {
 
             ORM.register(Paste.class.getPackage(), sqlPool, ormConfig);
 
-            ORM.autoMigrate();
+            if (config.get("pastefy.automigrate", "true").equals("true")) {
+                ORM.autoMigrate();
+            }
+
         } catch (ORMConfigurationException e) {
             e.printStackTrace();
         }
 
         getBackendPlugins().forEach(PastefyBackendPlugin::setupModels);
+    }
+
+    protected void setupElastic() {
+        if (config.has("elasticsearch.url")) {
+            String host = config.get("elasticsearch.url");
+
+            elasticsearchClient = ElasticsearchClient.of(b -> {
+                b = b.host(host);
+                if (config.has("elasticsearch.user") && config.has("elasticsearch.password")) {
+                    System.out.println("ELASTIC: Using username and password for authentication");
+                    b = b.usernameAndPassword(config.get("elasticsearch.user", "elastic"), config.get("elasticsearch.password", "changeme"));
+                } else {
+                    System.out.println("ELASTIC: Using API key for authentication");
+                    b = b.apiKey(config.get("elasticsearch.apikey", "elastic"));
+                }
+                return b;
+            });
+
+            for (String index : INDEXES) {
+                try {
+                    if (elasticsearchClient.indices().exists(e -> e.index(index)).value()) {
+                        availableIndexes.add(index);
+                    }
+                } catch (IOException e) {
+                    System.out.println("ELASTIC: Index " + index + " does not exist");
+                }
+            }
+
+            if (config.get("pastefy.automigrate", "true").equals("true")) {
+                ElasticMigrator elasticMigrator = new ElasticMigrator(elasticsearchClient);
+                try {
+                    elasticMigrator.migrateAll();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
     protected void setupPassport() {
@@ -231,7 +313,7 @@ public class Pastefy {
         passport.use("oauth2", oAuth2Strategy);
     }
 
-    protected void setupServer() {
+    public void setupServer() {
         httpRouter.port(config.getInt("http.server.port", 80));
 
         if (config.has("http.server.cors")) {
@@ -378,6 +460,11 @@ public class Pastefy {
 
         getBackendPlugins().forEach(PastefyBackendPlugin::beforeRoutes);
 
+        httpRouter.get("/assets/{*:path}", e -> {
+            e.header("Cache-Control", "public, max-age=604800, immutable");
+            return null;
+        });
+
         httpRouter.get("/", requestHandler);
         httpRouter.staticResourceDirectory("/", "static");
 
@@ -395,7 +482,8 @@ public class Pastefy {
                 Repo.get(Paste.class)
                         .where("expireAt", "<", Timestamp.from(Instant.now()))
                         .whereNotNull("expireAt")
-                        .delete();
+                        .all()
+                        .forEach(Paste::delete);
             }
         }, 0, 1000 * 60);
         getBackendPlugins().forEach(PastefyBackendPlugin::setupServer);
@@ -403,12 +491,13 @@ public class Pastefy {
 
     public void start() {
         httpRouter.start();
+        httpRouter.join();
     }
 
     public static void main(String[] args) {
         instance = new Pastefy();
-
-        instance.start();
+        int exitCode = new CommandLine(new PastefyCLI()).execute(args);
+        System.exit(exitCode);
     }
 
     public Passport getPassport() {
@@ -456,5 +545,33 @@ public class Pastefy {
                 .filter(p -> p.backendPlugin != null)
                 .map(p -> p.backendPlugin)
                 .collect(Collectors.toList());
+    }
+
+    public ElasticsearchClient getElasticsearchClient() {
+        return elasticsearchClient;
+    }
+
+    public boolean isElasticsearchEnabled() {
+        return elasticsearchClient != null;
+    }
+
+    public MinioClient getMinioClient() {
+        return minioClient;
+    }
+
+    public boolean isMinioEnabled() {
+        return minioClient != null;
+    }
+
+    public String getMinioBucket() {
+        return config.get("minio.bucket");
+    }
+
+    public boolean isIndexAvailable(String index) {
+        return availableIndexes.contains(index);
+    }
+
+    public boolean isDevMode() {
+        return config.get("pastefy.dev", "false").toLowerCase(Locale.ROOT).equals("true");
     }
 }

@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
 import Divider from 'primevue/divider'
-import CreatePaste from '@/views/forms/CreatePaste.vue'
 import { useAppInfoStore } from '@/stores/app-info.ts'
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 import { useAppStore } from '@/stores/app.ts'
 import ComponentInjection from '@/components/ComponentInjection.vue'
+import { defineAsyncComponent } from 'vue'
+import LoadingContainer from '@/components/LoadingContainer.vue'
+
+const CreatePaste = defineAsyncComponent(() => import('@/components/forms/CreatePaste.vue'))
+
+defineProps<{
+  isHidden?: boolean
+}>()
 
 const appInfo = useAppInfoStore()
 const appStore = useAppStore()
@@ -54,7 +61,8 @@ const appStore = useAppStore()
       </nav>
       <Divider class="m-0" />
 
-      <CreatePaste />
+      <LoadingContainer v-if="!appStore.codeMirrorAvailable" />
+      <CreatePaste v-else-if="!isHidden" />
     </div>
 
     <div id="sidenav-center" />

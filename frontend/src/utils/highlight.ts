@@ -1,4 +1,5 @@
-import hljs from 'highlight.js'
+import hljsCore from 'highlight.js/lib/core'
+export const hljs = hljsCore
 
 const escapeHtml = (str: string) => {
   return str

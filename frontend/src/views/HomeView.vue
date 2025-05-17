@@ -88,10 +88,10 @@ await axios.post('/paste', {
             <div class="flex w-full items-center justify-between gap-2 p-2 px-5">
               <FolderCard
                 disabled
-                v-for="name of ['Game Scripts', 'Web', 'Mobile']"
+                v-for="(name, i) of ['Game Scripts', 'Web', 'Mobile']"
                 :key="name"
                 :folder="{
-                  id: '1',
+                  id: String(i),
                   name,
                   children: [],
                   created: '',

@@ -4,10 +4,12 @@ import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.exceptions.PermissionsDeniedException;
 import de.interaapps.pastefy.helper.RequestHelper;
 import de.interaapps.pastefy.model.database.*;
+import de.interaapps.pastefy.model.queryparams.PasteQueryParameters;
 import de.interaapps.pastefy.model.responses.folder.FolderResponse;
 import de.interaapps.pastefy.model.responses.paste.PasteResponse;
 import de.interaapps.pastefy.model.responses.user.UserPastesResponse;
 import de.interaapps.pastefy.model.responses.user.UserResponse;
+import de.interaapps.pastefy.services.PasteService;
 import org.javawebstack.http.router.Exchange;
 import org.javawebstack.http.router.router.annotation.PathPrefix;
 import org.javawebstack.http.router.router.annotation.With;
@@ -64,21 +66,19 @@ public class UserController extends HttpController {
         if (authKey != null)
             authKey.checkPermission("pastes:read");
 
-        Query<Paste> query = Repo.get(Paste.class).query().where("userId", user.id).order("createdAt", true);
-
-        if ("true".equalsIgnoreCase(exchange.query("hide_children", "false"))) {
-            query.whereNull("folder");
-        }
-
-        RequestHelper.pagination(query, exchange);
-        query.search(exchange.query("search"));
-        RequestHelper.queryFilter(query, exchange.getQueryParameters());
-        RequestHelper.filterTags(query, exchange.getQueryParameters());
-
-
-        return query.all().stream().map(p -> PasteResponse.create(p, exchange, user, false, false)).collect(Collectors.toList());
+        return PasteService
+                .getAllPastes(
+                    exchange,
+                    PasteQueryParameters.from(exchange)
+                        .setFilter("userId", user.getId()),
+                    false
+                );
     }
 
+
+    /**
+     * @deprecated This is not implemented anymore
+     */
     @Get("/sharedpastes")
     @With({"auth", "awaiting-access-check", "blocked-check"})
     public List<PasteResponse> getSharedPastes(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
@@ -113,19 +113,9 @@ public class UserController extends HttpController {
         if (authKey != null)
             authKey.checkPermission("stars:read");
 
-        Query<Paste> query = Repo.get(Paste.class)
-                .query()
-                .whereExists(PasteStar.class, (q) -> q
-                        .where(PasteStar.class, "paste", "=", Paste.class, "key")
-                        .where("userId", user.id)
-                );
-
-        RequestHelper.pagination(query, exchange);
-        query.search(exchange.query("search"));
-        RequestHelper.queryFilter(query, exchange.getQueryParameters());
-        RequestHelper.filterTags(query, exchange.getQueryParameters());
-
-        return query.order("created_at", true).all().stream().map(p -> PasteResponse.create(p, exchange, user, false, true)).collect(Collectors.toList());
+        return PasteService.getAllPastes(exchange, PasteQueryParameters.from(exchange)
+                .setFilter("starredBy", user.getId())
+        );
     }
 
 

@@ -2,9 +2,8 @@
 import Sidebar from '@/components/layout/Sidebar.vue'
 import Button from 'primevue/button'
 import Popover from 'primevue/popover'
-import { computed, ref, useTemplateRef } from 'vue'
+import { computed, defineAsyncComponent, ref, useTemplateRef } from 'vue'
 import { useConfig } from '@/composables/config.ts'
-import Logo from '@/components/Logo.vue'
 import type { PopoverMethods } from 'primevue'
 import { useCurrentUserStore } from '@/stores/current-user.ts'
 import { useRoute } from 'vue-router'
@@ -15,6 +14,8 @@ import GlobalSearch from '@/components/GlobalSearch.vue'
 import UserMenu from '@/components/popovers/UserMenu.vue'
 import ComponentInjection from '@/components/ComponentInjection.vue'
 const loginModalVisible = ref(false)
+
+const Logo = defineAsyncComponent(() => import('@/components/Logo.vue'))
 
 const userMenu = useTemplateRef<PopoverMethods>('userMenu')
 
@@ -37,6 +38,7 @@ const appInfo = useAppInfoStore()
   >
     <Sidebar
       class="fixed top-0 left-0 w-[340px] transition-all"
+      :is-hidden="!(isHomeMobile || config.sideBarShown)"
       :class="isHomeMobile ? 'w-full' : config.sideBarShown ? 'flex' : 'hidden'"
     />
     <div
