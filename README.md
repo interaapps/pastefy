@@ -145,6 +145,26 @@ PASTEFY_PUBLIC_STATS=false
 
 # Disables public pastes section
 PASTEFY_PUBLIC_PASTES=false
+
+# Disables sql automigration. Then you have to do it manually via pastefy.jar automigrate 
+PASTEFY_AUTOMIGRATE=false
+
+# Optional extras
+
+
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# When using minio you must use elasticsearch as well for search and paste previews. 
+MINIO_SERVER=https://...your minio s3 server
+MINIO_REGION=de
+MINIO_BUCKET=pastefy
+MINIO_ACCESS_KEY=
+MINIO_SECRET_KEY=
+
+ELASTICSEARCH_URL=http://...
+ELASTICSEARCH_USER=elastic
+ELASTICSEARCH_PASSWORD=pw
 ```
 ### Adding login
 You can choose between [INTERAAPPS](https://accounts.interaapps.de/developers/projects) (best integration), [GOOGLE](https://support.google.com/cloud/answer/6158849?hl=en), [GITHUB](https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app), [DISCORD](https://discord.com/developers/docs/topics/oauth2) or [TWITCH](https://dev.twitch.tv/docs/authentication) for the provider (You can use all of them at the same time).
