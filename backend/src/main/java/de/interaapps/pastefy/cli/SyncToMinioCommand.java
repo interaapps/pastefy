@@ -22,10 +22,10 @@ public class SyncToMinioCommand implements Callable<Integer> {
     private int batchSize = 100;
 
     @CommandLine.Option(names = {"-i", "--iterations"}, description = "Iterations")
-    private int iterations = 2000;
+    private int iterations = 500;
 
     @CommandLine.Option(names = {"-t", "--threads"}, description = "Number of threads")
-    private int threadCount = 10;
+    private int threadCount = 32;
 
 
 
@@ -45,11 +45,14 @@ public class SyncToMinioCommand implements Callable<Integer> {
             executor.submit(() -> {
                 System.out.println("iteration " + (finalI + 1) + "/" + iterations);
                 Repo.get(Paste.class).query()
-                        .where("storageType", "!=", Paste.StorageType.DATABASE)
+                        .where("storageType", Paste.StorageType.DATABASE)
+                        .orWhereNull("storageType")
                         .limit(size)
                         .offset(finalI * size)
                         .all()
-                        .forEach(MinioPaste::store);
+                        .forEach(p -> {
+                            MinioPaste.store(p);
+                        });
                 for (int i1 = 0; i1 < size; i1++) {
                     syncedCount.incrementAndGet();
                 }

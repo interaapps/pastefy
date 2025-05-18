@@ -41,7 +41,7 @@ public class PasteMetaController extends HttpController {
 
     @Get("/{paste}")
     public String pasteTags(Exchange exchange, @Path("paste") String pasteId) {
-        if (Pastefy.getInstance().getConfig().get("pastefy.metatags", "false").equalsIgnoreCase("true")) return null;
+        if (!Pastefy.getInstance().getConfig().get("pastefy.metatags", "false").equalsIgnoreCase("true")) return null;
         if (html == null || pasteId.length() != 8) return null;
 
         if (!isSocialMediaBot(exchange.header("User-Agent"))) return null;
@@ -87,19 +87,33 @@ public class PasteMetaController extends HttpController {
         if (userAgent == null) return false;
 
         String[] socialMediaBots = {
-                "Twitterbot",  // Twitter
-                "facebookexternalhit",  // Facebook
-                "Instagram",  // Instagram
-                "Googlebot",  // Google
-                "LinkedInBot",  // LinkedIn
-                "Pinterest",  // Pinterest
-                "Slackbot",  // Slack
-                "WhatsApp"  // WhatsApp
+                "Twitterbot",
+                "facebookexternalhit",
+                "Instagram",
+                "Googlebot",
+                "LinkedInBot",
+                "Pinterest",
+                "Slackbot",
+                "Telegram",
+                "Slackbot",
+                "Discord",
+                "Bingbot",
+                "DuckDuckBot",
+                "YandexBot",
+                "BaiduSpider",
+                "Sogou",
+                "Exabot",
+                "WhatsApp",
+                "WhatsApp",
+                "Line",
+                "Viber",
+                "WeChat",
+                "QQ",
         };
 
         // Check if userAgent contains any social media bot signature
         for (String bot : socialMediaBots) {
-            if (userAgent.contains(bot)) {
+            if (userAgent.toLowerCase().contains(bot.toLowerCase())) {
                 return true;  // Bot found
             }
         }

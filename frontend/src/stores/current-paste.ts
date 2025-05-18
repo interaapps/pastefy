@@ -73,6 +73,7 @@ export const useCurrentPasteStore = defineStore('current-paste', () => {
     selectMultiPart(i)
     type.value = 'MULTI_PASTE'
   }
+
   function selectMultiPart(index: number) {
     currentMultiPasteIndex.value = index
     const part = multiPastes.value[index]

@@ -80,9 +80,10 @@ const currentTitle = computed(() =>
 watch(
   currentTitle,
   useDebounceFn(async () => {
-    const ext = currentTitle.value.split('.').pop()
+    let ext = currentTitle.value.split('.').pop()
     let lang: string | undefined = undefined
     if (ext) {
+      if (ext === 'geojson') ext = 'json'
       const cmExt = CodeMirror.findModeByExtension(ext)
       if (cmExt) {
         await codemirrorLanguageImports[cmExt.mode]?.()
@@ -204,6 +205,7 @@ const showPreview = computed(() => {
       currentTitle.value.endsWith('.csv') ||
       currentTitle.value.endsWith('.mmd') ||
       currentTitle.value.endsWith('.svg') ||
+      currentTitle.value.endsWith('.geojson') ||
       currentTitle.value.endsWith('.mermaid')) &&
     isFullscreen.value
   )
@@ -221,6 +223,12 @@ const previewInfo = computed(() => {
       contents: currentPaste.contents,
       fileName: currentTitle.value,
       type: 'mermaid',
+    }
+  } else if (currentTitle.value?.endsWith('.geojson')) {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'geojson',
     }
   } else if (currentTitle.value?.endsWith('.svg')) {
     return {
@@ -344,6 +352,7 @@ const previewInfo = computed(() => {
           :contents="currentPaste.contents"
           :file-name="previewInfo?.fileName"
           :type="previewInfo.type"
+          in-editor
         />
         <ButtonGroup
           class="absolute"

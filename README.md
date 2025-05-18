@@ -21,6 +21,9 @@ Try out the public instance https://pastefy.app
 - Copy Button
 - Fork
 - An API ([Docs](https://github.com/interaapps/pastefy/wiki/API-v2))
+  - [Javascript/Typescript](https://github.com/interaapps/js-api-clients?tab=readme-ov-file#pastefy)
+  - [Java](https://github.com/interaapps/pastefy-java-apiclient)
+  - [Go](https://github.com/interaapps/pastefy-go-api)
 - Log in
   - Folders 
   - See your created pastes
@@ -29,6 +32,16 @@ Try out the public instance https://pastefy.app
 - Extensions:
   - VS-Code
   - Raycast
+- Previews for (file extension)
+  - **[See examples here](https://pastefy.app/EByZpNoS)**
+  - Markdown (.md)
+  - Mermaid (.mermaid or .mmd)
+  - SVG (.svg)
+  - CSV (.csv)
+  - GeoJSON (.geojson)
+  - Diff (.diff)
+  - calendar (.ics)
+  - regex (.regex)
 
 # Overview
 - [Screenshots](#Screenshots)

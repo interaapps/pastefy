@@ -13,6 +13,7 @@ import { useAppInfoStore } from '@/stores/app-info.ts'
 import GlobalSearch from '@/components/GlobalSearch.vue'
 import UserMenu from '@/components/popovers/UserMenu.vue'
 import ComponentInjection from '@/components/ComponentInjection.vue'
+import { useCurrentPasteStore } from '@/stores/current-paste.ts'
 const loginModalVisible = ref(false)
 
 const Logo = defineAsyncComponent(() => import('@/components/Logo.vue'))
@@ -29,12 +30,85 @@ const isHomeMobile = computed(() => route.name === 'home' && isMobile.value)
 const config = useConfig()
 
 const appInfo = useAppInfoStore()
+
+const handleDrop = async (event: DragEvent) => {
+  const currentPaste = useCurrentPasteStore()
+  const files = event.dataTransfer?.files || []
+
+  if (files?.length > 0) event.preventDefault()
+
+  const contents: { name: string; content: string }[] = []
+  if (files && files.length > 0) {
+    for (const file of files) {
+      const reader = new FileReader()
+
+      const disallowedTypes = [
+        'image/',
+        'video/',
+        'audio/',
+        'application/pdf',
+        'application/zip',
+        'application/octet-stream',
+      ]
+      if (
+        file.type !== 'image/svg+xml' &&
+        disallowedTypes.some((type) => file.type.startsWith(type) || file.type === type)
+      )
+        continue
+
+      const content = await new Promise<string>((res) => {
+        reader.onload = (e) => {
+          const content = e.target?.result
+          if (content) {
+            if (typeof content === 'string') {
+              res(content)
+            } else {
+              res('')
+            }
+          }
+        }
+        reader.readAsText(file)
+      })
+
+      contents.push({
+        name: file.name,
+        content,
+      })
+    }
+  }
+
+  if (contents.length === 0) return
+
+  let appendToMultiPart = currentPaste.type === 'MULTI_PASTE' || contents.length > 1
+  if (!appendToMultiPart && currentPaste.contents !== '') {
+    appendToMultiPart = true
+    currentPaste.addMultiPart()
+  }
+
+  if (appendToMultiPart) {
+    for (const { name, content } of contents) {
+      currentPaste.addMultiPart()
+      currentPaste.multiPastes[currentPaste.currentMultiPasteIndex!] = {
+        name: name,
+        contents: content,
+      }
+      currentPaste.selectMultiPart(currentPaste.currentMultiPasteIndex!)
+    }
+  } else {
+    currentPaste.title ||= contents[0].name
+    currentPaste.contents = contents[0].content
+  }
+}
 </script>
 <template>
   <div
     :class="`grid h-full w-full ${
       isHomeMobile ? 'grid-cols-1' : config.sideBarShown ? 'grid-cols-[340px_1fr]' : 'grid-cols-1'
     }`"
+    @dragover.prevent
+    @dragenter.prevent
+    @dragleave.prevent
+    @drop="handleDrop"
   >
     <Sidebar
       class="fixed top-0 left-0 w-[340px] transition-all"

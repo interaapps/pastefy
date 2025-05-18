@@ -197,8 +197,9 @@ const sharePopover = useTemplateRef<PopoverMethods>('sharePopover')
 
 const canPreview = computed(
   () =>
-    ['markdown', 'csv', 'mermaid', 'mmd'].includes(currentLang.value) ||
-    currentFileName.value?.endsWith('.svg'),
+    ['markdown', 'csv', 'mermaid', 'mmd', 'diff', 'ics', 'regex'].includes(currentLang.value) ||
+    currentFileName.value?.endsWith('.svg') ||
+    currentFileName.value?.endsWith('.geojson'),
 )
 const showPreview = ref(true)
 </script>
@@ -427,7 +428,7 @@ const showPreview = ref(true)
                   :label="part.name"
                   size="small"
                   :icon="`ti ti-${getIconByFileName(part.name)}`"
-                  class="rounded-none"
+                  class="rounded-none whitespace-pre"
                   text
                   :severity="multiPartIndex === index ? 'primary' : 'contrast'"
                   @click="selectMultiPart(index)"
@@ -437,7 +438,8 @@ const showPreview = ref(true)
 
             <div
               v-if="canPreview"
-              class="absolute top-1 right-1 z-10 flex gap-1 opacity-0 transition-all group-hover:opacity-100"
+              class="absolute right-1 z-1000 flex gap-1 opacity-0 transition-all group-hover:opacity-100"
+              :class="paste.type === 'MULTI_PASTE' ? 'top-[2.57rem]' : 'top-1'"
             >
               <Button
                 v-if="showPreview"
