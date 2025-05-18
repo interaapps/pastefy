@@ -112,7 +112,7 @@ const setValues = () => {
 
   useTitle(`${title.value || 'Untitled Paste'} | Pastefy`)
 
-  if (paste.value.type === 'MULTI_PASTE' && decrypted.value) {
+  if (paste.value.type === 'MULTI_PASTE' && (!paste.value.encrypted || decrypted.value)) {
     multiPasteParts.value = JSON.parse(content.value!) as MultiPastePart[]
     selectMultiPart(0)
   }
