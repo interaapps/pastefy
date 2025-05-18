@@ -81,11 +81,6 @@
             <version>9.2.0</version>
         </dependency>
         <dependency>
-            <groupId>com.github.interaapps</groupId>
-            <artifactId>accounts-java-client</artifactId>
-            <version>1.0.5</version>
-        </dependency>
-        <dependency>
             <groupId>com.anthropic</groupId>
             <artifactId>anthropic-java</artifactId>
             <version>1.2.0</version>

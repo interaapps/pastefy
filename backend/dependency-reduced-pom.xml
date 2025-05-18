@@ -10,6 +10,8 @@
         <directory>src/main/resources</directory>
         <includes>
           <include>static/**/*.*</include>
+          <include>fonts/**/*.*</include>
+          <include>templates/**/*.*</include>
         </includes>
       </resource>
     </resources>

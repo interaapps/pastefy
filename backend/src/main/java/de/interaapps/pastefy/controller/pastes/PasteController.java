@@ -1,7 +1,5 @@
 package de.interaapps.pastefy.controller.pastes;
 
-import de.interaapps.accounts.apiclient.AccountsClient;
-import de.interaapps.accounts.apiclient.responses.contacts.ContactResponse;
 import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.exceptions.NotFoundException;
@@ -254,46 +252,9 @@ public class PasteController extends HttpController {
     }
 
     @Post("/{id}/friend")
+    @Deprecated
     @With({"auth", "awaiting-access-check", "blocked-check"})
     public ActionResponse addFriend(Exchange exchange, @Body AddFriendToPasteRequest request, @Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey requestAuthKey) {
-        if (requestAuthKey != null)
-            requestAuthKey.checkPermission("pastes.friends:edit");
-
-        ActionResponse response = new ActionResponse();
-        Paste paste = Repo.get(Paste.class).where("key", id).first();
-
-        if (paste == null) {
-            throw new NotFoundException();
-        }
-
-        if (!paste.getUserId().equals(user.getId())) {
-            throw new PermissionsDeniedException();
-        }
-
-        if (user.authProvider == User.AuthenticationProvider.INTERAAPPS) {
-            AuthKey authKey = Repo.get(AuthKey.class).where("userId", user.id).where("type", AuthKey.Type.USER).order("createdAt", true).first();
-
-            AccountsClient accountsClient = new AccountsClient(authKey.accessToken);
-            for (ContactResponse contact : accountsClient.getContacts().stream().filter(contact -> contact.getName().equalsIgnoreCase(request.friend)).collect(Collectors.toList())) {
-                User friend = Repo.get(User.class).where("name", contact.getName()).where("authProvider", User.AuthenticationProvider.INTERAAPPS).first();
-                SharedPaste sharedPaste = new SharedPaste();
-                sharedPaste.setUser(user);
-                sharedPaste.setTarget(friend);
-                sharedPaste.setPaste(paste);
-                sharedPaste.save();
-
-                Notification notification = new Notification();
-                notification.setMessage(user.getName() + " shared a paste with you! Click to open.");
-                notification.url = "/" + paste.getKey();
-                friend.sendNotification(notification);
-                response.success = true;
-            }
-        } else {
-            throw new RuntimeException("NOT IMPLEMENTED");
-        }
-
-        return response;
+        throw new RuntimeException("NOT IMPLEMENTED");
     }
-
-
 }
