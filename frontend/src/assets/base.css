@@ -70,7 +70,7 @@
     }
   }
 
-  code:not(:has(pre)) {
+  code:not(:has(pre)):not(:has(div)) {
     @apply bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 px-1 rounded-sm border-neutral-300 border dark:border-neutral-700 text-sm;
   }
 

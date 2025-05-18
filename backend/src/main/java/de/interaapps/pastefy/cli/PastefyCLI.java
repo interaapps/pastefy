@@ -12,6 +12,7 @@ import picocli.CommandLine;
             StartServerCommand.class,
             AutoMigrateElasticCommand.class,
             SyncToElasticCommand.class,
+            SyncToMinioCommand.class,
             TestingCommand.class
         }
 )

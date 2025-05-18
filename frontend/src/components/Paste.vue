@@ -179,9 +179,13 @@ const appInfo = useAppInfoStore()
 const currentUser = useCurrentUserStore()
 
 const permission = computed(() => ({
-  canDelete: paste.value?.user_id && currentUser.user?.id === paste.value?.user_id,
+  canDelete:
+    currentUser.user?.type === 'ADMIN' ||
+    (paste.value?.user_id && currentUser.user?.id === paste.value?.user_id),
   canEdit: paste.value?.user_id && currentUser.user?.id === paste.value?.user_id,
-  showVisibility: paste.value?.user_id && currentUser.user?.id === paste.value?.user_id,
+  showVisibility:
+    currentUser.user?.type === 'ADMIN' ||
+    (paste.value?.user_id && currentUser.user?.id === paste.value?.user_id),
 }))
 
 const newTab = (u: string) => window.open(u)
@@ -190,6 +194,13 @@ const config = useConfig()
 
 const tagsPopover = useTemplateRef<PopoverMethods>('tagsPopover')
 const sharePopover = useTemplateRef<PopoverMethods>('sharePopover')
+
+const canPreview = computed(
+  () =>
+    ['markdown', 'csv', 'mermaid', 'mmd'].includes(currentLang.value) ||
+    currentFileName.value?.endsWith('.svg'),
+)
+const showPreview = ref(true)
 </script>
 <template>
   <div v-if="appInfo.appInfo?.login_required_for_read && !currentUser.user">
@@ -398,7 +409,7 @@ const sharePopover = useTemplateRef<PopoverMethods>('sharePopover')
         </div>
         <div class="w-full overflow-hidden">
           <div
-            class="w-full rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
+            class="group relative w-full rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
             :style="{
               'view-transition-name': `paste-${paste.id}-highlighted`,
             }"
@@ -424,9 +435,31 @@ const sharePopover = useTemplateRef<PopoverMethods>('sharePopover')
               </div>
             </div>
 
+            <div
+              v-if="canPreview"
+              class="absolute top-1 right-1 z-10 flex gap-1 opacity-0 transition-all group-hover:opacity-100"
+            >
+              <Button
+                v-if="showPreview"
+                label="show code"
+                size="small"
+                severity="secondary"
+                @click="showPreview = false"
+                class="border border-neutral-200 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800"
+              />
+              <Button
+                v-else
+                label="show preview"
+                size="small"
+                severity="secondary"
+                @click="showPreview = true"
+                class="border border-neutral-200 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800"
+              />
+            </div>
+
             <template v-if="content">
               <PastePreview
-                v-if="['markdown', 'csv', 'tex'].includes(currentLang)"
+                v-if="canPreview && showPreview"
                 :contents="content"
                 :file-name="currentFileName"
                 :type="currentLang"

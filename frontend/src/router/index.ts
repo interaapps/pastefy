@@ -47,6 +47,20 @@ const router = createRouter({
           component: () => import('@/views/developers/ApiKeysPage.vue'),
         },
 
+        /* {
+          path: '/search',
+          component: () => import('@/views/layouts/SearchLayout.vue'),
+          meta: {
+            noSpacing: true,
+          },
+          children: [
+            {
+              path: '',
+              name: 'search-pastes',
+              component: () => import('@/views/search/SearchPastes.vue'),
+            },
+          ],
+        }, */
         {
           path: '/admin',
           component: () => import('@/views/layouts/AdminLayout.vue'),
@@ -106,7 +120,6 @@ const config = useConfig()
 router.beforeResolve(async (to, from) => {
   if (config.value.animations) {
     const viewTransition = startViewTransition(async () => {
-      console.log(to.name)
       if (
         (to.name === 'paste' ||
           to.name === 'folder' ||

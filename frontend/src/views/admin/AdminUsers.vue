@@ -75,7 +75,7 @@ const deleteUser = async (id: string) => {
       <div
         v-for="user in users"
         :key="user.id"
-        class="flex items-center justify-between rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-700"
+        class="flex items-center justify-between rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-800"
       >
         <div class="flex items-center gap-4">
           <img :src="user.avatar" class="h-8 w-8 rounded-full" alt="avatar" />

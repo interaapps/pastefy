@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @CommandLine.Command(
-        name = "syncelastic",
+        name = "syncminio",
         mixinStandardHelpOptions = true,
-        description = "Sync data to elasticsearch"
+        description = "Sync data to minio"
 )
 public class SyncToMinioCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-s", "--size"}, description = "Batch size")
@@ -45,7 +45,7 @@ public class SyncToMinioCommand implements Callable<Integer> {
             executor.submit(() -> {
                 System.out.println("iteration " + (finalI + 1) + "/" + iterations);
                 Repo.get(Paste.class).query()
-                        .where("storageType", Paste.StorageType.S3)
+                        .where("storageType", "!=", Paste.StorageType.DATABASE)
                         .limit(size)
                         .offset(finalI * size)
                         .all()

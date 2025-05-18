@@ -112,7 +112,6 @@ public class MinioPaste extends AbstractObject {
     }
     public static MinioPaste fromPaste(Paste paste) {
         if (paste.getStorageType() != Paste.StorageType.S3) return null;
-        System.out.println(paste.getRawContent());
         return fromObject(AbstractElement.fromJson(paste.getRawContent()).object());
     }
 

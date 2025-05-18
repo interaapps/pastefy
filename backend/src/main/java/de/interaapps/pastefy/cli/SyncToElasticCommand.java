@@ -60,7 +60,7 @@ public class SyncToElasticCommand implements Callable<Integer> {
 
 
         executor.shutdown();
-        executor.awaitTermination(1, TimeUnit.HOURS);
+        executor.awaitTermination(2, TimeUnit.HOURS);
         System.out.println("done");
 
         return 0;

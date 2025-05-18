@@ -98,13 +98,13 @@ onMounted(async () => {
 </script>
 <template>
   <div
-    class="highlighted group relative flex w-full overflow-auto text-sm"
+    class="highlighted highlighted-group relative flex w-full overflow-auto text-sm"
     :class="`higlighted-${id}`"
   >
     <CopyButton
       v-if="showCopyButton"
       :contents
-      class="absolute top-2 right-2 opacity-0 transition-all group-hover:opacity-100"
+      class="highlighted-group-show absolute top-2 right-2 opacity-0 transition-all"
       :getCopyContents
     />
     <div
@@ -128,3 +128,15 @@ onMounted(async () => {
     </code>
   </div>
 </template>
+<style>
+.highlighted-group {
+  .highlighted-group-show {
+    opacity: 0;
+  }
+  &:hover {
+    .highlighted-group-show {
+      opacity: 1;
+    }
+  }
+}
+</style>

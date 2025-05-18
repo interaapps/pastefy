@@ -64,7 +64,6 @@ public class PasteQueryBuilder extends ListQueryTransformer<Paste, PasteResponse
     @Override
     protected void ormFieldFilter(QueryGroup<Paste> query, String operator, String key, AbstractElement value, boolean isOrFilter) {
         if (key.equals("starredBy")) {
-            System.out.println("starredBy " );
             Function<Query<PasteStar>, Query<PasteStar>> queryQueryFunction = (q) -> q
                     .where(PasteStar.class, "paste", "=", Paste.class, "key")
                     .where("userId", value.string());

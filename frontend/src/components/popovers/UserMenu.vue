@@ -6,6 +6,8 @@ import { ref } from 'vue'
 
 const currentUserStore = useCurrentUserStore()
 
+const emit = defineEmits(['elementClicked'])
+
 const settingsOpened = ref(false)
 </script>
 <template>
@@ -19,6 +21,7 @@ const settingsOpened = ref(false)
     size="small"
     fluid
     class="flex justify-start md:hidden"
+    @click="emit('elementClicked')"
   />
   <Button
     as="router-link"
@@ -30,6 +33,7 @@ const settingsOpened = ref(false)
     size="small"
     fluid
     class="flex justify-start md:hidden"
+    @click="emit('elementClicked')"
   />
   <Button
     as="router-link"
@@ -42,6 +46,7 @@ const settingsOpened = ref(false)
     size="small"
     fluid
     class="justify-start"
+    @click="emit('elementClicked')"
   />
   <Button
     as="router-link"
@@ -53,10 +58,16 @@ const settingsOpened = ref(false)
     size="small"
     fluid
     class="justify-start"
+    @click="emit('elementClicked')"
   />
   <Button
     text
-    @click="settingsOpened = true"
+    @click="
+      () => {
+        emit('elementClicked')
+        settingsOpened = true
+      }
+    "
     icon="ti ti-settings text-lg"
     label="Settings"
     severity="contrast"
@@ -75,6 +86,7 @@ const settingsOpened = ref(false)
     size="small"
     fluid
     class="justify-start"
+    @click="emit('elementClicked')"
   />
   <Button
     text
@@ -84,7 +96,12 @@ const settingsOpened = ref(false)
     size="small"
     fluid
     class="justify-start"
-    @click="currentUserStore.logout()"
+    @click="
+      () => {
+        emit('elementClicked')
+        currentUserStore.logout()
+      }
+    "
   />
 
   <SettingsModal v-model:visible="settingsOpened" />

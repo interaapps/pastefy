@@ -311,12 +311,8 @@ public class Paste extends Model {
 
         updatedAt = Timestamp.from(Instant.now());
 
-        System.out.println("saving to mysql");
         super.save();
 
-        System.out.println("done saving to mysql");
-        System.out.println("async");
-        System.out.println("elastic start");
         if (Pastefy.getInstance().isElasticsearchEnabled()) {
             Pastefy.getInstance().executeAsync(() -> MinioPaste.store(this));
         }
@@ -324,7 +320,6 @@ public class Paste extends Model {
         if (Pastefy.getInstance().isElasticsearchEnabled()) {
             Pastefy.getInstance().executeAsync(() -> ElasticPaste.store(this));
         }
-        System.out.println("async end");
     }
 
     public void superSave() {

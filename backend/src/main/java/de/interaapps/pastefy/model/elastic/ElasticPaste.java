@@ -70,7 +70,6 @@ public class ElasticPaste {
 
     public static void store(Paste paste) {
         if (Pastefy.getInstance().isElasticsearchEnabled()) {
-            System.out.println("Storing to elastic "+ paste.getId());
             try {
                 Pastefy.getInstance()
                         .getElasticsearchClient()

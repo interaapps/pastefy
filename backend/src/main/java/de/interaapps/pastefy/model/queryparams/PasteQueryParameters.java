@@ -33,7 +33,6 @@ public class PasteQueryParameters extends ListQueryParameters {
         boolean loggedIn = exchange.attrib("loggedIn");
         User user = exchange.attrib("user");
 
-        System.out.println("adding guard");
         AbstractArray orFilters = new AbstractArray();
         if (user == null || !user.isAdmin()) {
             if (user != null) {

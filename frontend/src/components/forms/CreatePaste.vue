@@ -197,6 +197,46 @@ watch(
     if (!ignoreUrlCheck.value) checkUrl()
   },
 )
+
+const showPreview = computed(() => {
+  return (
+    (cmOptions.value.mode === 'markdown' ||
+      currentTitle.value.endsWith('.csv') ||
+      currentTitle.value.endsWith('.mmd') ||
+      currentTitle.value.endsWith('.svg') ||
+      currentTitle.value.endsWith('.mermaid')) &&
+    isFullscreen.value
+  )
+})
+
+const previewInfo = computed(() => {
+  if (currentTitle.value?.endsWith('.csv')) {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'csv',
+    }
+  } else if (currentTitle.value?.endsWith('.mmd') || currentTitle.value?.endsWith('.mermaid')) {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'mermaid',
+    }
+  } else if (currentTitle.value?.endsWith('.svg')) {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'svg',
+    }
+  } else if (cmOptions.value.mode === 'markdown') {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'markdown',
+    }
+  }
+  return undefined
+})
 </script>
 <template>
   <div v-if="appInfo.appInfo?.login_required_for_create && !currentUserStore.user">
@@ -283,7 +323,7 @@ watch(
 
     <Teleport :disabled="!isFullscreen" to="body">
       <div
-        :class="`relative ${isFullscreen ? `!fixed top-0 ${config.sideBarShown ? 'left-[340px] w-[calc(100%-340px)]' : 'left-[0px] w-full'} h-full` : ''} ${isFullscreen && (cmOptions.mode === 'markdown' || currentTitle?.endsWith('.csv')) ? 'grid grid-cols-2' : ''}`"
+        :class="`relative ${isFullscreen ? `!fixed top-0 ${config.sideBarShown ? 'left-[340px] w-[calc(100%-340px)]' : 'left-[0px] w-full'} h-full` : ''} ${showPreview ? 'grid grid-cols-2' : ''}`"
       >
         <Codemirror
           class="w-full"
@@ -299,18 +339,11 @@ watch(
           @paste="pasteEvent"
         />
         <PastePreview
-          v-if="isFullscreen && cmOptions.mode === 'markdown'"
+          v-if="showPreview && previewInfo"
           class="w-full overflow-auto border-l border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
           :contents="currentPaste.contents"
-          file-name="test.md"
-          type="markdown"
-        />
-        <PastePreview
-          v-if="isFullscreen && currentTitle?.endsWith('.csv')"
-          class="w-full overflow-auto border-l border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
-          :contents="currentPaste.contents"
-          file-name="test.csv"
-          type="csv"
+          :file-name="previewInfo?.fileName"
+          :type="previewInfo.type"
         />
         <ButtonGroup
           class="absolute"

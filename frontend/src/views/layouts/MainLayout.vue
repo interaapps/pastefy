@@ -106,7 +106,11 @@ const appInfo = useAppInfoStore()
       <Button v-else class="cursor-default opacity-0" icon="ti ti-login text-xl" text />
     </div>
     <div v-if="config.sideBarShown" />
-    <div v-if="!isHomeMobile" class="w-full overflow-auto p-4 pt-18 md:p-8 md:pt-20">
+    <div
+      v-if="!isHomeMobile"
+      class="w-full overflow-auto"
+      :class="route.meta.noSpacing ? '' : 'p-4 pt-18 md:p-8 md:pt-20'"
+    >
       <ComponentInjection type="main-layout-main-top" />
       <div id="full-screen-content"></div>
       <router-view :key="route.fullPath" />
@@ -114,7 +118,7 @@ const appInfo = useAppInfoStore()
     </div>
   </div>
   <Popover ref="userMenu" class="w-[14rem]" :pt="{ content: 'p-0' }">
-    <UserMenu />
+    <UserMenu @element-clicked="userMenu?.hide()" />
   </Popover>
 
   <GlobalSearch />

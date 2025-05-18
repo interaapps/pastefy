@@ -6,6 +6,8 @@ import org.javawebstack.abstractdata.AbstractElement;
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.http.router.Exchange;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.function.Consumer;
 
 public class ListQueryParameters {
@@ -45,7 +47,6 @@ public class ListQueryParameters {
             filters.forEach((key, value) -> filters.set(key, AbstractDataHelper.ifArrayConvertToArray(value)));
             filters = new AbstractObject().set("$and", filters);
         }
-        System.out.println(filters.toJsonString());
     }
 
     public ListQueryParameters setFilter(String key, AbstractElement value) {
@@ -82,5 +83,14 @@ public class ListQueryParameters {
 
     public ListQueryParameters guarded(Exchange exchange) {
         return this;
+    }
+
+    public static String fromDate(long time) {
+        if (Pastefy.getInstance().isElasticsearchEnabled()) {
+            return String.valueOf(time);
+        }
+        Date date = new Date();
+        date.setTime(time);
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
     }
 }
