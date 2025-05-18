@@ -3,7 +3,7 @@ import Button from 'primevue/button'
 import Divider from 'primevue/divider'
 import InputText from 'primevue/inputtext'
 import { useUrlSearchParams } from '@vueuse/core'
-import PasteFilters from '@/components/filters/PasteFilters.vue'
+//import PasteFilters from '@/components/filters/PasteFilters.vue'
 
 const params = useUrlSearchParams<{
   search: string
@@ -45,7 +45,7 @@ const params = useUrlSearchParams<{
           severity="contrast"
         />
         <Divider />
-        <PasteFilters v-model:filters="params" />
+        <!-- <PasteFilters v-model:filters="params" />-->
       </div>
     </div>
     <div class="flex w-full flex-col">
