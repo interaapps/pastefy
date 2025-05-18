@@ -8,7 +8,7 @@ COPY frontend app
 RUN npm run --prefix app build
 
 
-FROM maven:3.6.0-jdk-8-slim AS build
+FROM maven:3.8.3-eclipse-temurin-17 AS build
 
 WORKDIR /
 
@@ -17,7 +17,7 @@ COPY backend/pom.xml /home/app
 COPY --from=frontend backend/src/main/resources/static /home/app/src/main/resources/static
 RUN mvn -f /home/app/pom.xml clean package
 
-FROM openjdk:8-jre-slim
+FROM eclipse-temurin:17
 COPY --from=build /home/app/target/backend.jar /usr/local/lib/backend.jar
 # COPY .env .env
 
