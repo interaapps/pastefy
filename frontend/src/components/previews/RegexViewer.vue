@@ -11,11 +11,11 @@
           <label class="text-lg font-semibold text-neutral-700 dark:text-neutral-300">
             Test Input
           </label>
-          <InputText v-model="flags" placeholder="z. B. g, i, m" size="small" class="w-[5rem]" />
+          <InputText v-model="flags" placeholder="g, i, m" size="small" class="w-[5rem]" />
         </div>
         <div class="relative">
           <div
-            class="pointer-events-none absolute h-full w-full px-(--p-textarea-padding-x) py-(--p-textarea-padding-y) whitespace-pre"
+            class="pointer-events-none absolute h-full w-full px-(--p-textarea-padding-x) py-(--p-textarea-padding-y) whitespace-pre-wrap"
             v-html="highlightedResult || '&nbsp;'"
           />
           <Textarea
@@ -25,6 +25,7 @@
             class="relative z-10 bg-transparent text-transparent caret-neutral-500"
             style="font-size: 1rem"
             auto-resize
+            wrap="hard"
           />
         </div>
       </div>

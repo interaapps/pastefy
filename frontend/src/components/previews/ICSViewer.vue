@@ -10,6 +10,7 @@ const events = ref<
     uid: string
     summary?: string
     location?: string
+    description?: string
     organizer?: string
     attendees?: string[]
     start: Date
@@ -37,6 +38,7 @@ try {
     return {
       uid: event.uid,
       summary: event.summary,
+      description: event.description,
       location: event.location,
       organizer: event.organizer,
       color: event.color,
@@ -75,6 +77,7 @@ try {
             {{ event.attendees.join(', ') }}
           </div>
         </div>
+        <p v-if="event.description">{{ event.description }}</p>
         <div class="flex items-center gap-2 opacity-60">
           <i class="ti ti-clock text-xl" />
           {{ event.start.toLocaleString() }} → {{ event.end?.toLocaleString() }}

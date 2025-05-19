@@ -285,7 +285,7 @@ public class Paste extends Model {
     }
 
     public AbstractArray getMultiPasteParts() {
-        return AbstractElement.fromJson(content).array();
+        return AbstractElement.fromJson(getContent()).array();
     }
 
     public Boolean isIndexedInElastic() {
