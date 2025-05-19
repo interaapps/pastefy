@@ -141,6 +141,14 @@ public class Pastefy {
                 .map("OAUTH2_GOOGLE_CLIENT_SECRET", "oauth2.google.secret")
                 .map("OAUTH2_DISCORD_CLIENT_ID", "oauth2.discord.id")
                 .map("OAUTH2_DISCORD_CLIENT_SECRET", "oauth2.discord.secret")
+
+                .map("OAUTH2_OIDC_CLIENT_ID", "oauth2.oidc.id")
+                .map("OAUTH2_OIDC_CLIENT_SECRET", "oauth2.oidc.secret")
+                .map("OAUTH2_OIDC_AUTH_ENDPOINT", "oauth2.oidc.authendpoint")
+                .map("OAUTH2_OIDC_TOKEN_ENDPOINT", "oauth2.oidc.tokenendpoint")
+                .map("OAUTH2_OIDC_USERINFO_ENDPOINT", "oauth2.oidc.userinfoendpoint")
+
+
                 .map("PASTEFY_GRANT_ACCESS_REQUIRED", "pastefy.grantaccessrequired")
                 .map("PASTEFY_LOGIN_REQUIRED", "pastefy.loginrequired")
                 .map("PASTEFY_LOGIN_REQUIRED_CREATE", "pastefy.loginrequired.create")
@@ -326,6 +334,15 @@ public class Pastefy {
             oAuth2Strategy.use("github", new GitHubOAuth2Provider(getConfig().get("oauth2.github.id"), getConfig().get("oauth2.github.secret")));
         if (!getConfig().get("oauth2.twitch.id", "NONE").equalsIgnoreCase("NONE"))
             oAuth2Strategy.use("twitch", new TwitchOAuth2Provider(getConfig().get("oauth2.twitch.id"), getConfig().get("oauth2.twitch.secret")));
+        if (!getConfig().get("oauth2.oidc.id", "NONE").equalsIgnoreCase("NONE")) {
+            oAuth2Strategy.use("custom", new CustomOAuth2Provider(
+                    getConfig().get("oauth2.oidc.id"),
+                    getConfig().get("oauth2.oidc.secret"),
+                    getConfig().get("oauth2.oidc.authendpoint"),
+                    getConfig().get("oauth2.oidc.tokenendpoint"),
+                    getConfig().get("oauth2.oidc.userinfoendpoint")
+            ));
+        }
 
         getBackendPlugins().forEach(PastefyBackendPlugin::setupPassport);
         passport.use("oauth2", oAuth2Strategy);

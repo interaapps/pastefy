@@ -191,6 +191,15 @@ OAUTH2_INTERAAPPS_CLIENT_ID=dan3q9n
 OAUTH2_INTERAAPPS_CLIENT_SECRET=ASDFASDF
 ```
 
+#### Custom OIDC Example
+```properties
+OAUTH2_CUSTOM_CLIENT_ID=CLIENT_ID
+OAUTH2_CUSTOM_CLIENT_SECRET=SECRET
+OAUTH2_CUSTOM_AUTH_ENDPOINT=https://accounts.interaapps.de/auth/oauth2
+OAUTH2_CUSTOM_TOKEN_ENDPOINT=https://accounts.interaapps.de/api/v2/authorization/oauth2/access_token
+OAUTH2_CUSTOM_USERINFO_ENDPOINT=https://accounts.interaapps.de/api/v2/oidc/userinfo
+```
+
 ## Develop
 #### Build frontend into the backend
 ```bash
