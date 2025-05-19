@@ -335,7 +335,7 @@ public class Pastefy {
         if (!getConfig().get("oauth2.twitch.id", "NONE").equalsIgnoreCase("NONE"))
             oAuth2Strategy.use("twitch", new TwitchOAuth2Provider(getConfig().get("oauth2.twitch.id"), getConfig().get("oauth2.twitch.secret")));
         if (!getConfig().get("oauth2.oidc.id", "NONE").equalsIgnoreCase("NONE")) {
-            oAuth2Strategy.use("custom", new CustomOAuth2Provider(
+            oAuth2Strategy.use("oidc", new CustomOAuth2Provider(
                     getConfig().get("oauth2.oidc.id"),
                     getConfig().get("oauth2.oidc.secret"),
                     getConfig().get("oauth2.oidc.authendpoint"),

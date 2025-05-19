@@ -145,6 +145,7 @@ public class User extends Model {
         GOOGLE(GoogleOAuth2Provider.class, "google"),
         GITHUB(GitHubOAuth2Provider.class, "github"),
         TWITCH(TwitchOAuth2Provider.class, "twitch"),
+        OIDC(CustomOAuth2Provider.class, "oidc"),
         DISCORD(DiscordOAuth2Provider.class, "discord");
 
         private Class<? extends OAuth2Provider> oauth2Service;
