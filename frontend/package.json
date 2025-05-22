@@ -27,6 +27,7 @@
     "@types/qrcode": "^1.5.5",
     "@vue-leaflet/vue-leaflet": "^0.10.1",
     "@vueuse/core": "^13.0.0",
+    "asciinema-player": "^3.9.0",
     "axios": "^1.8.4",
     "codemirror": "^5.65.19",
     "codemirror-editor-vue3": "^2.8.0",

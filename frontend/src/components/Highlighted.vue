@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { findFromFileName } from '@/utils/lang-replacements.ts'
 import { highlight } from '@/utils/highlight.ts'
 import '@/utils/highlight-imports.ts'
@@ -91,6 +91,13 @@ const initHighlight = () => {
     addColorIndicators()
   }
 }
+
+watch(
+  () => props.contents,
+  () => {
+    initHighlight()
+  },
+)
 
 onMounted(async () => {
   initHighlight()

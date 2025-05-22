@@ -165,7 +165,13 @@ const pasteEvent = async (e: unknown) => {
   if (e instanceof ClipboardEvent) {
     const data = e.clipboardData?.getData('text')
     if (data && !(e.target as HTMLTextAreaElement)?.value && currentPaste.title === '') {
-      const title = estimateTitle(data.trim())
+      const inData = data.trim()
+
+      if (inData.length > 100_000) {
+        return
+      }
+
+      const title = estimateTitle(inData)
 
       if (!title) return
 

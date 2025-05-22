@@ -12,6 +12,9 @@ const GeoJSONViewer = defineAsyncComponent(() => import('@/components/previews/G
 const DiffViewer = defineAsyncComponent(() => import('@/components/previews/DiffViewer.vue'))
 const ICSViewer = defineAsyncComponent(() => import('@/components/previews/ICSViewer.vue'))
 const RegexViewer = defineAsyncComponent(() => import('@/components/previews/RegexViewer.vue'))
+const AsciinemaViewer = defineAsyncComponent(
+  () => import('@/components/previews/AsciinemaViewer.vue'),
+)
 
 defineProps<{
   fileName?: string
@@ -33,5 +36,6 @@ defineProps<{
   <DiffViewer v-else-if="type === 'diff'" :diff="contents" :inEditor />
   <ICSViewer v-else-if="type === 'ics'" :ics="contents" :inEditor />
   <RegexViewer v-else-if="type === 'regex'" :regex="contents" :inEditor />
+  <AsciinemaViewer v-else-if="type === 'cast'" :cast="contents" :inEditor />
   <!-- <LaTeXViewer v-else-if="type === 'tex'" :latex="contents" /> -->
 </template>

@@ -29,6 +29,9 @@ const Highlighted = defineAsyncComponent(() => import('@/components/Highlighted.
 const props = defineProps<{
   pasteId: string
   asEmbed?: boolean
+  hideTitle?: boolean
+  hideActions?: boolean
+  hideEmbedBottom?: boolean
 }>()
 
 const password = ref<string | undefined>(undefined)
@@ -118,6 +121,7 @@ const setValues = () => {
   }
 
   emit('update-height')
+  setTimeout(() => emit('update-height'), 500)
 }
 
 const copied = ref(false)
@@ -197,7 +201,9 @@ const sharePopover = useTemplateRef<PopoverMethods>('sharePopover')
 
 const canPreview = computed(
   () =>
-    ['markdown', 'csv', 'mermaid', 'mmd', 'diff', 'ics', 'regex'].includes(currentLang.value) ||
+    ['markdown', 'csv', 'mermaid', 'mmd', 'diff', 'ics', 'regex', 'cast'].includes(
+      currentLang.value,
+    ) ||
     currentFileName.value?.endsWith('.svg') ||
     currentFileName.value?.endsWith('.geojson'),
 )
@@ -241,7 +247,7 @@ const showPreview = ref(true)
   </main>
   <div v-else-if="paste" class="flex h-full w-full justify-center">
     <div class="flex w-full flex-col gap-2" :class="config.sideBarShown ? '' : 'xl:pl-[3.75rem]'">
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3" v-if="!hideTitle">
         <h1
           class="text-2xl font-bold break-all"
           id="paste-title"
@@ -259,12 +265,12 @@ const showPreview = ref(true)
           <span class="text-sm font-normal">{{ paste.visibility }}</span>
         </div>
       </div>
-      <div id="below-title" />
       <ComponentInjection type="paste-below-title" :value="paste" />
       <div class="relative flex w-full flex-col gap-3 md:flex-row-reverse">
         <div
           class="top-0 flex h-fit flex-wrap items-center md:sticky md:w-[3rem] md:flex-col"
           v-animate-css="'fadeIn'"
+          v-if="!hideActions"
         >
           <ComponentInjection type="paste-actions-first" :value="paste" />
           <Button
@@ -475,7 +481,7 @@ const showPreview = ref(true)
             </template>
 
             <div
-              v-if="asEmbed"
+              v-if="asEmbed && !hideEmbedBottom"
               class="flex overflow-auto border-t border-neutral-200 p-0.5 dark:border-neutral-700"
             >
               <Button
@@ -492,7 +498,6 @@ const showPreview = ref(true)
         </div>
       </div>
 
-      <div id="below-code" />
       <ComponentInjection type="paste-below-code" :value="paste" />
     </div>
   </div>

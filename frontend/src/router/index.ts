@@ -46,6 +46,15 @@ const router = createRouter({
           name: 'api-keys',
           component: () => import('@/views/developers/ApiKeysPage.vue'),
         },
+        {
+          path: '/connect/asciinema',
+          name: 'connect-asciinema',
+          component: () => import('@/views/extra/AsciinemaConnectView.vue'),
+        },
+        {
+          path: '/connect/:ignore',
+          redirect: { name: 'connect-asciinema' },
+        },
 
         /* {
           path: '/search',
