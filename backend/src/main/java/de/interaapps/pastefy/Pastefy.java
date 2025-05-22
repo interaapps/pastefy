@@ -416,8 +416,18 @@ public class Pastefy {
             String accessToken = null;
             if (exchange.header("x-auth-key") != null)
                 accessToken = exchange.header("x-auth-key");
-            if (exchange.bearerAuth() != null)
+
+            if (exchange.bearerAuth() != null) {
                 accessToken = exchange.bearerAuth();
+            } else if (exchange.header("Authorization") != null) {
+                if (exchange.header("Authorization").startsWith("Basic ")) {
+                    String authorization = new String(Base64.getDecoder().decode(exchange.header("Authorization").substring(6)));
+                    String[] parts = authorization.split(":");
+                    if (parts.length == 2) {
+                        accessToken = parts[1];
+                    }
+                }
+            }
 
             if (accessToken != null) {
                 AuthKey authKey = Repo.get(AuthKey.class).where("key", accessToken).first();

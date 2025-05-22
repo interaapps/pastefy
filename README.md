@@ -42,6 +42,7 @@ Try out the public instance https://pastefy.app
   - Diff (.diff)
   - calendar (.ics)
   - regex (.regex)
+  - [Asciinema recordings](https://docs.asciinema.org/getting-started/) (.cast) [(Example)](https://pastefy.app/ar9ehz8w)
 
 # Overview
 - [Screenshots](#Screenshots)
@@ -180,7 +181,7 @@ ELASTICSEARCH_USER=elastic
 ELASTICSEARCH_PASSWORD=pw
 ```
 ### Adding login
-You can choose between [INTERAAPPS](https://accounts.interaapps.de/developers/projects) (best integration), [GOOGLE](https://support.google.com/cloud/answer/6158849?hl=en), [GITHUB](https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app), [DISCORD](https://discord.com/developers/docs/topics/oauth2) or [TWITCH](https://dev.twitch.tv/docs/authentication) for the provider (You can use all of them at the same time).
+You can choose between [INTERAAPPS](https://accounts.interaapps.de/developers) (best integration), [GOOGLE](https://support.google.com/cloud/answer/6158849?hl=en), [GITHUB](https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app), [DISCORD](https://discord.com/developers/docs/topics/oauth2) or [TWITCH](https://dev.twitch.tv/docs/authentication) for the provider (You can use all of them at the same time).
 ```properties
 OAUTH2_${provider}_CLIENT_ID=${client_id}
 OAUTH2_${provider}_CLIENT_SECRET=${client_secret}
@@ -226,3 +227,30 @@ You can find the docs of the Pastefy-Rest-APi here: [Github Wiki](https://github
 If you want to give yourself the admin role, you have to log into your MySQL server and set `type` on your account to `ADMIN` in the `pastefy_users` table.
 
 You'll find the admin panel under `https://YOUR_URL/admin`
+
+
+## Extra Features
+### Upload via Curl
+```bash
+curl -F f=@file.txt pastefy.app
+```
+### Asciinema support
+
+configure: `nano ~/.config/asciinema/config`
+```
+[api]
+url = https://pastefy.app
+```
+
+Using asciinema
+```bash
+asciinema rec test.cast
+# ...
+asciinema upload test.cast
+
+# Authenticate via Pastefy
+# Pastefy will request you to set the install-id via `echo YOUR_PASTEFY_API_KEY > ~/.config/asciinema/install-id`
+asciinema auth
+
+asciinema upload test.cast
+```
