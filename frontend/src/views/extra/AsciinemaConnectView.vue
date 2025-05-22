@@ -49,8 +49,10 @@
 
     <div class="mb-7">
       <h3 class="mb-2 text-lg">Add Api-Key to Asciicema Config</h3>
-      <div class="rounded-xl border border-neutral-200 bg-neutral-100">
-        <div class="w-full border-b border-neutral-200 p-1 px-3">
+      <div
+        class="rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
+      >
+        <div class="w-full border-b border-neutral-200 p-1 px-3 dark:border-neutral-700">
           <span class="text-sm">bash</span>
         </div>
         <Highlighted
