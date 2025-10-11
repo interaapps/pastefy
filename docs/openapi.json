@@ -1,0 +1,873 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Pastefy API",
+    "version": "2.0",
+    "description": "API specification for Pastefy.app"
+  },
+  "servers": [
+    {
+      "url": "https://pastefy.app/api/v2",
+      "description": "Production server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "PasteVisibility": {
+        "type": "string",
+        "enum": [
+          "PUBLIC",
+          "PRIVATE",
+          "UNLISTED"
+        ]
+      },
+      "PasteType": {
+        "type": "string",
+        "enum": [
+          "PASTE",
+          "MULTI_PASTE"
+        ]
+      },
+      "Paste": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "encrypted": {
+            "type": "boolean"
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/PasteVisibility"
+          },
+          "raw_url": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PasteType"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expire_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "forked_from": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "folder": {
+            "type": "string"
+          },
+          "starred": {
+            "type": "boolean"
+          },
+          "ai": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreatePasteRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "encrypted": {
+            "type": "boolean"
+          },
+          "folder": {
+            "type": "string"
+          },
+          "expireAt": {
+            "type": "string"
+          },
+          "forkedFrom": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/PasteVisibility"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PasteType"
+          },
+          "ai": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "content"
+        ]
+      },
+      "EditPasteRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "encrypted": {
+            "type": "boolean"
+          },
+          "folder": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PasteType"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/PasteVisibility"
+          },
+          "expireAt": {
+            "type": "string"
+          }
+        }
+      },
+      "Folder": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Folder"
+            }
+          },
+          "pastes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Paste"
+            }
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreateFolderRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "parent": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UserType": {
+        "type": "string",
+        "enum": [
+          "ADMIN",
+          "USER",
+          "BLOCKED",
+          "AWAITING_ACCESS"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "logged_in": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "profile_picture": {
+            "type": "string"
+          },
+          "auth_type": {
+            "type": "string"
+          },
+          "auth_types": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "type": {
+            "$ref": "#/components/schemas/UserType"
+          }
+        }
+      },
+      "UserAsAdmin": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "uniqueName": {
+            "type": "string"
+          },
+          "eMail": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "authId": {
+            "type": "string"
+          },
+          "authProvider": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/UserType"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        }
+      },
+      "UserOverview": {
+        "type": "object",
+        "properties": {
+          "pastes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Paste"
+            }
+          },
+          "folders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Folder"
+            }
+          }
+        }
+      },
+      "ApiKey": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          }
+        }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "tag": {
+            "type": "string"
+          },
+          "paste_count": {
+            "type": "integer"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/paste": {
+      "post": {
+        "summary": "Create a paste",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePasteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paste created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "paste": {
+                      "$ref": "#/components/schemas/Paste"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get pastes",
+        "parameters": [
+          {
+            "name": "filter_tags",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of pastes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Paste"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paste/{id}": {
+      "get": {
+        "summary": "Get a single paste",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paste details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Paste"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Edit a paste",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditPasteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Paste updated"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a paste",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Paste deleted"
+          }
+        }
+      }
+    },
+    "/paste/{id}/star": {
+      "post": {
+        "summary": "Star a paste",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Paste starred"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Unstar a paste",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Paste unstarred"
+          }
+        }
+      }
+    },
+    "/paste/{id}/raw": {
+      "get": {
+        "summary": "Get raw paste content",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "part",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Raw paste content",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public-pastes": {
+      "get": {
+        "summary": "Get public pastes",
+        "parameters": [
+          {
+            "name": "filter_tags",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Public pastes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Paste"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public-pastes/trending": {
+      "get": {
+        "summary": "Get trending public pastes",
+        "parameters": [
+          {
+            "name": "filter_tags",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "trending",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trending pastes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Paste"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/folder": {
+      "post": {
+        "summary": "Create a folder",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFolderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Folder created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "folder": {
+                      "$ref": "#/components/schemas/Folder"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get folders",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of folders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Folder"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/keys": {
+      "post": {
+        "summary": "Create an API key",
+        "responses": {
+          "200": {
+            "description": "API key created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiKey"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get API keys",
+        "responses": {
+          "200": {
+            "description": "List of API keys",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/keys/{id}": {
+      "delete": {
+        "summary": "Delete an API key",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "API key deleted"
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "summary": "Get current user",
+        "responses": {
+          "200": {
+            "description": "Current user info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/overview": {
+      "get": {
+        "summary": "Get user overview",
+        "responses": {
+          "200": {
+            "description": "User overview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOverview"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/pastes": {
+      "get": {
+        "summary": "Get user pastes",
+        "parameters": [
+          {
+            "name": "filter_tags",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of user pastes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Paste"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/starred-pastes": {
+      "get": {
+        "summary": "Get starred pastes",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Starred pastes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Paste"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
