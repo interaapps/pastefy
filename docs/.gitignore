@@ -1,0 +1,14 @@
+node_modules
+.vitepress/dist
+.vitepress/cache
+.DS_Store
+.env
+dist
+.vscode
+.idea
+*.log
+*.local
+*.swp
+*.swo
+*.bak
+*.tmp

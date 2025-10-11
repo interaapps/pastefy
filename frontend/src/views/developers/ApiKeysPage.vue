@@ -80,7 +80,7 @@ const clipboard = useClipboard()
     <div class="flex justify-end gap-1">
       <Button
         as="a"
-        href="https://intera.dev/docs/pastefy/spec"
+        href="https://docs.pastefy.app"
         target="_blank"
         label="api-docs"
         text
