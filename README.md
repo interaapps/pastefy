@@ -20,7 +20,7 @@ Try out the public instance https://pastefy.app
 - Raw-Preview
 - Copy Button
 - Fork
-- An API ([Docs](https://github.com/interaapps/pastefy/wiki/API-v2))
+- An API ([Docs](https://docs.pastefy.app/api/))
   - [Javascript/Typescript](https://github.com/interaapps/js-api-clients?tab=readme-ov-file#pastefy)
   - [Java](https://github.com/interaapps/pastefy-java-apiclient)
   - [Go](https://github.com/interaapps/pastefy-go-api)
