@@ -56,7 +56,7 @@ const router = createRouter({
           redirect: { name: 'connect-asciinema' },
         },
 
-        /* {
+        {
           path: '/search',
           component: () => import('@/views/layouts/SearchLayout.vue'),
           meta: {
@@ -69,7 +69,7 @@ const router = createRouter({
               component: () => import('@/views/search/SearchPastes.vue'),
             },
           ],
-        }, */
+        },
         {
           path: '/admin',
           component: () => import('@/views/layouts/AdminLayout.vue'),
@@ -80,12 +80,12 @@ const router = createRouter({
               component: () => import('@/views/admin/AdminHome.vue'),
             },
             {
-              path: '/pastes',
+              path: 'pastes',
               name: 'admin-pastes',
               component: () => import('@/views/admin/AdminPastes.vue'),
             },
             {
-              path: '/users',
+              path: 'users',
               name: 'admin-users',
               component: () => import('@/views/admin/AdminUsers.vue'),
             },

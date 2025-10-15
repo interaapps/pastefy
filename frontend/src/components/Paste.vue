@@ -205,6 +205,9 @@ const canPreview = computed(
       currentLang.value,
     ) ||
     currentFileName.value?.endsWith('.svg') ||
+    currentFileName.value?.endsWith('.cast') ||
+    currentFileName.value?.endsWith('.mmd') ||
+    currentFileName.value?.endsWith('.mermaid') ||
     currentFileName.value?.endsWith('.geojson'),
 )
 const showPreview = ref(true)
@@ -400,9 +403,12 @@ const showPreview = ref(true)
             aria-label="Delete"
           />
           <ComponentInjection type="paste-actions-before-profile" :value="paste" />
-          <router-link
+          <component
+            :is="asEmbed ? 'a' : 'router-link'"
             v-if="paste?.user?.avatar"
             :to="{ name: 'user', params: { user: paste.user.name } }"
+            :href="router.resolve({ name: 'user', params: { user: paste.user.name } }).href"
+            :target="asEmbed ? '_blank' : undefined"
             class="ml-2 block md:mt-2 md:ml-0"
             v-tooltip="{ value: paste.user.name || paste.user.display_name, showDelay: 500 }"
           >
@@ -411,7 +417,7 @@ const showPreview = ref(true)
               :src="paste?.user?.avatar"
               alt="profile picture"
             />
-          </router-link>
+          </component>
           <ComponentInjection type="paste-actions-last" :value="paste" />
         </div>
         <div class="w-full overflow-hidden">
@@ -514,9 +520,12 @@ const showPreview = ref(true)
 
   <Popover ref="tagsPopover">
     <div v-if="paste?.tags?.length" class="flex max-w-[20rem] flex-wrap gap-2">
-      <router-link
+      <component
+        :is="asEmbed ? 'a' : 'router-link'"
         v-for="tag of paste.tags"
         :to="{ name: 'tag', params: { tag } }"
+        :href="router.resolve({ name: 'tag', params: { tag } }).href"
+        :target="asEmbed ? '_blank' : undefined"
         :key="tag"
         class="flex items-center gap-1 rounded-md border border-neutral-200 bg-neutral-100 p-0.5 px-1 text-sm hover:bg-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700"
       >
@@ -525,7 +534,7 @@ const showPreview = ref(true)
           :class="`ti ti-${tagsStore.tagsCache[tag]?.icon}`"
         />
         <span>{{ tagsStore.tagsCache[tag]?.display_name || tag }}</span>
-      </router-link>
+      </component>
       <ComponentInjection type="paste-tags-popover-inner-after" :value="paste" />
     </div>
   </Popover>

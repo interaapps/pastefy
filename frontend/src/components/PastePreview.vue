@@ -27,7 +27,12 @@ defineProps<{
   <CSVViewer v-if="type === 'csv'" :csv="contents" :inEditor />
   <MarkdownViewer v-else-if="type === 'markdown'" :markdown="contents" :inEditor />
   <MermaidViewer
-    v-else-if="type === 'mermaid' || type === 'mmd'"
+    v-else-if="
+      type === 'mermaid' ||
+      type === 'mmd' ||
+      fileName?.endsWith('.mmd') ||
+      fileName?.endsWith('.mermaid')
+    "
     :mermaid-code="contents"
     :inEditor
   />
@@ -36,6 +41,10 @@ defineProps<{
   <DiffViewer v-else-if="type === 'diff'" :diff="contents" :inEditor />
   <ICSViewer v-else-if="type === 'ics'" :ics="contents" :inEditor />
   <RegexViewer v-else-if="type === 'regex'" :regex="contents" :inEditor />
-  <AsciinemaViewer v-else-if="type === 'cast'" :cast="contents" :inEditor />
+  <AsciinemaViewer
+    v-else-if="type === 'cast' || fileName?.endsWith('.cast')"
+    :cast="contents"
+    :inEditor
+  />
   <!-- <LaTeXViewer v-else-if="type === 'tex'" :latex="contents" /> -->
 </template>

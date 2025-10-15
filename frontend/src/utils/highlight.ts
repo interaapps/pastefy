@@ -12,6 +12,7 @@ const escapeHtml = (str: string) => {
 
 export function highlight(contents: string, lang?: string, maxLength = 25000): string {
   if (contents.length < maxLength) {
+    console.log({ a: lang, b: hljs.listLanguages(), lang, l: hljs.listLanguages() })
     if (lang && hljs.listLanguages().includes(lang)) {
       return hljs.highlight(contents, {
         language: lang,

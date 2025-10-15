@@ -1,24 +1,14 @@
 <script setup lang="ts">
 import PasteList from '@/components/lists/PasteList.vue'
 import { useAsyncState, useTitle } from '@vueuse/core'
-import { useAppStore } from '@/stores/app.ts'
 import { client } from '@/main.ts'
-import type { Paste } from '@/types/paste.ts'
 import type { Tag } from '@/types/tags.ts'
 import ErrorContainer from '@/components/ErrorContainer.vue'
 import LoadingContainer from '@/components/LoadingContainer.vue'
 import TagCard from '@/components/TagCard.vue'
-import Pagination from '@/components/Pagination.vue'
+import ShowSearchButton from '@/components/ShowSearchButton.vue'
 
 useTitle(`Explore | Pastefy`)
-
-const appStore = useAppStore()
-
-const showSearch = () => {
-  appStore.searchShown = true
-  appStore.searchShownEndpoints.publicPastes = true
-  appStore.searchShownEndpoints.myPastes = false
-}
 
 const {
   isLoading: tagsLoading,
@@ -40,13 +30,7 @@ const {
     <div class="mb-8 flex items-center justify-between">
       <h1 class="text-3xl font-bold">Explore Pastefy</h1>
       <div>
-        <button
-          class="flex cursor-pointer items-center gap-1 rounded-md border border-neutral-200 px-2 py-1 dark:border-neutral-700"
-          @click="showSearch"
-        >
-          <i class="ti ti-search text-sm opacity-60" />
-          <span class="text-sm opacity-60">Search</span>
-        </button>
+        <ShowSearchButton public-pastes />
       </div>
     </div>
 

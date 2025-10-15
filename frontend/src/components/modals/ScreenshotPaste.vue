@@ -5,8 +5,10 @@ import FloatLabel from 'primevue/floatlabel'
 import Select from 'primevue/select'
 import InputNumber from 'primevue/inputnumber'
 import Highlighted from '@/components/Highlighted.vue'
-import { ref, useTemplateRef } from 'vue'
+import { computed, ref, useTemplateRef } from 'vue'
 import domtoimage from 'dom-to-image'
+import InputGroup from 'primevue/inputgroup'
+import InputGroupAddon from 'primevue/inputgroupaddon'
 const visible = defineModel<boolean>('visible')
 
 const screenshotAreaRef = useTemplateRef<HTMLDivElement>('screenshotAreaRef')
@@ -42,6 +44,14 @@ const download = () => {
     link.click()
   })
 }
+
+const fromLine = ref(0)
+const toLine = ref(props.content?.split('\n').length || 0)
+
+const selectedLines = computed(() => {
+  const lines = props.content?.split('\n') || []
+  return lines.slice(fromLine.value, toLine.value).join('\n')
+})
 </script>
 <template>
   <Dialog v-model:visible="visible" modal header="Screenshot" class="w-[60rem]">
@@ -69,14 +79,15 @@ const download = () => {
           <Highlighted
             class="w-full overflow-hidden"
             hide-divider
-            :contents="content"
+            :contents="selectedLines"
             :file-name="fileName"
+            :starting-line-number="fromLine"
           />
         </div>
       </div>
     </div>
     <template #footer>
-      <div class="flex w-full justify-between pt-2">
+      <div class="flex w-full justify-between pt-8">
         <div class="flex gap-2">
           <FloatLabel>
             <Select
@@ -109,6 +120,14 @@ const download = () => {
           <FloatLabel>
             <InputNumber v-model="width" />
             <label>width (px)</label>
+          </FloatLabel>
+          <FloatLabel>
+            <InputGroup>
+              <InputNumber v-model="fromLine" class="w-[4rem] text-center" />
+              <InputGroupAddon class="bg-transparent">-</InputGroupAddon>
+              <InputNumber v-model="toLine" class="w-[4rem] text-center" />
+            </InputGroup>
+            <label>lines (from - to)</label>
           </FloatLabel>
         </div>
         <Button label="download" @click="download" outlined icon="ti ti-download" />

@@ -5,18 +5,20 @@ import type { Paste } from '@/types/paste.ts'
 import PasteCard from '@/components/lists/PasteCard.vue'
 import ErrorContainer from '@/components/ErrorContainer.vue'
 import LoadingContainer from '@/components/LoadingContainer.vue'
-import { ref } from 'vue'
 import Pagination from '@/components/Pagination.vue'
+import { useRouteQuery } from '@vueuse/router'
 
 const props = defineProps<
-  | {
-      route: string
-      params?: Record<string, string | number>
-    }
-  | { pastes: Paste[] }
+  (
+    | {
+        route: string
+        params?: Record<string, string | number>
+      }
+    | { pastes: Paste[] }
+  ) & { queryPrefix?: string }
 >()
 
-const page = ref(1)
+const page = useRouteQuery(`${props.queryPrefix || ''}page`, 1, { transform: Number })
 
 const emit = defineEmits(['loaded'])
 

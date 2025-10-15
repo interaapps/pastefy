@@ -85,6 +85,11 @@ export default {
         },
       },
     },
+    tabs: {
+      tab: {
+        padding: '12px 12px',
+      },
+    },
     treeselect: {
       colorScheme: {
         light: {

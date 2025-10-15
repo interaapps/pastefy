@@ -4,6 +4,7 @@ import Highlighted from '@/components/Highlighted.vue'
 import { computed } from 'vue'
 import CSVViewer from '@/components/previews/CSVViewer.vue'
 import { useConfig } from '@/composables/config.ts'
+import { getIconByFileName } from '@/utils/lang-information.ts'
 
 const props = defineProps<{
   paste: Paste
@@ -42,6 +43,8 @@ const getCopyContents = async () => {
     },
   ).then((t) => t.text())
 }
+
+const icon = computed(() => getIconByFileName(props.paste.title))
 </script>
 <template>
   <router-link
@@ -54,21 +57,22 @@ const getCopyContents = async () => {
     "
   >
     <div class="flex justify-between gap-2 p-3 pb-0">
-      <div v-if="paste.encrypted" class="flex items-center gap-1">
+      <div v-if="paste.encrypted">
         <i class="ti ti-lock" />
         <span class="font-bold"> Encrypted paste </span>
       </div>
       <span
-        class="overflow-hidden font-bold overflow-ellipsis"
+        class="flex items-center gap-1 truncate font-bold"
         v-else-if="paste.title.trim()"
         v-view-transition-name="`paste-${paste.id}-title`"
       >
-        {{ paste.title }}
+        <i :class="`ti ti-${paste.type === 'MULTI_PASTE' ? 'files' : icon}`" />
+        <span class="truncate">{{ paste.title }}</span>
       </span>
       <span class="italic opacity-40" v-else> no title </span>
 
       <div>
-        <span class="text-sm opacity-40" v-if="paste.created_at">
+        <span class="truncate text-sm opacity-40" v-if="paste.created_at">
           {{ new Date(paste.created_at.replace(' ', 'T')).toLocaleString() }}
         </span>
       </div>

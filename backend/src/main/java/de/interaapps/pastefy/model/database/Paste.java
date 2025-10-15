@@ -54,6 +54,7 @@ public class Paste extends Model {
     private String key;
     @Column
     @Searchable
+    @Filterable
     private String title;
     @Column(size = 16777215)
     @Searchable

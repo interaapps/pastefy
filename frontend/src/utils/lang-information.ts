@@ -10,11 +10,14 @@ export const langInformation = {
   typescript: {
     icon: 'brand-typescript',
   },
+  kotlin: {
+    icon: 'brand-kotlin',
+  },
   go: {
     icon: 'brand-golang',
   },
   json: {
-    icon: 'braces',
+    icon: 'file-code-2',
   },
   jsx: {
     icon: 'brand-react',
@@ -46,6 +49,48 @@ export const langInformation = {
   lua: {
     icon: 'script',
   },
+  python: {
+    icon: 'brand-python',
+  },
+  rust: {
+    icon: 'brand-rust',
+  },
+  swift: {
+    icon: 'brand-swift',
+  },
+  powershell: {
+    icon: 'brand-powershell',
+  },
+  csharp: {
+    icon: 'brand-c-sharp',
+  },
+  shell: {
+    icon: 'terminal',
+  },
+  sql: {
+    icon: 'file-type-sql',
+  },
+  geojson: {
+    icon: 'map-route',
+  },
+  mermaid: {
+    icon: 'chart-arcs',
+  },
+  mmd: {
+    icon: 'chart-arcs',
+  },
+  ics: {
+    icon: 'calendar',
+  },
+  regex: {
+    icon: 'regex',
+  },
+  cast: {
+    icon: 'movie',
+  },
+  diff: {
+    icon: 'layers-difference',
+  },
 }
 
 export function getInformationByFileName(file: string) {
@@ -55,9 +100,19 @@ export function getInformationByFileName(file: string) {
 const fileNameIcons = {
   '.codebox': 'box',
   Dockerfile: 'brand-docker',
+  'docker-compose.yml': 'stack',
+  'docker-compose.yaml': 'stack',
+  Makefile: 'settings',
 } as Record<string, string>
 
 export function getIconByFileName(file: string) {
   if (file in fileNameIcons) return fileNameIcons[file]
-  return langInformation[findFromFileName(file) as keyof typeof langInformation]?.icon || 'file'
+
+  const ext = file.split('.').pop()!
+
+  return (
+    langInformation[ext as keyof typeof langInformation]?.icon ||
+    langInformation[findFromFileName(file) as keyof typeof langInformation]?.icon ||
+    'file-code'
+  )
 }

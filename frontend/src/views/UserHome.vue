@@ -4,6 +4,8 @@ import FolderList from '@/components/lists/FolderList.vue'
 import { useTitle } from '@vueuse/core'
 import ComponentInjection from '@/components/ComponentInjection.vue'
 import { eventBus } from '@/main.ts'
+import InputText from 'primevue/inputtext'
+import ShowSearchButton from '@/components/ShowSearchButton.vue'
 useTitle(`Home | Pastefy`)
 </script>
 
@@ -17,7 +19,12 @@ useTitle(`Home | Pastefy`)
     </div>
     <ComponentInjection type="user-home-after-folders" />
     <div>
-      <h2 class="mb-4 text-2xl font-bold">Pastes</h2>
+      <div class="flex justify-between gap-2">
+        <h2 class="mb-4 text-2xl font-bold">Pastes</h2>
+        <div>
+          <ShowSearchButton my-pastes />
+        </div>
+      </div>
 
       <PasteList
         @loaded="eventBus.emit('pageLoaded', 'home')"

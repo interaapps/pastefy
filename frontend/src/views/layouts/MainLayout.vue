@@ -14,9 +14,12 @@ import GlobalSearch from '@/components/GlobalSearch.vue'
 import UserMenu from '@/components/popovers/UserMenu.vue'
 import ComponentInjection from '@/components/ComponentInjection.vue'
 import { useCurrentPasteStore } from '@/stores/current-paste.ts'
+import SettingsModal from '@/components/modals/settings/SettingsModal.vue'
+import { useAppStore } from '@/stores/app.ts'
 const loginModalVisible = ref(false)
 
 const Logo = defineAsyncComponent(() => import('@/components/Logo.vue'))
+const appStore = useAppStore()
 
 const userMenu = useTemplateRef<PopoverMethods>('userMenu')
 
@@ -187,7 +190,7 @@ const handleDrop = async (event: DragEvent) => {
     >
       <ComponentInjection type="main-layout-main-top" />
       <div id="full-screen-content"></div>
-      <router-view :key="route.fullPath" />
+      <router-view :key="route.path" />
       <ComponentInjection type="main-layout-main-bottom" />
     </div>
   </div>
@@ -198,4 +201,6 @@ const handleDrop = async (event: DragEvent) => {
   <GlobalSearch />
 
   <LoginModal v-model:visible="loginModalVisible" />
+
+  <SettingsModal v-model:visible="appStore.settingsModalShown" />
 </template>

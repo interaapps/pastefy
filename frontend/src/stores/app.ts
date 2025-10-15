@@ -9,5 +9,7 @@ export const useAppStore = defineStore('app-store', () => {
     publicPastes: true,
   })
 
-  return { searchShown, searchShownEndpoints, codeMirrorAvailable }
+  const settingsModalShown = ref(false)
+
+  return { searchShown, searchShownEndpoints, codeMirrorAvailable, settingsModalShown }
 })

@@ -11,6 +11,7 @@ const props = defineProps<{
   fileName?: string
   lang?: string
   hideDivider?: boolean
+  startingLineNumber?: number
   hideLineNumbering?: boolean
   hideColorPreview?: boolean
   showCopyButton?: boolean
@@ -126,7 +127,7 @@ onMounted(async () => {
           : contents
         )?.split('\n') || []"
         :key="line + 1"
-        >{{ line + 1 }}</span
+        >{{ line + 1 + (startingLineNumber || 0) }}</span
       >
     </div>
     <code class="w-full p-3">

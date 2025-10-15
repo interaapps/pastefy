@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
 import { useCurrentUserStore } from '@/stores/current-user.ts'
-import SettingsModal from '@/components/modals/settings/SettingsModal.vue'
-import { ref } from 'vue'
+import { useAppStore } from '@/stores/app.ts'
 
 const currentUserStore = useCurrentUserStore()
+const appStore = useAppStore()
+import { useConfirm } from 'primevue/useconfirm'
+const confirm = useConfirm()
 
 const emit = defineEmits(['elementClicked'])
-
-const settingsOpened = ref(false)
 </script>
 <template>
   <Button
@@ -65,7 +65,7 @@ const settingsOpened = ref(false)
     @click="
       () => {
         emit('elementClicked')
-        settingsOpened = true
+        appStore.settingsModalShown = true
       }
     "
     icon="ti ti-settings text-lg"
@@ -74,6 +74,21 @@ const settingsOpened = ref(false)
     size="small"
     fluid
     class="justify-start"
+  />
+
+  <Button
+    as="a"
+    target="_blank"
+    href="https://accounts.interaapps.de"
+    v-if="currentUserStore.user?.logged_in && currentUserStore.user.auth_type === 'interaapps'"
+    text
+    icon="ti ti-user text-lg"
+    label="Account Settings"
+    severity="contrast"
+    size="small"
+    fluid
+    class="justify-start"
+    @click="emit('elementClicked')"
   />
   <Button
     as="router-link"
@@ -99,10 +114,14 @@ const settingsOpened = ref(false)
     @click="
       () => {
         emit('elementClicked')
-        currentUserStore.logout()
+        confirm.require({
+          message: 'Are you sure you want to log out?',
+          header: 'Log out',
+          accept: async () => {
+            currentUserStore.logout()
+          },
+        })
       }
     "
   />
-
-  <SettingsModal v-model:visible="settingsOpened" />
 </template>

@@ -22,19 +22,20 @@ const exampleCode = `function sayHello(name: string) {
 }
 
 sayHello('World')`
-const exampleIntegrationCode = `import axios from 'axios'
+const exampleIntegrationCode = `import { PastefyClient }
+    from '@interaapps/pastefy';
 
-axios.create({
-  baseURL: '${window.location.origin}/api/v2',
-  headers: {
-    Authorization: \`Bearer \${config.value.apiKey}\`
-  }
-})
+const client
+  = new PastefyClient(apiKey${window.location.origin !== 'https://pastefy.app' ? `, "${window.location.origin}"` : ''});
 
-await axios.post('/paste', {
-  title: 'Hello',
-  content: 'Hello, Pastefy!',
-})`
+console.log(
+  await client.getPaste('id')
+);
+
+await client.createPaste({
+  title: 'Hello World',
+  content: 'This is a sample paste.'
+});`
 </script>
 
 <template>
@@ -138,7 +139,7 @@ await axios.post('/paste', {
                 <Button
                   as="a"
                   icon="ti ti-book"
-                  href="https://intera.dev/docs/pastefy"
+                  href="https://docs.pastefy.app/api/"
                   target="_blank"
                   label="api docs"
                   size="small"
