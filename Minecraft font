@@ -1,0 +1,90 @@
+-- // MINECRAFT FULL TEXT MODE //
+-- Autor: Thiago Edición Completa
+-- Convierte todo el texto del juego (chat, GUI, nombres) en estilo Minecraft
+
+local player = game.Players.LocalPlayer
+
+-- Función general para aplicar estilo tipo Minecraft
+local function setMinecraftFont(obj)
+	if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
+		obj.Font = Enum.Font.Arcade
+		obj.TextStrokeTransparency = 0
+		obj.TextColor3 = Color3.fromRGB(255, 255, 255)
+	end
+end
+
+-- Cambia todos los textos existentes
+for _, v in pairs(game:GetDescendants()) do
+	setMinecraftFont(v)
+end
+
+-- Cambia nuevos textos que aparezcan
+game.DescendantAdded:Connect(function(obj)
+	setMinecraftFont(obj)
+end)
+
+-- Chat estilo Minecraft
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("ChatMakeSystemMessage", {
+	Text = "§a[Minecraft Chat Activado]",
+	Color = Color3.fromRGB(85, 255, 85),
+	Font = Enum.Font.Arcade,
+	TextSize = 20
+})
+
+-- Cambia los mensajes normales del chat en verde tipo Minecraft
+local ChatService = game:GetService("TextChatService")
+if ChatService and ChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+	for _, channel in pairs(ChatService:GetChildren()) do
+		if channel:IsA("TextChannel") then
+			channel.MessageReceived:Connect(function(message)
+				local props = Instance.new("TextChatMessageProperties")
+				props.PrefixText = "§a" .. message.PrefixText
+				props.Text = "§a" .. message.Text
+				return props
+			end)
+		end
+	end
+end
+
+-- Nombres de jugadores sobre la cabeza estilo Minecraft
+local function styleNameTags(plr)
+	plr.CharacterAdded:Connect(function(char)
+		repeat task.wait() until char:FindFirstChild("Head")
+		local head = char.Head
+		for _, tag in pairs(head:GetChildren()) do
+			if tag:IsA("BillboardGui") then
+				for _, t in pairs(tag:GetDescendants()) do
+					if t:IsA("TextLabel") then
+						t.Font = Enum.Font.Arcade
+						t.TextColor3 = Color3.fromRGB(255, 255, 255)
+						t.TextStrokeTransparency = 0
+					end
+				end
+			end
+		end
+	end)
+end
+
+for _, plr in pairs(game.Players:GetPlayers()) do
+	styleNameTags(plr)
+end
+
+game.Players.PlayerAdded:Connect(function(plr)
+	styleNameTags(plr)
+end)
+
+-- Mensaje de inicio
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+local msg = Instance.new("TextLabel", gui)
+msg.AnchorPoint = Vector2.new(0.5, 0.5)
+msg.Position = UDim2.new(0.5, 0.5, 0, 0)
+msg.Size = UDim2.new(0, 600, 0, 100)
+msg.BackgroundTransparency = 1
+msg.Font = Enum.Font.Arcade
+msg.TextColor3 = Color3.fromRGB(255, 255, 255)
+msg.TextStrokeTransparency = 0
+msg.TextScaled = true
+msg.Text = "MINECRAFT MODE ACTIVATED"
+task.wait(3)
+msg:Destroy()
