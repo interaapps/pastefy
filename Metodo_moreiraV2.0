@@ -1,0 +1,178 @@
+-- Crear ScreenGui
+local gui = Instance.new("ScreenGui")
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Fondo negro
+local fondo = Instance.new("Frame")
+fondo.Size = UDim2.new(1, 0, 1, 0)
+fondo.BackgroundColor3 = Color3.new(0, 0, 0)
+fondo.Parent = gui
+
+----------------------------------------------------------
+-- CUADRO PARA INGRESAR EL LINK DEL SERVIDOR PRIVADO
+----------------------------------------------------------
+local cuadroLink = Instance.new("Frame")
+cuadroLink.Size = UDim2.new(0, 450, 0, 160)
+cuadroLink.Position = UDim2.new(0.5, -225, 0.32, 0)
+cuadroLink.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+cuadroLink.Parent = fondo
+
+local cornerLink = Instance.new("UICorner")
+cornerLink.CornerRadius = UDim.new(0, 14)
+cornerLink.Parent = cuadroLink
+
+local textoLink = Instance.new("TextLabel")
+textoLink.Size = UDim2.new(1, 0, 0, 40)
+textoLink.Position = UDim2.new(0, 0, 0, 10)
+textoLink.BackgroundTransparency = 1
+textoLink.Text = "Introduce el link del servidor privado acá:"
+textoLink.TextColor3 = Color3.new(0, 0, 0)
+textoLink.Font = Enum.Font.GothamBold
+textoLink.TextScaled = true
+textoLink.Parent = cuadroLink
+
+local inputLink = Instance.new("TextBox")
+inputLink.Size = UDim2.new(0, 380, 0, 50)
+inputLink.Position = UDim2.new(0.5, -190, 0.5, -10)
+inputLink.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+inputLink.PlaceholderText = "Pega aquí el link del servidor privado"
+inputLink.Text = ""
+inputLink.TextColor3 = Color3.new(0, 0, 0)
+inputLink.Font = Enum.Font.Gotham
+inputLink.TextScaled = true
+inputLink.Parent = cuadroLink
+
+local cornerInput = Instance.new("UICorner")
+cornerInput.CornerRadius = UDim.new(0, 12)
+cornerInput.Parent = inputLink
+
+----------------------------------------------------------
+-- TÍTULO
+----------------------------------------------------------
+local cuadro = Instance.new("Frame")
+cuadro.Size = UDim2.new(0, 300, 0, 70)
+cuadro.Position = UDim2.new(0.5, -150, 0.12, 0)
+cuadro.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+cuadro.Parent = fondo
+
+local corner1 = Instance.new("UICorner")
+corner1.CornerRadius = UDim.new(0, 12)
+corner1.Parent = cuadro
+
+local titulo = Instance.new("TextLabel")
+titulo.Size = UDim2.new(1, 0, 1, 0)
+titulo.BackgroundTransparency = 1
+titulo.Text = "Método Moreira"
+titulo.TextColor3 = Color3.new(1, 1, 1)
+titulo.Font = Enum.Font.GothamBold
+titulo.TextScaled = true
+titulo.Parent = cuadro
+
+----------------------------------------------------------
+-- BOTÓN INICIAR (más abajo)
+----------------------------------------------------------
+local iniciar = Instance.new("TextButton")
+iniciar.Size = UDim2.new(0, 220, 0, 55)
+iniciar.Position = UDim2.new(0.5, -110, 0.70, 0) -- BOTÓN MÁS ABAJO
+iniciar.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+iniciar.Text = "Iniciar"
+iniciar.TextColor3 = Color3.new(1, 1, 1)
+iniciar.Font = Enum.Font.GothamBold
+iniciar.TextScaled = true
+iniciar.Parent = fondo
+
+local corner2 = Instance.new("UICorner")
+corner2.CornerRadius = UDim.new(0, 14)
+corner2.Parent = iniciar
+
+----------------------------------------------------------
+-- BARRA DE CARGA (más arriba)
+----------------------------------------------------------
+local barraFondo = Instance.new("Frame")
+barraFondo.Size = UDim2.new(0, 450, 0, 45)
+barraFondo.Position = UDim2.new(0.5, -225, 0.50, 0)
+barraFondo.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+barraFondo.Visible = false
+barraFondo.Parent = fondo
+
+local cornerBarra = Instance.new("UICorner")
+cornerBarra.CornerRadius = UDim.new(0, 12)
+cornerBarra.Parent = barraFondo
+
+local barra = Instance.new("Frame")
+barra.Size = UDim2.new(0, 0, 1, 0)
+barra.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+barra.Parent = barraFondo
+
+local cornerBarra2 = Instance.new("UICorner")
+cornerBarra2.CornerRadius = UDim.new(0, 12)
+cornerBarra2.Parent = barra
+
+local mensaje = Instance.new("TextLabel")
+mensaje.Size = UDim2.new(1, 0, 0, 30)
+mensaje.Position = UDim2.new(0, 0, -1.4, 0)
+mensaje.BackgroundTransparency = 1
+mensaje.Text = ""
+mensaje.TextColor3 = Color3.new(1, 1, 1)
+mensaje.Font = Enum.Font.GothamBold
+mensaje.TextScaled = true
+mensaje.Parent = barraFondo
+
+----------------------------------------------------------
+-- MENSAJES DE CARGA
+----------------------------------------------------------
+local mensajes = {
+    "Buscando bots...",
+    "Analizando servidores...",
+    "Optimización en proceso...",
+    "Cargando módulo avanzado...",
+    "Finalizando..."
+}
+
+----------------------------------------------------------
+-- REMOTEEVENT PARA ENVIAR LINKS AL SERVER
+----------------------------------------------------------
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+if not ReplicatedStorage:FindFirstChild("EnviarLink") then
+    local evento = Instance.new("RemoteEvent")
+    evento.Name = "EnviarLink"
+    evento.Parent = ReplicatedStorage
+end
+
+----------------------------------------------------------
+-- LÓGICA DEL BOTÓN INICIAR
+----------------------------------------------------------
+iniciar.MouseButton1Click:Connect(function()
+    
+    -- Validar link
+    if not string.find(inputLink.Text, "roblox.com") then
+        mensaje.Text = "Debes poner un link válido"
+        mensaje.Visible = true
+        return
+    end
+
+    -- Ocultar interfaz inicial
+    cuadroLink.Visible = false
+    iniciar.Visible = false
+    cuadro.Visible = false
+    barraFondo.Visible = true
+
+    -- Enviar link al servidor
+    ReplicatedStorage.EnviarLink:FireServer(inputLink.Text)
+
+    -- Cargar barra lentamente
+    local tiempoTotal = 180 -- 3 minutos
+    local pasos = 100
+    local intervalo = tiempoTotal / pasos
+
+    for i = 1, pasos do
+        barra.Size = UDim2.new(i / pasos, 0, 1, 0)
+        local mensajeIndex = math.clamp(math.floor(i / 20) + 1, 1, #mensajes)
+        mensaje.Text = mensajes[mensajeIndex]
+        task.wait(intervalo)
+    end
+
+    mensaje.Text = "Completado."
+end)
