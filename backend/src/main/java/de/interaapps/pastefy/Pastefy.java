@@ -42,13 +42,14 @@ import org.javawebstack.webutils.middleware.MultipartPolicy;
 import org.javawebstack.webutils.middleware.RateLimitMiddleware;
 import picocli.CommandLine;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -61,7 +62,7 @@ import java.util.stream.Collectors;
 public class Pastefy {
 
     private static Pastefy instance;
-    private Jedis redisClient;
+    private JedisPool redisPool;
 
     public static Pastefy getInstance() {
         return instance;
@@ -92,7 +93,14 @@ public class Pastefy {
 
     public Pastefy() {
         config = new Config();
-        httpRouter = new HTTPRouter(new UndertowHTTPSocketServer());
+
+        int cpu = Runtime.getRuntime().availableProcessors();
+
+        UndertowHTTPSocketServer undertowHTTPSocketServer = new UndertowHTTPSocketServer();
+
+        undertowHTTPSocketServer.setMaxThreads(Math.max(config.getInt("http.server.min.threads", 8), config.getInt("http.server.min.maxthreads", cpu * config.getInt("http.server.min.maxthreadscpumultiplier", 4))));
+
+        httpRouter = new HTTPRouter(undertowHTTPSocketServer);
 
         initPlugins();
 
@@ -114,7 +122,18 @@ public class Pastefy {
         String host = config.get("redis.host");
         int port = config.getInt("redis.port", 6379);
 
-        this.redisClient = new Jedis(host, port);
+        JedisPoolConfig poolConfig = new JedisPoolConfig();
+        poolConfig.setMaxTotal(config.getInt("redis.pool.max", 128));
+        poolConfig.setMaxIdle(config.getInt("redis.pool.maxidle", 64));
+        poolConfig.setMinIdle(config.getInt("redis.pool.minidle", 16));
+        poolConfig.setTestOnBorrow(config.get("redis.pool.textonborrow", "true").equalsIgnoreCase("true"));
+        poolConfig.setTestWhileIdle(config.get("redis.pool.testwhileitdle", "true").equalsIgnoreCase("true"));
+        poolConfig.setMinEvictableIdleTimeMillis(config.getInt("redis.pool.minevictableIdletimemillis", 60000));
+        poolConfig.setTimeBetweenEvictionRunsMillis(config.getInt("redis.pool.timebetweenevictionrunsmillis", 30000));
+        poolConfig.setNumTestsPerEvictionRun(-1);
+
+
+        this.redisPool = new JedisPool(poolConfig, host, port, config.getInt("redis.pool.timeout", 1000));
     }
 
     private void setupMinio() {
@@ -131,6 +150,10 @@ public class Pastefy {
 
     protected void setupConfig() {
         Mapping mapping = new Mapping()
+                .map("HTTP_SERVER_MIN_THREADS", "http.server.min.threads")
+                .map("HTTP_SERVER_MIN_MAXTHREADS", "http.server.min.maxthreads")
+                .map("HTTP_SERVER_MIN_MAXTHREADS_CPU_MULTIPLIER", "http.server.min.maxthreadscpumultiplier")
+
                 .map("OAUTH2_INTERAAPPS_CLIENT_ID", "oauth2.interaapps.id")
                 .map("OAUTH2_INTERAAPPS_CLIENT_SECRET", "oauth2.interaapps.secret")
                 .map("OAUTH2_TWITCH_CLIENT_ID", "oauth2.twitch.id")
@@ -171,6 +194,14 @@ public class Pastefy {
 
                 .map("REDIS_HOST", "redis.host")
                 .map("REDIS_PORT", "redis.port")
+                .map("REDIS_POOL_MAX", "redis.pool.max")
+                .map("REDIS_POOL_MAX_IDLE", "redis.pool.maxidle")
+                .map("REDIS_POOL_MIN_IDLE", "redis.pool.minidle")
+                .map("REDIS_POOL_TEXT_ON_BORROW", "redis.pool.textonborrow")
+                .map("REDIS_POOL_TEST_WHILE_IDLE", "redis.pool.testwhileitdle")
+                .map("REDIS_POOL_TIME_BETWEEN_EVICTION_MILLIS", "redis.pool.timebetweenevictionrunsmillis")
+                .map("REDIS_POOL_MIN_EVICTABLE_IDLE_TIME_MILLIS", "redis.pool.minevictableIdletimemillis")
+                .map("REDIS_POOL_TIMEOUT", "redis.pool.timeout")
 
                 .map("MINIO_SERVER", "minio.server")
                 .map("MINIO_BUCKET", "minio.bucket")
@@ -309,7 +340,7 @@ public class Pastefy {
             }
 
             if (config.get("pastefy.automigrate", "true").equals("true")) {
-                ElasticMigrator elasticMigrator = new ElasticMigrator(elasticsearchClient);
+                ElasticMigrator elasticMigrator = new ElasticMigrator(this, elasticsearchClient);
                 try {
                     elasticMigrator.migrateAll();
                 } catch (IOException e) {
@@ -618,10 +649,10 @@ public class Pastefy {
     }
 
     public Jedis getRedisClient() {
-        return redisClient;
+        return redisPool.getResource();
     }
     public boolean isRedisEnabled() {
-        return redisClient != null;
+        return redisPool != null;
     }
 
     public ExecutorService getExecutor() {

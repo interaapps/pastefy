@@ -16,7 +16,7 @@ public class AutoMigrateElasticCommand implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
         System.out.println("Automigrate");
-        new ElasticMigrator(Pastefy.getInstance().getElasticsearchClient()).migrateAll();
+        new ElasticMigrator(Pastefy.getInstance(), Pastefy.getInstance().getElasticsearchClient()).migrateAll();
         System.out.println("Automigrated");
         return 0;
     }

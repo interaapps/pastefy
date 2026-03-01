@@ -12,8 +12,10 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class ElasticMigrator {
+    private final Pastefy pastefy;
     private ElasticsearchClient client;
-    public ElasticMigrator(ElasticsearchClient client) {
+    public ElasticMigrator(Pastefy pastefy, ElasticsearchClient client) {
+        this.pastefy = pastefy;
         this.client = client;
     }
 
@@ -68,7 +70,7 @@ public class ElasticMigrator {
     }
 
     public void createIfNotExists(String index) throws IOException {
-        if (!Pastefy.getInstance().isIndexAvailable(index)) {
+        if (!pastefy.isIndexAvailable(index)) {
             client.indices().create(c -> c.index(index).mappings(p -> {
                 builders.get(index).forEach(p::properties);
                 return p;
@@ -85,7 +87,7 @@ public class ElasticMigrator {
     }
 
     public void migrateAll() throws IOException {
-        for (String index : Pastefy.getInstance().INDEXES) {
+        for (String index : pastefy.INDEXES) {
             createIfNotExists(index);
         }
     }
