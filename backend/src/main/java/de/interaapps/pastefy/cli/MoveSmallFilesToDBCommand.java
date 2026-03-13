@@ -22,10 +22,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 )
 public class MoveSmallFilesToDBCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-s", "--size"}, description = "Batch size")
-    private int batchSize = 100;
+    private int batchSize = 40;
 
     @CommandLine.Option(names = {"-i", "--iterations"}, description = "Iterations")
-    private int iterations = 2000;
+    private int iterations = 10000;
 
     @CommandLine.Option(names = {"-t", "--threads"}, description = "Number of threads")
     private int threadCount = 16;
@@ -57,19 +57,24 @@ public class MoveSmallFilesToDBCommand implements Callable<Integer> {
                         .all()
                         .forEach(p -> {
                             String content = p.getContent();
+                            System.out.println(p.getKey());
                             if (content.length() < 2000) {
-                                p.setStorageType(Paste.StorageType.DATABASE);
-                                p.setContent(content);
-                                MinioPaste.delete(p);
-                                p.superSave();
-                                syncedOffCount.incrementAndGet();
+                                try {
+                                    MinioPaste.delete(p);
+
+                                    p.setContent(content);
+                                    p.superSave();
+                                    syncedOffCount.incrementAndGet();
+                                } catch (Exception e) {
+                                   e.printStackTrace();
+                                }
                             }
                         });
                 for (int i1 = 0; i1 < size; i1++) {
                     syncedCount.incrementAndGet();
                 }
                 System.out.println("iteration " + (finalI + 1) + "/" + iterations + " done ("+syncedCount.get()+"/"+ (iterations * size) + ")");
-                System.out.println("New offset: "+syncedOffCount.get());
+                System.out.println("New offset: "+(syncedCount.get()-syncedOffCount.get()));
             });
         }
 
