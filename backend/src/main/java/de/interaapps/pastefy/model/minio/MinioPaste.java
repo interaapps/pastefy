@@ -152,8 +152,6 @@ public class MinioPaste extends AbstractObject {
     public static String generateObjectName(Paste paste) {
         String key = paste.getKey();
 
-        // Sicherstellen, dass der Key lang genug für Sharding ist (mind. 4 Zeichen)
-        // Falls kürzer, fällt er einfach in den Basis-Ordner zurück.
         String prefix = "";
         if (key != null && key.length() >= 4) {
             prefix = key.substring(0, 2) + "/" + key.substring(2, 4) + "/";
@@ -163,7 +161,6 @@ public class MinioPaste extends AbstractObject {
             return "pastes/" + paste.getUserId() + "/" + prefix + key + "/contents.txt";
         }
 
-        // Für Anonymous ist das Sharding besonders wichtig
         return "pastes/anonymous/" + prefix + key + "/contents.txt";
     }
 }
