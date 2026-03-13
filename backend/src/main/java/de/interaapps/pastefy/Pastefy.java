@@ -145,7 +145,7 @@ public class Pastefy {
         }
 
         OkHttpClient httpClient = new OkHttpClient.Builder()
-                .connectionPool(new ConnectionPool(50, 2, TimeUnit.MINUTES))
+                .connectionPool(new ConnectionPool(config.getInt("minio.pool", 50), 2, TimeUnit.MINUTES))
                 .connectTimeout(4, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
@@ -219,6 +219,7 @@ public class Pastefy {
                 .map("MINIO_BUCKET", "minio.bucket")
                 .map("MINIO_ACCESS_KEY", "minio.access.key")
                 .map("MINIO_SECRET_KEY", "minio.secret.key")
+                .map("MINIO_POOL", "minio.pool")
 
                 .map("MINIO_PASTESIZE_THRESHOLD", "minio.pastesize.threshold")
 
