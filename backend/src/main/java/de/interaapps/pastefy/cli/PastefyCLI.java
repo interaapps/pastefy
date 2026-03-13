@@ -13,7 +13,8 @@ import picocli.CommandLine;
             AutoMigrateElasticCommand.class,
             SyncToElasticCommand.class,
             SyncToMinioCommand.class,
-            TestingCommand.class
+            TestingCommand.class,
+            MoveSmallFilesToDBCommand.class
         }
 )
 public class PastefyCLI implements Runnable {
