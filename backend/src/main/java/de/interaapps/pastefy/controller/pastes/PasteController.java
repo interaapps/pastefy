@@ -69,9 +69,11 @@ public class PasteController extends HttpController {
 
         if (request.forkedFrom != null) {
             Paste forkedFrom = Repo.get(Paste.class).where("key", request.forkedFrom).first();
-            paste.setForkedFrom(request.forkedFrom);
-            if (forkedFrom != null && forkedFrom.isPublic()) {
-                Pastefy.getInstance().executeAsync(() -> PublicPasteEngagement.addInterestFromPaste(forkedFrom, 10));
+            if (forkedFrom != null) {
+                paste.setForkedFrom(request.forkedFrom);
+                if (forkedFrom.isPublic()) {
+                    Pastefy.getInstance().executeAsync(() -> PublicPasteEngagement.addInterestFromPaste(forkedFrom, 10));
+                }
             }
         }
 
@@ -126,10 +128,6 @@ public class PasteController extends HttpController {
     public List<PasteResponse> getPastes(Exchange exchange, @Attrib("user") User user, @Attrib("authkey") AuthKey authKey) {
         if (authKey != null)
             authKey.checkPermission("pastes:read");
-
-        Query<Paste> query = Repo.get(Paste.class).query();
-
-        RequestHelper.userIdPastesFilter(user, query, exchange);
 
         return PasteService.getAllPastes(exchange, PasteQueryParameters.from(exchange));
     }

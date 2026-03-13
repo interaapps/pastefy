@@ -19,6 +19,8 @@ import de.interaapps.pastefy.model.plugins.PastefyPlugin;
 import de.interaapps.pastefy.model.responses.ExceptionResponse;
 import io.minio.MinioClient;
 import io.undertow.util.FileUtils;
+import okhttp3.ConnectionPool;
+import okhttp3.OkHttpClient;
 import org.javawebstack.http.router.HTTPRouter;
 import org.javawebstack.http.router.handler.RequestHandler;
 import org.javawebstack.http.router.transformer.response.SerializedResponseTransformer;
@@ -52,6 +54,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -141,10 +144,19 @@ public class Pastefy {
             return;
         }
 
+        OkHttpClient httpClient = new OkHttpClient.Builder()
+                .connectionPool(new ConnectionPool(50, 2, TimeUnit.MINUTES))
+                .connectTimeout(4, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .build();
+
         minioClient = MinioClient.builder()
             .region(config.get("minio.region"))
             .endpoint(config.get("minio.server"))
             .credentials(config.get("minio.access.key"), config.get("minio.secret.key"))
+            .httpClient(httpClient)
             .build();
     }
 
@@ -207,6 +219,8 @@ public class Pastefy {
                 .map("MINIO_BUCKET", "minio.bucket")
                 .map("MINIO_ACCESS_KEY", "minio.access.key")
                 .map("MINIO_SECRET_KEY", "minio.secret.key")
+
+                .map("MINIO_PASTESIZE_THRESHOLD", "minio.pastesize.threshold")
 
                 .map("AI_ANTHROPIC_TOKEN", "ai.antrophic.token")
 
