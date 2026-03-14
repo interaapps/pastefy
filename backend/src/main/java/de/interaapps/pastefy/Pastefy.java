@@ -200,7 +200,7 @@ public class Pastefy {
                 .map("PASTEFY_AUTOMIGRATE", "pastefy.automigrate")
 
                 .map("ELASTICSEARCH_URL", "elasticsearch.url")
-                .map("ELASTICSEARCH_USER", "elasticsearch.user")
+                 .map("ELASTICSEARCH_USER", "elasticsearch.user")
                 .map("ELASTICSEARCH_PASSWORD", "elasticsearch.password")
                 .map("ELASTICSEARCH_API_KEY", "elasticsearch.apikey")
 
