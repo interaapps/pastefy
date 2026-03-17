@@ -2,16 +2,18 @@
 import { useAsyncState, useTitle } from '@vueuse/core'
 import { useRoute } from 'vue-router'
 import { client } from '@/main.ts'
-import type { Folder } from '@/types/folder.ts'
 import type { PublicUser } from '@/types/user.ts'
 import ErrorContainer from '@/components/ErrorContainer.vue'
 import LoadingContainer from '@/components/LoadingContainer.vue'
 import PasteList from '@/components/lists/PasteList.vue'
 import ComponentInjection from '@/components/ComponentInjection.vue'
+import Button from 'primevue/button'
+import { useCurrentUserStore } from '@/stores/current-user.ts'
 
 useTitle(`User | Pastefy`)
 
 const route = useRoute()
+const currentUserStore = useCurrentUserStore()
 
 const {
   isLoading,
@@ -48,11 +50,35 @@ const {
           <h1 class="text-xl font-bold">{{ user.display_name }}</h1>
           <span class="mono text-sm font-bold opacity-50">@{{ user.name }}</span>
         </div>
+        <div class="md:ml-auto">
+          <Button
+            v-if="currentUserStore.user?.type === 'ADMIN'"
+            as="router-link"
+            :to="{
+              name: 'admin-pastes',
+              query: {
+                userId: user.id,
+                userName: user.display_name,
+                page: '1',
+              },
+            }"
+            icon="ti ti-shield-search"
+            label="See All Pastes In Admin"
+            size="small"
+            outlined
+            severity="contrast"
+          />
+        </div>
       </div>
 
-      <div>
-        <h2 class="mb-3 text-2xl font-bold">Public Pastes</h2>
-        <PasteList route="/api/v2/public-pastes/latest" :params="{ 'filter[userId]': user.id }" />
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold">Public Pastes</h2>
+        <PasteList
+          route="/api/v2/public-pastes/latest"
+          :params="{ 'filter[userId]': user.id }"
+          :page-limit="10"
+          empty-message="This user has no public pastes yet."
+        />
       </div>
     </div>
   </main>
