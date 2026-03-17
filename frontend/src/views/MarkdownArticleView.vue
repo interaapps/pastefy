@@ -242,7 +242,7 @@ const { isLoading, error } = useAsyncState(async () => {
             :key="part.name"
             :label="toArticleLabel(part.name)"
             size="small"
-            :severity="part.name === activeMarkdownPart?.name ? 'primary' : 'contrast'"
+            severity="contrast"
             :outlined="part.name !== activeMarkdownPart?.name"
             @click="selectedPart = part.name"
           />

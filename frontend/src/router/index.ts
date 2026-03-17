@@ -120,6 +120,11 @@ const router = createRouter({
           component: () => import('@/views/PreviewPresentationView.vue'),
         },
         {
+          path: '/:paste/share-modes',
+          name: 'paste-share-modes',
+          component: () => import('@/views/ReaderShareModesView.vue'),
+        },
+        {
           path: '/:paste',
           name: 'paste',
           component: () => import('@/views/PasteView.vue'),

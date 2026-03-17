@@ -208,10 +208,6 @@ const { isLoading, error } = useAsyncState(async () => {
 
         <div class="flex items-center justify-between gap-4">
           <div class="space-y-4">
-            <p v-if="previewMeta" class="max-w-2xl text-sm text-neutral-600 dark:text-neutral-300">
-              {{ previewMeta.description }}
-            </p>
-
             <div
               v-if="paste.user"
               class="flex items-center gap-3 text-sm text-neutral-600 dark:text-neutral-300"
@@ -248,7 +244,7 @@ const { isLoading, error } = useAsyncState(async () => {
             <Button
               as="router-link"
               :to="{ name: 'paste', params: { paste: paste.id } }"
-              :label="paste.type === 'MULTI_PASTE' ? 'View Multi-Paste' : 'View Paste'"
+              label="View Code"
               size="small"
               text
               rounded
@@ -259,7 +255,7 @@ const { isLoading, error } = useAsyncState(async () => {
         </div>
       </header>
 
-      <div class="px-3 py-4 md:px-6 md:py-8">
+      <div>
         <div
           v-if="paste.type === 'MULTI_PASTE' && previewableParts.length > 1"
           class="mb-6 flex flex-wrap gap-2 px-2"
@@ -269,15 +265,13 @@ const { isLoading, error } = useAsyncState(async () => {
             :key="part.name"
             :label="toSharePreviewLabel(part.name)"
             size="small"
-            :severity="part.name === activePreviewPart?.name ? 'primary' : 'contrast'"
+            severity="contrast"
             :outlined="part.name !== activePreviewPart?.name"
             @click="selectedPart = part.name"
           />
         </div>
 
-        <div
-          class="overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950/40"
-        >
+        <div class="overflow-hidden">
           <PastePreview
             v-if="activePreviewType"
             :contents="previewContents"

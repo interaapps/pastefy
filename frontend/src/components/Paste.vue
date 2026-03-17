@@ -5,7 +5,7 @@ import Popover from 'primevue/popover'
 import { useAsyncState, useClipboard, useTitle } from '@vueuse/core'
 import { client, eventBus } from '@/main.ts'
 
-import { computed, defineAsyncComponent, ref, useTemplateRef } from 'vue'
+import { computed, defineAsyncComponent, ref, useTemplateRef, watch } from 'vue'
 import { useCurrentPasteStore } from '@/stores/current-paste.ts'
 import PasteVisibilityIcon from '@/components/PasteVisibilityIcon.vue'
 import type { MultiPastePart, Paste } from '@/types/paste.ts'
@@ -188,16 +188,54 @@ const sharePopover = useTemplateRef<PopoverMethods>('sharePopover')
 
 const canPreview = computed(
   () =>
-    ['markdown', 'csv', 'mermaid', 'mmd', 'diff', 'ics', 'regex', 'cast'].includes(
+    [
+      'markdown',
+      'csv',
+      'mermaid',
+      'mmd',
+      'diff',
+      'ics',
+      'regex',
+      'cast',
+      'json',
+      'xml',
+      'yaml',
+      'toml',
+      'properties',
+      'ini',
+    ].includes(
       currentLang.value,
     ) ||
+    currentFileName.value?.endsWith('.html') ||
+    currentFileName.value?.endsWith('.htm') ||
     currentFileName.value?.endsWith('.svg') ||
     currentFileName.value?.endsWith('.cast') ||
     currentFileName.value?.endsWith('.mmd') ||
     currentFileName.value?.endsWith('.mermaid') ||
     currentFileName.value?.endsWith('.geojson'),
 )
+
+const previewRequiresManualOpen = computed(
+  () =>
+    currentLang.value === 'json' ||
+    currentLang.value === 'xml' ||
+    currentLang.value === 'yaml' ||
+    currentLang.value === 'toml' ||
+    currentLang.value === 'properties' ||
+    currentLang.value === 'ini' ||
+    currentFileName.value?.endsWith('.html') ||
+    currentFileName.value?.endsWith('.htm'),
+)
+
 const showPreview = ref(true)
+
+watch(
+  [currentLang, currentFileName],
+  () => {
+    showPreview.value = !previewRequiresManualOpen.value
+  },
+  { immediate: true },
+)
 </script>
 <template>
   <div v-if="appInfo.appInfo?.login_required_for_read && !currentUser.user">

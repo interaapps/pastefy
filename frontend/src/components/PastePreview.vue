@@ -12,6 +12,11 @@ const GeoJSONViewer = defineAsyncComponent(() => import('@/components/previews/G
 const DiffViewer = defineAsyncComponent(() => import('@/components/previews/DiffViewer.vue'))
 const ICSViewer = defineAsyncComponent(() => import('@/components/previews/ICSViewer.vue'))
 const RegexViewer = defineAsyncComponent(() => import('@/components/previews/RegexViewer.vue'))
+const JSONViewer = defineAsyncComponent(() => import('@/components/previews/JSONViewer.vue'))
+const HTMLViewer = defineAsyncComponent(() => import('@/components/previews/HTMLViewer.vue'))
+const XMLViewer = defineAsyncComponent(() => import('@/components/previews/XMLViewer.vue'))
+const ConfigViewer = defineAsyncComponent(() => import('@/components/previews/ConfigViewer.vue'))
+const YAMLViewer = defineAsyncComponent(() => import('@/components/previews/YAMLViewer.vue'))
 const AsciinemaViewer = defineAsyncComponent(
   () => import('@/components/previews/AsciinemaViewer.vue'),
 )
@@ -41,6 +46,42 @@ defineProps<{
   <DiffViewer v-else-if="type === 'diff'" :diff="contents" :inEditor />
   <ICSViewer v-else-if="type === 'ics'" :ics="contents" :inEditor />
   <RegexViewer v-else-if="type === 'regex'" :regex="contents" :inEditor />
+  <JSONViewer v-else-if="type === 'json' || fileName?.endsWith('.json')" :json="contents" />
+  <HTMLViewer
+    v-else-if="type === 'html' || fileName?.endsWith('.html') || fileName?.endsWith('.htm')"
+    :html="contents"
+  />
+  <XMLViewer
+    v-else-if="
+      type === 'xml' ||
+      fileName?.endsWith('.xml') ||
+      fileName?.endsWith('.xhtml') ||
+      fileName?.endsWith('.iml')
+    "
+    :xml="contents"
+  />
+  <YAMLViewer
+    v-else-if="type === 'yaml' || fileName?.endsWith('.yml') || fileName?.endsWith('.yaml')"
+    :yaml="contents"
+  />
+  <ConfigViewer
+    v-else-if="type === 'toml' || fileName?.endsWith('.toml')"
+    :contents="contents"
+    :file-name="fileName"
+    type="toml"
+  />
+  <ConfigViewer
+    v-else-if="
+      type === 'properties' ||
+      type === 'ini' ||
+      fileName?.endsWith('.properties') ||
+      fileName?.endsWith('.ini') ||
+      fileName === '.env'
+    "
+    :contents="contents"
+    :file-name="fileName"
+    :type="type === 'ini' || fileName?.endsWith('.ini') ? 'ini' : 'properties'"
+  />
   <AsciinemaViewer
     v-else-if="type === 'cast' || fileName?.endsWith('.cast')"
     :cast="contents"

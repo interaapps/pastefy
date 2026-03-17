@@ -208,7 +208,15 @@ watch(
 const showPreview = computed(() => {
   return (
     (cmOptions.value.mode === 'markdown' ||
+      cmOptions.value.mode === 'json' ||
+      cmOptions.value.mode === 'xml' ||
+      cmOptions.value.mode === 'yaml' ||
+      cmOptions.value.mode === 'toml' ||
+      cmOptions.value.mode === 'properties' ||
+      cmOptions.value.mode === 'ini' ||
       currentTitle.value.endsWith('.csv') ||
+      currentTitle.value.endsWith('.html') ||
+      currentTitle.value.endsWith('.htm') ||
       currentTitle.value.endsWith('.mmd') ||
       currentTitle.value.endsWith('.svg') ||
       currentTitle.value.endsWith('.geojson') ||
@@ -223,6 +231,12 @@ const previewInfo = computed(() => {
       contents: currentPaste.contents,
       fileName: currentTitle.value,
       type: 'csv',
+    }
+  } else if (currentTitle.value?.endsWith('.html') || currentTitle.value?.endsWith('.htm')) {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'html',
     }
   } else if (currentTitle.value?.endsWith('.mmd') || currentTitle.value?.endsWith('.mermaid')) {
     return {
@@ -247,6 +261,36 @@ const previewInfo = computed(() => {
       contents: currentPaste.contents,
       fileName: currentTitle.value,
       type: 'markdown',
+    }
+  } else if (cmOptions.value.mode === 'json') {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'json',
+    }
+  } else if (cmOptions.value.mode === 'xml') {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'xml',
+    }
+  } else if (cmOptions.value.mode === 'yaml') {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'yaml',
+    }
+  } else if (cmOptions.value.mode === 'toml') {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'toml',
+    }
+  } else if (cmOptions.value.mode === 'properties' || cmOptions.value.mode === 'ini') {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: cmOptions.value.mode,
     }
   }
   return undefined

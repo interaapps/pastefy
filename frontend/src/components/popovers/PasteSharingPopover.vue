@@ -28,6 +28,7 @@ const props = defineProps<{
 }>()
 
 const pasteUrl = computed(() => `${origin}/${props.paste?.id}`)
+const shareModesUrl = computed(() => `${origin}/${props.paste?.id}/share-modes`)
 
 const markdownParts = computed(() => {
   if (props.paste?.type !== 'MULTI_PASTE') return []
@@ -252,7 +253,7 @@ defineExpose({
         />
         <CopyButton :contents="articleUrl" />
       </InputGroup>
-      <InputGroup v-if="canShareAsPresentation">
+      <InputGroup v-else-if="canShareAsPresentation">
         <InputText
           size="small"
           :value="presentationUrl"

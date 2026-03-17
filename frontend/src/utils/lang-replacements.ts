@@ -71,7 +71,8 @@ const fileNameReplacements = {
   'yarn.lock': 'yaml',
 } as Record<string, string>
 
-export function findFromFileName(fileName: string): string | undefined {
+export function findFromFileName(fileName?: string): string | undefined {
+  if (!fileName) return undefined
   if (fileName in fileNameReplacements) return fileNameReplacements[fileName]
 
   const ext = fileName.split('.').pop()!
