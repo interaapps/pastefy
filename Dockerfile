@@ -8,14 +8,15 @@ COPY frontend app
 RUN npm run --prefix app build
 
 
-FROM maven:3.8.3-eclipse-temurin-17 AS build
+FROM maven:3.9.14-eclipse-temurin-17 AS build
 
 WORKDIR /
 
 COPY backend/src /home/app/src
 COPY backend/pom.xml /home/app
 COPY --from=frontend backend/src/main/resources/static /home/app/src/main/resources/static
-RUN mvn -f /home/app/pom.xml clean package
+RUN rm -rf /home/app/.m2/repository
+RUN mvn -U -f /home/app/pom.xml clean package
 
 FROM eclipse-temurin:17
 COPY --from=build /home/app/target/backend.jar /usr/local/lib/backend.jar

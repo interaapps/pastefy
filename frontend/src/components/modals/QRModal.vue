@@ -51,11 +51,15 @@ onMounted(() => renderQRCode())
       class="align-items-center justify-content-center relative flex w-full rounded-xl border-1 border-neutral-300 p-3 dark:border-neutral-700"
     >
       <div class="absolute top-0 right-0 p-2">
-        <a :href="qrCodeDataURL" download="">
+        <a
+          :href="qrCodeDataURL"
+          download=""
+          class="flex size-6 items-center justify-center rounded-full bg-white text-black"
+        >
           <i class="ti ti-download scale-active icon-button" />
         </a>
       </div>
-      <img class="w-10rem h-10rem border-round-md block" :src="qrCodeDataURL" alt="" />
+      <img class="w-10rem h-10rem block rounded-sm" :src="qrCodeDataURL" alt="" />
     </div>
   </Dialog>
 </template>

@@ -10,11 +10,6 @@
 
     <repositories>
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-
-        <repository>
             <id>central-snapshots</id>
             <url>https://central.sonatype.com/repository/maven-snapshots/</url>
         </repository>

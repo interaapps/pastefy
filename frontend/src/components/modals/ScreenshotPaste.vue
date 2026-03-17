@@ -54,7 +54,7 @@ const selectedLines = computed(() => {
 })
 </script>
 <template>
-  <Dialog v-model:visible="visible" modal header="Screenshot" class="w-[60rem]">
+  <Dialog v-model:visible="visible" modal header="Screenshot" class="w-[60rem] max-w-full">
     <div class="mb-8 flex min-h-[20rem] items-center justify-center overflow-auto">
       <div
         ref="screenshotAreaRef"

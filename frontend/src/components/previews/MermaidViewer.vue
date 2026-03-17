@@ -28,7 +28,10 @@ const mermaidHTML = ref('Loading')
 
 const render = async () => {
   mermaidHTML.value = ''
-  const out = await mermaid.render('mermaid-preview', props.mermaidCode)
+  const out = await mermaid.render(
+    `mermaid-preview-${Math.random().toString().replace('.', '')}`,
+    props.mermaidCode,
+  )
   mermaidHTML.value = out.svg
 }
 onMounted(() => {

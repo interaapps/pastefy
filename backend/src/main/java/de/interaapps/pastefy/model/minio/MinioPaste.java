@@ -118,11 +118,12 @@ public class MinioPaste extends AbstractObject {
         if (Pastefy.getInstance().isMinioEnabled()) {
             try {
                 MinioPaste minioPaste = fromPaste(paste);
+
                 Pastefy.getInstance().getMinioClient().removeObject(RemoveObjectArgs.builder()
                     .bucket(minioPaste.getBucket())
                     .region(minioPaste.getRegion())
                     .object(minioPaste.getObjectName())
-                .build());
+                        .build());
             } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
                      InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
                      XmlParserException e) {
