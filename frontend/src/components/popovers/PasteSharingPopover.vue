@@ -12,6 +12,7 @@ import type { PopoverMethods } from 'primevue'
 import { useClipboard } from '@vueuse/core'
 import CopyButton from '@/components/CopyButton.vue'
 import { findFromFileName } from '@/utils/lang-replacements.ts'
+import { resolveSharePreviewType } from '@/utils/share-preview.ts'
 
 const pasteEmbedOpened = ref(false)
 const pasteScreenshotOpened = ref(false)
@@ -40,6 +41,18 @@ const markdownParts = computed(() => {
   }
 })
 
+const previewParts = computed(() => {
+  if (props.paste?.type !== 'MULTI_PASTE') return []
+
+  try {
+    return (JSON.parse(props.paste.content || '[]') as MultiPastePart[]).filter((part) =>
+      resolveSharePreviewType(part.name),
+    )
+  } catch {
+    return []
+  }
+})
+
 const preferredArticlePart = computed(() => {
   if (props.paste?.type !== 'MULTI_PASTE') return undefined
   if (findFromFileName(props.currentFileName || '') === 'markdown') return props.currentFileName
@@ -54,12 +67,34 @@ const articleUrl = computed(() => {
   return url.toString()
 })
 
+const preferredPresentationPart = computed(() => {
+  if (props.paste?.type !== 'MULTI_PASTE') return undefined
+  if (resolveSharePreviewType(props.currentFileName || '')) return props.currentFileName
+  return previewParts.value[0]?.name
+})
+
+const presentationUrl = computed(() => {
+  const url = new URL(`${origin}/${props.paste?.id}/presentation`)
+  if (preferredPresentationPart.value) {
+    url.searchParams.set('part', preferredPresentationPart.value)
+  }
+  return url.toString()
+})
+
 const canShareAsArticle = computed(() => {
   if (props.paste?.type === 'PASTE') {
     return findFromFileName(props.currentFileName || '') === 'markdown'
   }
 
   return props.paste?.type === 'MULTI_PASTE' && markdownParts.value.length > 0
+})
+
+const canShareAsPresentation = computed(() => {
+  if (props.paste?.type === 'PASTE') {
+    return !!resolveSharePreviewType(props.currentFileName || '')
+  }
+
+  return props.paste?.type === 'MULTI_PASTE' && previewParts.value.length > 0
 })
 
 const share = () => {
@@ -189,6 +224,23 @@ defineExpose({
           label="article view"
           @click="sharePopover!.hide()"
         />
+        <Button
+          v-if="canShareAsPresentation"
+          as="router-link"
+          :to="{
+            name: 'paste-presentation',
+            params: { paste: paste.id },
+            query: preferredPresentationPart ? { part: preferredPresentationPart } : undefined,
+          }"
+          severity="contrast"
+          size="small"
+          class="justify-start"
+          text
+          fluid
+          icon="ti ti-presentation text-lg"
+          label="presentation view"
+          @click="sharePopover!.hide()"
+        />
       </div>
 
       <InputGroup v-if="canShareAsArticle">
@@ -199,6 +251,15 @@ defineExpose({
           readonly
         />
         <CopyButton :contents="articleUrl" />
+      </InputGroup>
+      <InputGroup v-if="canShareAsPresentation">
+        <InputText
+          size="small"
+          :value="presentationUrl"
+          class="border-r-0 border-gray-200 select-all dark:border-neutral-700"
+          readonly
+        />
+        <CopyButton :contents="presentationUrl" />
       </InputGroup>
     </div>
   </Popover>

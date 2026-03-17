@@ -24,6 +24,7 @@ import { useTagsStore } from '@/stores/tags-store.ts'
 import type { PopoverMethods } from 'primevue'
 import ComponentInjection from '@/components/ComponentInjection.vue'
 import PasteSharingPopover from '@/components/popovers/PasteSharingPopover.vue'
+import PasteStarButton from '@/components/paste/PasteStarButton.vue'
 const Highlighted = defineAsyncComponent(() => import('@/components/Highlighted.vue'))
 
 const props = defineProps<{
@@ -61,20 +62,6 @@ const origin = window.location.origin
 const paste = ref<Paste | undefined>(undefined)
 
 const tagsStore = useTagsStore()
-
-const { isLoading: starLoading, execute: star } = useAsyncState(
-  async () => {
-    if (paste.value?.starred) {
-      await client.delete(`/api/v2/paste/${props.pasteId}/star`)
-      paste.value.starred = false
-    } else {
-      await client.post(`/api/v2/paste/${props.pasteId}/star`)
-      paste.value!.starred = true
-    }
-  },
-  undefined,
-  { immediate: false },
-)
 
 const { isLoading, error } = useAsyncState(async () => {
   const pasteRes = (
@@ -287,17 +274,7 @@ const showPreview = ref(true)
             @shortkey="copy"
             aria-label="Copy"
           />
-          <Button
-            v-if="currentUser.user?.logged_in"
-            @click="() => star()"
-            severity="contrast"
-            text
-            rounded
-            :icon="`ti ti-star text-xl ${paste.starred ? 'text-yellow-500' : ''}`"
-            v-tooltip="{ value: 'Star', showDelay: 500 }"
-            :loading="starLoading"
-            aria-label="Star"
-          />
+          <PasteStarButton v-if="paste" :paste="paste" :paste-id="props.pasteId" />
           <Button
             v-if="paste.tags?.includes('codebox')"
             target="_blank"

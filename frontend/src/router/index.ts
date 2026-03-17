@@ -115,6 +115,11 @@ const router = createRouter({
           component: () => import('@/views/MarkdownArticleView.vue'),
         },
         {
+          path: '/:paste/presentation',
+          name: 'paste-presentation',
+          component: () => import('@/views/PreviewPresentationView.vue'),
+        },
+        {
           path: '/:paste',
           name: 'paste',
           component: () => import('@/views/PasteView.vue'),
