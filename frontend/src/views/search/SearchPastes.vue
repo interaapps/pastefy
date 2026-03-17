@@ -69,31 +69,32 @@ watch(
   },
 )
 
-const scopeOptions = computed(() =>
-  [
-    {
-      label: 'Public',
-      value: 'public' as Scope,
-      icon: 'world',
-      description: 'Search all public pastes.',
-    },
-    ...(currentUserStore.user
-      ? [
-          {
-            label: 'Mine',
-            value: 'mine' as Scope,
-            icon: 'user',
-            description: 'Search your own pastes.',
-          },
-          {
-            label: 'Starred',
-            value: 'starred' as Scope,
-            icon: 'star',
-            description: 'Search your starred collection.',
-          },
-        ]
-      : []),
-  ] as const,
+const scopeOptions = computed(
+  () =>
+    [
+      {
+        label: 'Public',
+        value: 'public' as Scope,
+        icon: 'world',
+        description: 'Search all public pastes.',
+      },
+      ...(currentUserStore.user
+        ? [
+            {
+              label: 'Mine',
+              value: 'mine' as Scope,
+              icon: 'user',
+              description: 'Search your own pastes.',
+            },
+            {
+              label: 'Starred',
+              value: 'starred' as Scope,
+              icon: 'star',
+              description: 'Search your starred collection.',
+            },
+          ]
+        : []),
+    ] as const,
 )
 
 const sortOptions = [
@@ -292,12 +293,14 @@ const resultDescription = computed(() => {
 <template>
   <section class="mx-auto flex w-full max-w-[1440px] flex-col gap-6 p-4 md:p-8">
     <div
-      class="overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 p-5 dark:border-neutral-700 dark:bg-neutral-800 md:p-6"
+      class="overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 p-5 md:p-6 dark:border-neutral-700 dark:bg-neutral-800"
     >
       <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div class="max-w-[52rem]">
           <div class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Search</div>
-          <h1 class="mt-1 text-3xl font-bold tracking-tight md:text-4xl">Find the right paste faster</h1>
+          <h1 class="mt-1 text-3xl font-bold tracking-tight md:text-4xl">
+            Find the right paste faster
+          </h1>
           <p class="mt-2 text-neutral-600 dark:text-neutral-300">
             {{ resultDescription }}
           </p>
@@ -333,10 +336,11 @@ const resultDescription = computed(() => {
             fluid
             placeholder="Search titles, content, or enter @username"
             @update:model-value="commitSearch(String($event || ''))"
+            autofocus
           />
           <p class="mt-3 text-xs text-neutral-500 dark:text-neutral-400">
-            The backend searches title, content, username, and unique name. Enter `@username` for
-            an exact public user lookup.
+            The backend searches title, content, username, and unique name. Enter `@username` for an
+            exact public user lookup.
           </p>
         </div>
 
@@ -375,11 +379,19 @@ const resultDescription = computed(() => {
           <div class="grid gap-3">
             <div>
               <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Sort</label>
-              <Select v-model="sort" :options="sortOptions" option-label="label" option-value="value" fluid />
+              <Select
+                v-model="sort"
+                :options="sortOptions"
+                option-label="label"
+                option-value="value"
+                fluid
+              />
             </div>
 
             <div>
-              <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Results per page</label>
+              <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400"
+                >Results per page</label
+              >
               <Select
                 v-model="pageLimit"
                 :options="pageLimitOptions"
@@ -390,7 +402,9 @@ const resultDescription = computed(() => {
             </div>
 
             <div v-if="scope !== 'public'">
-              <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Visibility</label>
+              <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400"
+                >Visibility</label
+              >
               <Select
                 v-model="visibility"
                 :options="visibilityOptions"
@@ -401,7 +415,9 @@ const resultDescription = computed(() => {
             </div>
 
             <div>
-              <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Paste type</label>
+              <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400"
+                >Paste type</label
+              >
               <Select
                 v-model="pasteType"
                 :options="typeOptions"
@@ -412,7 +428,9 @@ const resultDescription = computed(() => {
             </div>
 
             <div>
-              <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Encryption</label>
+              <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400"
+                >Encryption</label
+              >
               <Select
                 v-model="encryption"
                 :options="encryptionOptions"
@@ -423,7 +441,9 @@ const resultDescription = computed(() => {
             </div>
 
             <div>
-              <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Folder state</label>
+              <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400"
+                >Folder state</label
+              >
               <Select
                 v-model="folder"
                 :options="folderOptions"
@@ -474,7 +494,8 @@ const resultDescription = computed(() => {
           v-else-if="matchedUser === null"
           class="rounded-2xl border border-dashed border-neutral-300 bg-white/70 p-4 text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-900/40 dark:text-neutral-400"
         >
-          No public user matched <span class="font-medium">@{{ userLookupName }}</span>.
+          No public user matched <span class="font-medium">@{{ userLookupName }}</span
+          >.
         </div>
 
         <div
@@ -489,12 +510,7 @@ const resultDescription = computed(() => {
             </div>
 
             <div v-if="activeFilters.length" class="flex flex-wrap gap-2">
-              <Tag
-                v-for="entry of activeFilters"
-                :key="entry"
-                :value="entry"
-                severity="contrast"
-              />
+              <Tag v-for="entry of activeFilters" :key="entry" :value="entry" severity="contrast" />
             </div>
           </div>
         </div>
