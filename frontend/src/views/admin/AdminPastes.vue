@@ -163,7 +163,7 @@ const formatDate = (value?: string) => {
       <div v-for="paste in pastes" :key="paste.id">
         <PasteCard :paste link-class="rounded-b-none" />
         <div
-          class="flex items-center justify-between rounded-xl rounded-t-none border border-neutral-200 bg-neutral-100 p-3"
+          class="flex items-center justify-between rounded-xl rounded-t-none border border-t-0 border-neutral-200 bg-neutral-100 p-3 dark:border-neutral-700 dark:bg-neutral-800"
         >
           <div class="min-w-0 space-y-3">
             <div

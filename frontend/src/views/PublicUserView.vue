@@ -52,6 +52,23 @@ const {
         </div>
         <div class="md:ml-auto">
           <Button
+            as="router-link"
+            :to="{
+              name: 'search-pastes',
+              query: {
+                search: `@${user.name}`,
+                scope: 'public',
+                page: '1',
+              },
+            }"
+            icon="ti ti-search"
+            label="Search This User"
+            size="small"
+            outlined
+            severity="contrast"
+            class="mr-2"
+          />
+          <Button
             v-if="currentUserStore.user?.type === 'ADMIN'"
             as="router-link"
             :to="{

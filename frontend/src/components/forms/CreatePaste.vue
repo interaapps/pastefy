@@ -48,11 +48,13 @@ import type { Folder } from '@/types/folder.ts'
 import { useCurrentUserStore } from '@/stores/current-user.ts'
 import { estimateTitle } from '@/utils/estimate-title.ts'
 import { useConfig } from '@/composables/config.ts'
+import { useAppStore } from '@/stores/app.ts'
 
 const currentPaste = useCurrentPasteStore()
 const currentUserStore = useCurrentUserStore()
 
 const config = useConfig()
+const appStore = useAppStore()
 
 emmet(CodeMirror)
 
@@ -203,6 +205,16 @@ watch(
   () => {
     if (!ignoreUrlCheck.value) checkUrl()
   },
+)
+
+watch(
+  () => appStore.createPasteFullscreenRequested,
+  (requested) => {
+    if (!requested) return
+    isFullscreen.value = true
+    appStore.createPasteFullscreenRequested = false
+  },
+  { immediate: true },
 )
 
 const showPreview = computed(() => {

@@ -50,7 +50,12 @@ const {
 }, undefined)
 
 watch(
-  () => JSON.stringify('route' in props ? props.params || {} : {}),
+  () =>
+    JSON.stringify({
+      route: 'route' in props ? props.route : undefined,
+      params: 'route' in props ? props.params || {} : {},
+      pageLimit: resolvedPageLimit.value,
+    }),
   () => {
     page.value = 1
     load()
