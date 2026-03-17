@@ -130,7 +130,7 @@ watch(search, (value) => {
 </script>
 
 <template>
-  <div class="overflow-hidden text-sm">
+  <div class="@container overflow-hidden text-sm">
     <div
       class="flex flex-col gap-4 border-b border-neutral-200 bg-neutral-50 px-4 py-4 dark:border-neutral-700 dark:bg-neutral-900/70"
     >
@@ -147,8 +147,15 @@ watch(search, (value) => {
         </div>
       </div>
 
-      <div class="grid gap-3 xl:grid-cols-[minmax(0,1fr)_180px_auto]">
-        <InputText v-model="search" placeholder="Search keys, paths, and values" fluid />
+      <div
+        class="grid gap-3 @[42rem]:grid-cols-[minmax(0,1fr)_12rem] @[68rem]:grid-cols-[minmax(0,1fr)_12rem_auto]"
+      >
+        <InputText
+          v-model="search"
+          placeholder="Search keys, paths, and values"
+          fluid
+          class="min-w-0"
+        />
         <Select
           v-model="viewMode"
           :options="viewOptions"
@@ -156,7 +163,7 @@ watch(search, (value) => {
           option-value="value"
           fluid
         />
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap gap-2 @[42rem]:col-span-2 @[68rem]:col-span-1 @[68rem]:justify-end">
           <Button
             v-if="viewMode === 'tree'"
             icon="ti ti-fold-down"
