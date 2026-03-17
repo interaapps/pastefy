@@ -11,6 +11,7 @@ import { computed, ref, useTemplateRef } from 'vue'
 import type { PopoverMethods } from 'primevue'
 import { useClipboard } from '@vueuse/core'
 import CopyButton from '@/components/CopyButton.vue'
+import { findFromFileName } from '@/utils/lang-replacements.ts'
 
 const pasteEmbedOpened = ref(false)
 const pasteScreenshotOpened = ref(false)
@@ -26,6 +27,10 @@ const props = defineProps<{
 }>()
 
 const pasteUrl = computed(() => `${origin}/${props.paste?.id}`)
+const articleUrl = computed(() => `${origin}/${props.paste?.id}/article`)
+const canShareAsArticle = computed(
+  () => props.paste?.type === 'PASTE' && findFromFileName(props.currentFileName || '') === 'markdown',
+)
 
 const share = () => {
   navigator.share({
@@ -137,7 +142,30 @@ defineExpose({
           icon="ti ti-qrcode text-lg"
           label="qr code"
         />
+        <Button
+          v-if="canShareAsArticle"
+          as="router-link"
+          :to="{ name: 'paste-article', params: { paste: paste.id } }"
+          severity="contrast"
+          size="small"
+          class="justify-start"
+          text
+          fluid
+          icon="ti ti-article text-lg"
+          label="article view"
+          @click="sharePopover!.hide()"
+        />
       </div>
+
+      <InputGroup v-if="canShareAsArticle">
+        <InputText
+          size="small"
+          :value="articleUrl"
+          class="border-r-0 border-gray-200 select-all dark:border-neutral-700"
+          readonly
+        />
+        <CopyButton :contents="articleUrl" />
+      </InputGroup>
     </div>
   </Popover>
 

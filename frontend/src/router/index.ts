@@ -110,6 +110,11 @@ const router = createRouter({
         },
 
         {
+          path: '/:paste/article',
+          name: 'paste-article',
+          component: () => import('@/views/MarkdownArticleView.vue'),
+        },
+        {
           path: '/:paste',
           name: 'paste',
           component: () => import('@/views/PasteView.vue'),
