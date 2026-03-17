@@ -48,11 +48,13 @@ import type { Folder } from '@/types/folder.ts'
 import { useCurrentUserStore } from '@/stores/current-user.ts'
 import { estimateTitle } from '@/utils/estimate-title.ts'
 import { useConfig } from '@/composables/config.ts'
+import { useAppStore } from '@/stores/app.ts'
 
 const currentPaste = useCurrentPasteStore()
 const currentUserStore = useCurrentUserStore()
 
 const config = useConfig()
+const appStore = useAppStore()
 
 emmet(CodeMirror)
 
@@ -205,10 +207,34 @@ watch(
   },
 )
 
+watch(
+  () => appStore.createPasteFullscreenRequested,
+  (requested) => {
+    if (!requested) return
+    isFullscreen.value = true
+    appStore.createPasteFullscreenRequested = false
+  },
+  { immediate: true },
+)
+
 const showPreview = computed(() => {
   return (
     (cmOptions.value.mode === 'markdown' ||
+      cmOptions.value.mode === 'json' ||
+      cmOptions.value.mode === 'xml' ||
+      cmOptions.value.mode === 'yaml' ||
+      cmOptions.value.mode === 'toml' ||
+      cmOptions.value.mode === 'properties' ||
+      cmOptions.value.mode === 'ini' ||
+      cmOptions.value.mode === 'http' ||
+      cmOptions.value.mode === 'hcl' ||
+      cmOptions.value.mode === 'log' ||
       currentTitle.value.endsWith('.csv') ||
+      currentTitle.value.endsWith('.tf') ||
+      currentTitle.value.endsWith('.tfvars') ||
+      currentTitle.value.endsWith('.hcl') ||
+      currentTitle.value.endsWith('.html') ||
+      currentTitle.value.endsWith('.htm') ||
       currentTitle.value.endsWith('.mmd') ||
       currentTitle.value.endsWith('.svg') ||
       currentTitle.value.endsWith('.geojson') ||
@@ -223,6 +249,12 @@ const previewInfo = computed(() => {
       contents: currentPaste.contents,
       fileName: currentTitle.value,
       type: 'csv',
+    }
+  } else if (currentTitle.value?.endsWith('.html') || currentTitle.value?.endsWith('.htm')) {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'html',
     }
   } else if (currentTitle.value?.endsWith('.mmd') || currentTitle.value?.endsWith('.mermaid')) {
     return {
@@ -247,6 +279,59 @@ const previewInfo = computed(() => {
       contents: currentPaste.contents,
       fileName: currentTitle.value,
       type: 'markdown',
+    }
+  } else if (cmOptions.value.mode === 'json') {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'json',
+    }
+  } else if (cmOptions.value.mode === 'xml') {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'xml',
+    }
+  } else if (cmOptions.value.mode === 'yaml') {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'yaml',
+    }
+  } else if (cmOptions.value.mode === 'toml') {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'toml',
+    }
+  } else if (cmOptions.value.mode === 'properties' || cmOptions.value.mode === 'ini') {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: cmOptions.value.mode,
+    }
+  } else if (cmOptions.value.mode === 'http') {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'http',
+    }
+  } else if (
+    cmOptions.value.mode === 'hcl' ||
+    currentTitle.value?.endsWith('.tf') ||
+    currentTitle.value?.endsWith('.tfvars') ||
+    currentTitle.value?.endsWith('.hcl')
+  ) {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'hcl',
+    }
+  } else if (cmOptions.value.mode === 'log' || currentTitle.value?.endsWith('.log')) {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'log',
     }
   }
   return undefined

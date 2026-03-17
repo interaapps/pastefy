@@ -6,6 +6,19 @@ import { useConfig } from '@/composables/config.ts'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to) {
+    if (to.hash) {
+      return {
+        el: to.hash,
+        top: 96,
+        behavior: 'smooth',
+      }
+    }
+
+    return {
+      top: 0,
+    }
+  },
   routes: [
     {
       path: '/auth',
@@ -16,6 +29,32 @@ const router = createRouter({
       path: '/:paste/embed',
       name: 'paste-embed',
       component: () => import('@/views/PasteEmbed.vue'),
+    },
+    {
+      path: '/tools',
+      component: () => import('@/views/layouts/ToolLayout.vue'),
+      children: [
+        {
+          path: '',
+          name: 'tool-home',
+          component: () => import('@/views/ToolIndexView.vue'),
+        },
+        {
+          path: 'convert/:tool',
+          name: 'tool-conversion',
+          component: () => import('@/views/ConversionToolView.vue'),
+        },
+        {
+          path: 'utility/:tool',
+          name: 'tool-utility',
+          component: () => import('@/views/UtilityToolView.vue'),
+        },
+        {
+          path: ':tool',
+          name: 'tool-preview',
+          component: () => import('@/views/PreviewToolView.vue'),
+        },
+      ],
     },
     {
       path: '/',
@@ -109,6 +148,21 @@ const router = createRouter({
           component: () => import('@/views/TagView.vue'),
         },
 
+        {
+          path: '/:paste/article',
+          name: 'paste-article',
+          component: () => import('@/views/MarkdownArticleView.vue'),
+        },
+        {
+          path: '/:paste/presentation',
+          name: 'paste-presentation',
+          component: () => import('@/views/PreviewPresentationView.vue'),
+        },
+        {
+          path: '/:paste/share-modes',
+          name: 'paste-share-modes',
+          component: () => import('@/views/ReaderShareModesView.vue'),
+        },
         {
           path: '/:paste',
           name: 'paste',

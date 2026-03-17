@@ -5,7 +5,7 @@ import Popover from 'primevue/popover'
 import { useAsyncState, useClipboard, useTitle } from '@vueuse/core'
 import { client, eventBus } from '@/main.ts'
 
-import { computed, defineAsyncComponent, ref, useTemplateRef } from 'vue'
+import { computed, defineAsyncComponent, ref, useTemplateRef, watch } from 'vue'
 import { useCurrentPasteStore } from '@/stores/current-paste.ts'
 import PasteVisibilityIcon from '@/components/PasteVisibilityIcon.vue'
 import type { MultiPastePart, Paste } from '@/types/paste.ts'
@@ -24,6 +24,7 @@ import { useTagsStore } from '@/stores/tags-store.ts'
 import type { PopoverMethods } from 'primevue'
 import ComponentInjection from '@/components/ComponentInjection.vue'
 import PasteSharingPopover from '@/components/popovers/PasteSharingPopover.vue'
+import PasteStarButton from '@/components/paste/PasteStarButton.vue'
 const Highlighted = defineAsyncComponent(() => import('@/components/Highlighted.vue'))
 
 const props = defineProps<{
@@ -61,20 +62,6 @@ const origin = window.location.origin
 const paste = ref<Paste | undefined>(undefined)
 
 const tagsStore = useTagsStore()
-
-const { isLoading: starLoading, execute: star } = useAsyncState(
-  async () => {
-    if (paste.value?.starred) {
-      await client.delete(`/api/v2/paste/${props.pasteId}/star`)
-      paste.value.starred = false
-    } else {
-      await client.post(`/api/v2/paste/${props.pasteId}/star`)
-      paste.value!.starred = true
-    }
-  },
-  undefined,
-  { immediate: false },
-)
 
 const { isLoading, error } = useAsyncState(async () => {
   const pasteRes = (
@@ -201,16 +188,60 @@ const sharePopover = useTemplateRef<PopoverMethods>('sharePopover')
 
 const canPreview = computed(
   () =>
-    ['markdown', 'csv', 'mermaid', 'mmd', 'diff', 'ics', 'regex', 'cast'].includes(
+    [
+      'markdown',
+      'csv',
+      'mermaid',
+      'mmd',
+      'diff',
+      'ics',
+      'regex',
+      'cast',
+      'json',
+      'xml',
+      'yaml',
+      'toml',
+      'properties',
+      'ini',
+      'hcl',
+      'http',
+      'log',
+    ].includes(
       currentLang.value,
     ) ||
+    currentFileName.value?.endsWith('.tf') ||
+    currentFileName.value?.endsWith('.tfvars') ||
+    currentFileName.value?.endsWith('.hcl') ||
+    currentFileName.value?.endsWith('.html') ||
+    currentFileName.value?.endsWith('.htm') ||
     currentFileName.value?.endsWith('.svg') ||
     currentFileName.value?.endsWith('.cast') ||
     currentFileName.value?.endsWith('.mmd') ||
     currentFileName.value?.endsWith('.mermaid') ||
     currentFileName.value?.endsWith('.geojson'),
 )
+
+const previewRequiresManualOpen = computed(
+  () =>
+    currentLang.value === 'json' ||
+    currentLang.value === 'xml' ||
+    currentLang.value === 'yaml' ||
+    currentLang.value === 'toml' ||
+    currentLang.value === 'properties' ||
+    currentLang.value === 'ini' ||
+    currentFileName.value?.endsWith('.html') ||
+    currentFileName.value?.endsWith('.htm'),
+)
+
 const showPreview = ref(true)
+
+watch(
+  [currentLang, currentFileName],
+  () => {
+    showPreview.value = !previewRequiresManualOpen.value
+  },
+  { immediate: true },
+)
 </script>
 <template>
   <div v-if="appInfo.appInfo?.login_required_for_read && !currentUser.user">
@@ -287,17 +318,7 @@ const showPreview = ref(true)
             @shortkey="copy"
             aria-label="Copy"
           />
-          <Button
-            v-if="currentUser.user?.logged_in"
-            @click="() => star()"
-            severity="contrast"
-            text
-            rounded
-            :icon="`ti ti-star text-xl ${paste.starred ? 'text-yellow-500' : ''}`"
-            v-tooltip="{ value: 'Star', showDelay: 500 }"
-            :loading="starLoading"
-            aria-label="Star"
-          />
+          <PasteStarButton v-if="paste" :paste="paste" :paste-id="props.pasteId" />
           <Button
             v-if="paste.tags?.includes('codebox')"
             target="_blank"

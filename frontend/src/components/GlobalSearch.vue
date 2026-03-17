@@ -184,6 +184,18 @@ const enter = () => {
   }
   entriesRef.value?.[currentIndex.value]?.click()
 }
+
+const openFullPageSearch = async () => {
+  await router.push({
+    name: 'search-pastes',
+    query: {
+      ...(search.value.trim() ? { search: search.value.trim() } : {}),
+      ...(currentFilterTag.value ? { tags: currentFilterTag.value } : {}),
+      scope: currentUserStore.user && appStore.searchShownEndpoints.myPastes ? 'mine' : 'public',
+    },
+  })
+  appStore.searchShown = false
+}
 </script>
 <template>
   <div
@@ -238,6 +250,14 @@ const enter = () => {
             :severity="appStore.searchShownEndpoints.publicPastes ? 'primary' : 'secondary'"
             outlined
             label="public"
+          />
+          <Button
+            icon="ti ti-external-link"
+            class="gap-0.5 rounded-md border px-2 py-0.5"
+            @click="openFullPageSearch"
+            severity="secondary"
+            outlined
+            label="page"
           />
         </div>
       </div>
