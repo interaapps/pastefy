@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useAsyncState, useTitle } from '@vueuse/core'
 import { useRoute } from 'vue-router'
+import { useRouteQuery } from '@vueuse/router'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import CryptoJS from 'crypto-js'
 import { client, eventBus } from '@/main.ts'
-import type { Paste } from '@/types/paste.ts'
+import type { MultiPastePart, Paste } from '@/types/paste.ts'
 import ErrorContainer from '@/components/ErrorContainer.vue'
 import LoadingContainer from '@/components/LoadingContainer.vue'
 import MarkdownViewer from '@/components/previews/MarkdownViewer.vue'
 import { findFromFileName } from '@/utils/lang-replacements.ts'
 
 const route = useRoute()
+const selectedPart = useRouteQuery<string>('part', '')
 
 const password = ref<string | undefined>(undefined)
 const decrypted = ref(false)
@@ -20,9 +22,32 @@ const paste = ref<Paste | undefined>(undefined)
 const title = ref<string>('')
 const markdown = ref<string>('')
 
+const multiPasteParts = computed(() => {
+  if (!paste.value || paste.value.type !== 'MULTI_PASTE') return []
+
+  try {
+    return JSON.parse(paste.value.content || '[]') as MultiPastePart[]
+  } catch {
+    return []
+  }
+})
+
+const markdownParts = computed(() =>
+  multiPasteParts.value.filter((part) => findFromFileName(part.name || '') === 'markdown'),
+)
+
+const activeMarkdownPart = computed(() => {
+  if (paste.value?.type !== 'MULTI_PASTE') return undefined
+
+  return (
+    markdownParts.value.find((part) => part.name === selectedPart.value) || markdownParts.value[0]
+  )
+})
+
 const isMarkdownPaste = computed(() => {
-  if (!paste.value || paste.value.type !== 'PASTE') return false
-  return findFromFileName(paste.value.title || '') === 'markdown'
+  if (!paste.value) return false
+  if (paste.value.type === 'PASTE') return findFromFileName(paste.value.title || '') === 'markdown'
+  return markdownParts.value.length > 0
 })
 
 const formatDate = (value?: string) => {
@@ -34,12 +59,29 @@ const formatDate = (value?: string) => {
   })
 }
 
+const toArticleLabel = (value?: string) => {
+  if (!value) return 'Untitled Article'
+  return value.replace(/\.md$/i, '')
+}
+
 const setValues = () => {
   if (!paste.value) return
-  title.value = paste.value.title || 'Untitled Article'
-  markdown.value = paste.value.content
+  if (paste.value.type === 'MULTI_PASTE') {
+    const part = activeMarkdownPart.value
+    title.value = toArticleLabel(part?.name || paste.value.title || 'Untitled Article')
+    markdown.value = part?.contents || ''
+  } else {
+    title.value = toArticleLabel(paste.value.title || 'Untitled Article')
+    markdown.value = paste.value.content
+  }
   useTitle(`${title.value} | Pastefy`)
 }
+
+watch(activeMarkdownPart, () => {
+  if (paste.value?.type === 'MULTI_PASTE' && activeMarkdownPart.value) {
+    setValues()
+  }
+})
 
 const decrypt = () => {
   if (!paste.value || !password.value) return
@@ -67,6 +109,10 @@ const { isLoading, error } = useAsyncState(async () => {
   ).data as Paste
 
   paste.value = pasteRes
+
+  if (pasteRes.type === 'MULTI_PASTE' && !selectedPart.value) {
+    selectedPart.value = markdownParts.value[0]?.name || ''
+  }
 
   const hashPw = window.location.hash?.replace('#', '')
   if (hashPw && paste.value.encrypted) {
@@ -160,6 +206,16 @@ const { isLoading, error } = useAsyncState(async () => {
 
         <div class="mt-6 flex flex-wrap gap-2">
           <Button
+            v-if="paste.type === 'MULTI_PASTE'"
+            as="router-link"
+            :to="{ name: 'paste', params: { paste: paste.id } }"
+            label="Open Multi-Paste View"
+            icon="ti ti-files"
+            outlined
+            severity="contrast"
+          />
+          <Button
+            v-else
             as="router-link"
             :to="{ name: 'paste', params: { paste: paste.id } }"
             label="Open Code View"
@@ -180,6 +236,20 @@ const { isLoading, error } = useAsyncState(async () => {
       </header>
 
       <div class="px-2 py-4 md:px-6 md:py-8">
+        <div
+          v-if="paste.type === 'MULTI_PASTE' && markdownParts.length > 1"
+          class="mb-6 flex flex-wrap gap-2 px-2 md:px-4"
+        >
+          <Button
+            v-for="part in markdownParts"
+            :key="part.name"
+            :label="toArticleLabel(part.name)"
+            size="small"
+            :severity="part.name === activeMarkdownPart?.name ? 'primary' : 'contrast'"
+            :outlined="part.name !== activeMarkdownPart?.name"
+            @click="selectedPart = part.name"
+          />
+        </div>
         <div class="markdown-article">
           <MarkdownViewer :markdown="markdown" />
         </div>

@@ -3,7 +3,7 @@ import Popover from 'primevue/popover'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import InputGroup from 'primevue/inputgroup'
-import type { Paste } from '@/types/paste.ts'
+import type { MultiPastePart, Paste } from '@/types/paste.ts'
 import EmbedPasteModal from '@/components/modals/EmbedPasteModal.vue'
 import ScreenshotPaste from '@/components/modals/ScreenshotPaste.vue'
 import QRModal from '@/components/modals/QRModal.vue'
@@ -27,10 +27,40 @@ const props = defineProps<{
 }>()
 
 const pasteUrl = computed(() => `${origin}/${props.paste?.id}`)
-const articleUrl = computed(() => `${origin}/${props.paste?.id}/article`)
-const canShareAsArticle = computed(
-  () => props.paste?.type === 'PASTE' && findFromFileName(props.currentFileName || '') === 'markdown',
-)
+
+const markdownParts = computed(() => {
+  if (props.paste?.type !== 'MULTI_PASTE') return []
+
+  try {
+    return (JSON.parse(props.paste.content || '[]') as MultiPastePart[]).filter(
+      (part) => findFromFileName(part.name || '') === 'markdown',
+    )
+  } catch {
+    return []
+  }
+})
+
+const preferredArticlePart = computed(() => {
+  if (props.paste?.type !== 'MULTI_PASTE') return undefined
+  if (findFromFileName(props.currentFileName || '') === 'markdown') return props.currentFileName
+  return markdownParts.value[0]?.name
+})
+
+const articleUrl = computed(() => {
+  const url = new URL(`${origin}/${props.paste?.id}/article`)
+  if (preferredArticlePart.value) {
+    url.searchParams.set('part', preferredArticlePart.value)
+  }
+  return url.toString()
+})
+
+const canShareAsArticle = computed(() => {
+  if (props.paste?.type === 'PASTE') {
+    return findFromFileName(props.currentFileName || '') === 'markdown'
+  }
+
+  return props.paste?.type === 'MULTI_PASTE' && markdownParts.value.length > 0
+})
 
 const share = () => {
   navigator.share({
@@ -145,7 +175,11 @@ defineExpose({
         <Button
           v-if="canShareAsArticle"
           as="router-link"
-          :to="{ name: 'paste-article', params: { paste: paste.id } }"
+          :to="{
+            name: 'paste-article',
+            params: { paste: paste.id },
+            query: preferredArticlePart ? { part: preferredArticlePart } : undefined,
+          }"
           severity="contrast"
           size="small"
           class="justify-start"
