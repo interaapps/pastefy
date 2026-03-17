@@ -45,6 +45,12 @@ export const LANG_REPLACEMENTS = {
   mermaid: 'yaml',
   ics: 'wren',
   cast: 'json',
+  tf: 'hcl',
+  tfvars: 'hcl',
+  hcl: 'hcl',
+  log: 'log',
+  http: 'http',
+  rest: 'http',
 } as Record<string, string>
 
 const fileNameReplacements = {
@@ -69,6 +75,7 @@ const fileNameReplacements = {
   'settings.gradle.kts': 'kotlin',
   gradlew: 'shell',
   'yarn.lock': 'yaml',
+  '.env': 'properties',
 } as Record<string, string>
 
 export function findFromFileName(fileName?: string): string | undefined {

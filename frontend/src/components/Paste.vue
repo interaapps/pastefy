@@ -203,9 +203,15 @@ const canPreview = computed(
       'toml',
       'properties',
       'ini',
+      'hcl',
+      'http',
+      'log',
     ].includes(
       currentLang.value,
     ) ||
+    currentFileName.value?.endsWith('.tf') ||
+    currentFileName.value?.endsWith('.tfvars') ||
+    currentFileName.value?.endsWith('.hcl') ||
     currentFileName.value?.endsWith('.html') ||
     currentFileName.value?.endsWith('.htm') ||
     currentFileName.value?.endsWith('.svg') ||

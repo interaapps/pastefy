@@ -214,7 +214,13 @@ const showPreview = computed(() => {
       cmOptions.value.mode === 'toml' ||
       cmOptions.value.mode === 'properties' ||
       cmOptions.value.mode === 'ini' ||
+      cmOptions.value.mode === 'http' ||
+      cmOptions.value.mode === 'hcl' ||
+      cmOptions.value.mode === 'log' ||
       currentTitle.value.endsWith('.csv') ||
+      currentTitle.value.endsWith('.tf') ||
+      currentTitle.value.endsWith('.tfvars') ||
+      currentTitle.value.endsWith('.hcl') ||
       currentTitle.value.endsWith('.html') ||
       currentTitle.value.endsWith('.htm') ||
       currentTitle.value.endsWith('.mmd') ||
@@ -291,6 +297,29 @@ const previewInfo = computed(() => {
       contents: currentPaste.contents,
       fileName: currentTitle.value,
       type: cmOptions.value.mode,
+    }
+  } else if (cmOptions.value.mode === 'http') {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'http',
+    }
+  } else if (
+    cmOptions.value.mode === 'hcl' ||
+    currentTitle.value?.endsWith('.tf') ||
+    currentTitle.value?.endsWith('.tfvars') ||
+    currentTitle.value?.endsWith('.hcl')
+  ) {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'hcl',
+    }
+  } else if (cmOptions.value.mode === 'log' || currentTitle.value?.endsWith('.log')) {
+    return {
+      contents: currentPaste.contents,
+      fileName: currentTitle.value,
+      type: 'log',
     }
   }
   return undefined
