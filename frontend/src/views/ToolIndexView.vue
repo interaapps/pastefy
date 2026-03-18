@@ -2,10 +2,18 @@
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import { computed, ref } from 'vue'
-import { previewTools } from '@/utils/preview-tools.ts'
-import { conversionTools } from '@/utils/conversion-tools.ts'
-import { utilityTools } from '@/utils/utility-tools.ts'
+
+import ToolCard from '@/components/tools/ToolCard.vue'
 import { useSEO } from '@/composables/seo.ts'
+import { usePinnedTools } from '@/composables/pinned-tools.ts'
+import {
+  conversionCatalogEntries,
+  getCategoryCount,
+  previewCatalogEntries,
+  toolCategoryDefinitions,
+  utilityCatalogEntries,
+} from '@/utils/tool-categories.ts'
+import { previewTools } from '@/utils/preview-tools.ts'
 
 useSEO({
   title: 'Pastefy Tools • Preview, Convert, and Share',
@@ -14,6 +22,7 @@ useSEO({
 })
 
 const search = ref('')
+const pinnedToolsStore = usePinnedTools()
 
 const normalizedSearch = computed(() => search.value.trim().toLowerCase())
 
@@ -44,11 +53,22 @@ const groupedTools = computed(() => {
   ).filter(([, tools]) => tools.length > 0)
 })
 
-const filteredPreviewTools = computed(() => previewTools.filter((tool) => matchesSearch(tool)))
+const filteredPreviewTools = computed(() => previewCatalogEntries.filter((tool) => matchesSearch(tool)))
 const filteredConversionTools = computed(() =>
-  conversionTools.filter((tool) => matchesSearch(tool)),
+  conversionCatalogEntries.filter((tool) => matchesSearch(tool)),
 )
-const filteredUtilityTools = computed(() => utilityTools.filter((tool) => matchesSearch(tool)))
+const filteredUtilityTools = computed(() => utilityCatalogEntries.filter((tool) => matchesSearch(tool)))
+const categoryLinks = computed(() =>
+  toolCategoryDefinitions
+    .filter((category) => getCategoryCount(category.slug) > 0)
+    .filter((category) => {
+      if (!normalizedSearch.value) return true
+      return `${category.title} ${category.description} ${category.eyebrow}`
+        .toLowerCase()
+        .includes(normalizedSearch.value)
+    }),
+)
+const pinnedTools = computed(() => pinnedToolsStore.pinnedTools.value)
 </script>
 
 <template>
@@ -108,6 +128,70 @@ const filteredUtilityTools = computed(() => utilityTools.filter((tool) => matche
       </div>
     </div>
 
+    <section v-if="pinnedTools.length" class="flex flex-col gap-4">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl font-bold">Pinned Tools</h2>
+          <p class="text-sm text-neutral-500 dark:text-neutral-400">
+            Your saved shortcuts live here and stay on this browser via local storage.
+          </p>
+        </div>
+        <span
+          class="rounded-full border border-neutral-200 px-3 py-1 text-sm text-neutral-500 dark:border-neutral-700 dark:text-neutral-300"
+        >
+          {{ pinnedTools.length }} pinned
+        </span>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <ToolCard v-for="tool of pinnedTools" :key="`${tool.kind}:${tool.slug}`" :tool="tool" />
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-4">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl font-bold">Browse by Category</h2>
+          <p class="text-sm text-neutral-500 dark:text-neutral-400">
+            Jump straight into focused tool collections with dedicated SEO pages.
+          </p>
+        </div>
+        <span
+          class="rounded-full border border-neutral-200 px-3 py-1 text-sm text-neutral-500 dark:border-neutral-700 dark:text-neutral-300"
+        >
+          {{ categoryLinks.length }} categories
+        </span>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <router-link
+          v-for="category of categoryLinks"
+          :key="category.slug"
+          :to="{ name: 'tool-category', params: { category: category.slug } }"
+          class="rounded-xl border border-neutral-200 bg-neutral-100 p-5 transition-all hover:-translate-y-0.5 hover:bg-white dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-900"
+        >
+          <div class="flex items-start gap-3">
+            <div
+              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200"
+            >
+              <i :class="`ti ti-${category.icon} text-2xl`" />
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <h3 class="font-semibold">{{ category.title }}</h3>
+                <span class="text-xs text-neutral-400">
+                  {{ getCategoryCount(category.slug) }}
+                </span>
+              </div>
+              <p class="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+                {{ category.description }}
+              </p>
+            </div>
+          </div>
+        </router-link>
+      </div>
+    </section>
+
     <section id="preview-tools" class="flex flex-col gap-4 scroll-mt-24">
       <div class="flex items-center justify-between gap-3">
         <div>
@@ -145,43 +229,28 @@ const filteredUtilityTools = computed(() => utilityTools.filter((tool) => matche
 
       <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <router-link
+          :to="{ name: 'tool-category', params: { category: category.toLowerCase() } }"
+          class="md:col-span-2 xl:col-span-3 inline-flex items-center gap-2 text-sm text-neutral-500 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
+        >
+          Browse {{ category.toLowerCase() }} category page
+          <i class="ti ti-arrow-right text-base" />
+        </router-link>
+        <ToolCard
           v-for="tool of tools"
           :key="tool.slug"
-          :to="{ name: 'tool-preview', params: { tool: tool.slug } }"
-          class="group flex h-full flex-col justify-between rounded-xl border border-neutral-200 bg-neutral-100 p-5 transition-all hover:-translate-y-0.5 hover:bg-white dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-900"
-        >
-          <div class="flex flex-col gap-4">
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <div
-                  class="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200"
-                >
-                  <i :class="`ti ti-${tool.icon} text-2xl`" />
-                </div>
-                <div>
-                  <h3 class="font-semibold">{{ tool.shortTitle }}</h3>
-                  <p class="text-xs uppercase tracking-[0.2em] text-neutral-400">
-                    {{ tool.fileName }}
-                  </p>
-                </div>
-              </div>
-              <i
-                class="ti ti-arrow-up-right text-lg text-neutral-300 transition-all group-hover:text-neutral-500 dark:group-hover:text-neutral-300"
-              />
-            </div>
-            <p class="text-sm text-neutral-600 dark:text-neutral-300">{{ tool.description }}</p>
-          </div>
-
-          <div class="mt-5 flex flex-wrap gap-2">
-            <span
-              v-for="keyword of tool.keywords.slice(0, 3)"
-              :key="keyword"
-              class="rounded-full bg-neutral-100 px-2.5 py-1 text-xs text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
-            >
-              {{ keyword }}
-            </span>
-          </div>
-        </router-link>
+          :tool="{
+            kind: 'preview',
+            slug: tool.slug,
+            title: tool.title,
+            shortTitle: tool.shortTitle,
+            description: tool.description,
+            icon: tool.icon,
+            category: tool.category,
+            keywords: tool.keywords,
+            meta: tool.fileName,
+            to: { name: 'tool-preview', params: { tool: tool.slug } },
+          }"
+        />
       </div>
     </section>
 
@@ -201,44 +270,7 @@ const filteredUtilityTools = computed(() => utilityTools.filter((tool) => matche
       </div>
 
       <div v-if="filteredConversionTools.length" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <router-link
-          v-for="tool of filteredConversionTools"
-          :key="tool.slug"
-          :to="{ name: 'tool-conversion', params: { tool: tool.slug } }"
-          class="group flex h-full flex-col justify-between rounded-xl border border-neutral-200 bg-neutral-100 p-5 transition-all hover:-translate-y-0.5 hover:bg-white dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-900"
-        >
-          <div class="flex flex-col gap-4">
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <div
-                  class="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200"
-                >
-                  <i :class="`ti ti-${tool.icon} text-2xl`" />
-                </div>
-                <div>
-                  <h3 class="font-semibold">{{ tool.shortTitle }}</h3>
-                  <p class="text-xs uppercase tracking-[0.2em] text-neutral-400">
-                    {{ tool.sourceFileName }} -> {{ tool.targetFileName }}
-                  </p>
-                </div>
-              </div>
-              <i
-                class="ti ti-arrow-up-right text-lg text-neutral-300 transition-all group-hover:text-neutral-500 dark:group-hover:text-neutral-300"
-              />
-            </div>
-            <p class="text-sm text-neutral-600 dark:text-neutral-300">{{ tool.description }}</p>
-          </div>
-
-          <div class="mt-5 flex flex-wrap gap-2">
-            <span
-              v-for="keyword of tool.keywords.slice(0, 3)"
-              :key="keyword"
-              class="rounded-full bg-neutral-100 px-2.5 py-1 text-xs text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
-            >
-              {{ keyword }}
-            </span>
-          </div>
-        </router-link>
+        <ToolCard v-for="tool of filteredConversionTools" :key="tool.slug" :tool="tool" />
       </div>
 
       <div
@@ -265,44 +297,7 @@ const filteredUtilityTools = computed(() => utilityTools.filter((tool) => matche
       </div>
 
       <div v-if="filteredUtilityTools.length" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <router-link
-          v-for="tool of filteredUtilityTools"
-          :key="tool.slug"
-          :to="{ name: 'tool-utility', params: { tool: tool.slug } }"
-          class="group flex h-full flex-col justify-between rounded-xl border border-neutral-200 bg-neutral-100 p-5 transition-all hover:-translate-y-0.5 hover:bg-white dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-900"
-        >
-          <div class="flex flex-col gap-4">
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <div
-                  class="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200"
-                >
-                  <i :class="`ti ti-${tool.icon} text-2xl`" />
-                </div>
-                <div>
-                  <h3 class="font-semibold">{{ tool.shortTitle }}</h3>
-                  <p class="text-xs uppercase tracking-[0.2em] text-neutral-400">
-                    {{ tool.category }}
-                  </p>
-                </div>
-              </div>
-              <i
-                class="ti ti-arrow-up-right text-lg text-neutral-300 transition-all group-hover:text-neutral-500 dark:group-hover:text-neutral-300"
-              />
-            </div>
-            <p class="text-sm text-neutral-600 dark:text-neutral-300">{{ tool.description }}</p>
-          </div>
-
-          <div class="mt-5 flex flex-wrap gap-2">
-            <span
-              v-for="keyword of tool.keywords.slice(0, 3)"
-              :key="keyword"
-              class="rounded-full bg-neutral-100 px-2.5 py-1 text-xs text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300"
-            >
-              {{ keyword }}
-            </span>
-          </div>
-        </router-link>
+        <ToolCard v-for="tool of filteredUtilityTools" :key="tool.slug" :tool="tool" />
       </div>
 
       <div

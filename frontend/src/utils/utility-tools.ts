@@ -4,7 +4,17 @@ export type UtilityToolDefinition = {
   shortTitle: string
   description: string
   icon: string
-  category: 'Inspect' | 'Generate' | 'Security' | 'Automation' | 'Encode' | 'Time' | 'Visualize'
+  category:
+    | 'Inspect'
+    | 'Generate'
+    | 'Security'
+    | 'Automation'
+    | 'Encode'
+    | 'Time'
+    | 'Visualize'
+    | 'Operations'
+    | 'Server'
+    | 'Deploy'
   keywords: string[]
 }
 
@@ -18,6 +28,86 @@ export const utilityTools: UtilityToolDefinition[] = [
     icon: 'chart-bar',
     category: 'Visualize',
     keywords: ['mermaid', 'chart', 'csv', 'json', 'yaml', 'visualize', 'diagram'],
+  },
+  {
+    slug: 'mermaid-theme-builder',
+    title: 'Mermaid Theme Builder',
+    shortTitle: 'Theme Builder',
+    description:
+      'Tune Mermaid colors, fonts, spacing, and diagram styling, then export the themed config plus diagram.',
+    icon: 'palette',
+    category: 'Visualize',
+    keywords: ['mermaid', 'theme', 'diagram', 'colors', 'styling'],
+  },
+  {
+    slug: 'data-to-mermaid-er',
+    title: 'Data to Mermaid ER Diagram',
+    shortTitle: 'Data -> ER',
+    description:
+      'Infer Mermaid ER diagrams from JSON, YAML, or CSV schema-like data structures.',
+    icon: 'chart-arcs-3',
+    category: 'Visualize',
+    keywords: ['mermaid', 'er diagram', 'json schema', 'yaml schema', 'csv'],
+  },
+  {
+    slug: 'sql-to-mermaid-er',
+    title: 'SQL to Mermaid ER',
+    shortTitle: 'SQL -> ER',
+    description:
+      'Parse CREATE TABLE statements into Mermaid ER diagrams with tables and foreign keys.',
+    icon: 'database',
+    category: 'Visualize',
+    keywords: ['sql', 'er diagram', 'mermaid', 'database', 'schema'],
+  },
+  {
+    slug: 'infra-to-mermaid',
+    title: 'Infra to Mermaid',
+    shortTitle: 'Infra',
+    description:
+      'Convert Compose, Kubernetes, Terraform, and GitHub Actions definitions into Mermaid architecture flowcharts.',
+    icon: 'hierarchy-3',
+    category: 'Visualize',
+    keywords: ['infrastructure', 'mermaid', 'docker compose', 'kubernetes', 'terraform', 'github actions'],
+  },
+  {
+    slug: 'markdown-to-mermaid',
+    title: 'Markdown to Mermaid Mindmap / Flow',
+    shortTitle: 'Markdown -> Mermaid',
+    description:
+      'Turn Markdown headings and bullet outlines into Mermaid mindmaps or flowcharts.',
+    icon: 'markdown',
+    category: 'Visualize',
+    keywords: ['markdown', 'mermaid', 'mindmap', 'flowchart', 'outline'],
+  },
+  {
+    slug: 'data-to-class-diagram',
+    title: 'JSON / YAML to Class Diagram',
+    shortTitle: 'Data -> Class',
+    description:
+      'Map nested structured data to Mermaid class diagrams with inferred fields and relationships.',
+    icon: 'binary-tree-2',
+    category: 'Visualize',
+    keywords: ['json', 'yaml', 'class diagram', 'mermaid', 'schema'],
+  },
+  {
+    slug: 'mermaid-image-export',
+    title: 'Mermaid Image Export Tool',
+    shortTitle: 'Mermaid Export',
+    description:
+      'Export Mermaid diagrams as PNG or SVG with padding, scale, background, and watermark options.',
+    icon: 'photo-down',
+    category: 'Visualize',
+    keywords: ['mermaid', 'png', 'svg', 'export', 'image'],
+  },
+  {
+    slug: 'diff-lab',
+    title: 'Diff Lab',
+    shortTitle: 'Diff',
+    description:
+      'Compare two textareas, inspect a rendered diff, and export the unified patch.',
+    icon: 'git-compare',
+    category: 'Inspect',
+    keywords: ['diff', 'compare', 'patch', 'unified diff', 'changes'],
   },
   {
     slug: 'jwt-inspector',
@@ -218,6 +308,96 @@ export const utilityTools: UtilityToolDefinition[] = [
     icon: 'align-box-left-middle',
     category: 'Inspect',
     keywords: ['word count', 'line count', 'character count', 'reading time', 'text stats'],
+  },
+  {
+    slug: 'nginx-log-inspector',
+    title: 'NGINX Logs Inspector',
+    shortTitle: 'NGINX Logs',
+    description:
+      'Parse common NGINX access logs, inspect status codes and top paths, and export structured request data.',
+    icon: 'logs',
+    category: 'Operations',
+    keywords: ['nginx', 'logs', 'access log', 'ops', 'http'],
+  },
+  {
+    slug: 'apache-log-inspector',
+    title: 'Apache Logs Inspector',
+    shortTitle: 'Apache Logs',
+    description:
+      'Inspect Apache access logs with parsed requests, status groups, path summaries, and fast filtering.',
+    icon: 'logs',
+    category: 'Operations',
+    keywords: ['apache', 'logs', 'access log', 'httpd', 'ops'],
+  },
+  {
+    slug: 'caddy-config-generator',
+    title: 'Visual Caddy File Generator',
+    shortTitle: 'Caddyfile',
+    description:
+      'Build production-friendly Caddy configs for static sites or reverse proxies with deploy-ready defaults.',
+    icon: 'server',
+    category: 'Server',
+    keywords: ['caddy', 'caddyfile', 'reverse proxy', 'static site', 'deploy'],
+  },
+  {
+    slug: 'nginx-config-generator',
+    title: 'Visual NGINX File Generator',
+    shortTitle: 'NGINX Config',
+    description:
+      'Generate NGINX virtual host configs for reverse proxy and static site deployments with common production settings.',
+    icon: 'server',
+    category: 'Server',
+    keywords: ['nginx', 'server block', 'reverse proxy', 'static site', 'deploy'],
+  },
+  {
+    slug: 'apache-config-generator',
+    title: 'Visual Apache File Generator',
+    shortTitle: 'Apache Config',
+    description:
+      'Generate Apache VirtualHost configs with HTTPS placeholders, proxying, static hosting, logging, and caching options.',
+    icon: 'server',
+    category: 'Server',
+    keywords: ['apache', 'virtualhost', 'reverse proxy', 'static site', 'deploy'],
+  },
+  {
+    slug: 'dockerfile-generator',
+    title: 'Visual Dockerfile Generator',
+    shortTitle: 'Dockerfile',
+    description:
+      'Generate Dockerfiles for Node, Bun, Java JAR, Python, or static assets with useful deployment defaults.',
+    icon: 'brand-docker',
+    category: 'Deploy',
+    keywords: ['dockerfile', 'docker', 'container', 'deploy', 'build'],
+  },
+  {
+    slug: 'jar-start-script-generator',
+    title: 'Visual JAR Start Script Generator',
+    shortTitle: 'JAR Start',
+    description:
+      'Generate start.sh or start.bat launch scripts for Java JAR applications with JVM args, logs, and app flags.',
+    icon: 'player-play',
+    category: 'Deploy',
+    keywords: ['java', 'jar', 'start.sh', 'start.bat', 'deploy'],
+  },
+  {
+    slug: 'systemd-service-generator',
+    title: 'Systemd Service Generator',
+    shortTitle: 'systemd',
+    description:
+      'Generate systemd unit files for apps and services with restart policy, environment variables, and working directory setup.',
+    icon: 'settings-up',
+    category: 'Deploy',
+    keywords: ['systemd', 'service', 'linux', 'deploy', 'daemon'],
+  },
+  {
+    slug: 'compose-stack-generator',
+    title: 'Docker Compose Web Stack Generator',
+    shortTitle: 'Compose Stack',
+    description:
+      'Generate a simple web stack with app, proxy, Postgres, and Redis services for local or server deployment.',
+    icon: 'stack-2',
+    category: 'Deploy',
+    keywords: ['docker compose', 'stack', 'postgres', 'redis', 'deploy'],
   },
 ]
 

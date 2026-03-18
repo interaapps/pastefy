@@ -21,6 +21,7 @@ import { client } from '@/main.ts'
 import PastePreview from '@/components/PastePreview.vue'
 import Highlighted from '@/components/Highlighted.vue'
 import ToolFocusExitButton from '@/components/tools/ToolFocusExitButton.vue'
+import ToolPinButton from '@/components/tools/ToolPinButton.vue'
 import ToolRelatedLinks from '@/components/tools/ToolRelatedLinks.vue'
 import { useCurrentPasteStore } from '@/stores/current-paste.ts'
 import type { Paste } from '@/types/paste.ts'
@@ -285,14 +286,7 @@ const relatedToolLinks = computed(() =>
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2">
-          <Button
-            @click="isExpanded = !isExpanded"
-            :label="isExpanded ? 'exit focus mode' : 'focus mode'"
-            :icon="`ti ${isExpanded ? 'ti-minimize' : 'ti-maximize'}`"
-            severity="contrast"
-            outlined
-          />
+        <div class="flex flex-wrap items-center justify-end gap-2">
           <Button
             as="router-link"
             :to="{ name: 'tool-home', hash: '#conversions' }"
@@ -307,6 +301,14 @@ const relatedToolLinks = computed(() =>
             icon="ti ti-restore"
             severity="contrast"
             outlined
+          />
+          <ToolPinButton kind="conversion" :slug="tool.slug" :label="false" />
+          <Button
+            @click="isExpanded = !isExpanded"
+            :icon="`ti ${isExpanded ? 'ti-minimize' : 'ti-maximize'}`"
+            severity="contrast"
+            outlined
+            :aria-label="isExpanded ? 'Exit focus mode' : 'Focus mode'"
           />
         </div>
       </div>

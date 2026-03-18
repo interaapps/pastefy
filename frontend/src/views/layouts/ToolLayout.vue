@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
 import Popover from 'primevue/popover'
 import LoginModal from '@/components/modals/LoginModal.vue'
 import UserMenu from '@/components/popovers/UserMenu.vue'
@@ -10,17 +11,51 @@ import type { PopoverMethods } from 'primevue'
 import { previewTools } from '@/utils/preview-tools.ts'
 import { conversionTools } from '@/utils/conversion-tools.ts'
 import { utilityTools } from '@/utils/utility-tools.ts'
+import {
+  allToolCatalogEntries,
+  getCategoryCount,
+  toolCategoryDefinitions,
+} from '@/utils/tool-categories.ts'
 
 const Logo = defineAsyncComponent(() => import('@/components/Logo.vue'))
 
 const loginModalVisible = ref(false)
+const toolSearch = ref('')
 const currentUserStore = useCurrentUserStore()
 const appInfo = useAppInfoStore()
 const userMenu = useTemplateRef<PopoverMethods>('userMenu')
 
+const toolSearchResults = computed(() => {
+  const query = toolSearch.value.trim().toLowerCase()
+  if (!query) return []
+
+  return allToolCatalogEntries
+    .filter((entry) =>
+      [entry.title, entry.shortTitle, entry.description, entry.category, ...entry.keywords]
+        .join(' ')
+        .toLowerCase()
+        .includes(query),
+    )
+    .slice(0, 8)
+})
+
 const topLinks = computed(() => [
   {
-    label: 'tools',
+    label: 'categories',
+    icon: 'ti ti-category',
+    to: { name: 'tool-home' },
+    panelClass: 'w-[56rem]',
+    cards: toolCategoryDefinitions
+      .filter((category) => getCategoryCount(category.slug) > 0)
+      .map((category) => ({
+        title: category.title,
+        description: `${category.description} ${getCategoryCount(category.slug)} tools.`,
+        icon: category.icon,
+        to: { name: 'tool-category', params: { category: category.slug } },
+      })),
+  },
+  {
+    label: 'preview & inspect',
     icon: 'ti ti-sparkles',
     to: { name: 'tool-home', hash: '#preview-tools' },
     cards: previewTools.slice(0, 6).map((tool) => ({
@@ -96,9 +131,12 @@ const topLinks = computed(() => [
                   class="pointer-events-none absolute top-full left-0 pt-2 opacity-0 transition-all duration-150 group-hover:pointer-events-auto group-hover:opacity-100"
                 >
                   <div
-                    class="w-[38rem] rounded-xl border border-neutral-200 bg-white p-3 shadow-xl dark:border-neutral-700 dark:bg-neutral-900"
+                    :class="[
+                      'rounded-xl border border-neutral-200 bg-white p-3 shadow-xl dark:border-neutral-700 dark:bg-neutral-900',
+                      link.panelClass || 'w-[38rem]',
+                    ]"
                   >
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="grid grid-cols-2 gap-2 xl:grid-cols-3">
                       <router-link
                         v-for="card of link.cards"
                         :key="card.title"
@@ -141,6 +179,38 @@ const topLinks = computed(() => [
         </div>
 
         <div class="flex items-center gap-2">
+          <div class="relative hidden md:block">
+            <InputText
+              v-model="toolSearch"
+              placeholder="Search tools..."
+              class="w-[10rem]"
+              size="small"
+            />
+            <div
+              v-if="toolSearchResults.length"
+              class="absolute top-full right-0 mt-2 w-[24rem] rounded-xl border border-neutral-200 bg-white p-2 shadow-xl dark:border-neutral-700 dark:bg-neutral-900"
+            >
+              <router-link
+                v-for="entry of toolSearchResults"
+                :key="`${entry.kind}:${entry.slug}`"
+                :to="entry.to"
+                class="flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                @click="toolSearch = ''"
+              >
+                <div
+                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
+                >
+                  <i :class="`ti ti-${entry.icon}`" />
+                </div>
+                <div class="min-w-0">
+                  <div class="font-medium">{{ entry.shortTitle }}</div>
+                  <p class="mt-1 line-clamp-2 text-xs text-neutral-500 dark:text-neutral-400">
+                    {{ entry.description }}
+                  </p>
+                </div>
+              </router-link>
+            </div>
+          </div>
           <Button
             v-if="!currentUserStore.user && currentUserStore.authTypes?.[0]"
             @click="currentUserStore.authTypes?.length > 1 ? (loginModalVisible = true) : null"

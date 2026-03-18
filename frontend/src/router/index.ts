@@ -40,6 +40,11 @@ const router = createRouter({
           component: () => import('@/views/ToolIndexView.vue'),
         },
         {
+          path: 'category/:category',
+          name: 'tool-category',
+          component: () => import('@/views/ToolCategoryView.vue'),
+        },
+        {
           path: 'convert/:tool',
           name: 'tool-conversion',
           component: () => import('@/views/ConversionToolView.vue'),

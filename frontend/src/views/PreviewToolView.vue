@@ -22,6 +22,7 @@ import 'codemirror/addon/mode/loadmode.js'
 import { client } from '@/main.ts'
 import PastePreview from '@/components/PastePreview.vue'
 import ToolFocusExitButton from '@/components/tools/ToolFocusExitButton.vue'
+import ToolPinButton from '@/components/tools/ToolPinButton.vue'
 import ToolRelatedLinks from '@/components/tools/ToolRelatedLinks.vue'
 import { findPreviewTool, previewTools } from '@/utils/preview-tools.ts'
 import codemirrorLanguageImports from '@/utils/codemirror-language-imports.ts'
@@ -316,14 +317,7 @@ const relatedToolLinks = computed(() =>
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2">
-          <Button
-            @click="isExpanded = !isExpanded"
-            :label="isExpanded ? 'exit focus mode' : 'focus mode'"
-            :icon="`ti ${isExpanded ? 'ti-minimize' : 'ti-maximize'}`"
-            severity="contrast"
-            outlined
-          />
+        <div class="flex flex-wrap items-center justify-end gap-2">
           <Button
             as="router-link"
             :to="{ name: 'tool-home' }"
@@ -338,6 +332,14 @@ const relatedToolLinks = computed(() =>
             icon="ti ti-restore"
             severity="contrast"
             outlined
+          />
+          <ToolPinButton kind="preview" :slug="tool.slug" :label="false" />
+          <Button
+            @click="isExpanded = !isExpanded"
+            :icon="`ti ${isExpanded ? 'ti-minimize' : 'ti-maximize'}`"
+            severity="contrast"
+            outlined
+            :aria-label="isExpanded ? 'Exit focus mode' : 'Focus mode'"
           />
         </div>
       </div>

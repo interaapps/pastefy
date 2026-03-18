@@ -4,6 +4,7 @@ import { computed, defineAsyncComponent, provide, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import ToolFocusExitButton from '@/components/tools/ToolFocusExitButton.vue'
+import ToolPinButton from '@/components/tools/ToolPinButton.vue'
 import ToolRelatedLinks from '@/components/tools/ToolRelatedLinks.vue'
 import { useSEO } from '@/composables/seo.ts'
 import { findUtilityTool, utilityTools } from '@/utils/utility-tools.ts'
@@ -28,6 +29,55 @@ useSEO({
 const toolComponents = {
   'data-to-mermaid': defineAsyncComponent(
     () => import('@/components/tools/utility/DataToMermaidTool.vue'),
+  ),
+  'mermaid-theme-builder': defineAsyncComponent(
+    () => import('@/components/tools/utility/MermaidThemeBuilderTool.vue'),
+  ),
+  'data-to-mermaid-er': defineAsyncComponent(
+    () => import('@/components/tools/utility/DataToMermaidERTool.vue'),
+  ),
+  'sql-to-mermaid-er': defineAsyncComponent(
+    () => import('@/components/tools/utility/SQLToMermaidERTool.vue'),
+  ),
+  'infra-to-mermaid': defineAsyncComponent(
+    () => import('@/components/tools/utility/InfraToMermaidTool.vue'),
+  ),
+  'markdown-to-mermaid': defineAsyncComponent(
+    () => import('@/components/tools/utility/MarkdownToMermaidTool.vue'),
+  ),
+  'data-to-class-diagram': defineAsyncComponent(
+    () => import('@/components/tools/utility/DataToClassDiagramTool.vue'),
+  ),
+  'mermaid-image-export': defineAsyncComponent(
+    () => import('@/components/tools/utility/MermaidImageExportTool.vue'),
+  ),
+  'diff-lab': defineAsyncComponent(() => import('@/components/tools/utility/DiffLabTool.vue')),
+  'nginx-log-inspector': defineAsyncComponent(
+    () => import('@/components/tools/utility/NginxLogInspectorTool.vue'),
+  ),
+  'apache-log-inspector': defineAsyncComponent(
+    () => import('@/components/tools/utility/ApacheLogInspectorTool.vue'),
+  ),
+  'caddy-config-generator': defineAsyncComponent(
+    () => import('@/components/tools/utility/CaddyConfigGeneratorTool.vue'),
+  ),
+  'nginx-config-generator': defineAsyncComponent(
+    () => import('@/components/tools/utility/NginxConfigGeneratorTool.vue'),
+  ),
+  'apache-config-generator': defineAsyncComponent(
+    () => import('@/components/tools/utility/ApacheConfigGeneratorTool.vue'),
+  ),
+  'dockerfile-generator': defineAsyncComponent(
+    () => import('@/components/tools/utility/DockerfileGeneratorTool.vue'),
+  ),
+  'jar-start-script-generator': defineAsyncComponent(
+    () => import('@/components/tools/utility/JarStartScriptGeneratorTool.vue'),
+  ),
+  'systemd-service-generator': defineAsyncComponent(
+    () => import('@/components/tools/utility/SystemdServiceGeneratorTool.vue'),
+  ),
+  'compose-stack-generator': defineAsyncComponent(
+    () => import('@/components/tools/utility/ComposeStackGeneratorTool.vue'),
   ),
   'jwt-inspector': defineAsyncComponent(
     () => import('@/components/tools/utility/JwtInspectorTool.vue'),
@@ -144,14 +194,7 @@ const relatedToolLinks = computed(() =>
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2">
-          <Button
-            @click="focusMode = !focusMode"
-            :label="focusMode ? 'exit focus mode' : 'focus mode'"
-            :icon="`ti ${focusMode ? 'ti-minimize' : 'ti-maximize'}`"
-            severity="contrast"
-            outlined
-          />
+        <div class="flex flex-wrap items-center justify-end gap-2">
           <Button
             as="router-link"
             :to="{ name: 'tool-home', hash: '#utilities' }"
@@ -159,6 +202,14 @@ const relatedToolLinks = computed(() =>
             icon="ti ti-layout-grid"
             severity="contrast"
             outlined
+          />
+          <ToolPinButton kind="utility" :slug="tool.slug" :label="false" />
+          <Button
+            @click="focusMode = !focusMode"
+            :icon="`ti ${focusMode ? 'ti-minimize' : 'ti-maximize'}`"
+            severity="contrast"
+            outlined
+            :aria-label="focusMode ? 'Exit focus mode' : 'Focus mode'"
           />
         </div>
       </div>
