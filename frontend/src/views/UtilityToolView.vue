@@ -26,6 +26,9 @@ useSEO({
 })
 
 const toolComponents = {
+  'data-to-mermaid': defineAsyncComponent(
+    () => import('@/components/tools/utility/DataToMermaidTool.vue'),
+  ),
   'jwt-inspector': defineAsyncComponent(
     () => import('@/components/tools/utility/JwtInspectorTool.vue'),
   ),

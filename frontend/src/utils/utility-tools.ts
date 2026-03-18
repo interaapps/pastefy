@@ -4,11 +4,21 @@ export type UtilityToolDefinition = {
   shortTitle: string
   description: string
   icon: string
-  category: 'Inspect' | 'Generate' | 'Security' | 'Automation' | 'Encode' | 'Time'
+  category: 'Inspect' | 'Generate' | 'Security' | 'Automation' | 'Encode' | 'Time' | 'Visualize'
   keywords: string[]
 }
 
 export const utilityTools: UtilityToolDefinition[] = [
+  {
+    slug: 'data-to-mermaid',
+    title: 'Data to Mermaid Charts',
+    shortTitle: 'Mermaid Charts',
+    description:
+      'Turn JSON, YAML, or CSV datasets into Mermaid pie, bar, line, grouped, and combo charts with field mapping and aggregation.',
+    icon: 'chart-bar',
+    category: 'Visualize',
+    keywords: ['mermaid', 'chart', 'csv', 'json', 'yaml', 'visualize', 'diagram'],
+  },
   {
     slug: 'jwt-inspector',
     title: 'JWT Inspector',

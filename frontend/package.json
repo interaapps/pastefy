@@ -38,6 +38,7 @@
     "dompurify": "^3.2.5",
     "highlight.js": "^11.11.1",
     "ical.js": "^2.1.0",
+    "js-yaml": "^4.1.1",
     "leaflet": "^1.9.4",
     "markdown-it": "^14.1.0",
     "mathjax": "^3.2.2",

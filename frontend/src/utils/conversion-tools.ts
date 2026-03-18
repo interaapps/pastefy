@@ -1,3 +1,5 @@
+import { parseYamlDocument } from '@/utils/yaml.ts'
+
 export type ConversionToolDefinition = {
   slug: string
   title: string
@@ -60,161 +62,6 @@ const toYaml = (value: unknown, indent = 0): string => {
   }
 
   return `${prefix}${yamlScalar(value)}`
-}
-
-const parseYamlScalar = (value: string): unknown => {
-  const trimmed = value.trim()
-  if (trimmed === '' || trimmed === 'null' || trimmed === '~') return null
-  if (trimmed === 'true') return true
-  if (trimmed === 'false') return false
-  if (/^[-+]?\d+(\.\d+)?$/.test(trimmed)) return Number(trimmed)
-
-  if (
-    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-    (trimmed.startsWith("'") && trimmed.endsWith("'"))
-  ) {
-    try {
-      return JSON.parse(trimmed.replace(/^'/, '"').replace(/'$/, '"'))
-    } catch {
-      return trimmed.slice(1, -1)
-    }
-  }
-
-  return trimmed
-}
-
-type YamlLine = {
-  indent: number
-  content: string
-}
-
-const prepareYamlLines = (source: string) =>
-  source
-    .replace(/\t/g, '  ')
-    .split('\n')
-    .map((line) => {
-      const commentless = line.replace(/\s+#.*$/, '')
-      return {
-        indent: commentless.match(/^ */)?.[0].length || 0,
-        content: commentless.trimEnd(),
-      }
-    })
-    .filter((line) => line.content.trim() !== '' && !line.content.trim().startsWith('#'))
-
-const parseYamlBlock = (lines: YamlLine[], startIndex: number, indent: number): [unknown, number] => {
-  const current = lines[startIndex]
-  if (!current) return [null, startIndex]
-
-  if (current.indent < indent) return [null, startIndex]
-
-  if (current.content.trim().startsWith('- ')) {
-    const items: unknown[] = []
-    let index = startIndex
-
-    while (index < lines.length) {
-      const line = lines[index]
-      if (line.indent < indent || !line.content.trim().startsWith('- ')) break
-      if (line.indent !== indent) break
-
-      const itemContent = line.content.trim().slice(2).trim()
-      const next = lines[index + 1]
-
-      if (itemContent === '') {
-        if (next && next.indent > indent) {
-          const [child, nextIndex] = parseYamlBlock(lines, index + 1, next.indent)
-          items.push(child)
-          index = nextIndex
-          continue
-        }
-
-        items.push(null)
-        index += 1
-        continue
-      }
-
-      const colonIndex = itemContent.indexOf(':')
-      if (colonIndex > -1) {
-        const key = itemContent.slice(0, colonIndex).trim()
-        const rest = itemContent.slice(colonIndex + 1).trim()
-        const item: Record<string, unknown> = {}
-
-        if (rest !== '') {
-          item[key] = parseYamlScalar(rest)
-        } else if (next && next.indent > indent) {
-          const [child, nextIndex] = parseYamlBlock(lines, index + 1, next.indent)
-          item[key] = child
-          index = nextIndex
-          items.push(item)
-          continue
-        } else {
-          item[key] = null
-        }
-
-        if (next && next.indent > indent) {
-          const [child, nextIndex] = parseYamlBlock(lines, index + 1, next.indent)
-          if (child && typeof child === 'object' && !Array.isArray(child)) {
-            Object.assign(item, child)
-            index = nextIndex
-            items.push(item)
-            continue
-          }
-        }
-
-        items.push(item)
-        index += 1
-        continue
-      }
-
-      items.push(parseYamlScalar(itemContent))
-      index += 1
-    }
-
-    return [items, index]
-  }
-
-  const obj: Record<string, unknown> = {}
-  let index = startIndex
-
-  while (index < lines.length) {
-    const line = lines[index]
-    if (line.indent < indent || line.indent !== indent) break
-
-    const trimmed = line.content.trim()
-    const colonIndex = trimmed.indexOf(':')
-    if (colonIndex === -1) {
-      index += 1
-      continue
-    }
-
-    const key = trimmed.slice(0, colonIndex).trim()
-    const rest = trimmed.slice(colonIndex + 1).trim()
-    const next = lines[index + 1]
-
-    if (rest !== '') {
-      obj[key] = parseYamlScalar(rest)
-      index += 1
-      continue
-    }
-
-    if (next && next.indent > indent) {
-      const [child, nextIndex] = parseYamlBlock(lines, index + 1, next.indent)
-      obj[key] = child
-      index = nextIndex
-      continue
-    }
-
-    obj[key] = null
-    index += 1
-  }
-
-  return [obj, index]
-}
-
-const parseYaml = (source: string) => {
-  const lines = prepareYamlLines(source)
-  if (lines.length === 0) return {}
-  const [parsed] = parseYamlBlock(lines, 0, lines[0].indent)
-  return parsed
 }
 
 const flattenObject = (
@@ -789,7 +636,7 @@ export function runConversion(tool: ConversionToolDefinition, source: string): C
     case 'json-to-yaml':
       return { output: toYaml(JSON.parse(source)) }
     case 'yaml-to-json':
-      return { output: JSON.stringify(parseYaml(source), null, 2) }
+      return { output: JSON.stringify(parseYamlDocument(source), null, 2) }
     case 'json-to-env':
       return { output: toEnv(JSON.parse(source)) }
     case 'env-to-json':
@@ -810,7 +657,7 @@ export function runConversion(tool: ConversionToolDefinition, source: string): C
     case 'curl-to-http':
       return { output: toHttp(parseCurl(source)) }
     case 'yaml-to-env':
-      return { output: toEnv(parseYaml(source)) }
+      return { output: toEnv(parseYamlDocument(source)) }
     case 'env-to-yaml':
       return { output: toYaml(parseEnv(source)) }
     case 'csv-to-markdown': {
