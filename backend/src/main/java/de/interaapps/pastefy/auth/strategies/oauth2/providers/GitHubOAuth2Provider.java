@@ -73,6 +73,8 @@ public class GitHubOAuth2Provider implements OAuth2Provider {
                 profile.id = userData.get("id").number().toString();
             if (userData.has("name"))
                 profile.name = userData.get("name").string();
+            else if (userData.has("login"))
+                profile.name = userData.get("login").string();
             if (userData.has("avatar_url"))
                 profile.avatar = userData.get("avatar_url").string();
 
