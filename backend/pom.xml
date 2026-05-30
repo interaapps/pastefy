@@ -13,9 +13,15 @@
             <id>central-snapshots</id>
             <url>https://central.sonatype.com/repository/maven-snapshots/</url>
         </repository>
+
+        <repository>
+            <id>local-repo</id>
+            <url>file://${project.basedir}/temp-libs</url>
+        </repository>
     </repositories>
 
     <dependencies>
+        <!-- Temporary fix:-->
         <dependency>
             <groupId>org.javawebstack</groupId>
             <artifactId>http-router</artifactId>
@@ -25,21 +31,6 @@
             <groupId>org.javawebstack</groupId>
             <artifactId>http-router-undertow</artifactId>
             <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>io.undertow</groupId>
-            <artifactId>undertow-core</artifactId>
-            <version>2.3.17.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.xerial.snappy</groupId>
-            <artifactId>snappy-java</artifactId>
-            <version>1.1.10.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk18on</artifactId>
-            <version>1.78</version>
         </dependency>
         <dependency>
             <groupId>org.javawebstack</groupId>
@@ -60,6 +51,22 @@
             <groupId>org.javawebstack</groupId>
             <artifactId>orm</artifactId>
             <version>1.0.3-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-core</artifactId>
+            <version>2.3.17.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+            <version>1.1.10.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.78</version>
         </dependency>
         <dependency>
             <groupId>com.google.apis</groupId>
