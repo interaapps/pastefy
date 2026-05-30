@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import { computed, ref, useTemplateRef, watch } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import domtoimage from 'dom-to-image'
@@ -12,6 +13,7 @@ import InputNumber from 'primevue/inputnumber'
 import Select from 'primevue/select'
 import Highlighted from '@/components/Highlighted.vue'
 
+const { t } = useTranslation()
 const visible = defineModel<boolean>('visible')
 
 const screenshotAreaRef = useTemplateRef<HTMLDivElement>('screenshotAreaRef')
@@ -36,19 +38,19 @@ const backgrounds = [
 ]
 
 const themes = [
-  { label: 'Dark', value: 'dark' },
-  { label: 'Light', value: 'light' },
+  { get label() { return t('modals.screenshotPaste.options.dark') }, value: 'dark' },
+  { get label() { return t('modals.screenshotPaste.options.light') }, value: 'light' },
 ]
 
 const exportFormats = [
-  { label: 'PNG', value: 'png' },
-  { label: 'JPEG', value: 'jpeg' },
+  { get label() { return t('modals.screenshotPaste.options.png') }, value: 'png' },
+  { get label() { return t('modals.screenshotPaste.options.jpeg') }, value: 'jpeg' },
 ]
 
 const scaleOptions = [
-  { label: '1x', value: 1 },
-  { label: '2x', value: 2 },
-  { label: '3x', value: 3 },
+  { get label() { return t('modals.screenshotPaste.options.1x') }, value: 1 },
+  { get label() { return t('modals.screenshotPaste.options.2x') }, value: 2 },
+  { get label() { return t('modals.screenshotPaste.options.3x') }, value: 3 },
 ]
 
 const background = ref(backgrounds[0].value)
@@ -193,7 +195,7 @@ const copyImage = async () => {
 }
 </script>
 <template>
-  <Dialog v-model:visible="visible" modal header="Screenshot" class="w-[75rem] max-w-full">
+  <Dialog v-model:visible="visible" modal :header="$t('modals.screenshotPaste.screenshot')" class="w-[75rem] max-w-full">
     <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_23rem]">
       <div
         class="overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-700 dark:bg-neutral-900"
@@ -246,7 +248,7 @@ const copyImage = async () => {
         <section
           class="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900"
         >
-          <h3 class="mb-8 text-sm font-semibold tracking-[0.2em] uppercase opacity-60">Style</h3>
+          <h3 class="mb-8 text-sm font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('modals.screenshotPaste.style') }}</h3>
           <div class="space-y-7">
             <FloatLabel>
               <Select
@@ -256,7 +258,7 @@ const copyImage = async () => {
                 option-value="value"
                 fluid
               />
-              <label>Theme</label>
+              <label>{{ $t('settings.theme') }}</label>
             </FloatLabel>
             <FloatLabel>
               <Select
@@ -285,15 +287,15 @@ const copyImage = async () => {
                   </div>
                 </template>
               </Select>
-              <label>Background</label>
+              <label>{{ $t('modals.screenshotPaste.background') }}</label>
             </FloatLabel>
             <FloatLabel>
               <InputNumber v-model="width" :min="320" :max="2200" fluid />
-              <label>Canvas width (px)</label>
+              <label>{{ $t('modals.screenshotPaste.canvasWidthPx') }}</label>
             </FloatLabel>
             <FloatLabel>
               <InputNumber v-model="padding" :min="0" :max="160" fluid />
-              <label>Outer padding (px)</label>
+              <label>{{ $t('modals.screenshotPaste.outerPaddingPx') }}</label>
             </FloatLabel>
           </div>
         </section>
@@ -301,27 +303,27 @@ const copyImage = async () => {
         <section
           class="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900"
         >
-          <h3 class="mb-8 text-sm font-semibold tracking-[0.2em] uppercase opacity-60">Content</h3>
+          <h3 class="mb-8 text-sm font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('common.content') }}</h3>
           <div class="space-y-7">
             <FloatLabel>
               <InputGroup>
                 <InputNumber v-model="fromLine" :min="1" :max="totalLines" fluid />
-                <InputGroupAddon class="bg-transparent">to</InputGroupAddon>
+                <InputGroupAddon class="bg-transparent">{{ $t('modals.screenshotPaste.to') }}</InputGroupAddon>
                 <InputNumber v-model="toLine" :min="fromLine" :max="totalLines" fluid />
               </InputGroup>
-              <label>Line range</label>
+              <label>{{ $t('modals.screenshotPaste.lineRange') }}</label>
             </FloatLabel>
             <div class="grid gap-3">
               <label
                 class="flex items-center justify-between gap-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-700"
               >
-                <span class="text-sm font-medium">Show title bar</span>
+                <span class="text-sm font-medium">{{ $t('modals.screenshotPaste.showTitleBar') }}</span>
                 <Checkbox v-model="showTitleBar" binary />
               </label>
               <label
                 class="flex items-center justify-between gap-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-700"
               >
-                <span class="text-sm font-medium">Show line numbers</span>
+                <span class="text-sm font-medium">{{ $t('modals.screenshotPaste.showLineNumbers') }}</span>
                 <Checkbox v-model="showLineNumbers" binary />
               </label>
             </div>
@@ -331,7 +333,7 @@ const copyImage = async () => {
         <section
           class="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900"
         >
-          <h3 class="mb-8 text-sm font-semibold tracking-[0.2em] uppercase opacity-60">Export</h3>
+          <h3 class="mb-8 text-sm font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('common.export') }}</h3>
           <div class="space-y-7">
             <FloatLabel>
               <Select
@@ -341,7 +343,7 @@ const copyImage = async () => {
                 option-value="value"
                 fluid
               />
-              <label>Format</label>
+              <label>{{ $t('common.format') }}</label>
             </FloatLabel>
             <FloatLabel>
               <Select
@@ -351,7 +353,7 @@ const copyImage = async () => {
                 option-value="value"
                 fluid
               />
-              <label>Sharpness</label>
+              <label>{{ $t('modals.screenshotPaste.sharpness') }}</label>
             </FloatLabel>
             <p class="text-xs text-neutral-500 dark:text-neutral-400">
               Higher sharpness creates larger files but produces crisper screenshots.
@@ -371,13 +373,13 @@ const copyImage = async () => {
         <div class="flex flex-wrap justify-end gap-2">
           <Button
             v-if="canCopyImage"
-            label="Copy Image"
+            :label="$t('common.copyImage')"
             icon="ti ti-copy"
             severity="contrast"
             outlined
             @click="copyImage"
           />
-          <Button label="Download" @click="download" icon="ti ti-download" />
+          <Button :label="$t('common.download')" @click="download" icon="ti ti-download" />
         </div>
       </div>
     </template>

@@ -36,7 +36,7 @@ const pasteContents = computed(() => {
 const config = useConfig()
 const getCopyContents = async () => {
   return await fetch(
-    `${(import.meta.env.VITE_APP_BASE_URL as string) || ''}/${props.paste.id}/raw`,
+    `${(import.meta.env.VITE_APP_BASE_Url as string) || ''}/${props.paste.id}/raw`,
     {
       headers: {
         Authorization: `Bearer ${config.value.apiKey}`,
@@ -61,7 +61,7 @@ const icon = computed(() => getIconByFileName(props.paste.title))
     <div class="flex justify-between gap-2 p-3 pb-0">
       <div v-if="paste.encrypted">
         <i class="ti ti-lock" />
-        <span class="font-bold"> Encrypted paste </span>
+        <span class="font-bold">{{ $t('paste.encryptedPaste') }}</span>
       </div>
       <span
         class="flex items-center gap-1 truncate font-bold"
@@ -71,7 +71,7 @@ const icon = computed(() => getIconByFileName(props.paste.title))
         <i :class="`ti ti-${paste.type === 'MULTI_PASTE' ? 'files' : icon}`" />
         <span class="truncate">{{ paste.title }}</span>
       </span>
-      <span class="italic opacity-40" v-else> no title </span>
+      <span class="italic opacity-40" v-else>{{ $t('paste.noTitle') }}</span>
 
       <div>
         <span class="truncate text-sm opacity-40" v-if="paste.created_at">
@@ -85,7 +85,7 @@ const icon = computed(() => getIconByFileName(props.paste.title))
       }"
     >
       <div class="p-3" v-if="paste.encrypted">
-        <span class="font-italic text-sm opacity-60">No preview available</span>
+        <span class="font-italic text-sm opacity-60">{{ $t('paste.noPreview') }}</span>
       </div>
       <div
         v-else-if="paste.title?.endsWith('.csv')"
@@ -113,13 +113,13 @@ const icon = computed(() => getIconByFileName(props.paste.title))
         class="flex items-center gap-1 rounded-md border border-black/10 bg-black/5 px-1.5 backdrop-blur-2xl"
       >
         <i class="ti ti-box" />
-        Codebox
+        {{ $t('components.pasteCard.codebox') }}
       </span>
       <span
         v-else-if="paste.type === 'MULTI_PASTE'"
         class="flex rounded-md border border-black/10 bg-black/5 px-1.5 backdrop-blur-2xl"
       >
-        Multi-Paste
+        {{ $t('components.pasteCard.multiPaste') }}
       </span>
 
       <img

@@ -76,7 +76,7 @@ const result = computed(() =>
     result-description="Detailed counts and heuristics for the current text."
   >
     <template #controls>
-      <label class="text-sm font-medium">Text input</label>
+      <label class="text-sm font-medium">{{ $t('utility.wordStatsTool.textInput') }}</label>
       <Textarea v-model="input" auto-resize rows="14" fluid />
     </template>
 
@@ -104,7 +104,7 @@ const result = computed(() =>
       </div>
 
       <div class="mt-4 rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900">
-        <div class="mb-3 text-sm font-medium">Most common words</div>
+        <div class="mb-3 text-sm font-medium">{{ $t('utility.wordStatsTool.mostCommonWords') }}</div>
         <div v-if="topWords.length" class="flex flex-wrap gap-2">
           <span
             v-for="[word, count] of topWords"
@@ -115,7 +115,7 @@ const result = computed(() =>
           </span>
         </div>
         <div v-else class="text-sm text-neutral-500 dark:text-neutral-400">
-          Add more text to see common words.
+          {{ $t('utility.wordStatsTool.addMoreTextToSeeCommonWords') }}
         </div>
       </div>
     </template>

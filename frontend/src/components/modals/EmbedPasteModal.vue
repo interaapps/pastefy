@@ -55,35 +55,35 @@ const iframeEmbedCode = computed(
 )
 </script>
 <template>
-  <Dialog v-model:visible="visible" modal header="Embed" class="w-[80rem] max-w-full">
+  <Dialog v-model:visible="visible" modal :header="$t('modals.embedPasteModal.embed')" class="w-[80rem] max-w-full">
     <div class="gap-4 md:grid md:grid-cols-2">
       <div class="md:h-full md:overflow-auto">
-        <h2 class="mb-2 text-lg font-bold">Options</h2>
+        <h2 class="mb-2 text-lg font-bold">{{ $t('common.options') }}</h2>
         <div
           class="mb-5 flex flex-wrap gap-5 rounded-xl border border-neutral-200 bg-neutral-100 p-5 dark:border-neutral-700 dark:bg-neutral-800"
         >
           <div class="flex items-center gap-3">
-            <label for="hide-title">Hide Title</label>
+            <label for="hide-title">{{ $t('modals.embedPasteModal.hideTitle') }}</label>
             <Checkbox input-id="hide-title" binary v-model="hideTitle" />
           </div>
           <div class="flex items-center gap-3">
-            <label for="hide-actions">Hide Actions</label>
+            <label for="hide-actions">{{ $t('modals.embedPasteModal.hideActions') }}</label>
             <Checkbox input-id="hide-actions" binary v-model="hideActions" />
           </div>
           <div class="flex items-center gap-3">
-            <label for="add-padding">Add Padding</label>
+            <label for="add-padding">{{ $t('modals.embedPasteModal.addPadding') }}</label>
             <Checkbox input-id="add-padding" binary v-model="addPadding" />
           </div>
         </div>
 
-        <h2 class="mb-2 text-lg font-bold">Embed via script</h2>
+        <h2 class="mb-2 text-lg font-bold">{{ $t('modals.embedPasteModal.embedViaScript') }}</h2>
         <div
           class="mb-5 rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
         >
           <Highlighted show-copy-button file-name=".html" :contents="embedCode" />
         </div>
 
-        <h2 class="mb-2 text-lg font-bold">Embed via iframe tag</h2>
+        <h2 class="mb-2 text-lg font-bold">{{ $t('modals.embedPasteModal.embedViaIframeTag') }}</h2>
         <div
           class="mb-6 rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
         >
@@ -92,7 +92,7 @@ const iframeEmbedCode = computed(
       </div>
 
       <div class="md:h-full md:overflow-auto">
-        <h2 class="mb-2 text-lg font-bold">Preview</h2>
+        <h2 class="mb-2 text-lg font-bold">{{ $t('common.preview') }}</h2>
         <div
           class="h-[20rem] rounded-xl border border-neutral-200 p-6 md:h-full dark:border-neutral-700"
         >

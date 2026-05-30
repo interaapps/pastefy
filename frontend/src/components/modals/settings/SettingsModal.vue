@@ -11,7 +11,7 @@ const tab = ref('app-settings')
   <Dialog
     v-model:visible="visible"
     modal
-    header="Settings"
+    :header="$t('settings.title')"
     class="h-[20rem] w-[46rem] max-w-full overflow-hidden"
   >
     <template #container="{ closeCallback }">
@@ -27,14 +27,14 @@ const tab = ref('app-settings')
         <div
           class="flex flex-col gap-1 border-r border-neutral-200 bg-neutral-100 md:h-full dark:border-neutral-700 dark:bg-neutral-800"
         >
-          <span class="block p-3 pb-1 text-sm">Settings</span>
+          <span class="block p-3 pb-1 text-sm">{{ $t('settings.title') }}</span>
           <div class="flex flex-col p-1">
             <Button
               :text="tab !== 'app-settings'"
               icon="ti ti-settings text-lg"
               severity="contrast"
               fluid
-              label="App Settings"
+              :label="$t('settings.app')"
               class="justify-start"
               size="small"
               @click="tab = 'app-settings'"

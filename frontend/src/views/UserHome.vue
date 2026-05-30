@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import PasteList from '@/components/lists/PasteList.vue'
 import FolderList from '@/components/lists/FolderList.vue'
 import { useTitle } from '@vueuse/core'
@@ -11,6 +12,7 @@ import { useAppStore } from '@/stores/app.ts'
 import { useConfig } from '@/composables/config.ts'
 import { useRouter } from 'vue-router'
 
+const { t } = useTranslation()
 const currentUserStore = useCurrentUserStore()
 const appStore = useAppStore()
 const config = useConfig()
@@ -19,35 +21,35 @@ const router = useRouter()
 const quickActions = computed(() => [
   {
     key: 'create-paste',
-    title: 'Create Paste',
-    description: 'Open the editor and start a new paste right away.',
+    title: t('paste.create'),
+    get description() { return t('views.userHome.descriptions.openTheEditorAndStartaNewPasteRightAway') },
     icon: 'edit',
   },
   {
     key: 'search-pastes',
-    title: 'Search Pastes',
-    description: 'Find snippets, titles, and content across your saved work.',
+    title: t('nav.search'),
+    get description() { return t('views.userHome.descriptions.findSnippetsTitlesAndContentAcrossYourSavedWork') },
     icon: 'search',
   },
   {
     key: 'open-tools',
-    title: 'Open Tools',
-    description: 'Preview, convert, and inspect content without publishing it.',
+    title: t('tools.title'),
+    get description() { return t('views.userHome.descriptions.previewConvertAndInspectContentWithoutPublishingIt') },
     icon: 'tool',
     to: { name: 'tool-home' as const },
   },
   currentUserStore.user?.type === 'ADMIN'
     ? {
         key: 'admin-home',
-        title: 'Admin Panel',
-        description: 'Jump into moderation, users, and recent platform activity.',
+        title: t('admin.title'),
+        get description() { return t('views.userHome.descriptions.jumpIntoModerationUsersAndRecentPlatformActivity') },
         icon: 'shield',
         to: { name: 'admin-home' as const },
       }
     : {
         key: 'explore',
-        title: 'Explore Public',
-        description: 'Browse public pastes and discover what others are sharing.',
+        title: t('nav.explore'),
+        get description() { return t('views.userHome.descriptions.browsePublicPastesAndDiscoverWhatOthersAreSharing') },
         icon: 'world',
         to: { name: 'explore' as const },
       },
@@ -84,7 +86,7 @@ useTitle(`Home | Pastefy`)
 
     <section class="hidden space-y-4 md:block">
       <div class="flex flex-col gap-1">
-        <h2 class="text-2xl font-bold">Quick Actions</h2>
+        <h2 class="text-2xl font-bold">{{ $t('admin.quickActions') }}</h2>
       </div>
 
       <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -113,14 +115,14 @@ useTitle(`Home | Pastefy`)
     </section>
 
     <div class="space-y-4">
-      <h2 class="text-2xl font-bold">Folders</h2>
+      <h2 class="text-2xl font-bold">{{ $t('paste.folders') }}</h2>
 
       <FolderList route="/api/v2/user/folders" />
     </div>
     <ComponentInjection type="user-home-after-folders" />
     <div>
       <div class="flex justify-between gap-2">
-        <h2 class="mb-4 text-2xl font-bold">Pastes</h2>
+        <h2 class="mb-4 text-2xl font-bold">{{ $t('paste.pastes') }}</h2>
         <div>
           <ShowSearchButton my-pastes />
         </div>

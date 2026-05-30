@@ -74,7 +74,7 @@ watch(
       v-else
       class="rounded-2xl border border-dashed border-neutral-300 bg-white/70 p-8 text-center text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-900/40 dark:text-neutral-400"
     >
-      {{ props.emptyMessage || 'No pastes found for this selection.' }}
+      {{ props.emptyMessage || $t('paste.empty') }}
     </div>
 
     <Pagination

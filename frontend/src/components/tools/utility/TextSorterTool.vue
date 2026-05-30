@@ -28,19 +28,19 @@ const output = computed(() => {
 <template>
   <UtilityShell>
     <template #controls>
-      <label class="text-sm font-medium">Lines</label>
+      <label class="text-sm font-medium">{{ $t('utility.textSorterTool.lines') }}</label>
       <Textarea v-model="input" auto-resize rows="12" fluid />
       <label class="flex items-center gap-2 text-sm">
         <Checkbox v-model="dedupe" binary />
-        Remove duplicates
+        {{ $t('utility.textSorterTool.removeDuplicates') }}
       </label>
       <label class="flex items-center gap-2 text-sm">
         <Checkbox v-model="reverse" binary />
-        Reverse order
+        {{ $t('utility.textSorterTool.reverseOrder') }}
       </label>
       <label class="flex items-center gap-2 text-sm">
         <Checkbox v-model="caseSensitive" binary />
-        Case-sensitive sort
+        {{ $t('utility.textSorterTool.caseSensitiveSort') }}
       </label>
     </template>
 

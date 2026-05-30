@@ -340,7 +340,7 @@ const previewInfo = computed(() => {
 <template>
   <div v-if="appInfo.appInfo?.login_required_for_create && !currentUserStore.user">
     <span class="block text-center text-sm text-neutral-500">
-      Login is required to create pastes
+      {{ $t('paste.loginRequired') }}
     </span>
   </div>
   <form @submit.prevent="() => submitPaste()" v-else class="flex w-full flex-col gap-2">
@@ -374,7 +374,7 @@ const previewInfo = computed(() => {
         <template #option="{ option }">
           <div class="flex items-center gap-1">
             <PasteVisibilityIcon :visibility="option" class="text-lg" />
-            <span>{{ option }}</span>
+            <span>{{ $t(`paste.visibility.${option.toLowerCase()}`) }}</span>
           </div>
         </template>
       </Select>
@@ -382,7 +382,7 @@ const previewInfo = computed(() => {
 
     <div class="mt-4 mb-3" v-if="currentPaste.type === 'MULTI_PASTE'">
       <div class="mb-2 flex w-full items-center justify-between gap-4">
-        <label>FILES</label>
+        <label>{{ $t('paste.files') }}</label>
         <Button
           @click="currentPaste.addMultiPart()"
           size="small"
@@ -405,7 +405,7 @@ const previewInfo = computed(() => {
           <input
             :readonly="index !== currentPaste.currentMultiPasteIndex"
             v-model="part.name"
-            placeholder="filename"
+            :placeholder="$t('paste.filename')"
             class="h-full w-full outline-none"
           />
           <Button
@@ -425,6 +425,7 @@ const previewInfo = computed(() => {
         :class="`relative ${isFullscreen ? `!fixed top-0 ${config.sideBarShown ? 'left-[340px] w-[calc(100%-340px)]' : 'left-[0px] w-full'} h-full` : ''} ${showPreview ? 'grid grid-cols-2' : ''}`"
       >
         <Codemirror
+          :key="$t('paste.pasteHere')"
           class="w-full"
           :class="
             isFullscreen
@@ -433,7 +434,7 @@ const previewInfo = computed(() => {
           "
           v-model:value="currentPaste.contents"
           :options="cmOptions"
-          placeholder="Paste here"
+          :placeholder="$t('paste.pasteHere')"
           :height="isFullscreen ? '100%' : '200px'"
           @paste="pasteEvent"
         />
@@ -482,19 +483,19 @@ const previewInfo = computed(() => {
         <template #value="{ value: option }">
           <div class="flex items-center gap-1">
             <PasteVisibilityIcon :visibility="option" class="text-lg" />
-            <span>{{ option }}</span>
+            <span>{{ $t(`paste.visibility.${option.toLowerCase()}`) }}</span>
           </div>
         </template>
         <template #option="{ option }">
           <div class="flex items-center gap-1">
             <PasteVisibilityIcon :visibility="option" class="text-lg" />
-            <span>{{ option }}</span>
+            <span>{{ $t(`paste.visibility.${option.toLowerCase()}`) }}</span>
           </div>
         </template>
       </Select>
 
       <InputText
-        placeholder="password (optional)"
+        :placeholder="$t('paste.passwordOptional')"
         fluid
         size="small"
         v-model="currentPaste.password"
@@ -509,7 +510,7 @@ const previewInfo = computed(() => {
           size="small"
         />
         <Checkbox v-else id="is-encrypted" v-model="currentPaste.encrypted" binary size="small" />
-        <label for="is-encrypted" class="text-sm"> Encrypted </label>
+        <label for="is-encrypted" class="text-sm">{{ $t('paste.encrypted') }}</label>
       </div>
       <div class="flex items-center gap-2">
         <Checkbox
@@ -518,7 +519,7 @@ const previewInfo = computed(() => {
           binary
           size="small"
         />
-        <label for="expires-checkbox" class="text-sm"> Expires </label>
+        <label for="expires-checkbox" class="text-sm">{{ $t('paste.expires') }}</label>
       </div>
       <div v-if="currentPaste.expiresAtEnabled">
         <DatePicker
@@ -543,7 +544,7 @@ const previewInfo = computed(() => {
         :loading="userFoldersStore.isLoading"
         :model-value="currentPaste.folder ? { [currentPaste.folder]: true } : undefined"
         :options="userFolders"
-        placeholder="folder (optional)"
+        :placeholder="$t('paste.folderOptional')"
         filter
         filter-by="label"
         fluid
@@ -556,7 +557,7 @@ const previewInfo = computed(() => {
       />
 
       <InputText
-        placeholder="tags (optional, comma-seperated)"
+        :placeholder="$t('paste.tagsOptional')"
         fluid
         size="small"
         :model-value="(currentPaste.tags || []).join(',')"
@@ -567,7 +568,7 @@ const previewInfo = computed(() => {
 
       <div class="flex items-center gap-2" v-if="appInfo.appInfo?.ai_enabled">
         <Checkbox id="ai-checkbox" v-model="currentPaste.ai" binary size="small" />
-        <label for="ai-checkbox" class="text-sm"> Add file extension and tags with AI </label>
+        <label for="ai-checkbox" class="text-sm">{{ $t('paste.addMetadataWithAi') }}</label>
       </div>
     </div>
 
@@ -575,7 +576,7 @@ const previewInfo = computed(() => {
       class="flex w-full items-center justify-between rounded-md border border-neutral-200 p-1 dark:border-neutral-700"
       v-if="currentPaste.currentId"
     >
-      <span class="pl-1"> Editing {{ currentPaste.currentId }} </span>
+      <span class="pl-1">{{ $t('paste.editing', { id: currentPaste.currentId }) }}</span>
       <Button
         @click="currentPaste.clear"
         size="small"
@@ -589,7 +590,7 @@ const previewInfo = computed(() => {
       class="flex w-full items-center justify-between rounded-md border border-neutral-200 p-1 dark:border-neutral-700"
       v-if="currentPaste.forkedFrom"
     >
-      <span class="pl-1"> Forking {{ currentPaste.forkedFrom }} </span>
+      <span class="pl-1">{{ $t('paste.forking', { id: currentPaste.forkedFrom }) }}</span>
       <div class="flex items-center gap-0.5">
         <Button
           @click="currentPaste.forkedFrom = undefined"
@@ -612,14 +613,14 @@ const previewInfo = computed(() => {
 
     <div class="flex w-full gap-1">
       <Button
-        :label="currentPaste.currentId ? 'edit' : 'submit'"
+        :label="$t(currentPaste.currentId ? 'paste.edit' : 'paste.submit')"
         fluid
         class="text-white"
         :disabled="!currentPaste.contents"
         size="small"
         type="submit"
         :loading="isPasting"
-        v-tooltip.bottom="!currentPaste.contents ? 'enter contents first' : undefined"
+        v-tooltip.bottom="!currentPaste.contents ? $t('paste.enterContentsFirst') : undefined"
       />
       <div>
         <Button
@@ -635,8 +636,8 @@ const previewInfo = computed(() => {
 
     <Message v-if="isUrl" size="small" severity="info" closable @close="ignoreUrlCheck = true">
       <span class="text-sm">
-        Detected URL. You may wanna use
-        <a target="_blank" href="https://puny.be" class="underline">punyshort</a> for shortening
+        {{ $t('components.createPaste.detectedUrlYouMayWannaUse') }}
+        <a target="_blank" href="https://puny.be" class="underline">{{ $t('components.createPaste.punyshort') }}</a> for shortening
         urls.
       </span>
     </Message>

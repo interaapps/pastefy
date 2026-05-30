@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import Highlighted from '@/components/Highlighted.vue'
 import GeneratorToggleField from '@/components/tools/utility/GeneratorToggleField.vue'
 import KeyValueListField from '@/components/tools/utility/KeyValueListField.vue'
@@ -21,6 +22,7 @@ import {
   type RestartPolicy,
 } from '@/utils/container-generators.ts'
 
+const { t } = useTranslation()
 const preset = useStorage<DockerfilePreset>('pastefy-utility-dockerfile-preset', 'node')
 const baseImage = useStorage('pastefy-utility-dockerfile-base-image', 'node:20-alpine')
 const runtimeImage = useStorage('pastefy-utility-dockerfile-runtime-image', '')
@@ -42,17 +44,17 @@ const healthcheckCommand = useStorage('pastefy-utility-dockerfile-healthcheck-co
 const multiStage = useStorage('pastefy-utility-dockerfile-multi-stage', true)
 
 const presetOptions = [
-  { label: 'Node.js app', value: 'node' as DockerfilePreset },
-  { label: 'Bun app', value: 'bun' as DockerfilePreset },
-  { label: 'Java JAR', value: 'java-jar' as DockerfilePreset },
-  { label: 'Python app', value: 'python' as DockerfilePreset },
-  { label: 'Static site on NGINX', value: 'static-nginx' as DockerfilePreset },
-  { label: 'Go app', value: 'go' as DockerfilePreset },
-  { label: 'Rust app', value: 'rust' as DockerfilePreset },
-  { label: 'PHP Apache', value: 'php-apache' as DockerfilePreset },
-  { label: 'PHP-FPM', value: 'php-fpm' as DockerfilePreset },
-  { label: '.NET app', value: 'dotnet' as DockerfilePreset },
-  { label: 'Custom image', value: 'custom' as DockerfilePreset },
+  { get label() { return t('utility.dockerfileGeneratorTool.options.nodeJsApp') }, value: 'node' as DockerfilePreset },
+  { get label() { return t('utility.dockerfileGeneratorTool.options.bunApp') }, value: 'bun' as DockerfilePreset },
+  { get label() { return t('utility.dockerfileGeneratorTool.options.javaJar') }, value: 'java-jar' as DockerfilePreset },
+  { get label() { return t('utility.dockerfileGeneratorTool.options.pythonApp') }, value: 'python' as DockerfilePreset },
+  { get label() { return t('utility.dockerfileGeneratorTool.options.staticSiteOnNginx') }, value: 'static-nginx' as DockerfilePreset },
+  { get label() { return t('utility.dockerfileGeneratorTool.options.goApp') }, value: 'go' as DockerfilePreset },
+  { get label() { return t('utility.dockerfileGeneratorTool.options.rustApp') }, value: 'rust' as DockerfilePreset },
+  { get label() { return t('utility.dockerfileGeneratorTool.options.phpApache') }, value: 'php-apache' as DockerfilePreset },
+  { get label() { return t('utility.dockerfileGeneratorTool.options.phpFpm') }, value: 'php-fpm' as DockerfilePreset },
+  { get label() { return t('utility.dockerfileGeneratorTool.options.dotNetApp') }, value: 'dotnet' as DockerfilePreset },
+  { get label() { return t('utility.dockerfileGeneratorTool.options.customImage') }, value: 'custom' as DockerfilePreset },
 ]
 
 watch(
@@ -120,39 +122,39 @@ const dockerfile = computed(() => {
     <template #controls>
       <div class="grid gap-3 md:grid-cols-2">
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Preset</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dockerfileGeneratorTool.preset') }}</label>
           <Select v-model="preset" :options="presetOptions" option-label="label" option-value="value" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Base image</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dockerfileGeneratorTool.baseImage') }}</label>
           <InputText v-model="baseImage" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Runtime image</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dockerfileGeneratorTool.runtimeImage') }}</label>
           <InputText v-model="runtimeImage" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Build workdir</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dockerfileGeneratorTool.buildWorkdir') }}</label>
           <InputText v-model="buildWorkdir" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Runtime workdir</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dockerfileGeneratorTool.runtimeWorkdir') }}</label>
           <InputText v-model="runtimeWorkdir" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Copy source</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dockerfileGeneratorTool.copySource') }}</label>
           <InputText v-model="copySource" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Copy target</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dockerfileGeneratorTool.copyTarget') }}</label>
           <InputText v-model="copyTarget" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Restart policy hint</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dockerfileGeneratorTool.restartPolicyHint') }}</label>
           <Select v-model="restartPolicy" :options="restartPolicyOptions" option-label="label" option-value="value" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Network hint</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dockerfileGeneratorTool.networkHint') }}</label>
           <InputText v-model="networkName" fluid />
         </div>
       </div>
@@ -160,24 +162,24 @@ const dockerfile = computed(() => {
       <div class="grid gap-3 md:grid-cols-2">
         <GeneratorToggleField
           v-model="multiStage"
-          label="Use multi-stage build"
+          :label="$t('utility.dockerfileGeneratorTool.useMultiStageBuild')"
           help="Split build and runtime images where it is useful."
         />
         <GeneratorToggleField
           v-model="includeHealthcheck"
-          label="Add healthcheck"
+          :label="$t('utility.dockerfileGeneratorTool.addHealthcheck')"
           help="Useful for container health reporting and orchestration."
         />
       </div>
 
-      <StringListField v-model="runCommands" label="RUN commands" placeholder="npm ci" add-label="add command" />
-      <InputText v-if="includeHealthcheck" v-model="healthcheckCommand" placeholder="Healthcheck command" fluid />
-      <KeyValueListField v-model="environmentEntries" label="Environment variables" key-placeholder="NODE_ENV" value-placeholder="production" />
-      <KeyValueListField v-model="labelEntries" label="Image labels" key-placeholder="org.opencontainers.image.source" value-placeholder="https://example.com/repo" />
-      <StringListField v-model="volumeEntries" label="Volumes" placeholder="/app/data" add-label="add volume" />
-      <StringListField v-model="portEntries" label="Exposed ports" placeholder="3000" add-label="add port" />
-      <InputText v-model="entrypoint" placeholder="Entrypoint command" fluid />
-      <InputText v-model="command" placeholder="Default command" fluid />
+      <StringListField v-model="runCommands" :label="$t('utility.dockerfileGeneratorTool.runCommands')" :placeholder="$t('utility.dockerfileGeneratorTool.npmCi')" :add-label="$t('utility.dockerfileGeneratorTool.addCommand')" />
+      <InputText v-if="includeHealthcheck" v-model="healthcheckCommand" :placeholder="$t('utility.dockerfileGeneratorTool.healthcheckCommand')" fluid />
+      <KeyValueListField v-model="environmentEntries" :label="$t('utility.dockerfileGeneratorTool.environmentVariables')" key-placeholder="NODE_ENV" :value-placeholder="$t('utility.dockerfileGeneratorTool.production')" />
+      <KeyValueListField v-model="labelEntries" :label="$t('utility.dockerfileGeneratorTool.imageLabels')" key-placeholder="org.opencontainers.image.source" value-placeholder="https://example.com/repo" />
+      <StringListField v-model="volumeEntries" :label="$t('utility.dockerfileGeneratorTool.volumes')" placeholder="/app/data" :add-label="$t('utility.dockerfileGeneratorTool.addVolume')" />
+      <StringListField v-model="portEntries" :label="$t('utility.dockerfileGeneratorTool.exposedPorts')" placeholder="3000" :add-label="$t('utility.dockerfileGeneratorTool.addPort')" />
+      <InputText v-model="entrypoint" :placeholder="$t('utility.dockerfileGeneratorTool.entrypointCommand')" fluid />
+      <InputText v-model="command" :placeholder="$t('utility.dockerfileGeneratorTool.defaultCommand')" fluid />
     </template>
 
     <template #result>

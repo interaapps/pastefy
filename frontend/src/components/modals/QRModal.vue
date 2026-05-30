@@ -16,7 +16,7 @@ const props = defineProps<{
 
 const visible = defineModel<boolean>('visible')
 const toast = useToast()
-const qrCodeDataURL = ref<string | undefined>(undefined)
+const qrCodeDataUrl = ref<string | undefined>(undefined)
 
 const exportFormats = [
   { label: 'PNG', value: 'image/png' },
@@ -137,7 +137,7 @@ const buildOptions = () => ({
 const renderQRCode = async () => {
   try {
     if (exportFormat.value === 'image/svg+xml') {
-      qrCodeDataURL.value = await QRCode.toString(props.text, {
+      qrCodeDataUrl.value = await QRCode.toString(props.text, {
         type: 'svg',
         width: Math.max(180, width.value),
         margin: includeQuietZone.value ? Math.max(0, margin.value) : 0,
@@ -149,7 +149,7 @@ const renderQRCode = async () => {
       return
     }
 
-    qrCodeDataURL.value = await QRCode.toDataURL(props.text, buildOptions())
+    qrCodeDataUrl.value = await QRCode.toDataURL(props.text, buildOptions())
   } catch (error) {
     console.error(error)
     toast.add({
@@ -162,8 +162,8 @@ const renderQRCode = async () => {
 }
 
 const fetchBlob = async () => {
-  if (!qrCodeDataURL.value) throw new Error('QR code is not ready yet.')
-  const response = await fetch(qrCodeDataURL.value)
+  if (!qrCodeDataUrl.value) throw new Error('QR code is not ready yet.')
+  const response = await fetch(qrCodeDataUrl.value)
   return await response.blob()
 }
 
@@ -236,20 +236,20 @@ watch(
 onMounted(() => renderQRCode())
 </script>
 <template>
-  <Dialog v-model:visible="visible" modal header="QR Code" class="w-[75rem] max-w-full">
+  <Dialog v-model:visible="visible" modal :header="$t('modals.qrModal.qrCode')" class="w-[75rem] max-w-full">
     <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_23rem]">
       <div
         class="flex min-h-[24rem] items-start justify-center rounded-2xl border border-neutral-200 bg-neutral-100 p-5 dark:border-neutral-700 dark:bg-neutral-900"
       >
         <div
-          v-if="qrCodeDataURL"
+          v-if="qrCodeDataUrl"
           class="relative flex items-center justify-start rounded-[2rem] border border-neutral-200 p-6 shadow-sm dark:border-neutral-700"
           :style="previewCardStyle"
         >
           <img
             class="block rounded-md"
             :style="previewWrapperStyle"
-            :src="qrCodeDataURL"
+            :src="qrCodeDataUrl"
             alt="QR Code"
           />
           <div
@@ -266,11 +266,11 @@ onMounted(() => renderQRCode())
         <section
           class="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900"
         >
-          <h3 class="mb-8 text-sm font-semibold tracking-[0.2em] uppercase opacity-60">Export</h3>
+          <h3 class="mb-8 text-sm font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('common.export') }}</h3>
           <div class="space-y-7">
             <FloatLabel>
               <InputText v-model="fileName" fluid />
-              <label>File name</label>
+              <label>{{ $t('common.filename') }}</label>
             </FloatLabel>
             <FloatLabel>
               <Select
@@ -280,15 +280,15 @@ onMounted(() => renderQRCode())
                 option-value="value"
                 fluid
               />
-              <label>Format</label>
+              <label>{{ $t('common.format') }}</label>
             </FloatLabel>
             <FloatLabel>
               <InputNumber v-model="width" :min="180" :max="2048" fluid />
-              <label>Size (px)</label>
+              <label>{{ $t('modals.qrModal.sizePx') }}</label>
             </FloatLabel>
             <FloatLabel>
               <InputNumber v-model="margin" :min="0" :max="20" fluid />
-              <label>Quiet zone</label>
+              <label>{{ $t('modals.qrModal.quietZone') }}</label>
             </FloatLabel>
           </div>
         </section>
@@ -296,12 +296,12 @@ onMounted(() => renderQRCode())
         <section
           class="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900"
         >
-          <h3 class="mb-8 text-sm font-semibold tracking-[0.2em] uppercase opacity-60">Colors</h3>
+          <h3 class="mb-8 text-sm font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('common.colors') }}</h3>
           <div class="space-y-7">
             <Select
               :options="colorPresets"
               option-label="label"
-              placeholder="Apply preset"
+              :placeholder="$t('modals.qrModal.applyPreset')"
               fluid
               @update:model-value="applyPreset"
             >
@@ -323,7 +323,7 @@ onMounted(() => renderQRCode())
             </Select>
             <div class="rounded-xl border border-neutral-200 p-3 dark:border-neutral-700">
               <div class="mb-2 flex items-center justify-between text-xs uppercase opacity-60">
-                <span>Current palette</span>
+                <span>{{ $t('modals.qrModal.currentPalette') }}</span>
                 <span>{{ darkColor }} / {{ showBackground ? lightColor : 'transparent' }}</span>
               </div>
               <div
@@ -333,7 +333,7 @@ onMounted(() => renderQRCode())
             </div>
             <FloatLabel>
               <InputText v-model="darkColor" fluid />
-              <label>Foreground color</label>
+              <label>{{ $t('modals.qrModal.foregroundColor') }}</label>
             </FloatLabel>
             <div
               class="flex items-center gap-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-700"
@@ -343,13 +343,13 @@ onMounted(() => renderQRCode())
                 :style="{ backgroundColor: darkColor }"
               />
               <div>
-                <p class="text-sm font-medium">Foreground preview</p>
-                <p class="text-xs opacity-60">QR modules and scan pattern</p>
+                <p class="text-sm font-medium">{{ $t('modals.qrModal.foregroundPreview') }}</p>
+                <p class="text-xs opacity-60">{{ $t('modals.qrModal.qrModulesAndScanPattern') }}</p>
               </div>
             </div>
             <FloatLabel>
               <InputText v-model="lightColor" fluid :disabled="!showBackground" />
-              <label>Background color</label>
+              <label>{{ $t('modals.qrModal.backgroundColor') }}</label>
             </FloatLabel>
             <div
               class="flex items-center gap-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-700"
@@ -359,7 +359,7 @@ onMounted(() => renderQRCode())
                 :style="{ backgroundColor: showBackground ? lightColor : 'transparent' }"
               />
               <div>
-                <p class="text-sm font-medium">Background preview</p>
+                <p class="text-sm font-medium">{{ $t('modals.qrModal.backgroundPreview') }}</p>
                 <p class="text-xs opacity-60">
                   {{ showBackground ? 'Card and QR background color' : 'Transparent background' }}
                 </p>
@@ -369,13 +369,13 @@ onMounted(() => renderQRCode())
               <label
                 class="flex items-center justify-between gap-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-700"
               >
-                <span class="text-sm font-medium">Show background</span>
+                <span class="text-sm font-medium">{{ $t('modals.qrModal.showBackground') }}</span>
                 <Checkbox v-model="showBackground" binary />
               </label>
               <label
                 class="flex items-center justify-between gap-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-700"
               >
-                <span class="text-sm font-medium">Include quiet zone</span>
+                <span class="text-sm font-medium">{{ $t('modals.qrModal.includeQuietZone') }}</span>
                 <Checkbox v-model="includeQuietZone" binary />
               </label>
             </div>
@@ -385,7 +385,7 @@ onMounted(() => renderQRCode())
         <section
           class="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900"
         >
-          <h3 class="mb-8 text-sm font-semibold tracking-[0.2em] uppercase opacity-60">Logo</h3>
+          <h3 class="mb-8 text-sm font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('modals.qrModal.logo') }}</h3>
           <div class="space-y-7">
             <label
               class="flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-neutral-300 px-4 py-5 text-sm font-medium text-neutral-600 transition hover:border-neutral-400 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
@@ -399,22 +399,22 @@ onMounted(() => renderQRCode())
                 text
                 severity="danger"
                 icon="ti ti-trash"
-                label="Remove Logo"
+                :label="$t('modals.qrModal.removeLogo')"
                 @click="clearLogo"
               />
             </div>
             <FloatLabel>
               <InputNumber v-model="logoSize" :min="10" :max="35" suffix="%" fluid />
-              <label>Logo size</label>
+              <label>{{ $t('modals.qrModal.logoSize') }}</label>
             </FloatLabel>
             <FloatLabel>
               <InputNumber v-model="logoPadding" :min="0" :max="32" fluid />
-              <label>Logo padding</label>
+              <label>{{ $t('modals.qrModal.logoPadding') }}</label>
             </FloatLabel>
             <label
               class="flex items-center justify-between gap-3 rounded-xl border border-neutral-200 p-3 dark:border-neutral-700"
             >
-              <span class="text-sm font-medium">Logo background plate</span>
+              <span class="text-sm font-medium">{{ $t('modals.qrModal.logoBackgroundPlate') }}</span>
               <Checkbox v-model="logoBackground" binary />
             </label>
           </div>
@@ -423,7 +423,7 @@ onMounted(() => renderQRCode())
         <section
           class="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900"
         >
-          <h3 class="mb-3 text-sm font-semibold tracking-[0.2em] uppercase opacity-60">Content</h3>
+          <h3 class="mb-3 text-sm font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('common.content') }}</h3>
           <p
             class="rounded-xl border border-dashed border-neutral-300 p-3 text-sm break-all text-neutral-600 dark:border-neutral-700 dark:text-neutral-300"
           >
@@ -443,13 +443,13 @@ onMounted(() => renderQRCode())
         <div class="flex flex-wrap justify-end gap-2">
           <Button
             v-if="canCopyImage && exportFormat !== 'image/svg+xml'"
-            label="Copy Image"
+            :label="$t('common.copyImage')"
             icon="ti ti-copy"
             severity="contrast"
             outlined
             @click="copyImage"
           />
-          <Button label="Download" icon="ti ti-download" @click="download" />
+          <Button :label="$t('common.download')" icon="ti ti-download" @click="download" />
         </div>
       </div>
     </template>

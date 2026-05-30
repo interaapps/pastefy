@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import domtoimage from 'dom-to-image'
 import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
@@ -11,6 +12,7 @@ import { useStorage } from '@vueuse/core'
 import MermaidViewer from '@/components/previews/MermaidViewer.vue'
 import UtilityShell from '@/components/tools/utility/UtilityShell.vue'
 
+const { t } = useTranslation()
 const source = useStorage(
   'pastefy-utility-mermaid-export-source',
   `flowchart LR
@@ -28,8 +30,8 @@ const exportAreaRef = useTemplateRef<HTMLDivElement>('exportAreaRef')
 const isExporting = ref(false)
 
 const formatOptions = [
-  { label: 'PNG', value: 'png' as const },
-  { label: 'SVG', value: 'svg' as const },
+  { get label() { return t('utility.mermaidImageExportTool.options.png') }, value: 'png' as const },
+  { get label() { return t('utility.mermaidImageExportTool.options.svg') }, value: 'svg' as const },
 ]
 
 const download = async () => {
@@ -96,11 +98,11 @@ const copyMermaid = async () => {
     <template #controls>
       <div class="grid gap-3 md:grid-cols-2">
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Filename</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('common.filename') }}</label>
           <InputText v-model="fileName" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Format</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('common.format') }}</label>
           <Select
             v-model="format"
             :options="formatOptions"
@@ -110,27 +112,27 @@ const copyMermaid = async () => {
           />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Scale</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidImageExportTool.scale') }}</label>
           <InputNumber v-model="scale" :min="1" :max="4" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Padding</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidImageExportTool.padding') }}</label>
           <InputNumber v-model="padding" :min="0" :max="120" fluid />
         </div>
         <div>
           <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400"
-            >Background</label
+            >{{ $t('utility.mermaidImageExportTool.background') }}</label
           >
           <InputText v-model="background" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Watermark</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidImageExportTool.watermark') }}</label>
           <InputText v-model="watermark" fluid />
         </div>
       </div>
       <div>
         <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400"
-          >Mermaid code</label
+          >{{ $t('utility.mermaidImageExportTool.mermaidCode') }}</label
         >
         <Textarea v-model="source" auto-resize rows="18" fluid />
       </div>
@@ -164,7 +166,7 @@ const copyMermaid = async () => {
           />
           <Button
             @click="copyMermaid"
-            label="copy mermaid"
+            :label="$t('utility.mermaidImageExportTool.copyMermaid')"
             icon="ti ti-copy"
             severity="contrast"
             outlined

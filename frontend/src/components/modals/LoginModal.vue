@@ -6,7 +6,7 @@ const currentUserStore = useCurrentUserStore()
 const visible = defineModel<boolean>('visible')
 </script>
 <template>
-  <Dialog v-model:visible="visible" modal header="Login" class="w-[30rem] max-w-full">
+  <Dialog v-model:visible="visible" modal :header="$t('auth.login')" class="w-[30rem] max-w-full">
     <div class="flex flex-wrap justify-center gap-2">
       <a
         v-for="authType of currentUserStore.authTypes"

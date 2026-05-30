@@ -32,7 +32,7 @@ const {
       class="mb-9 flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white/80 p-5 dark:border-neutral-800 dark:bg-neutral-900/70 lg:flex-row lg:items-center lg:justify-between"
     >
       <div>
-        <h2 class="text-xl font-bold">Quick Actions</h2>
+        <h2 class="text-xl font-bold">{{ $t('admin.quickActions') }}</h2>
         <p class="text-sm text-neutral-600 dark:text-neutral-300">
           Jump straight into the two moderation queues you are most likely to use.
         </p>
@@ -42,7 +42,7 @@ const {
           as="router-link"
           :to="{ name: 'admin-users' }"
           icon="ti ti-users"
-          label="Manage Users"
+          :label="$t('admin.manageUsers')"
           size="small"
           outlined
           severity="contrast"
@@ -51,14 +51,14 @@ const {
           as="router-link"
           :to="{ name: 'admin-pastes', query: { sort: 'createdAt', page: '1' } }"
           icon="ti ti-script"
-          label="Latest Pastes"
+          :label="$t('admin.latestPastes')"
           size="small"
         />
       </div>
     </div>
 
     <div class="mb-9">
-      <h2 class="mb-3 text-2xl font-bold">Pastes</h2>
+      <h2 class="mb-3 text-2xl font-bold">{{ $t('paste.pastes') }}</h2>
       <div class="grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard :top="stats.created_pastes" description="Created Pastes" />
         <StatsCard :top="stats.logged_in_pastes" description="Logged in Pastes" />
@@ -72,19 +72,19 @@ const {
     </div>
 
     <div class="mb-9">
-      <h2 class="mb-3 text-2xl font-bold">Folders</h2>
+      <h2 class="mb-3 text-2xl font-bold">{{ $t('paste.folders') }}</h2>
       <div class="grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard :top="stats.folder_count" description="folders" />
       </div>
     </div>
     <div class="mb-9">
-      <h2 class="mb-3 text-2xl font-bold">Users</h2>
+      <h2 class="mb-3 text-2xl font-bold">{{ $t('common.users') }}</h2>
       <div class="grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard :top="stats.user_count" description="Users" />
       </div>
     </div>
     <div class="mb-9">
-      <h2 class="mb-3 text-2xl font-bold">Tags</h2>
+      <h2 class="mb-3 text-2xl font-bold">{{ $t('common.tags') }}</h2>
       <div class="grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard :top="stats.tag_count" description="Tags" />
       </div>

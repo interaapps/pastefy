@@ -62,13 +62,13 @@ const updateItem = (index: number, next: Partial<Entry>) => {
           icon="ti ti-trash"
           severity="contrast"
           outlined
-          aria-label="Remove entry"
+          :aria-label="$t('utility.keyValueListField.removeEntry')"
         />
       </div>
     </div>
 
     <div v-if="!model.length" class="rounded-xl border border-dashed border-neutral-200 px-3 py-3 text-sm text-neutral-500 dark:border-neutral-700 dark:text-neutral-400">
-      No entries yet.
+      {{ $t('utility.keyValueListField.noEntriesYet') }}
     </div>
   </div>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import Button from 'primevue/button'
@@ -6,6 +7,7 @@ import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Tag from 'primevue/tag'
 import XMLTreeNode, { type XMLNodeEntry } from '@/components/previews/XMLTreeNode.vue'
+const { t } = useTranslation()
 const Highlighted = defineAsyncComponent(() => import('@/components/Highlighted.vue'))
 
 const props = defineProps<{
@@ -69,9 +71,9 @@ const rootNode = computed(() => parserResult.value.root)
 const prettyXml = computed(() => parserResult.value.pretty)
 
 const viewOptions = [
-  { label: 'Tree', value: 'tree' },
-  { label: 'Pretty', value: 'pretty' },
-  { label: 'Raw', value: 'raw' },
+  { get label() { return t('previews.xmlViewer.options.tree') }, value: 'tree' },
+  { get label() { return t('previews.xmlViewer.options.pretty') }, value: 'pretty' },
+  { get label() { return t('previews.xmlViewer.options.raw') }, value: 'raw' },
 ]
 
 const summary = computed(() => {
@@ -146,7 +148,7 @@ watch(search, (value) => {
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">XML View</div>
+          <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('previews.xmlViewer.xmlView') }}</div>
           <div class="mt-1 text-xs opacity-60">{{ summary }}</div>
         </div>
         <div class="flex flex-wrap gap-2">
@@ -157,7 +159,7 @@ watch(search, (value) => {
       </div>
 
       <div class="grid gap-3 xl:grid-cols-[minmax(0,1fr)_180px_auto]">
-        <InputText v-model="search" placeholder="Search tags, attributes, text, and paths" fluid />
+        <InputText v-model="search" :placeholder="$t('previews.xmlViewer.searchTagsAttributesTextAndPaths')" fluid />
         <Select
           v-model="viewMode"
           :options="viewOptions"
@@ -169,7 +171,7 @@ watch(search, (value) => {
           <Button
             v-if="viewMode === 'tree'"
             icon="ti ti-fold-down"
-            label="Expand all"
+            :label="$t('previews.xmlViewer.expandAll')"
             size="small"
             severity="contrast"
             outlined
@@ -178,7 +180,7 @@ watch(search, (value) => {
           <Button
             v-if="viewMode === 'tree'"
             icon="ti ti-fold-up"
-            label="Collapse"
+            :label="$t('previews.xmlViewer.collapse')"
             size="small"
             severity="contrast"
             outlined
@@ -186,7 +188,7 @@ watch(search, (value) => {
           />
           <Button
             icon="ti ti-copy"
-            label="Copy pretty"
+            :label="$t('previews.xmlViewer.copyPretty')"
             size="small"
             severity="contrast"
             outlined
@@ -194,7 +196,7 @@ watch(search, (value) => {
           />
           <Button
             icon="ti ti-download"
-            label="Export"
+            :label="$t('common.export')"
             size="small"
             severity="contrast"
             outlined

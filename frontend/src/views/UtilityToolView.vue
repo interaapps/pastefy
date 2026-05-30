@@ -8,12 +8,18 @@ import ToolPinButton from '@/components/tools/ToolPinButton.vue'
 import ToolRelatedLinks from '@/components/tools/ToolRelatedLinks.vue'
 import { useSEO } from '@/composables/seo.ts'
 import { findUtilityTool, utilityTools } from '@/utils/utility-tools.ts'
+import { useTranslation } from 'i18next-vue'
+import { localizeTool } from '@/utils/tool-catalog-i18n.ts'
 
 const route = useRoute()
 const focusMode = ref(false)
+const { t } = useTranslation()
 provide('tool-focus-mode', focusMode)
 
-const tool = computed(() => findUtilityTool(String(route.params.tool || '')))
+const tool = computed(() => {
+  const definition = findUtilityTool(String(route.params.tool || ''))
+  return definition ? localizeTool('utility', definition, t) : undefined
+})
 
 useSEO({
   title: computed(() =>
@@ -144,7 +150,10 @@ const currentComponent = computed(() =>
 )
 
 const relatedTools = computed(() =>
-  utilityTools.filter((entry) => entry.slug !== tool.value?.slug).slice(0, 3),
+  utilityTools
+    .map((entry) => localizeTool('utility', entry, t))
+    .filter((entry) => entry.slug !== tool.value?.slug)
+    .slice(0, 3),
 )
 
 const relatedToolLinks = computed(() =>
@@ -198,7 +207,7 @@ const relatedToolLinks = computed(() =>
           <Button
             as="router-link"
             :to="{ name: 'tool-home', hash: '#utilities' }"
-            label="all utilities"
+            :label="$t('tools.allUtilities')"
             icon="ti ti-layout-grid"
             severity="contrast"
             outlined
@@ -209,7 +218,7 @@ const relatedToolLinks = computed(() =>
             :icon="`ti ${focusMode ? 'ti-minimize' : 'ti-maximize'}`"
             severity="contrast"
             outlined
-            :aria-label="focusMode ? 'Exit focus mode' : 'Focus mode'"
+            :aria-label="$t(focusMode ? 'tools.exitFocusMode' : 'tools.focusMode')"
           />
         </div>
       </div>
@@ -224,12 +233,12 @@ const relatedToolLinks = computed(() =>
     v-else
     class="mx-auto flex max-w-[50rem] flex-col gap-4 rounded-xl border border-neutral-200 bg-neutral-100 p-6 dark:border-neutral-700 dark:bg-neutral-800"
   >
-    <h1 class="text-2xl font-bold">Utility tool not found</h1>
+    <h1 class="text-2xl font-bold">{{ $t('tools.notFound.utilityTitle') }}</h1>
     <p class="text-neutral-600 dark:text-neutral-300">
       This utility tool does not exist. Open the tools index to pick one of the supported utilities.
     </p>
     <div>
-      <Button as="router-link" :to="{ name: 'tool-home', hash: '#utilities' }" label="back to utilities" />
+      <Button as="router-link" :to="{ name: 'tool-home', hash: '#utilities' }" :label="$t('tools.backToUtilities')" />
     </div>
   </section>
 </template>

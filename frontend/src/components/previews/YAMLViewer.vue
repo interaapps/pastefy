@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import Button from 'primevue/button'
@@ -6,6 +7,7 @@ import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Tag from 'primevue/tag'
 import YAMLTreeNode, { type YAMLNodeEntry } from '@/components/previews/YAMLTreeNode.vue'
+const { t } = useTranslation()
 const Highlighted = defineAsyncComponent(() => import('@/components/Highlighted.vue'))
 
 const props = defineProps<{
@@ -19,7 +21,7 @@ const expandedPaths = ref(new Set<string>(['root']))
 
 const parsedTree = computed(() => {
   const root: YAMLNodeEntry = {
-    label: 'root',
+    get label() { return t('previews.yamlViewer.options.root') },
     path: 'root',
     lineNumber: 0,
     kind: 'mapping',
@@ -135,9 +137,9 @@ const stats = computed(() => {
 })
 
 const viewOptions = [
-  { label: 'Tree', value: 'tree' },
-  { label: 'Pretty', value: 'pretty' },
-  { label: 'Raw', value: 'raw' },
+  { get label() { return t('previews.yamlViewer.options.tree') }, value: 'tree' },
+  { get label() { return t('previews.yamlViewer.options.pretty') }, value: 'pretty' },
+  { get label() { return t('previews.yamlViewer.options.raw') }, value: 'raw' },
 ]
 
 const setExpanded = (path: string, expanded: boolean) => {
@@ -185,8 +187,8 @@ watch(search, (value) => {
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">YAML View</div>
-          <div class="mt-1 text-xs opacity-60">Collapsible tree, search, copy, and export for YAML files</div>
+          <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('previews.yamlViewer.yamlView') }}</div>
+          <div class="mt-1 text-xs opacity-60">{{ $t('previews.yamlViewer.description') }}</div>
         </div>
         <div class="flex flex-wrap gap-2">
           <Tag :value="`${stats.keys} keys`" severity="contrast" />
@@ -196,7 +198,7 @@ watch(search, (value) => {
       </div>
 
       <div class="grid gap-3 xl:grid-cols-[minmax(0,1fr)_180px_auto]">
-        <InputText v-model="search" placeholder="Search keys, values, and paths" fluid />
+        <InputText v-model="search" :placeholder="$t('previews.yamlViewer.searchKeysValuesAndPaths')" fluid />
         <Select
           v-model="viewMode"
           :options="viewOptions"
@@ -208,7 +210,7 @@ watch(search, (value) => {
           <Button
             v-if="viewMode === 'tree'"
             icon="ti ti-fold-down"
-            label="Expand all"
+            :label="$t('previews.yamlViewer.expandAll')"
             size="small"
             severity="contrast"
             outlined
@@ -217,7 +219,7 @@ watch(search, (value) => {
           <Button
             v-if="viewMode === 'tree'"
             icon="ti ti-fold-up"
-            label="Collapse"
+            :label="$t('previews.yamlViewer.collapse')"
             size="small"
             severity="contrast"
             outlined
@@ -225,7 +227,7 @@ watch(search, (value) => {
           />
           <Button
             icon="ti ti-copy"
-            label="Copy"
+            :label="$t('common.copy')"
             size="small"
             severity="contrast"
             outlined
@@ -233,7 +235,7 @@ watch(search, (value) => {
           />
           <Button
             icon="ti ti-download"
-            label="Export"
+            :label="$t('common.export')"
             size="small"
             severity="contrast"
             outlined
@@ -244,7 +246,7 @@ watch(search, (value) => {
     </div>
 
     <div v-if="viewMode === 'tree'" class="max-h-[42rem] overflow-auto px-2 py-3">
-      <div v-if="parsedTree.children.length === 0" class="p-4 text-sm opacity-60">No YAML nodes found.</div>
+      <div v-if="parsedTree.children.length === 0" class="p-4 text-sm opacity-60">{{ $t('previews.yamlViewer.noYamlNodesFound') }}</div>
       <YAMLTreeNode
         v-for="node in parsedTree.children"
         :key="node.path"

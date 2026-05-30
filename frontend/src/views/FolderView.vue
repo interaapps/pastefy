@@ -10,6 +10,7 @@ import ErrorContainer from '@/components/ErrorContainer.vue'
 import LoadingContainer from '@/components/LoadingContainer.vue'
 import { useConfirm } from 'primevue/useconfirm'
 import router from '@/router'
+import { useTranslation } from 'i18next-vue'
 
 useTitle(`Folder | Pastefy`)
 
@@ -34,10 +35,11 @@ const {
 }, undefined)
 
 const confirm = useConfirm()
+const { t } = useTranslation()
 const deleteFolder = () => {
   confirm.require({
-    message: 'Are you sure you want to delete this folder?',
-    header: 'Delete folder',
+    message: t('folder.deleteConfirm'),
+    header: t('folder.deleteTitle'),
     accept: async () => {
       await client.delete(`/api/v2/folder/${folder.value?.id}`)
       router.push({ name: 'home-page' })
@@ -59,13 +61,13 @@ const deleteFolder = () => {
         <Button icon="ti ti-trash text-lg" text severity="contrast" @click="deleteFolder" />
       </div>
       <div class="mb-14">
-        <h2 class="mb-4 text-xl font-bold">Folders</h2>
+        <h2 class="mb-4 text-xl font-bold">{{ $t('paste.folders') }}</h2>
 
         <FolderList :folders="folder.children" :parent="folder.id" />
       </div>
 
       <div>
-        <h2 class="mb-4 text-xl font-bold">Pastes</h2>
+        <h2 class="mb-4 text-xl font-bold">{{ $t('paste.pastes') }}</h2>
 
         <PasteList :pastes="folder.pastes" />
       </div>

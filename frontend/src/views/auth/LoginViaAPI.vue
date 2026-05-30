@@ -19,6 +19,6 @@ onMounted(() => {
 </script>
 <template>
   <div>
-    <h1>Logging in...</h1>
+    <h1>{{ $t('views.loginViaApi.loggingIn') }}</h1>
   </div>
 </template>

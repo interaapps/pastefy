@@ -114,7 +114,7 @@ const handleDrop = async (event: DragEvent) => {
     @drop="handleDrop"
   >
     <Sidebar
-      class="fixed top-0 left-0 w-[340px] transition-all"
+      class="fixed top-0 w-[340px] transition-all ltr:left-0 rtl:right-0"
       :is-hidden="!(isHomeMobile || config.sideBarShown)"
       :class="isHomeMobile ? 'w-full' : config.sideBarShown ? 'flex' : 'hidden'"
     />
@@ -129,7 +129,7 @@ const handleDrop = async (event: DragEvent) => {
         severity="contrast"
         :disabled="isHomeMobile"
         text
-        aria-label="Create Paste"
+        :aria-label="$t('paste.create')"
       />
       <Button
         class="hidden md:flex"
@@ -140,14 +140,14 @@ const handleDrop = async (event: DragEvent) => {
         text
         v-shortkey="['meta', 'b']"
         @shortkey="config.sideBarShown = !config.sideBarShown"
-        aria-label="Toggle Sidebar"
+        :aria-label="$t('layout.toggleSidebar')"
       />
 
       <router-link
         v-if="config.sideBarShown || isMobile"
         :to="{ name: 'home' }"
         class="transition-all hover:scale-[1.05] active:scale-[0.95]"
-        aria-label="Home"
+        :aria-label="$t('nav.home')"
       >
         <img
           v-if="appInfo.appInfo?.custom_logo"
@@ -167,7 +167,7 @@ const handleDrop = async (event: DragEvent) => {
         text
         :loading="currentUserStore.userLoading"
         v-tooltip="{ value: 'Login', showDelay: 500 }"
-        aria-label="Login"
+        :aria-label="$t('auth.login')"
       />
       <button
         v-else-if="currentUserStore.user"

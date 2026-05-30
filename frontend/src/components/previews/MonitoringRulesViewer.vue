@@ -31,9 +31,9 @@ const panels = computed(() => Array.from(props.config.matchAll(/"panels"\s*:/gim
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">
-            Monitoring Rules
+            {{ $t('previews.monitoringRulesViewer.monitoringRules') }}
           </div>
-          <div class="mt-1 text-xs opacity-60">Prometheus, Grafana, and alert rule overviews</div>
+          <div class="mt-1 text-xs opacity-60">{{ $t('previews.monitoringRulesViewer.prometheusGrafanaAndAlertRuleOverviews') }}</div>
         </div>
         <div class="flex flex-wrap gap-2">
           <Tag :value="`${alerts.length} alerts/titles`" severity="contrast" />

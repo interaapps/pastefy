@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import { computed, watch } from 'vue'
 import { useAsyncState, useDebounceFn, useTitle } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
@@ -16,6 +17,7 @@ import PasteCard from '@/components/lists/PasteCard.vue'
 
 useTitle('Pastes - Admin | pastefy')
 
+const { t } = useTranslation()
 const page = useRouteQuery('page', 1, { transform: Number })
 const pageLimit = useRouteQuery('pageLimit', 10, { transform: Number })
 const search = useRouteQuery('search', '')
@@ -25,15 +27,15 @@ const userId = useRouteQuery('userId', '')
 const userName = useRouteQuery('userName', '')
 
 const visibilityOptions: Array<{ label: string; value: PasteVisibility | '' }> = [
-  { label: 'All visibilities', value: '' },
-  { label: 'Public', value: 'PUBLIC' },
-  { label: 'Unlisted', value: 'UNLISTED' },
-  { label: 'Private', value: 'PRIVATE' },
+  { get label() { return t('views.adminPastes.options.allVisibilities') }, value: '' },
+  { get label() { return t('views.adminPastes.options.public') }, value: 'PUBLIC' },
+  { get label() { return t('views.adminPastes.options.unlisted') }, value: 'UNLISTED' },
+  { get label() { return t('views.adminPastes.options.private') }, value: 'PRIVATE' },
 ]
 
 const sortOptions = [
-  { label: 'Newest first', value: 'createdAt' },
-  { label: 'Oldest first', value: '+createdAt' },
+  { get label() { return t('views.adminPastes.options.newestFirst') }, value: 'createdAt' },
+  { get label() { return t('views.adminPastes.options.oldestFirst') }, value: '+createdAt' },
 ]
 
 const pageSizeOptions = [10, 20, 50].map((value) => ({
@@ -88,8 +90,8 @@ const deletePaste = async (id?: string) => {
   if (!id) return
 
   confirm.require({
-    message: 'Are you sure you want to delete this paste?',
-    header: 'Delete paste',
+    message: t('paste.deleteConfirm'),
+    header: t('paste.deleteTitle'),
     accept: async () => {
       await client.delete(`/api/v2/paste/${id}`)
       load()
@@ -98,7 +100,7 @@ const deletePaste = async (id?: string) => {
 }
 
 const formatDate = (value?: string) => {
-  if (!value) return 'Unknown date'
+  if (!value) return t('common.unknownDate')
   return new Date(value.replace(' ', 'T')).toLocaleString()
 }
 </script>
@@ -107,7 +109,7 @@ const formatDate = (value?: string) => {
     <section
       class="grid gap-3 rounded-2xl border border-neutral-200 bg-white/80 p-4 xl:grid-cols-[minmax(0,1fr)_220px_220px_180px] dark:border-neutral-800 dark:bg-neutral-900/70"
     >
-      <InputText v-model="search" fluid placeholder="Search by title, content, or creator" />
+      <InputText v-model="search" fluid :placeholder="$t('views.adminPastes.searchByTitleContentOrCreator')" />
       <Select
         v-model="visibility"
         :options="visibilityOptions"
@@ -132,7 +134,7 @@ const formatDate = (value?: string) => {
     </section>
 
     <div class="flex flex-wrap items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
-      <span>Filters:</span>
+      <span>{{ $t('common.filters') }}</span>
       <Tag :value="search ? `Search: ${search}` : 'No search'" severity="contrast" />
       <Tag
         :value="visibility ? `Visibility: ${visibility}` : 'All visibilities'"
@@ -145,7 +147,7 @@ const formatDate = (value?: string) => {
         text
         severity="contrast"
         icon="ti ti-x"
-        label="Clear User Filter"
+        :label="$t('views.adminPastes.clearUserFilter')"
         @click="clearUserFilter"
       />
     </div>
@@ -157,7 +159,7 @@ const formatDate = (value?: string) => {
         v-if="pastes.length === 0"
         class="rounded-2xl border border-dashed border-neutral-300 bg-white/80 p-8 text-center text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-900/60 dark:text-neutral-400"
       >
-        No pastes match the current filters.
+        {{ $t('views.adminPastes.noPastesMatchTheCurrentFilters') }}
       </div>
 
       <div v-for="paste in pastes" :key="paste.id">
@@ -171,7 +173,7 @@ const formatDate = (value?: string) => {
             >
               <span>{{ formatDate(paste.created_at) }}</span>
               <span v-if="paste.user?.name">
-                by
+                {{ $t('views.adminPastes.by') }}
                 <router-link
                   :to="{ name: 'user', params: { user: paste.user.name } }"
                   class="font-medium text-neutral-700 hover:underline dark:text-neutral-200"
@@ -191,7 +193,7 @@ const formatDate = (value?: string) => {
               size="small"
               outlined
               severity="contrast"
-              label="Open"
+              :label="$t('common.open')"
               icon="ti ti-external-link"
             />
             <Button
@@ -208,7 +210,7 @@ const formatDate = (value?: string) => {
               size="small"
               text
               severity="contrast"
-              label="More From User"
+              :label="$t('views.adminPastes.moreFromUser')"
               icon="ti ti-filter"
             />
             <Button
@@ -218,14 +220,14 @@ const formatDate = (value?: string) => {
               size="small"
               text
               severity="contrast"
-              label="Profile"
+              :label="$t('common.profile')"
               icon="ti ti-user"
             />
             <Button
               severity="danger"
               size="small"
               text
-              label="Delete"
+              :label="$t('common.delete')"
               icon="ti ti-trash"
               @click="deletePaste(paste.id)"
             />

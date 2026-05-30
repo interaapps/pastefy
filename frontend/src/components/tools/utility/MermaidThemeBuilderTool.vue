@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
@@ -9,6 +10,7 @@ import { useStorage } from '@vueuse/core'
 import MermaidToolResult from '@/components/tools/utility/MermaidToolResult.vue'
 import UtilityShell from '@/components/tools/utility/UtilityShell.vue'
 
+const { t } = useTranslation()
 const source = useStorage(
   'pastefy-utility-mermaid-theme-source',
   `flowchart LR
@@ -31,18 +33,18 @@ const rankSpacing = useStorage('pastefy-utility-mermaid-rank-spacing', 50)
 const diagramPadding = useStorage('pastefy-utility-mermaid-diagram-padding', 8)
 
 const themeOptions = [
-  { label: 'Base', value: 'base' },
-  { label: 'Default', value: 'default' },
-  { label: 'Dark', value: 'dark' },
-  { label: 'Forest', value: 'forest' },
-  { label: 'Neutral', value: 'neutral' },
+  { get label() { return t('utility.mermaidThemeBuilderTool.options.base') }, value: 'base' },
+  { get label() { return t('utility.mermaidThemeBuilderTool.options.default') }, value: 'default' },
+  { get label() { return t('utility.mermaidThemeBuilderTool.options.dark') }, value: 'dark' },
+  { get label() { return t('utility.mermaidThemeBuilderTool.options.forest') }, value: 'forest' },
+  { get label() { return t('utility.mermaidThemeBuilderTool.options.neutral') }, value: 'neutral' },
 ]
 
 const curveOptions = [
-  { label: 'Basis', value: 'basis' },
-  { label: 'Linear', value: 'linear' },
-  { label: 'Step', value: 'stepBefore' },
-  { label: 'Monotone', value: 'monotoneX' },
+  { get label() { return t('utility.mermaidThemeBuilderTool.options.basis') }, value: 'basis' },
+  { get label() { return t('utility.mermaidThemeBuilderTool.options.linear') }, value: 'linear' },
+  { get label() { return t('utility.mermaidThemeBuilderTool.options.step') }, value: 'stepBefore' },
+  { get label() { return t('utility.mermaidThemeBuilderTool.options.monotone') }, value: 'monotoneX' },
 ]
 
 const themedCode = computed(() => {
@@ -80,57 +82,57 @@ const themedCode = computed(() => {
     <template #controls>
       <div class="grid gap-3 md:grid-cols-2">
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Theme</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('settings.theme') }}</label>
           <Select v-model="theme" :options="themeOptions" option-label="label" option-value="value" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Curve</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidThemeBuilderTool.curve') }}</label>
           <Select v-model="curve" :options="curveOptions" option-label="label" option-value="value" fluid />
         </div>
         <div class="md:col-span-2">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Font family</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidThemeBuilderTool.fontFamily') }}</label>
           <InputText v-model="fontFamily" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Primary color</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidThemeBuilderTool.primaryColor') }}</label>
           <InputText v-model="primaryColor" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Primary text color</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidThemeBuilderTool.primaryTextColor') }}</label>
           <InputText v-model="primaryTextColor" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Border color</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidThemeBuilderTool.borderColor') }}</label>
           <InputText v-model="primaryBorderColor" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Line color</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidThemeBuilderTool.lineColor') }}</label>
           <InputText v-model="lineColor" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Tertiary color</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidThemeBuilderTool.tertiaryColor') }}</label>
           <InputText v-model="tertiaryColor" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Background</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidThemeBuilderTool.background') }}</label>
           <InputText v-model="background" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Node spacing</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidThemeBuilderTool.nodeSpacing') }}</label>
           <InputNumber v-model="nodeSpacing" :min="0" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Rank spacing</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidThemeBuilderTool.rankSpacing') }}</label>
           <InputNumber v-model="rankSpacing" :min="0" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Padding</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidThemeBuilderTool.padding') }}</label>
           <InputNumber v-model="diagramPadding" :min="0" fluid />
         </div>
       </div>
 
       <div>
-        <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Mermaid source</label>
+        <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.mermaidThemeBuilderTool.mermaidSource') }}</label>
         <Textarea v-model="source" auto-resize rows="16" fluid />
       </div>
     </template>
@@ -139,7 +141,7 @@ const themedCode = computed(() => {
       <MermaidToolResult
         :code="themedCode"
         file-name="themed-diagram.mmd"
-        placeholder="Add Mermaid code to preview the themed diagram."
+        :placeholder="$t('utility.mermaidThemeBuilderTool.addMermaidCodeToPreviewTheThemedDiagram')"
       />
     </template>
   </UtilityShell>

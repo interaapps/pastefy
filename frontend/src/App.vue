@@ -19,13 +19,13 @@ const currentUserStore = useCurrentUserStore()
         <div class="mt-6 flex items-center gap-2">
           <Button
             severity="contrast"
-            label="confirm"
+            :label="$t('common.confirm')"
             @click="acceptCallback"
             class="w-32 max-w-full"
             size="small"
           />
           <Button
-            label="cancel"
+            :label="$t('common.cancel')"
             outlined
             @click="rejectCallback"
             class="w-32 max-w-full"
@@ -40,27 +40,25 @@ const currentUserStore = useCurrentUserStore()
   <Dialog
     v-if="currentUserStore.user?.type === 'AWAITING_ACCESS'"
     :visible="currentUserStore.user?.type === 'AWAITING_ACCESS'"
-    header="Awaiting Access"
+    :header="$t('auth.awaitingAccess')"
     modal
     :closable="false"
     class="w-[20rem] max-w-full"
   >
     <div class="flex flex-col gap-4">
-      <p>
-        Hello {{ currentUserStore.user.name }}, please wait until an admin activates your account.
-      </p>
+      <p>{{ $t('auth.awaitingMessage', { name: currentUserStore.user.name }) }}</p>
 
-      <Button @click="currentUserStore.logout()" label="Logout" outlined size="small" />
+      <Button @click="currentUserStore.logout()" :label="$t('auth.logout')" outlined size="small" />
     </div>
   </Dialog>
   <Dialog
     v-if="currentUserStore.user?.type === 'BLOCKED'"
     :visible="currentUserStore.user?.type === 'BLOCKED'"
-    header="Blocked"
+    :header="$t('auth.blocked')"
     modal
     :closable="false"
     class="w-[20rem] max-w-full"
   >
-    Hello {{ currentUserStore.user.name }}, ou have been blocked!
+    {{ $t('auth.blockedMessage', { name: currentUserStore.user.name }) }}
   </Dialog>
 </template>

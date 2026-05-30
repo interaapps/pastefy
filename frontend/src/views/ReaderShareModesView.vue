@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import { computed, ref } from 'vue'
 import { useAsyncState, useTitle } from '@vueuse/core'
 import { useRoute } from 'vue-router'
@@ -15,6 +16,7 @@ import InputGroup from 'primevue/inputgroup'
 import { findFromFileName } from '@/utils/lang-replacements.ts'
 import { resolveSharePreviewType, toSharePreviewLabel } from '@/utils/share-preview.ts'
 
+const { t } = useTranslation()
 const route = useRoute()
 const password = ref<string | undefined>(undefined)
 const decrypted = ref(false)
@@ -53,15 +55,15 @@ const modes = computed(() => {
   }> = [
     {
       key: 'default',
-      label: 'Default Paste',
-      description: 'The full Pastefy paste page with code, actions, metadata, and sharing tools.',
+      get label() { return t('views.readerShareModesView.options.defaultPaste') },
+      get description() { return t('views.readerShareModesView.descriptions.theFullPastefyPastePageWithCodeActionsMetadataAndSharingTools') },
       icon: 'file-code',
       url: `${origin}/${paste.value.id}`,
     },
     {
       key: 'raw',
-      label: 'Raw File',
-      description: 'The plain raw file URL for direct downloads, scripts, and integrations.',
+      get label() { return t('views.readerShareModesView.options.rawFile') },
+      get description() { return t('views.readerShareModesView.descriptions.thePlainRawFileUrlForDirectDownloadsScriptsAndIntegrations') },
       icon: 'file-text',
       url: paste.value.raw_url || `${origin}/${paste.value.id}/raw`,
     },
@@ -70,8 +72,8 @@ const modes = computed(() => {
   if (paste.value.type === 'PASTE' && findFromFileName(paste.value.title || '') === 'markdown') {
     items.push({
       key: 'article',
-      label: 'Article View',
-      description: 'A reader-friendly layout for sharing markdown like a polished article.',
+      get label() { return t('views.readerShareModesView.options.articleView') },
+      get description() { return t('views.readerShareModesView.descriptions.aReaderFriendlyLayoutForSharingMarkdownLikeaPolishedArticle') },
       icon: 'article',
       url: `${origin}/${paste.value.id}/article`,
     })
@@ -80,8 +82,8 @@ const modes = computed(() => {
   if (paste.value.type === 'PASTE' && resolveSharePreviewType(paste.value.title)) {
     items.push({
       key: 'presentation',
-      label: 'Presentation View',
-      description: 'A focused preview page for tables, diagrams, maps, SVGs, diffs, JSON, HTML, and terminal replays.',
+      get label() { return t('views.readerShareModesView.options.presentationView') },
+      get description() { return t('views.readerShareModesView.descriptions.aFocusedPreviewPageForTablesDiagramsMapsSvgsDiffsJsonHtmlAndTerminalReplays') },
       icon: 'presentation',
       url: `${origin}/${paste.value.id}/presentation`,
     })
@@ -92,7 +94,7 @@ const modes = computed(() => {
       items.push({
         key: `article-${part.name}`,
         label: `Article: ${toSharePreviewLabel(part.name)}`,
-        description: 'A direct article link to this markdown file inside the multi-paste.',
+        get description() { return t('views.readerShareModesView.descriptions.aDirectArticleLinkToThisMarkdownFileInsideTheMultiPaste') },
         icon: 'article',
         url: `${origin}/${paste.value.id}/article?part=${encodeURIComponent(part.name)}`,
       })
@@ -104,7 +106,7 @@ const modes = computed(() => {
       items.push({
         key: `presentation-${part.name}`,
         label: `Presentation: ${toSharePreviewLabel(part.name)}`,
-        description: 'A direct presentation link to this previewable file inside the multi-paste.',
+        get description() { return t('views.readerShareModesView.descriptions.aDirectPresentationLinkToThisPreviewableFileInsideTheMultiPaste') },
         icon: 'presentation',
         url: `${origin}/${paste.value.id}/presentation?part=${encodeURIComponent(part.name)}`,
       })
@@ -160,17 +162,17 @@ const { isLoading, error } = useAsyncState(async () => {
       @submit.prevent="decrypt"
     >
       <i class="ti ti-lock text-5xl opacity-60" />
-      <h1 class="text-2xl font-bold">This share sheet is encrypted</h1>
+      <h1 class="text-2xl font-bold">{{ $t('views.readerShareModesView.thisShareSheetIsEncrypted') }}</h1>
       <p class="text-sm text-neutral-500 dark:text-neutral-400">
         Unlock the paste first to see all available reader and share modes.
       </p>
       <input
         v-model="password"
         type="password"
-        placeholder="Password"
+        :placeholder="$t('auth.password')"
         class="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 outline-none dark:border-neutral-700 dark:bg-neutral-800"
       />
-      <Button type="submit" label="Unlock" />
+      <Button type="submit" :label="$t('common.unlock')" />
     </form>
   </main>
 
@@ -186,7 +188,7 @@ const { isLoading, error } = useAsyncState(async () => {
             class="inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-3 py-1 font-semibold tracking-[0.2em] uppercase dark:border-neutral-700 dark:bg-neutral-900"
           >
             <i class="ti ti-share-3" />
-            Reader & Share Modes
+            {{ $t('views.readerShareModesView.readerShareModes') }}
           </span>
           <span>{{ paste.type === 'MULTI_PASTE' ? 'Multi-Paste' : 'Single Paste' }}</span>
         </div>
@@ -205,7 +207,7 @@ const { isLoading, error } = useAsyncState(async () => {
             <Button
               as="router-link"
               :to="{ name: 'paste', params: { paste: paste.id } }"
-              label="Open Paste"
+              :label="$t('views.readerShareModesView.openPaste')"
               icon="ti ti-code"
               outlined
               severity="contrast"
@@ -245,7 +247,7 @@ const { isLoading, error } = useAsyncState(async () => {
         </InputGroup>
 
         <div class="flex flex-wrap gap-2">
-          <Button as="a" :href="mode.url" target="_blank" label="Open" icon="ti ti-external-link" />
+          <Button as="a" :href="mode.url" target="_blank" :label="$t('common.open')" icon="ti ti-external-link" />
         </div>
       </article>
     </section>

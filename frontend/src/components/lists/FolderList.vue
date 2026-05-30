@@ -61,7 +61,7 @@ const creatFolderModalVisible = ref(false)
         >
           <i class="ti ti-folder-plus text-4xl" />
         </div>
-        <span class="text-sm"> new </span>
+        <span class="text-sm">{{ $t('paste.new') }}</span>
       </button>
     </div>
   </section>

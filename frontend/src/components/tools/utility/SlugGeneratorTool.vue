@@ -39,7 +39,7 @@ const result = computed(() => JSON.stringify(state.value, null, 2))
 <template>
   <UtilityShell>
     <template #controls>
-      <label class="text-sm font-medium">Source text</label>
+      <label class="text-sm font-medium">{{ $t('utility.slugGeneratorTool.sourceText') }}</label>
       <Textarea v-model="input" auto-resize rows="8" fluid />
     </template>
 

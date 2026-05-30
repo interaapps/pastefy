@@ -88,7 +88,7 @@ try {
     <Button
       severity="contrast"
       outlined
-      label="Add to Calendar"
+      :label="$t('previews.icsViewer.addToCalendar')"
       class="mt-4"
       icon="ti ti-calendar-week"
       @click="addToCalendar()"

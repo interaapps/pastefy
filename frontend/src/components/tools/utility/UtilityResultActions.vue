@@ -65,7 +65,7 @@ const createPaste = async () => {
       <Button
         @click="copyResult"
         :disabled="!resolvedResult()"
-        label="copy result"
+        :label="$t('utility.utilityResultActions.copyResult')"
         icon="ti ti-copy"
         severity="contrast"
         outlined
@@ -73,7 +73,7 @@ const createPaste = async () => {
       <Button
         @click="openInPasteEditor"
         :disabled="!resolvedResult()"
-        label="open in paste editor"
+        :label="$t('paste.openInEditor')"
         icon="ti ti-edit"
         severity="contrast"
         outlined
@@ -84,7 +84,7 @@ const createPaste = async () => {
       @click="createPaste"
       :disabled="!resolvedResult()"
       :loading="isCreatingPaste"
-      label="create paste"
+      :label="$t('tools.createPaste')"
       icon="ti ti-send"
       severity="contrast"
     />

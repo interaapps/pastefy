@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import { computed, watch } from 'vue'
 import { useDebounceFn, useAsyncState, useTitle } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
@@ -15,6 +16,7 @@ import type { UserType } from '@/types/user.ts'
 
 useTitle('Users - Admin | pastefy')
 
+const { t } = useTranslation()
 type UserAsAdmin = {
   auth_id: string
   auth_provider: string
@@ -71,8 +73,8 @@ watch(search, () => debouncedReloadFirstPage())
 
 const setUserType = async (id: string, type: UserType) => {
   confirm.require({
-    message: "Are you sure you want to change this user's type?",
-    header: 'Change user type',
+    message: t('admin.users.changeTypeConfirm'),
+    header: t('admin.users.changeTypeTitle'),
     accept: async () => {
       await client.put(`/api/v2/admin/users/${id}`, {
         type,
@@ -84,8 +86,8 @@ const setUserType = async (id: string, type: UserType) => {
 
 const deleteUser = async (id: string) => {
   confirm.require({
-    message: 'Are you sure you want to delete this user?',
-    header: 'Delete user',
+    message: t('admin.users.deleteConfirm'),
+    header: t('admin.users.deleteTitle'),
     accept: async () => {
       await client.delete(`/api/v2/admin/users/${id}`)
       load()
@@ -94,11 +96,11 @@ const deleteUser = async (id: string) => {
 }
 
 const typeOptions: Array<{ label: string; value: UserType | '' }> = [
-  { label: 'All roles', value: '' },
-  { label: 'Admins', value: 'ADMIN' },
-  { label: 'Users', value: 'USER' },
-  { label: 'Awaiting access', value: 'AWAITING_ACCESS' },
-  { label: 'Blocked', value: 'BLOCKED' },
+  { get label() { return t('views.adminUsers.options.allRoles') }, value: '' },
+  { get label() { return t('views.adminUsers.options.admins') }, value: 'ADMIN' },
+  { get label() { return t('views.adminUsers.options.users') }, value: 'USER' },
+  { get label() { return t('views.adminUsers.options.awaitingAccess') }, value: 'AWAITING_ACCESS' },
+  { get label() { return t('views.adminUsers.options.blocked') }, value: 'BLOCKED' },
 ]
 
 const pageSizeOptions = [10, 20, 50].map((value) => ({
@@ -118,7 +120,7 @@ const getUserTypeSeverity = (type: UserType) => {
     <section
       class="grid gap-3 rounded-2xl border border-neutral-200 bg-white/80 p-4 lg:grid-cols-[minmax(0,1fr)_220px_180px] dark:border-neutral-800 dark:bg-neutral-900/70"
     >
-      <InputText v-model="search" fluid placeholder="Search by username, email, or provider" />
+      <InputText v-model="search" fluid :placeholder="$t('views.adminUsers.searchByUsernameEmailOrProvider')" />
       <Select
         v-model="userType"
         :options="typeOptions"
@@ -136,7 +138,7 @@ const getUserTypeSeverity = (type: UserType) => {
     </section>
 
     <div class="flex flex-wrap items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
-      <span>Filters:</span>
+      <span>{{ $t('common.filters') }}</span>
       <Tag :value="search ? `Search: ${search}` : 'No search'" severity="contrast" />
       <Tag
         :value="userType ? `Role: ${userType}` : 'All roles'"
@@ -151,7 +153,7 @@ const getUserTypeSeverity = (type: UserType) => {
         v-if="users.length === 0"
         class="rounded-xl border border-dashed border-neutral-300 bg-white/80 p-8 text-center text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-900/60 dark:text-neutral-400"
       >
-        No users match the current filters.
+        {{ $t('views.adminUsers.noUsersMatchTheCurrentFilters') }}
       </div>
 
       <article
@@ -171,7 +173,7 @@ const getUserTypeSeverity = (type: UserType) => {
                 <p>{{ user.e_mail || 'No email available' }}</p>
                 <p class="font-mono">@{{ user.unique_name || user.name }}</p>
                 <p>
-                  Provider:
+                  {{ $t('views.adminUsers.provider') }}
                   <span class="font-medium text-neutral-700 dark:text-neutral-200">
                     {{ user.auth_provider }}
                   </span>
@@ -186,7 +188,7 @@ const getUserTypeSeverity = (type: UserType) => {
               severity="contrast"
               size="small"
               outlined
-              label="Grant Access"
+              :label="$t('views.adminUsers.grantAccess')"
               icon="ti ti-circle-check"
               @click="setUserType(user.id, 'USER')"
             />
@@ -195,7 +197,7 @@ const getUserTypeSeverity = (type: UserType) => {
               severity="danger"
               size="small"
               outlined
-              label="Make Admin"
+              :label="$t('views.adminUsers.makeAdmin')"
               icon="ti ti-crown"
               @click="setUserType(user.id, 'ADMIN')"
             />
@@ -204,7 +206,7 @@ const getUserTypeSeverity = (type: UserType) => {
               severity="success"
               size="small"
               outlined
-              label="Set User"
+              :label="$t('views.adminUsers.setUser')"
               icon="ti ti-user-check"
               @click="setUserType(user.id, 'USER')"
             />
@@ -213,7 +215,7 @@ const getUserTypeSeverity = (type: UserType) => {
               severity="warn"
               size="small"
               outlined
-              label="Block"
+              :label="$t('views.adminUsers.block')"
               icon="ti ti-ban"
               @click="setUserType(user.id, 'BLOCKED')"
             />
@@ -223,7 +225,7 @@ const getUserTypeSeverity = (type: UserType) => {
               severity="contrast"
               size="small"
               text
-              label="Profile"
+              :label="$t('common.profile')"
               icon="ti ti-user"
             />
             <Button
@@ -239,14 +241,14 @@ const getUserTypeSeverity = (type: UserType) => {
               severity="contrast"
               size="small"
               text
-              label="View Pastes"
+              :label="$t('views.adminUsers.viewPastes')"
               icon="ti ti-script"
             />
             <Button
               severity="danger"
               size="small"
               text
-              label="Delete"
+              :label="$t('common.delete')"
               icon="ti ti-trash"
               @click="deleteUser(user.id)"
             />

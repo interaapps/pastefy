@@ -33,6 +33,8 @@ import type { Router } from 'vue-router'
 import { createPlugin, plugins } from '@/plugins.ts'
 import { useComponentInjectionStore } from '@/stores/component-injections.ts'
 import { useAppStore } from '@/stores/app.ts'
+import i18next from '@/i18n.ts'
+import I18NextVue from 'i18next-vue'
 
 declare global {
   interface Window {
@@ -58,6 +60,7 @@ export const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
+app.use(I18NextVue, { i18next })
 
 import('codemirror-editor-vue3').then(({ InstallCodeMirror }) => {
   app.use(InstallCodeMirror)
@@ -86,15 +89,17 @@ app.directive('tooltip', Tooltip)
 app.use(ConfirmationService)
 app.use(vue3Shortkey, { prevent: ['input', 'textarea'] })
 
-customElements.define(
-  'pastefy-highlighted',
-  defineCustomElement(
-    defineAsyncComponent(() => import('@/components/Highlighted.vue')),
-    {
-      shadowRoot: false,
-    },
-  ),
-)
+if (!customElements.get('pastefy-highlighted')) {
+  customElements.define(
+    'pastefy-highlighted',
+    defineCustomElement(
+      defineAsyncComponent(() => import('@/components/Highlighted.vue')),
+      {
+        shadowRoot: false,
+      },
+    ),
+  )
+}
 
 app.mount('#app')
 

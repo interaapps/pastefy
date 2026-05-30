@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
 import Select from 'primevue/select'
@@ -7,6 +8,7 @@ import { useClipboard, useStorage } from '@vueuse/core'
 import UtilityShell from '@/components/tools/utility/UtilityShell.vue'
 import UtilityResultActions from '@/components/tools/utility/UtilityResultActions.vue'
 
+const { t } = useTranslation()
 const clipboard = useClipboard()
 const mode = useStorage<'uuid' | 'hex' | 'base64url'>('pastefy-utility-secret-mode', 'uuid')
 const count = useStorage('pastefy-utility-secret-count', 3)
@@ -14,9 +16,9 @@ const length = useStorage('pastefy-utility-secret-length', 32)
 const generatedValues = ref<string[]>([])
 
 const modeOptions = [
-  { label: 'UUID', value: 'uuid' },
-  { label: 'Hex token', value: 'hex' },
-  { label: 'Base64URL token', value: 'base64url' },
+  { get label() { return t('utility.secretGeneratorTool.options.uuid') }, value: 'uuid' },
+  { get label() { return t('utility.secretGeneratorTool.options.hexToken') }, value: 'hex' },
+  { get label() { return t('utility.secretGeneratorTool.options.base64UrlToken') }, value: 'base64url' },
 ]
 
 const randomChars = (charset: string, targetLength: number) => {
@@ -52,14 +54,14 @@ const result = computed(() => generatedValues.value.join('\n'))
 <template>
   <UtilityShell>
     <template #controls>
-      <label class="text-sm font-medium">Mode</label>
+      <label class="text-sm font-medium">{{ $t('utility.secretGeneratorTool.mode') }}</label>
       <Select v-model="mode" :options="modeOptions" option-label="label" option-value="value" />
-      <label class="text-sm font-medium">Count</label>
+      <label class="text-sm font-medium">{{ $t('utility.secretGeneratorTool.count') }}</label>
       <InputNumber v-model="count" :min="1" :max="25" fluid />
-      <label class="text-sm font-medium">Length</label>
+      <label class="text-sm font-medium">{{ $t('utility.secretGeneratorTool.length') }}</label>
       <InputNumber v-model="length" :min="8" :max="256" fluid />
       <div>
-        <Button @click="generateValues()" label="generate again" icon="ti ti-refresh" severity="contrast" outlined />
+        <Button @click="generateValues()" :label="$t('utility.secretGeneratorTool.generateAgain')" icon="ti ti-refresh" severity="contrast" outlined />
       </div>
     </template>
 

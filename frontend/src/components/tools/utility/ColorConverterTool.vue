@@ -70,7 +70,7 @@ const result = computed(() =>
 <template>
   <UtilityShell>
     <template #controls>
-      <label class="text-sm font-medium">Hex color</label>
+      <label class="text-sm font-medium">{{ $t('utility.colorConverterTool.hexColor') }}</label>
       <div class="grid gap-3 md:grid-cols-[1fr_auto]">
         <InputText v-model="input" fluid />
         <ColorPicker v-model="input" />

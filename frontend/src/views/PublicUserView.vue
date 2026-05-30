@@ -62,7 +62,7 @@ const {
               },
             }"
             icon="ti ti-search"
-            label="Search This User"
+            :label="$t('views.publicUserView.searchThisUser')"
             size="small"
             outlined
             severity="contrast"
@@ -80,7 +80,7 @@ const {
               },
             }"
             icon="ti ti-shield-search"
-            label="See All Pastes In Admin"
+            :label="$t('views.publicUserView.seeAllPastesInAdmin')"
             size="small"
             outlined
             severity="contrast"
@@ -89,7 +89,7 @@ const {
       </div>
 
       <div class="space-y-3">
-        <h2 class="text-2xl font-bold">Public Pastes</h2>
+        <h2 class="text-2xl font-bold">{{ $t('views.publicUserView.publicPastes') }}</h2>
         <PasteList
           route="/api/v2/public-pastes/latest"
           :params="{ 'filter[userId]': user.id }"

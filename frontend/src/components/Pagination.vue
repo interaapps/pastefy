@@ -19,7 +19,7 @@ const previous = () => {
 <template>
   <div class="flex items-center justify-between gap-3">
     <div class="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
-      <span>Page {{ page }}</span>
+      <span>{{ $t('common.page', { page }) }}</span>
     </div>
     <div class="flex items-center gap-2">
       <Button
@@ -28,7 +28,7 @@ const previous = () => {
         size="small"
         outlined
         severity="contrast"
-        label="Previous"
+        :label="$t('common.previous')"
       />
       <Button
         @click="next"
@@ -37,7 +37,7 @@ const previous = () => {
         outlined
         severity="contrast"
         icon-pos="right"
-        label="Next"
+        :label="$t('common.next')"
       />
     </div>
   </div>

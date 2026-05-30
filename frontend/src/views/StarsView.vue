@@ -7,7 +7,7 @@ useTitle(`Stars | Pastefy`)
 
 <template>
   <main class="mx-auto w-full max-w-[1200px]">
-    <h1 class="mb-7 text-3xl font-bold">Stars</h1>
+    <h1 class="mb-7 text-3xl font-bold">{{ $t('nav.stars') }}</h1>
 
     <PasteList route="/api/v2/user/starred-pastes" :params="{ page_limit: 7 }" />
   </main>

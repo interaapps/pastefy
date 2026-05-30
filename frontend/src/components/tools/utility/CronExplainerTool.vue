@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import InputText from 'primevue/inputtext'
 import Message from 'primevue/message'
 import Select from 'primevue/select'
@@ -7,18 +8,19 @@ import { useStorage } from '@vueuse/core'
 import UtilityShell from '@/components/tools/utility/UtilityShell.vue'
 import UtilityResultActions from '@/components/tools/utility/UtilityResultActions.vue'
 
+const { t } = useTranslation()
 const cronInput = useStorage('pastefy-utility-cron-input', '*/15 9-17 * * 1-5')
 const selectedSample = useStorage('pastefy-utility-cron-sample', '')
 
 const samples = [
-  { label: 'Custom', value: '', cron: '' },
-  { label: 'Every hour', value: 'hourly', cron: '0 * * * *' },
-  { label: 'Daily at midnight', value: 'daily', cron: '0 0 * * *' },
-  { label: 'Weekly on Monday', value: 'weekly', cron: '0 9 * * 1' },
-  { label: 'Monthly on the 1st', value: 'monthly', cron: '0 8 1 * *' },
-  { label: 'Every 15 minutes', value: 'quarter-hour', cron: '*/15 * * * *' },
-  { label: 'Weekday mornings', value: 'weekday-morning', cron: '0 9 * * 1-5' },
-  { label: 'Yearly on Jan 1st', value: 'yearly', cron: '0 0 1 1 *' },
+  { get label() { return t('utility.cronExplainerTool.options.custom') }, value: '', cron: '' },
+  { get label() { return t('utility.cronExplainerTool.options.everyHour') }, value: 'hourly', cron: '0 * * * *' },
+  { get label() { return t('utility.cronExplainerTool.options.dailyAtMidnight') }, value: 'daily', cron: '0 0 * * *' },
+  { get label() { return t('utility.cronExplainerTool.options.weeklyOnMonday') }, value: 'weekly', cron: '0 9 * * 1' },
+  { get label() { return t('utility.cronExplainerTool.options.monthlyOnThe1st') }, value: 'monthly', cron: '0 8 1 * *' },
+  { get label() { return t('utility.cronExplainerTool.options.every15Minutes') }, value: 'quarter-hour', cron: '*/15 * * * *' },
+  { get label() { return t('utility.cronExplainerTool.options.weekdayMornings') }, value: 'weekday-morning', cron: '0 9 * * 1-5' },
+  { get label() { return t('utility.cronExplainerTool.options.yearlyOnJan1st') }, value: 'yearly', cron: '0 0 1 1 *' },
 ]
 
 const applySample = (value: string) => {
@@ -61,7 +63,7 @@ const result = computed(() => {
 <template>
   <UtilityShell>
     <template #controls>
-      <label class="text-sm font-medium">Samples</label>
+      <label class="text-sm font-medium">{{ $t('utility.cronExplainerTool.samples') }}</label>
       <Select
         :model-value="selectedSample"
         :options="samples"
@@ -69,7 +71,7 @@ const result = computed(() => {
         option-value="value"
         @update:model-value="applySample"
       />
-      <label class="text-sm font-medium">Cron expression</label>
+      <label class="text-sm font-medium">{{ $t('utility.cronExplainerTool.cronExpression') }}</label>
       <InputText v-model="cronInput" fluid />
       <Message severity="secondary" size="small" variant="simple">
         Uses the common 5-field cron format: minute hour day-of-month month day-of-week.

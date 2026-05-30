@@ -38,7 +38,7 @@ const result = computed(() => hashResults.value.map((entry) => `${entry.label}: 
 <template>
   <UtilityShell>
     <template #controls>
-      <label class="text-sm font-medium">Input text</label>
+      <label class="text-sm font-medium">{{ $t('utility.hashGeneratorTool.inputText') }}</label>
       <Textarea v-model="hashInput" auto-resize rows="10" fluid />
       <div class="text-sm text-neutral-500 dark:text-neutral-400">{{ hashInput.length }} characters</div>
     </template>

@@ -21,6 +21,6 @@ const showSearch = () => {
     @click="showSearch"
   >
     <i class="ti ti-search text-sm opacity-60" />
-    <span class="text-sm opacity-60">Search</span>
+    <span class="text-sm opacity-60">{{ $t('nav.search') }}</span>
   </button>
 </template>

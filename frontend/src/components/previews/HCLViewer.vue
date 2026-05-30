@@ -38,9 +38,9 @@ const stats = computed(() => {
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">
-            Terraform / HCL
+            {{ $t('previews.hclViewer.terraformHcl') }}
           </div>
-          <div class="mt-1 text-xs opacity-60">Resources, modules, providers, and variables at a glance</div>
+          <div class="mt-1 text-xs opacity-60">{{ $t('previews.hclViewer.description') }}</div>
         </div>
         <div class="flex flex-wrap gap-2">
           <Tag :value="`${stats.resources} resources`" severity="contrast" />

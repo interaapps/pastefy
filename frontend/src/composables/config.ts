@@ -1,6 +1,7 @@
 import { useStorage } from '@vueuse/core'
 import type { SelectedTheme } from '@/utils/theme-logic.ts'
 import type { PasteVisibility } from '@/types/paste.ts'
+import type { LanguagePreference } from '@/i18n.ts'
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
 
 export function useConfig() {
@@ -10,6 +11,7 @@ export function useConfig() {
     theme?: SelectedTheme
     animations?: boolean
     defaultVisibility?: PasteVisibility
+    language?: LanguagePreference
   }>(
     'config',
     // Default values:
@@ -19,6 +21,7 @@ export function useConfig() {
       theme: 'system',
       animations: !prefersReducedMotion.matches,
       defaultVisibility: 'UNLISTED',
+      language: 'browser',
     },
     localStorage,
     {

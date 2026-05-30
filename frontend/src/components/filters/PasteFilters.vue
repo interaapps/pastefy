@@ -19,13 +19,13 @@ const filters = defineModel<{
       <template #value="{ value: option }">
         <div class="flex items-center gap-1">
           <PasteVisibilityIcon :visibility="option" class="text-lg" />
-          <span>{{ option }}</span>
+          <span>{{ $t(`paste.visibility.${option.toLowerCase()}`) }}</span>
         </div>
       </template>
       <template #option="{ option }">
         <div class="flex items-center gap-1">
           <PasteVisibilityIcon :visibility="option" class="text-lg" />
-          <span>{{ option }}</span>
+          <span>{{ $t(`paste.visibility.${option.toLowerCase()}`) }}</span>
         </div>
       </template>
     </Select>

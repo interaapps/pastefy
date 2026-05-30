@@ -33,6 +33,8 @@ import {
 } from '@/utils/conversion-tools.ts'
 import { findFromFileName } from '@/utils/lang-replacements.ts'
 import { useSEO } from '@/composables/seo.ts'
+import { useTranslation } from 'i18next-vue'
+import { localizeTool } from '@/utils/tool-catalog-i18n.ts'
 
 const route = useRoute()
 const router = useRouter()
@@ -40,12 +42,16 @@ const currentPaste = useCurrentPasteStore()
 const clipboard = useClipboard()
 const showEditor = ref(true)
 const isExpanded = ref(false)
+const { t } = useTranslation()
 
 const drafts = useStorage<Record<string, string>>('pastefy-conversion-drafts', {})
 const outputNames = useStorage<Record<string, string>>('pastefy-conversion-output-files', {})
 const viewMode = ref<'preview' | 'code'>('code')
 
-const tool = computed(() => findConversionTool(String(route.params.tool || '')))
+const tool = computed(() => {
+  const definition = findConversionTool(String(route.params.tool || ''))
+  return definition ? localizeTool('conversion', definition, t) : undefined
+})
 
 useSEO({
   title: computed(() =>
@@ -233,7 +239,10 @@ const { execute: createPaste, isLoading: isCreatingPaste } = useAsyncState(
 )
 
 const relatedTools = computed(() =>
-  conversionTools.filter((entry) => entry.slug !== tool.value?.slug).slice(0, 3),
+  conversionTools
+    .map((entry) => localizeTool('conversion', entry, t))
+    .filter((entry) => entry.slug !== tool.value?.slug)
+    .slice(0, 3),
 )
 
 const relatedToolLinks = computed(() =>
@@ -271,7 +280,7 @@ const relatedToolLinks = computed(() =>
               class="inline-flex items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 py-1 text-sm text-neutral-700 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200"
             >
               <i :class="`ti ti-${tool.icon}`" />
-              Conversion
+              {{ $t('tools.conversion') }}
             </span>
             <span class="text-sm text-neutral-500 dark:text-neutral-400">
               {{ tool.sourceFileName }} -> {{ tool.targetFileName }}
@@ -290,14 +299,14 @@ const relatedToolLinks = computed(() =>
           <Button
             as="router-link"
             :to="{ name: 'tool-home', hash: '#conversions' }"
-            label="all conversions"
+            :label="$t('tools.allConversions')"
             icon="ti ti-layout-grid"
             severity="contrast"
             outlined
           />
           <Button
             @click="resetExample"
-            label="reset example"
+            :label="$t('tools.resetExample')"
             icon="ti ti-restore"
             severity="contrast"
             outlined
@@ -308,7 +317,7 @@ const relatedToolLinks = computed(() =>
             :icon="`ti ${isExpanded ? 'ti-minimize' : 'ti-maximize'}`"
             severity="contrast"
             outlined
-            :aria-label="isExpanded ? 'Exit focus mode' : 'Focus mode'"
+            :aria-label="$t(isExpanded ? 'tools.exitFocusMode' : 'tools.focusMode')"
           />
         </div>
       </div>
@@ -322,7 +331,7 @@ const relatedToolLinks = computed(() =>
       >
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-900">
           <div>
-            <h2 class="font-semibold">Source</h2>
+            <h2 class="font-semibold">{{ $t('common.source') }}</h2>
             <p class="text-sm text-neutral-500 dark:text-neutral-400">
               Paste or edit the original content you want to transform.
             </p>
@@ -334,18 +343,19 @@ const relatedToolLinks = computed(() =>
               icon="ti ti-layout-sidebar-left-collapse"
               severity="contrast"
               text
-              aria-label="Hide editor"
+              :aria-label="$t('common.hideEditor')"
             />
           </div>
         </div>
 
         <div class="min-h-0 flex-1 overflow-hidden">
           <Codemirror
+            :key="$t('views.conversionToolView.pasteYourSourceContentHere')"
             v-model:value="currentContents"
             :options="sourceOptions"
             height="100%"
             width="100%"
-            placeholder="Paste your source content here..."
+            :placeholder="$t('views.conversionToolView.pasteYourSourceContentHere')"
           />
         </div>
       </div>
@@ -356,9 +366,9 @@ const relatedToolLinks = computed(() =>
       >
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 bg-white px-4 py-3 dark:border-neutral-700 dark:bg-neutral-900">
           <div>
-            <h2 class="font-semibold">Output</h2>
+            <h2 class="font-semibold">{{ $t('common.output') }}</h2>
             <p class="text-sm text-neutral-500 dark:text-neutral-400">
-              Converted result with preview and quick actions.
+              {{ $t('views.conversionToolView.convertedResultWithPreviewAndQuickActions') }}
             </p>
           </div>
           <div class="flex flex-wrap gap-2">
@@ -368,16 +378,16 @@ const relatedToolLinks = computed(() =>
               icon="ti ti-layout-sidebar-left-expand"
               severity="contrast"
               text
-              aria-label="Show editor"
+              :aria-label="$t('common.showEditor')"
             />
             <Button
-              label="preview"
+              :label="$t('common.preview')"
               size="small"
               :severity="viewMode === 'preview' ? 'contrast' : 'secondary'"
               @click="viewMode = 'preview'"
             />
             <Button
-              label="code"
+              :label="$t('common.code')"
               size="small"
               :severity="viewMode === 'code' ? 'contrast' : 'secondary'"
               @click="viewMode = 'code'"
@@ -386,7 +396,7 @@ const relatedToolLinks = computed(() =>
         </div>
 
         <div class="border-b border-neutral-200 p-4 dark:border-neutral-700">
-          <InputText v-model="currentOutputFileName" placeholder="Output filename" fluid />
+          <InputText v-model="currentOutputFileName" :placeholder="$t('common.filename')" fluid />
         </div>
 
         <div class="min-h-0 flex-1 overflow-auto">
@@ -418,7 +428,7 @@ const relatedToolLinks = computed(() =>
             <Button
               @click="copyOutput"
               :disabled="!conversionState.output"
-              label="copy output"
+              :label="$t('tools.copyOutput')"
               icon="ti ti-copy"
               severity="contrast"
               outlined
@@ -426,7 +436,7 @@ const relatedToolLinks = computed(() =>
             <Button
               @click="openInPasteEditor"
               :disabled="!conversionState.output"
-              label="open in paste editor"
+              :label="$t('paste.openInEditor')"
               icon="ti ti-edit"
               severity="contrast"
               outlined
@@ -437,7 +447,7 @@ const relatedToolLinks = computed(() =>
             @click="createPaste()"
             :disabled="!conversionState.output"
             :loading="isCreatingPaste"
-            label="create paste"
+            :label="$t('tools.createPaste')"
             icon="ti ti-send"
             severity="contrast"
           />
@@ -449,13 +459,13 @@ const relatedToolLinks = computed(() =>
   </section>
 
   <section v-else class="mx-auto flex max-w-[50rem] flex-col gap-4 rounded-xl border border-neutral-200 bg-neutral-100 p-6 dark:border-neutral-700 dark:bg-neutral-800">
-    <h1 class="text-2xl font-bold">Conversion tool not found</h1>
+    <h1 class="text-2xl font-bold">{{ $t('tools.notFound.conversionTitle') }}</h1>
     <p class="text-neutral-600 dark:text-neutral-300">
       This conversion tool does not exist. Open the tools index to pick one of the supported
       converters.
     </p>
     <div>
-      <Button as="router-link" :to="{ name: 'tool-home', hash: '#conversions' }" label="back to conversions" />
+      <Button as="router-link" :to="{ name: 'tool-home', hash: '#conversions' }" :label="$t('tools.backToConversions')" />
     </div>
   </section>
 </template>

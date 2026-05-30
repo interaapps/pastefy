@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import Highlighted from '@/components/Highlighted.vue'
 import GeneratorToggleField from '@/components/tools/utility/GeneratorToggleField.vue'
 import KeyValueListField from '@/components/tools/utility/KeyValueListField.vue'
@@ -12,6 +13,7 @@ import { useStorage } from '@vueuse/core'
 
 import { toKeyValueEntries, toStringEntries, type KeyValueEntry } from '@/utils/container-generators.ts'
 
+const { t } = useTranslation()
 const props = defineProps<{
   server: 'caddy' | 'nginx' | 'apache'
 }>()
@@ -48,13 +50,13 @@ const accessLogPath = useStorage(`pastefy-${props.server}-config-access-log`, `/
 const errorLogPath = useStorage(`pastefy-${props.server}-config-error-log`, `/var/log/${props.server}/error.log`)
 
 const modeOptions = [
-  { label: 'Reverse proxy', value: 'reverse-proxy' as SiteMode },
-  { label: 'Static site', value: 'static-site' as SiteMode },
+  { get label() { return t('utility.webServerConfigGeneratorBase.options.reverseProxy') }, value: 'reverse-proxy' as SiteMode },
+  { get label() { return t('utility.webServerConfigGeneratorBase.options.staticSite') }, value: 'static-site' as SiteMode },
 ]
 
 const tlsModeOptions = [
   { label: "Automatic / Let's Encrypt", value: 'auto' as TlsMode },
-  { label: 'Manual certificate paths', value: 'manual' as TlsMode },
+  { get label() { return t('utility.webServerConfigGeneratorBase.options.manualCertificatePaths') }, value: 'manual' as TlsMode },
 ]
 
 const hosts = computed(() => {
@@ -244,93 +246,93 @@ const resultFileName = computed(() => (props.server === 'caddy' ? 'Caddyfile' : 
     <template #controls>
       <div class="grid gap-3 md:grid-cols-2">
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Site mode</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.webServerConfigGeneratorBase.siteMode') }}</label>
           <Select v-model="mode" :options="modeOptions" option-label="label" option-value="value" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">TLS mode</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.webServerConfigGeneratorBase.tlsMode') }}</label>
           <Select v-model="tlsMode" :options="tlsModeOptions" option-label="label" option-value="value" fluid :disabled="!enableTls" />
         </div>
         <div v-if="enableTls && tlsMode === 'auto' && props.server === 'caddy'">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Let's Encrypt email</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.webServerConfigGeneratorBase.letsEncryptEmail') }}</label>
           <InputText v-model="tlsEmail" fluid />
         </div>
         <div v-if="enableTls && tlsMode === 'manual'">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Certificate path</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.webServerConfigGeneratorBase.certificatePath') }}</label>
           <InputText v-model="certPath" fluid />
         </div>
         <div v-if="enableTls && tlsMode === 'manual'">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Key path</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.webServerConfigGeneratorBase.keyPath') }}</label>
           <InputText v-model="keyPath" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Access log path</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.webServerConfigGeneratorBase.accessLogPath') }}</label>
           <InputText v-model="accessLogPath" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Error log path</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.webServerConfigGeneratorBase.errorLogPath') }}</label>
           <InputText v-model="errorLogPath" fluid />
         </div>
         <div v-if="mode === 'static-site'">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Root path</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.webServerConfigGeneratorBase.rootPath') }}</label>
           <InputText v-model="rootPath" fluid />
         </div>
         <div v-else>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Upstream host</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.webServerConfigGeneratorBase.upstreamHost') }}</label>
           <InputText v-model="upstreamHost" fluid />
         </div>
         <div v-if="mode === 'reverse-proxy'">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Upstream port</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.webServerConfigGeneratorBase.upstreamPort') }}</label>
           <InputText v-model="upstreamPort" fluid />
         </div>
         <div v-if="mode === 'reverse-proxy'">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Forwarded IP header</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.webServerConfigGeneratorBase.forwardedIpHeader') }}</label>
           <InputText v-model="forwardedIpHeader" fluid />
         </div>
       </div>
 
       <StringListField
         v-model="hostEntries"
-        label="Hostnames / site entries"
+        :label="$t('utility.webServerConfigGeneratorBase.hostnamesSiteEntries')"
         placeholder="example.com"
-        add-label="add host"
+        :add-label="$t('utility.webServerConfigGeneratorBase.addHost')"
       />
 
       <div class="grid gap-3 md:grid-cols-2">
-        <GeneratorToggleField v-model="enableTls" label="Enable TLS / HTTPS" />
-        <GeneratorToggleField v-model="enableWwwRedirect" label="Redirect www to primary domain" />
-        <GeneratorToggleField v-model="enableCompression" label="Enable compression" />
-        <GeneratorToggleField v-model="enableSecurityHeaders" label="Add basic security headers" />
-        <GeneratorToggleField v-model="enableHsts" label="Enable HSTS" />
-        <GeneratorToggleField v-model="enableBasicAuth" label="Protect with basic auth" />
-        <GeneratorToggleField v-model="enableStaticCaching" label="Cache static assets" />
-        <GeneratorToggleField v-if="mode === 'static-site'" v-model="enableSpaFallback" label="Enable SPA fallback" />
-        <GeneratorToggleField v-if="mode === 'reverse-proxy'" v-model="forwardClientIp" label="Forward client IP headers" />
+        <GeneratorToggleField v-model="enableTls" :label="$t('utility.webServerConfigGeneratorBase.enableTlsHttps')" />
+        <GeneratorToggleField v-model="enableWwwRedirect" :label="$t('utility.webServerConfigGeneratorBase.redirectWwwToPrimaryDomain')" />
+        <GeneratorToggleField v-model="enableCompression" :label="$t('utility.webServerConfigGeneratorBase.enableCompression')" />
+        <GeneratorToggleField v-model="enableSecurityHeaders" :label="$t('utility.webServerConfigGeneratorBase.addBasicSecurityHeaders')" />
+        <GeneratorToggleField v-model="enableHsts" :label="$t('utility.webServerConfigGeneratorBase.enableHsts')" />
+        <GeneratorToggleField v-model="enableBasicAuth" :label="$t('utility.webServerConfigGeneratorBase.protectWithBasicAuth')" />
+        <GeneratorToggleField v-model="enableStaticCaching" :label="$t('utility.webServerConfigGeneratorBase.cacheStaticAssets')" />
+        <GeneratorToggleField v-if="mode === 'static-site'" v-model="enableSpaFallback" :label="$t('utility.webServerConfigGeneratorBase.enableSpaFallback')" />
+        <GeneratorToggleField v-if="mode === 'reverse-proxy'" v-model="forwardClientIp" :label="$t('utility.webServerConfigGeneratorBase.forwardClientIpHeaders')" />
       </div>
 
       <div v-if="enableBasicAuth" class="grid gap-3 md:grid-cols-2">
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Basic auth user</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.webServerConfigGeneratorBase.basicAuthUser') }}</label>
           <InputText v-model="basicAuthUser" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Password hash / placeholder</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.webServerConfigGeneratorBase.passwordHashPlaceholder') }}</label>
           <InputText v-model="basicAuthPasswordHash" fluid />
         </div>
       </div>
 
       <KeyValueListField
         v-model="extraHeaderEntries"
-        label="Extra headers"
-        key-placeholder="X-Robots-Tag"
-        value-placeholder="noindex"
+        :label="$t('utility.webServerConfigGeneratorBase.extraHeaders')"
+        :key-placeholder="$t('utility.webServerConfigGeneratorBase.xRobotsTag')"
+        :value-placeholder="$t('utility.webServerConfigGeneratorBase.noindex')"
       />
       <StringListField
         v-if="props.server !== 'caddy'"
         v-model="trustedProxyEntries"
-        label="Trusted proxy IPs / CIDRs"
+        :label="$t('utility.webServerConfigGeneratorBase.trustedProxyIpsCidrs')"
         placeholder="10.0.0.0/8"
-        add-label="add proxy"
+        :add-label="$t('utility.webServerConfigGeneratorBase.addProxy')"
       />
     </template>
 

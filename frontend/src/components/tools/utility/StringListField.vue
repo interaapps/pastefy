@@ -48,13 +48,13 @@ const updateItem = (index: number, value: string) => {
           icon="ti ti-trash"
           severity="contrast"
           outlined
-          aria-label="Remove entry"
+          :aria-label="$t('utility.stringListField.removeEntry')"
         />
       </div>
     </div>
 
     <div v-if="!model.length" class="rounded-xl border border-dashed border-neutral-200 px-3 py-3 text-sm text-neutral-500 dark:border-neutral-700 dark:text-neutral-400">
-      No entries yet.
+      {{ $t('utility.stringListField.noEntriesYet') }}
     </div>
   </div>
 </template>

@@ -66,34 +66,34 @@ const result = computed(() => generatedPasswords.value.join('\n'))
 <template>
   <UtilityShell>
     <template #controls>
-      <label class="text-sm font-medium">Count</label>
+      <label class="text-sm font-medium">{{ $t('utility.passwordGeneratorTool.count') }}</label>
       <InputNumber v-model="count" :min="1" :max="25" fluid />
-      <label class="text-sm font-medium">Length</label>
+      <label class="text-sm font-medium">{{ $t('utility.passwordGeneratorTool.length') }}</label>
       <InputNumber v-model="length" :min="8" :max="128" fluid />
 
       <label class="flex items-center gap-2 text-sm">
         <Checkbox v-model="includeUppercase" binary />
-        Uppercase letters
+        {{ $t('utility.passwordGeneratorTool.uppercaseLetters') }}
       </label>
       <label class="flex items-center gap-2 text-sm">
         <Checkbox v-model="includeLowercase" binary />
-        Lowercase letters
+        {{ $t('utility.passwordGeneratorTool.lowercaseLetters') }}
       </label>
       <label class="flex items-center gap-2 text-sm">
         <Checkbox v-model="includeNumbers" binary />
-        Numbers
+        {{ $t('utility.passwordGeneratorTool.numbers') }}
       </label>
       <label class="flex items-center gap-2 text-sm">
         <Checkbox v-model="includeSymbols" binary />
-        Symbols
+        {{ $t('utility.passwordGeneratorTool.symbols') }}
       </label>
       <label class="flex items-center gap-2 text-sm">
         <Checkbox v-model="excludeAmbiguous" binary />
-        Exclude ambiguous characters
+        {{ $t('utility.passwordGeneratorTool.excludeAmbiguousCharacters') }}
       </label>
 
       <div>
-        <Button @click="generatePasswords()" label="generate again" icon="ti ti-refresh" severity="contrast" outlined />
+        <Button @click="generatePasswords()" :label="$t('utility.passwordGeneratorTool.generateAgain')" icon="ti ti-refresh" severity="contrast" outlined />
       </div>
     </template>
 

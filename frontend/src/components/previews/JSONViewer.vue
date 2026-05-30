@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import Button from 'primevue/button'
@@ -6,6 +7,7 @@ import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Tag from 'primevue/tag'
 import JSONTreeNode from '@/components/previews/JSONTreeNode.vue'
+const { t } = useTranslation()
 const Highlighted = defineAsyncComponent(() => import('@/components/Highlighted.vue'))
 
 const props = defineProps<{
@@ -39,7 +41,7 @@ const rootSummary = computed(() => {
   if (Array.isArray(parsed.value)) return `${parsed.value.length} items`
   if (parsed.value && typeof parsed.value === 'object')
     return `${Object.keys(parsed.value).length} keys`
-  if (parsed.value === undefined) return 'Invalid JSON'
+  if (parsed.value === undefined) return t('common.invalidJson')
   return typeof parsed.value
 })
 
@@ -73,9 +75,9 @@ const stats = computed(() => {
 })
 
 const viewOptions = [
-  { label: 'Tree', value: 'tree' },
-  { label: 'Pretty', value: 'pretty' },
-  { label: 'Raw', value: 'raw' },
+  { get label() { return t('previews.jsonViewer.options.tree') }, value: 'tree' },
+  { get label() { return t('previews.jsonViewer.options.pretty') }, value: 'pretty' },
+  { get label() { return t('previews.jsonViewer.options.raw') }, value: 'raw' },
 ]
 
 const setExpanded = (path: string, expanded: boolean) => {
@@ -136,7 +138,7 @@ watch(search, (value) => {
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">JSON View</div>
+          <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('previews.jsonViewer.jsonView') }}</div>
           <div class="mt-1 text-xs opacity-60">{{ rootSummary }}</div>
         </div>
         <div class="flex flex-wrap gap-2">
@@ -152,7 +154,7 @@ watch(search, (value) => {
       >
         <InputText
           v-model="search"
-          placeholder="Search keys, paths, and values"
+          :placeholder="$t('previews.jsonViewer.searchKeysPathsAndValues')"
           fluid
           class="min-w-0"
         />
@@ -167,7 +169,7 @@ watch(search, (value) => {
           <Button
             v-if="viewMode === 'tree'"
             icon="ti ti-fold-down"
-            label="Expand all"
+            :label="$t('previews.jsonViewer.expandAll')"
             size="small"
             severity="contrast"
             outlined
@@ -176,7 +178,7 @@ watch(search, (value) => {
           <Button
             v-if="viewMode === 'tree'"
             icon="ti ti-fold-up"
-            label="Collapse"
+            :label="$t('previews.jsonViewer.collapse')"
             size="small"
             severity="contrast"
             outlined
@@ -184,7 +186,7 @@ watch(search, (value) => {
           />
           <Button
             icon="ti ti-copy"
-            label="Copy pretty"
+            :label="$t('previews.jsonViewer.copyPretty')"
             size="small"
             severity="contrast"
             outlined
@@ -192,7 +194,7 @@ watch(search, (value) => {
           />
           <Button
             icon="ti ti-download"
-            label="Export"
+            :label="$t('common.export')"
             size="small"
             severity="contrast"
             outlined

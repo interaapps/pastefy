@@ -108,6 +108,7 @@ onMounted(async () => {
   <div
     class="highlighted highlighted-group relative flex w-full overflow-auto text-sm"
     :class="`higlighted-${id}`"
+    dir="ltr"
   >
     <CopyButton
       v-if="showCopyButton"

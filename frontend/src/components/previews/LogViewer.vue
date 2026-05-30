@@ -56,8 +56,8 @@ const levelClass = (level: string) => {
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">Log View</div>
-          <div class="mt-1 text-xs opacity-60">Filter levels, search incidents, and scan output faster</div>
+          <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('previews.logViewer.logView') }}</div>
+          <div class="mt-1 text-xs opacity-60">{{ $t('previews.logViewer.filterLevelsSearchIncidentsAndScanOutputFaster') }}</div>
         </div>
         <div class="flex flex-wrap gap-2">
           <Tag :value="`${stats.error} errors`" severity="danger" />
@@ -68,13 +68,13 @@ const levelClass = (level: string) => {
       </div>
 
       <div class="grid gap-3 xl:grid-cols-[minmax(0,1fr)_180px]">
-        <InputText v-model="search" placeholder="Search log lines" fluid />
+        <InputText v-model="search" :placeholder="$t('previews.logViewer.searchLogLines')" fluid />
         <Select v-model="levelFilter" :options="levelOptions" fluid />
       </div>
     </div>
 
     <div class="max-h-[42rem] overflow-auto font-[JetBrains_Mono_Variable] text-[0.9rem]">
-      <div v-if="filteredEntries.length === 0" class="p-4 opacity-60">No matching log lines.</div>
+      <div v-if="filteredEntries.length === 0" class="p-4 opacity-60">{{ $t('previews.logViewer.noMatchingLogLines') }}</div>
       <div
         v-for="entry in filteredEntries"
         :key="entry.index"

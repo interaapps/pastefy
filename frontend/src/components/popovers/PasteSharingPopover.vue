@@ -136,7 +136,7 @@ defineExpose({
 
         <div>
           <span class="overflow-hidden text-sm">{{ paste.title }}</span> <br />
-          <span class="text-[10px] opacity-60">Share code with Pastefy.</span>
+          <span class="text-[10px] opacity-60">{{ $t('components.pasteSharingPopover.shareCodeWithPastefy') }}</span>
         </div>
       </div>
       <InputGroup>
@@ -158,8 +158,8 @@ defineExpose({
           size="small"
           class="justify-start"
           icon="ti ti-share-2 text-lg"
-          aria-label="Share"
-          label="share"
+          :aria-label="$t('common.share')"
+          :label="$t('share.share')"
         />
         <Button
           @click="
@@ -174,8 +174,8 @@ defineExpose({
           size="small"
           class="justify-start"
           icon="ti ti-camera text-lg"
-          aria-label="Create Screenshot"
-          label="screenshot"
+          :aria-label="$t('components.pasteSharingPopover.createScreenshot')"
+          :label="$t('share.screenshot')"
         />
         <Button
           @click="
@@ -190,8 +190,8 @@ defineExpose({
           text
           fluid
           icon="ti ti-code text-lg"
-          aria-label="Embed"
-          label="embed"
+          :aria-label="$t('components.pasteSharingPopover.embed')"
+          :label="$t('share.embed')"
         />
         <Button
           @click="
@@ -206,7 +206,7 @@ defineExpose({
           text
           fluid
           icon="ti ti-qrcode text-lg"
-          label="qr code"
+          :label="$t('share.qrCode')"
         />
         <Button
           v-if="canShareAsArticle"
@@ -222,7 +222,7 @@ defineExpose({
           text
           fluid
           icon="ti ti-article text-lg"
-          label="article view"
+          :label="$t('share.articleView')"
           @click="sharePopover!.hide()"
         />
         <Button
@@ -239,7 +239,7 @@ defineExpose({
           text
           fluid
           icon="ti ti-presentation text-lg"
-          label="presentation view"
+          :label="$t('share.presentationView')"
           @click="sharePopover!.hide()"
         />
       </div>

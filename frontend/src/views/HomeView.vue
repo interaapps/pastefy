@@ -44,7 +44,7 @@ await client.createPaste({
     <div v-else :ref="() => eventBus.emit('pageLoaded', 'home')">
       <div class="mx-auto mb-10 max-w-[1000px]">
         <div class="mb-5 flex items-center justify-between">
-          <h1 class="text-3xl font-bold">Pastefy</h1>
+          <h1 class="text-3xl font-bold">{{ $t('views.homeView.pastefy') }}</h1>
 
           <Button
             v-if="!currentUserStore.user && currentUserStore.authTypes?.[0]"
@@ -53,7 +53,7 @@ await client.createPaste({
             :href="`/api/v2/auth/oauth2/${currentUserStore.authTypes[0]}`"
             icon="ti ti-user text-lg"
             severity="contrast"
-            label="login"
+            :label="$t('auth.login')"
             text
             size="small"
             :loading="currentUserStore.userLoading"
@@ -65,10 +65,8 @@ await client.createPaste({
             class="flex h-full flex-col items-end overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 md:grid md:grid-cols-2 dark:border-neutral-700 dark:bg-neutral-800"
           >
             <div class="flex h-full flex-col gap-3 p-4">
-              <h2 class="text-xl font-bold">Share Code</h2>
-              <p>
-                Share your code snippets with the world. Paste your code and share it with others.
-              </p>
+              <h2 class="text-xl font-bold">{{ $t('home.shareCode') }}</h2>
+              <p>{{ $t('home.shareCodeDescription') }}</p>
             </div>
             <div>
               <div
@@ -83,8 +81,8 @@ await client.createPaste({
             class="flex h-full flex-col justify-between overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
           >
             <div class="flex h-full flex-col gap-1 p-4 pb-0">
-              <h2 class="text-xl font-bold">Organize</h2>
-              <p>Create folders and organize your code snippets in a structured way.</p>
+              <h2 class="text-xl font-bold">{{ $t('home.organize') }}</h2>
+              <p>{{ $t('home.organizeDescription') }}</p>
             </div>
             <div class="flex w-full items-center justify-between gap-2 p-2 px-5">
               <FolderCard
@@ -107,11 +105,8 @@ await client.createPaste({
             class="flex h-full flex-col justify-between overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
           >
             <div class="flex h-full flex-col gap-1 p-4 pb-0">
-              <h2 class="text-xl font-bold">Keep secret</h2>
-              <p>
-                Use client encryption to keep your code snippets secret. Even we can't read your
-                encrypted pastes.
-              </p>
+              <h2 class="text-xl font-bold">{{ $t('home.keepSecret') }}</h2>
+              <p>{{ $t('home.keepSecretDescription') }}</p>
             </div>
             <div class="flex w-full flex-col items-center justify-between gap-2 p-2">
               <i class="ti ti-lock text-3xl" />
@@ -128,11 +123,8 @@ await client.createPaste({
           >
             <div class="flex h-full flex-col justify-between gap-3 p-4">
               <div class="flex-col gap-3">
-                <h2 class="text-xl font-bold">Integration</h2>
-                <p>
-                  Use our API to integrate Pastefy with your applications or simply embed your paste
-                  into your own website easily.
-                </p>
+                <h2 class="text-xl font-bold">{{ $t('home.integration') }}</h2>
+                <p>{{ $t('home.integrationDescription') }}</p>
               </div>
 
               <div>
@@ -141,7 +133,7 @@ await client.createPaste({
                   icon="ti ti-book"
                   href="https://docs.pastefy.app/api/"
                   target="_blank"
-                  label="api docs"
+                  :label="$t('views.homeView.apiDocs')"
                   size="small"
                   severity="contrast"
                   outlined
@@ -163,12 +155,12 @@ await client.createPaste({
           class="mb-3 flex h-full flex-col items-center gap-3 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 p-3 dark:border-neutral-700 dark:bg-neutral-800"
         >
           <i class="ti ti-world text-4xl" />
-          <h2 class="text-lg font-bold">Explore Public Pastes</h2>
+          <h2 class="text-lg font-bold">{{ $t('views.homeView.explorePublicPastes') }}</h2>
 
           <Button
             as="router-link"
             :to="{ name: 'explore' }"
-            label="explore"
+            :label="$t('views.homeView.explore')"
             outlined
             fluid
             class="max-w-[10rem]"
@@ -185,11 +177,11 @@ await client.createPaste({
             >
               <div class="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
                 <i class="ti ti-code-dots" />
-                Preview
+                {{ $t('common.preview') }}
               </div>
-              <h3 class="mt-3 font-semibold">Rich file views</h3>
+              <h3 class="mt-3 font-semibold">{{ $t('views.homeView.richFileViews') }}</h3>
               <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-300">
-                JSON, YAML, Markdown, HTML, logs, configs, diagrams, and more.
+                {{ $t('views.homeView.richFileViewsDescription') }}
               </p>
             </router-link>
 
@@ -199,11 +191,11 @@ await client.createPaste({
             >
               <div class="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
                 <i class="ti ti-arrows-exchange" />
-                Convert
+                {{ $t('views.homeView.convert') }}
               </div>
-              <h3 class="mt-3 font-semibold">Format transforms</h3>
+              <h3 class="mt-3 font-semibold">{{ $t('views.homeView.formatTransforms') }}</h3>
               <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-300">
-                Move between JSON, YAML, CSV, HTTP, cURL, env files, and more.
+                {{ $t('views.homeView.formatTransformsDescription') }}
               </p>
             </router-link>
 
@@ -213,11 +205,11 @@ await client.createPaste({
             >
               <div class="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
                 <i class="ti ti-sparkles" />
-                Utilities
+                {{ $t('views.homeView.utilities') }}
               </div>
-              <h3 class="mt-3 font-semibold">Small dev helpers</h3>
+              <h3 class="mt-3 font-semibold">{{ $t('views.homeView.smallDevHelpers') }}</h3>
               <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-300">
-                Generate hashes, inspect JWTs, explain cron, count words, and more.
+                {{ $t('views.homeView.utilitiesDescription') }}
               </p>
             </router-link>
           </div>
@@ -228,14 +220,13 @@ await client.createPaste({
             <div class="flex h-full flex-col gap-3 p-4">
               <div class="flex items-center gap-2 text-neutral-500 dark:text-neutral-400">
                 <i class="ti ti-tool text-lg" />
-                <span class="text-sm font-medium">Tools</span>
+                <span class="text-sm font-medium">{{ $t('views.homeView.tools') }}</span>
               </div>
 
               <div>
-                <h2 class="text-xl font-bold">Preview, Convert, and Inspect</h2>
+                <h2 class="text-xl font-bold">{{ $t('views.homeView.previewConvertAndInspect') }}</h2>
                 <p class="mt-1">
-                  Use Pastefy tools without creating a paste first. Open live preview labs, format
-                  converters, and developer utilities, then share only when you are ready.
+                  {{ $t('views.homeView.toolsDescription') }}
                 </p>
               </div>
             </div>
@@ -244,7 +235,7 @@ await client.createPaste({
               <Button
                 as="router-link"
                 :to="{ name: 'tool-home' }"
-                label="open tools"
+                :label="$t('views.homeView.openTools')"
                 icon="ti ti-arrow-up-right"
                 severity="contrast"
               />

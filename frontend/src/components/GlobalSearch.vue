@@ -212,7 +212,7 @@ const openFullPageSearch = async () => {
           autofocus
           v-model="searchInputValue"
           class="block w-full p-3 focus:outline-none"
-          placeholder="search"
+          :placeholder="$t('nav.search')"
           :ref="(e) => focusInput(e as HTMLInputElement)"
           @input="debounceSearch"
           @keydown.esc="appStore.searchShown = false"
@@ -235,7 +235,7 @@ const openFullPageSearch = async () => {
             "
             :severity="appStore.searchShownEndpoints.myPastes ? 'primary' : 'secondary'"
             outlined
-            label="mine"
+            :label="$t('components.globalSearch.mine')"
           />
           <Button
             icon="ti ti-world"
@@ -249,7 +249,7 @@ const openFullPageSearch = async () => {
             "
             :severity="appStore.searchShownEndpoints.publicPastes ? 'primary' : 'secondary'"
             outlined
-            label="public"
+            :label="$t('components.globalSearch.public')"
           />
           <Button
             icon="ti ti-external-link"
@@ -257,7 +257,7 @@ const openFullPageSearch = async () => {
             @click="openFullPageSearch"
             severity="secondary"
             outlined
-            label="page"
+            :label="$t('components.globalSearch.page')"
           />
         </div>
       </div>

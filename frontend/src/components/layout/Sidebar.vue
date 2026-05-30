@@ -7,6 +7,7 @@ import { useAppStore } from '@/stores/app.ts'
 import ComponentInjection from '@/components/ComponentInjection.vue'
 import { defineAsyncComponent } from 'vue'
 import LoadingContainer from '@/components/LoadingContainer.vue'
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 
 const CreatePaste = defineAsyncComponent(() => import('@/components/forms/CreatePaste.vue'))
 
@@ -31,7 +32,7 @@ const appStore = useAppStore()
           class="border-neutral-400 bg-gradient-to-b from-[transparent] to-neutral-100 dark:border-neutral-600 dark:to-neutral-900"
           size="small"
           icon="ti ti-home text-lg"
-          label="home"
+          :label="$t('nav.home').toLowerCase()"
           severity="contrast"
           outlined
           fluid
@@ -43,7 +44,7 @@ const appStore = useAppStore()
           class="border-neutral-400 bg-gradient-to-b from-[transparent] to-neutral-100 dark:border-neutral-600 dark:to-neutral-900"
           size="small"
           icon="ti ti-world text-lg"
-          label="explore"
+          :label="$t('nav.explore').toLowerCase()"
           severity="contrast"
           outlined
           fluid
@@ -53,7 +54,7 @@ const appStore = useAppStore()
           class="border-neutral-400 bg-gradient-to-b from-[transparent] to-neutral-100 dark:border-neutral-600 dark:to-neutral-900"
           size="small"
           icon="ti ti-search text-lg"
-          label="search"
+          :label="$t('nav.search').toLowerCase()"
           severity="contrast"
           outlined
           fluid
@@ -73,7 +74,7 @@ const appStore = useAppStore()
       <ComponentInjection type="sidebar-bottom" />
 
       <div class="flex w-full items-center justify-between gap-2">
-        <div class="flex w-full items-center">
+        <div class="flex items-center">
           <Button
             as="a"
             target="_blank"
@@ -81,7 +82,7 @@ const appStore = useAppStore()
             icon="ti ti-brand-github text-xl"
             text
             severity="contrast"
-            aria-label="Source Code"
+            :aria-label="$t('components.sidebar.sourceCode')"
           />
           <template v-if="appInfo">
             <Button
@@ -98,7 +99,10 @@ const appStore = useAppStore()
 
           <ComponentInjection type="sidebar-footer-links" />
         </div>
-        <ThemeSwitcher />
+        <div class="flex items-center gap-0">
+          <ThemeSwitcher />
+          <LanguageSwitcher />
+        </div>
       </div>
     </footer>
   </div>

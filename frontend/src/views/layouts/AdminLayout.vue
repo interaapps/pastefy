@@ -4,12 +4,12 @@ import Button from 'primevue/button'
 <template>
   <div class="mx-auto max-w-[1200px]">
     <div class="flex flex-col gap-4">
-      <h1 class="text-2xl font-bold">Admin</h1>
+      <h1 class="text-2xl font-bold">{{ $t('views.adminLayout.admin') }}</h1>
       <div class="flex gap-1">
         <Button
           as="router-link"
           :to="{ name: 'admin-home' }"
-          label="home"
+          :label="$t('nav.home')"
           size="small"
           outlined
           severity="contrast"
@@ -17,7 +17,7 @@ import Button from 'primevue/button'
         <Button
           as="router-link"
           :to="{ name: 'admin-users' }"
-          label="users"
+          :label="$t('common.users')"
           size="small"
           outlined
           severity="contrast"
@@ -25,7 +25,7 @@ import Button from 'primevue/button'
         <Button
           as="router-link"
           :to="{ name: 'admin-pastes' }"
-          label="pastes"
+          :label="$t('paste.pastes')"
           size="small"
           outlined
           severity="contrast"

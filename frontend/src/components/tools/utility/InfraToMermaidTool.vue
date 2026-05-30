@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Textarea from 'primevue/textarea'
@@ -10,6 +11,7 @@ import UtilityShell from '@/components/tools/utility/UtilityShell.vue'
 import { parseYamlDocument, parseYamlDocuments } from '@/utils/yaml.ts'
 import { isRecord } from '@/utils/structured-data.ts'
 
+const { t } = useTranslation()
 type InfraFormat = 'auto' | 'compose' | 'kubernetes' | 'terraform' | 'github-actions'
 type MermaidNode = {
   id: string
@@ -38,16 +40,16 @@ const direction = useStorage('pastefy-utility-infra-direction', 'LR')
 const graphTitle = useStorage('pastefy-utility-infra-title', 'Infrastructure Overview')
 
 const formatOptions = [
-  { label: 'Auto detect', value: 'auto' as InfraFormat },
-  { label: 'Docker Compose', value: 'compose' as InfraFormat },
-  { label: 'Kubernetes', value: 'kubernetes' as InfraFormat },
-  { label: 'Terraform / HCL', value: 'terraform' as InfraFormat },
-  { label: 'GitHub Actions', value: 'github-actions' as InfraFormat },
+  { get label() { return t('utility.infraToMermaidTool.options.autoDetect') }, value: 'auto' as InfraFormat },
+  { get label() { return t('utility.infraToMermaidTool.options.dockerCompose') }, value: 'compose' as InfraFormat },
+  { get label() { return t('utility.infraToMermaidTool.options.kubernetes') }, value: 'kubernetes' as InfraFormat },
+  { get label() { return t('utility.infraToMermaidTool.options.terraformHcl') }, value: 'terraform' as InfraFormat },
+  { get label() { return t('utility.infraToMermaidTool.options.gitHubActions') }, value: 'github-actions' as InfraFormat },
 ]
 
 const directionOptions = [
-  { label: 'Left to right', value: 'LR' },
-  { label: 'Top to bottom', value: 'TD' },
+  { get label() { return t('utility.infraToMermaidTool.options.leftToRight') }, value: 'LR' },
+  { get label() { return t('utility.infraToMermaidTool.options.topToBottom') }, value: 'TD' },
 ]
 
 const sanitizeNodeId = (...parts: string[]) => {
@@ -321,20 +323,20 @@ const diagram = computed(() => {
     <template #controls>
       <div class="grid gap-3 md:grid-cols-2">
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Format</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('common.format') }}</label>
           <Select v-model="format" :options="formatOptions" option-label="label" option-value="value" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Direction</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.infraToMermaidTool.direction') }}</label>
           <Select v-model="direction" :options="directionOptions" option-label="label" option-value="value" fluid />
         </div>
         <div class="md:col-span-2">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Diagram title</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.infraToMermaidTool.diagramTitle') }}</label>
           <InputText v-model="graphTitle" fluid />
         </div>
       </div>
       <div>
-        <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Infra file</label>
+        <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.infraToMermaidTool.infraFile') }}</label>
         <Textarea v-model="source" auto-resize rows="20" fluid />
       </div>
     </template>

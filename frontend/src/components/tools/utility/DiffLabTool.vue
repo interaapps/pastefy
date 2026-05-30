@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
@@ -11,6 +12,7 @@ import DiffViewer from '@/components/previews/DiffViewer.vue'
 import UtilityResultActions from '@/components/tools/utility/UtilityResultActions.vue'
 import UtilityShell from '@/components/tools/utility/UtilityShell.vue'
 
+const { t } = useTranslation()
 type DiffMode = 'lines' | 'words' | 'chars'
 
 const left = useStorage('pastefy-utility-diff-left', 'hello\nworld\nold line')
@@ -20,9 +22,9 @@ const rightName = useStorage('pastefy-utility-diff-right-name', 'after.txt')
 const mode = useStorage<DiffMode>('pastefy-utility-diff-mode', 'lines')
 
 const modeOptions = [
-  { label: 'Line diff', value: 'lines' as DiffMode },
-  { label: 'Word diff', value: 'words' as DiffMode },
-  { label: 'Character diff', value: 'chars' as DiffMode },
+  { get label() { return t('utility.diffLabTool.options.lineDiff') }, value: 'lines' as DiffMode },
+  { get label() { return t('utility.diffLabTool.options.wordDiff') }, value: 'words' as DiffMode },
+  { get label() { return t('utility.diffLabTool.options.characterDiff') }, value: 'chars' as DiffMode },
 ]
 
 const patch = computed(() =>
@@ -68,11 +70,11 @@ const stats = computed(() => {
       </div>
       <div class="grid gap-3 md:grid-cols-2">
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Before</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.diffLabTool.before') }}</label>
           <Textarea v-model="left" auto-resize rows="18" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">After</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.diffLabTool.after') }}</label>
           <Textarea v-model="right" auto-resize rows="18" fluid />
         </div>
       </div>

@@ -32,9 +32,9 @@ const steps = computed(() =>
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">
-            GitHub Actions
+            {{ $t('previews.gitHubActionsViewer.gitHubActions') }}
           </div>
-          <div class="mt-1 text-xs opacity-60">Workflow triggers, jobs, and named steps at a glance</div>
+          <div class="mt-1 text-xs opacity-60">{{ $t('previews.githubActionsViewer.description') }}</div>
         </div>
         <div class="flex flex-wrap gap-2">
           <Tag :value="`${jobs.length} jobs`" severity="contrast" />
@@ -49,15 +49,15 @@ const steps = computed(() =>
 
     <div class="grid gap-0 border-b border-neutral-200 dark:border-neutral-700 md:grid-cols-2">
       <div class="border-b border-neutral-200 p-4 md:border-r md:border-b-0 dark:border-neutral-700">
-        <div class="mb-3 text-xs font-semibold tracking-[0.2em] uppercase opacity-60">Jobs</div>
+        <div class="mb-3 text-xs font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('previews.gitHubActionsViewer.jobs') }}</div>
         <div class="flex flex-wrap gap-2">
           <Tag v-for="job in jobs" :key="job.name" :value="job.name" severity="contrast" />
         </div>
       </div>
       <div class="p-4">
-        <div class="mb-3 text-xs font-semibold tracking-[0.2em] uppercase opacity-60">Named Steps</div>
+        <div class="mb-3 text-xs font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('previews.gitHubActionsViewer.namedSteps') }}</div>
         <div class="space-y-2 font-[JetBrains_Mono_Variable] text-[0.9rem]">
-          <div v-if="steps.length === 0" class="opacity-50">No named steps detected.</div>
+          <div v-if="steps.length === 0" class="opacity-50">{{ $t('previews.gitHubActionsViewer.noNamedStepsDetected') }}</div>
           <div v-for="step in steps.slice(0, 16)" :key="step" class="break-all">{{ step }}</div>
         </div>
       </div>

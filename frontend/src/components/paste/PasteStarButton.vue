@@ -41,6 +41,6 @@ const { isLoading: starLoading, execute: toggleStar } = useAsyncState(
     :icon="`ti ti-star text-xl ${paste.starred ? 'text-yellow-500' : ''}`"
     v-tooltip="{ value: 'Star', showDelay: 500 }"
     :loading="starLoading"
-    aria-label="Star"
+    :aria-label="$t('components.pasteStarButton.star')"
   />
 </template>

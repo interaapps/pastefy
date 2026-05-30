@@ -48,17 +48,17 @@ WantedBy=multi-user.target`)
   >
     <template #controls>
       <div class="grid gap-3 md:grid-cols-2">
-        <InputText v-model="serviceName" placeholder="Service name" fluid />
-        <InputText v-model="description" placeholder="Description" fluid />
-        <InputText v-model="user" placeholder="User" fluid />
-        <InputText v-model="group" placeholder="Group" fluid />
-        <InputText v-model="workingDir" placeholder="Working directory" fluid />
-        <InputText v-model="restartPolicy" placeholder="Restart policy" fluid />
+        <InputText v-model="serviceName" :placeholder="$t('utility.systemdServiceGeneratorTool.serviceName')" fluid />
+        <InputText v-model="description" :placeholder="$t('utility.systemdServiceGeneratorTool.description')" fluid />
+        <InputText v-model="user" :placeholder="$t('utility.systemdServiceGeneratorTool.user')" fluid />
+        <InputText v-model="group" :placeholder="$t('utility.systemdServiceGeneratorTool.group')" fluid />
+        <InputText v-model="workingDir" :placeholder="$t('utility.systemdServiceGeneratorTool.workingDirectory')" fluid />
+        <InputText v-model="restartPolicy" :placeholder="$t('utility.systemdServiceGeneratorTool.restartPolicy')" fluid />
         <div class="md:col-span-2">
-          <InputText v-model="execStart" placeholder="ExecStart command" fluid />
+          <InputText v-model="execStart" :placeholder="$t('utility.systemdServiceGeneratorTool.execStartCommand')" fluid />
         </div>
         <div class="md:col-span-2">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Environment variables</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.systemdServiceGeneratorTool.environmentVariables') }}</label>
           <Textarea v-model="environment" auto-resize rows="8" fluid />
         </div>
       </div>

@@ -6,7 +6,9 @@ import { useAppStore } from '@/stores/app.ts'
 const currentUserStore = useCurrentUserStore()
 const appStore = useAppStore()
 import { useConfirm } from 'primevue/useconfirm'
+import { useTranslation } from 'i18next-vue'
 const confirm = useConfirm()
+const { t } = useTranslation()
 
 const emit = defineEmits(['elementClicked'])
 </script>
@@ -16,7 +18,7 @@ const emit = defineEmits(['elementClicked'])
     :to="{ name: 'home-page' }"
     text
     icon="ti ti-home text-lg"
-    label="My Pastes"
+    :label="$t('paste.myPastes')"
     severity="contrast"
     size="small"
     fluid
@@ -28,7 +30,7 @@ const emit = defineEmits(['elementClicked'])
     :to="{ name: 'explore' }"
     text
     icon="ti ti-world text-lg"
-    label="Explore"
+    :label="$t('nav.explore')"
     severity="contrast"
     size="small"
     fluid
@@ -41,7 +43,7 @@ const emit = defineEmits(['elementClicked'])
     v-if="currentUserStore.user?.logged_in"
     text
     icon="ti ti-star text-lg"
-    label="Stars"
+    :label="$t('nav.stars')"
     severity="contrast"
     size="small"
     fluid
@@ -53,7 +55,7 @@ const emit = defineEmits(['elementClicked'])
     :to="{ name: 'api-keys' }"
     text
     icon="ti ti-key text-lg"
-    label="Api Keys"
+    :label="$t('nav.apiKeys')"
     severity="contrast"
     size="small"
     fluid
@@ -69,7 +71,7 @@ const emit = defineEmits(['elementClicked'])
       }
     "
     icon="ti ti-settings text-lg"
-    label="Settings"
+    :label="$t('settings.title')"
     severity="contrast"
     size="small"
     fluid
@@ -83,7 +85,7 @@ const emit = defineEmits(['elementClicked'])
     v-if="currentUserStore.user?.logged_in && currentUserStore.user.auth_type === 'interaapps'"
     text
     icon="ti ti-user text-lg"
-    label="Account Settings"
+    :label="$t('auth.accountSettings')"
     severity="contrast"
     size="small"
     fluid
@@ -96,7 +98,7 @@ const emit = defineEmits(['elementClicked'])
     v-if="currentUserStore.user?.type === 'ADMIN'"
     text
     icon="ti ti-terminal text-lg"
-    label="Admin"
+    :label="$t('components.userMenu.admin')"
     severity="contrast"
     size="small"
     fluid
@@ -106,7 +108,7 @@ const emit = defineEmits(['elementClicked'])
   <Button
     text
     icon="ti ti-logout text-lg"
-    label="Sign out"
+    :label="$t('auth.signOut')"
     severity="contrast"
     size="small"
     fluid
@@ -115,8 +117,8 @@ const emit = defineEmits(['elementClicked'])
       () => {
         emit('elementClicked')
         confirm.require({
-          message: 'Are you sure you want to log out?',
-          header: 'Log out',
+          message: t('auth.logoutConfirm'),
+          header: t('auth.logout'),
           accept: async () => {
             currentUserStore.logout()
           },

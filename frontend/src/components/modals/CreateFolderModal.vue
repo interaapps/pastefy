@@ -52,11 +52,11 @@ const {
 )
 </script>
 <template>
-  <Dialog v-model:visible="visible" modal header="Login" class="w-[30rem] max-w-full">
+  <Dialog v-model:visible="visible" modal :header="$t('folder.createTitle')" class="w-[30rem] max-w-full">
     <form class="flex flex-col justify-center gap-3" @submit.prevent="() => createFolder()">
-      <InputText autofocus v-model="name" placeholder="name" fluid />
+      <InputText autofocus v-model="name" :placeholder="$t('folder.name')" fluid />
 
-      <Button type="submit" label="create" :loading="isLoading" />
+      <Button type="submit" :label="$t('folder.create')" :loading="isLoading" />
 
       <ErrorContainer v-if="error" :error="error as any" />
     </form>

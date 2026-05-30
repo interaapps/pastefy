@@ -25,8 +25,8 @@ const tasks = computed(() =>
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">Ansible View</div>
-          <div class="mt-1 text-xs opacity-60">Hosts, roles, and named tasks for operational playbooks</div>
+          <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('previews.ansibleViewer.ansibleView') }}</div>
+          <div class="mt-1 text-xs opacity-60">{{ $t('previews.ansibleViewer.hostsRolesAndNamedTasksForOperationalPlaybooks') }}</div>
         </div>
         <div class="flex flex-wrap gap-2">
           <Tag :value="`${hosts.length} hosts`" severity="contrast" />
@@ -42,15 +42,15 @@ const tasks = computed(() =>
 
     <div class="grid gap-0 border-b border-neutral-200 dark:border-neutral-700 md:grid-cols-2">
       <div class="border-b border-neutral-200 p-4 md:border-r md:border-b-0 dark:border-neutral-700">
-        <div class="mb-3 text-xs font-semibold tracking-[0.2em] uppercase opacity-60">Roles</div>
+        <div class="mb-3 text-xs font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('previews.ansibleViewer.roles') }}</div>
         <div class="flex flex-wrap gap-2">
           <Tag v-for="role in roles" :key="role" :value="role" severity="contrast" />
         </div>
       </div>
       <div class="p-4">
-        <div class="mb-3 text-xs font-semibold tracking-[0.2em] uppercase opacity-60">Named Tasks</div>
+        <div class="mb-3 text-xs font-semibold tracking-[0.2em] uppercase opacity-60">{{ $t('previews.ansibleViewer.namedTasks') }}</div>
         <div class="space-y-2 font-[JetBrains_Mono_Variable] text-[0.9rem]">
-          <div v-if="tasks.length === 0" class="opacity-50">No named tasks detected.</div>
+          <div v-if="tasks.length === 0" class="opacity-50">{{ $t('previews.ansibleViewer.noNamedTasksDetected') }}</div>
           <div v-for="task in tasks.slice(0, 18)" :key="task" class="break-all">{{ task }}</div>
         </div>
       </div>

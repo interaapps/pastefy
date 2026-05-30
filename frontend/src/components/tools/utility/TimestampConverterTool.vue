@@ -42,12 +42,12 @@ const result = computed(() => ('error' in state.value && state.value.error ? '' 
 <template>
   <UtilityShell>
     <template #controls>
-      <label class="text-sm font-medium">Timestamp or date</label>
+      <label class="text-sm font-medium">{{ $t('utility.timestampConverterTool.timestampOrDate') }}</label>
       <InputText v-model="input" fluid />
       <div>
         <Button
           @click="input = String(Math.floor(Date.now() / 1000))"
-          label="use current unix time"
+          :label="$t('utility.timestampConverterTool.useCurrentUnixTime')"
           icon="ti ti-clock"
           severity="contrast"
           outlined

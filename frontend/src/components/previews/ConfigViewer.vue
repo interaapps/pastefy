@@ -91,7 +91,7 @@ const exportConfig = () => {
           <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">
             {{ type }} View
           </div>
-          <div class="mt-1 text-xs opacity-60">Config explorer with search and export</div>
+          <div class="mt-1 text-xs opacity-60">{{ $t('previews.configViewer.configExplorerWithSearchAndExport') }}</div>
         </div>
         <div class="flex flex-wrap gap-2">
           <Tag :value="`${stats.keys} keys`" severity="contrast" />
@@ -101,11 +101,11 @@ const exportConfig = () => {
       </div>
 
       <div class="grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto]">
-        <InputText v-model="search" placeholder="Search sections, keys, and values" fluid />
+        <InputText v-model="search" :placeholder="$t('previews.configViewer.searchSectionsKeysAndValues')" fluid />
         <div class="flex flex-wrap gap-2">
           <Button
             icon="ti ti-copy"
-            label="Copy"
+            :label="$t('common.copy')"
             size="small"
             severity="contrast"
             outlined
@@ -113,7 +113,7 @@ const exportConfig = () => {
           />
           <Button
             icon="ti ti-download"
-            label="Export"
+            :label="$t('common.export')"
             size="small"
             severity="contrast"
             outlined
@@ -124,7 +124,7 @@ const exportConfig = () => {
     </div>
 
     <div class="max-h-[22rem] overflow-auto border-b border-neutral-200 dark:border-neutral-700">
-      <div v-if="filteredLines.length === 0" class="p-4 text-sm opacity-60">No matching lines.</div>
+      <div v-if="filteredLines.length === 0" class="p-4 text-sm opacity-60">{{ $t('previews.configViewer.noMatchingLines') }}</div>
       <div
         v-for="entry in filteredLines"
         :key="entry.index"

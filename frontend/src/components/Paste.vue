@@ -25,6 +25,7 @@ import type { PopoverMethods } from 'primevue'
 import ComponentInjection from '@/components/ComponentInjection.vue'
 import PasteSharingPopover from '@/components/popovers/PasteSharingPopover.vue'
 import PasteStarButton from '@/components/paste/PasteStarButton.vue'
+import { useTranslation } from 'i18next-vue'
 const Highlighted = defineAsyncComponent(() => import('@/components/Highlighted.vue'))
 
 const props = defineProps<{
@@ -140,10 +141,11 @@ const copy = () => {
 }
 
 const confirm = useConfirm()
+const { t } = useTranslation()
 const deletePaste = () => {
   confirm.require({
-    message: 'Are you sure you want to delete this paste?',
-    header: 'Delete paste',
+    message: t('paste.deleteConfirm'),
+    header: t('paste.deleteTitle'),
     accept: async () => {
       await client.delete(`/api/v2/paste/${props.pasteId}`)
       router.push({ name: 'home-page' })
@@ -245,7 +247,7 @@ watch(
 </script>
 <template>
   <div v-if="appInfo.appInfo?.login_required_for_read && !currentUser.user">
-    <span class="block text-center text-neutral-500"> Login is required to view pastes </span>
+    <span class="block text-center text-neutral-500">{{ $t('paste.loginReadRequired') }}</span>
   </div>
   <ErrorContainer v-else-if="error" :error="error as any" />
   <LoadingContainer v-else-if="isLoading" />
@@ -255,16 +257,16 @@ watch(
       @submit.prevent="decrypt"
     >
       <i class="ti ti-lock text-5xl opacity-60" />
-      <h2>Paste is password protected</h2>
+      <h2>{{ $t('paste.passwordProtected') }}</h2>
       <InputText
         autofocus
         fluid
         size="small"
-        placeholder="password"
+        :placeholder="$t('auth.password')"
         v-model="password"
         type="password"
       />
-      <Button type="submit" label="decrypt" fluid size="small" outlined severity="contrast" />
+      <Button type="submit" :label="$t('paste.decrypt')" fluid size="small" outlined severity="contrast" />
     </form>
 
     <Button
@@ -273,7 +275,7 @@ watch(
       text
       rounded
       v-if="!asEmbed && permission.canDelete"
-      label="delete"
+      :label="$t('common.delete')"
       size="small"
       v-shortkey="['ctrl', 'd']"
       @shortkey="deletePaste"
@@ -296,7 +298,7 @@ watch(
           v-animate-css="{ classes: 'fadeIn', delay: 500 }"
         >
           <PasteVisibilityIcon :visibility="paste.visibility" />
-          <span class="text-sm font-normal">{{ paste.visibility }}</span>
+          <span class="text-sm font-normal">{{ $t(`paste.visibility.${paste.visibility.toLowerCase()}`) }}</span>
         </div>
       </div>
       <ComponentInjection type="paste-below-title" :value="paste" />
@@ -313,10 +315,10 @@ watch(
             text
             rounded
             :icon="`ti ${copied ? 'ti-check text-green-500' : 'ti-copy'} text-xl`"
-            v-tooltip="{ value: 'Copy (⌘+⇧+C)', showDelay: 500 }"
+            v-tooltip="{ value: `${$t('common.copy')} (⌘+⇧+C)`, showDelay: 500 }"
             v-shortkey.click="['meta', 'shift', 'c']"
             @shortkey="copy"
-            aria-label="Copy"
+            :aria-label="$t('common.copy')"
           />
           <PasteStarButton v-if="paste" :paste="paste" :paste-id="props.pasteId" />
           <Button
@@ -329,7 +331,7 @@ watch(
             rounded
             :icon="`ti ti-box text-xl`"
             v-tooltip="{ value: 'Open in Codebox', showDelay: 500 }"
-            aria-label="Open in Codebox"
+            :aria-label="$t('components.paste.openInCodebox')"
           />
           <!-- <Button severity="contrast" text rounded icon="ti ti-bookmark text-xl" /> -->
           <Button
@@ -339,10 +341,10 @@ watch(
             rounded
             v-if="!asEmbed"
             icon="ti ti-git-fork text-xl"
-            v-tooltip="{ value: 'Fork (ctrl+F)', showDelay: 500 }"
+            v-tooltip="{ value: `${$t('common.fork')} (ctrl+F)`, showDelay: 500 }"
             v-shortkey.click="['ctrl', 'f']"
             @shortkey="() => currentPasteStore.forkFrom(paste!)"
-            aria-label="Fork"
+            :aria-label="$t('common.fork')"
           />
           <Button
             @click="() => currentPasteStore.editFrom(paste!, password)"
@@ -351,10 +353,10 @@ watch(
             rounded
             v-if="!asEmbed && permission.canEdit"
             icon="ti ti-pencil text-xl"
-            v-tooltip="{ value: 'Edit (ctrl+E)', showDelay: 500 }"
+            v-tooltip="{ value: `${$t('common.edit')} (ctrl+E)`, showDelay: 500 }"
             v-shortkey.click="['ctrl', 'e']"
             @shortkey="() => currentPasteStore.editFrom(paste!, password)"
-            aria-label="Edit"
+            :aria-label="$t('common.edit')"
           />
           <Button
             @click="(e) => sharePopover!.toggle(e)"
@@ -363,8 +365,8 @@ watch(
             text
             rounded
             icon="ti ti-share-3 text-xl"
-            v-tooltip="{ value: 'Share', showDelay: 500 }"
-            aria-label="Share"
+            v-tooltip="{ value: $t('common.share'), showDelay: 500 }"
+            :aria-label="$t('common.share')"
           />
           <Button
             as="a"
@@ -380,10 +382,10 @@ watch(
             :pt="{
               label: 'text-sm font-bold',
             }"
-            v-tooltip="{ value: 'Show raw code (ctrl+R)', showDelay: 500 }"
+            v-tooltip="{ value: `${$t('common.raw')} (ctrl+R)`, showDelay: 500 }"
             v-shortkey.click="['ctrl', 'r']"
             @shortkey="newTab(paste.raw_url!)"
-            aria-label="Show Raw"
+            :aria-label="$t('common.raw')"
           />
           <Button
             @click="download"
@@ -394,7 +396,7 @@ watch(
             v-tooltip="{ value: 'Download (ctrl+S)', showDelay: 500 }"
             v-shortkey.click="['ctrl', 's']"
             @shortkey="download"
-            aria-label="Download"
+            :aria-label="$t('common.download')"
           />
           <Button
             v-if="paste?.tags?.length"
@@ -409,7 +411,7 @@ watch(
             rounded
             icon="ti ti-label text-xl rotate-[-45deg]"
             v-tooltip="{ value: 'Tags', showDelay: 500 }"
-            aria-label="Tags"
+            :aria-label="$t('common.tags')"
           />
           <Button
             severity="contrast"
@@ -421,7 +423,7 @@ watch(
             v-tooltip="{ value: 'Delete (ctrl+⌫)', showDelay: 500 }"
             v-shortkey="['ctrl', 'backspace']"
             @shortkey="deletePaste"
-            aria-label="Delete"
+            :aria-label="$t('common.delete')"
           />
           <ComponentInjection type="paste-actions-before-profile" :value="paste" />
           <component
@@ -476,7 +478,7 @@ watch(
             >
               <Button
                 v-if="showPreview"
-                label="show code"
+                :label="$t('paste.showCode')"
                 size="small"
                 severity="secondary"
                 @click="showPreview = false"
@@ -484,7 +486,7 @@ watch(
               />
               <Button
                 v-else
-                label="show preview"
+                :label="$t('paste.showPreview')"
                 size="small"
                 severity="secondary"
                 @click="showPreview = true"
@@ -512,7 +514,7 @@ watch(
               class="flex overflow-auto border-t border-neutral-200 p-0.5 dark:border-neutral-700"
             >
               <Button
-                label="view on pastefy"
+                :label="$t('paste.viewOnPastefy')"
                 as="a"
                 :href="`${origin}/${paste.id}`"
                 target="_blank"

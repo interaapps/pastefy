@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
 import Select from 'primevue/select'
@@ -7,14 +8,15 @@ import { useStorage } from '@vueuse/core'
 import UtilityShell from '@/components/tools/utility/UtilityShell.vue'
 import UtilityResultActions from '@/components/tools/utility/UtilityResultActions.vue'
 
+const { t } = useTranslation()
 const mode = useStorage<'paragraphs' | 'sentences' | 'words'>('pastefy-utility-lorem-mode', 'paragraphs')
 const count = useStorage('pastefy-utility-lorem-count', 3)
 const output = ref('')
 
 const modeOptions = [
-  { label: 'Paragraphs', value: 'paragraphs' },
-  { label: 'Sentences', value: 'sentences' },
-  { label: 'Words', value: 'words' },
+  { get label() { return t('utility.loremIpsumTool.options.paragraphs') }, value: 'paragraphs' },
+  { get label() { return t('utility.loremIpsumTool.options.sentences') }, value: 'sentences' },
+  { get label() { return t('utility.loremIpsumTool.options.words') }, value: 'words' },
 ]
 
 const corpus = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat'.split(
@@ -58,12 +60,12 @@ const result = computed(() => output.value)
 <template>
   <UtilityShell>
     <template #controls>
-      <label class="text-sm font-medium">Mode</label>
+      <label class="text-sm font-medium">{{ $t('utility.loremIpsumTool.mode') }}</label>
       <Select v-model="mode" :options="modeOptions" option-label="label" option-value="value" />
-      <label class="text-sm font-medium">Count</label>
+      <label class="text-sm font-medium">{{ $t('utility.loremIpsumTool.count') }}</label>
       <InputNumber v-model="count" :min="1" :max="20" fluid />
       <div>
-        <Button @click="generate()" label="generate again" icon="ti ti-refresh" severity="contrast" outlined />
+        <Button @click="generate()" :label="$t('utility.loremIpsumTool.generateAgain')" icon="ti ti-refresh" severity="contrast" outlined />
       </div>
     </template>
 

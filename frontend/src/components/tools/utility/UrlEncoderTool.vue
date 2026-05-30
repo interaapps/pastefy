@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import Select from 'primevue/select'
@@ -8,13 +9,14 @@ import { useClipboard, useStorage } from '@vueuse/core'
 import UtilityShell from '@/components/tools/utility/UtilityShell.vue'
 import UtilityResultActions from '@/components/tools/utility/UtilityResultActions.vue'
 
+const { t } = useTranslation()
 const clipboard = useClipboard()
 const mode = useStorage<'encode' | 'decode'>('pastefy-utility-url-mode', 'encode')
 const input = useStorage('pastefy-utility-url-input', 'https://pastefy.app/tools?tab=utilities&query=hello world')
 
 const modeOptions = [
-  { label: 'Encode', value: 'encode' },
-  { label: 'Decode', value: 'decode' },
+  { get label() { return t('utility.urlEncoderTool.options.encode') }, value: 'encode' },
+  { get label() { return t('utility.urlEncoderTool.options.decode') }, value: 'decode' },
 ]
 
 const state = computed(() => {
@@ -35,9 +37,9 @@ const state = computed(() => {
 <template>
   <UtilityShell>
     <template #controls>
-      <label class="text-sm font-medium">Mode</label>
+      <label class="text-sm font-medium">{{ $t('utility.urlEncoderTool.mode') }}</label>
       <Select v-model="mode" :options="modeOptions" option-label="label" option-value="value" />
-      <label class="text-sm font-medium">Input</label>
+      <label class="text-sm font-medium">{{ $t('utility.urlEncoderTool.input') }}</label>
       <Textarea v-model="input" auto-resize rows="8" fluid />
     </template>
 

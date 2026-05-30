@@ -14,10 +14,12 @@ import TabPanels from 'primevue/tabpanels'
 import TabPanel from 'primevue/tabpanel'
 import Tab from 'primevue/tab'
 import { useCurrentUserStore } from '@/stores/current-user.ts'
+import { useTranslation } from 'i18next-vue'
 
 useTitle('Api-Keys | pastefy')
 
 const toast = useToast()
+const { t } = useTranslation()
 
 const currentUserStore = useCurrentUserStore()
 
@@ -34,8 +36,8 @@ const {
       if (e?.status === 401) {
         toast.add({
           severity: 'error',
-          summary: 'Login required',
-          detail: 'You need to be logged in to view your api keys',
+          summary: t('apiKeys.loginRequiredSummary'),
+          detail: t('apiKeys.loginRequiredDetail'),
           life: 10000,
         })
         router.replace({ name: 'home' })
@@ -48,8 +50,8 @@ const {
 const confirm = useConfirm()
 const deleteKey = async (key: string) => {
   confirm.require({
-    message: 'Are you sure you want to delete this key?',
-    header: 'Delete key',
+    message: t('apiKeys.deleteConfirm'),
+    header: t('apiKeys.deleteTitle'),
     accept: async () => {
       await client.delete(`/api/v2/user/keys/${key}`)
       await load()
@@ -81,15 +83,15 @@ const clipboard = useClipboard()
       }"
     >
       <TabList :pt="{ root: 'bg-transparent', tabList: 'bg-transparent' }">
-        <Tab value="apikeys">Api Keys</Tab>
-        <Tab as="a" href="https://docs.pastefy.app/api/" value="apidocs"> API Docs </Tab>
+        <Tab value="apikeys">{{ $t('views.apiKeysPage.apiKeys') }}</Tab>
+        <Tab as="a" href="https://docs.pastefy.app/api/" value="apidocs"> {{ $t('views.apiKeysPage.apiDocsTab') }}</Tab>
         <Tab
           as="a"
           href="https://docs.pastefy.app/api/oauth.html"
           value="oauth2apps"
           v-if="currentUserStore.user?.auth_types?.includes('interaapps')"
         >
-          OAuth2 Apps
+          {{ $t('views.apiKeysPage.oAuth2Apps') }}
         </Tab>
       </TabList>
       <TabPanels
@@ -134,14 +136,14 @@ const clipboard = useClipboard()
                 as="a"
                 href="https://docs.pastefy.app"
                 target="_blank"
-                label="api-docs"
+                :label="$t('views.apiKeysPage.apiDocs')"
                 text
                 size="small"
               />
               <Button
                 :loading="isCreating"
                 @click="() => createKey()"
-                label="add api-key"
+                :label="$t('views.apiKeysPage.addApiKey')"
                 size="small"
                 class="text-white"
               />

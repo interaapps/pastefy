@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
@@ -13,6 +14,7 @@ import { useAppStore } from '@/stores/app.ts'
 import { useCurrentUserStore } from '@/stores/current-user.ts'
 import type { PublicUser } from '@/types/user.ts'
 
+const { t } = useTranslation()
 type Scope = 'public' | 'mine' | 'starred'
 type VisibilityFilter = 'all' | 'PUBLIC' | 'UNLISTED' | 'PRIVATE'
 type TypeFilter = 'all' | 'PASTE' | 'MULTI_PASTE'
@@ -73,24 +75,24 @@ const scopeOptions = computed(
   () =>
     [
       {
-        label: 'Public',
+        get label() { return t('views.searchPastes.options.public') },
         value: 'public' as Scope,
         icon: 'world',
-        description: 'Search all public pastes.',
+        get description() { return t('views.searchPastes.descriptions.searchAllPublicPastes') },
       },
       ...(currentUserStore.user
         ? [
             {
-              label: 'Mine',
+              get label() { return t('views.searchPastes.options.mine') },
               value: 'mine' as Scope,
               icon: 'user',
-              description: 'Search your own pastes.',
+              get description() { return t('views.searchPastes.descriptions.searchYourOwnPastes') },
             },
             {
-              label: 'Starred',
+              get label() { return t('views.searchPastes.options.starred') },
               value: 'starred' as Scope,
               icon: 'star',
-              description: 'Search your starred collection.',
+              get description() { return t('views.searchPastes.descriptions.searchYourStarredCollection') },
             },
           ]
         : []),
@@ -98,41 +100,41 @@ const scopeOptions = computed(
 )
 
 const sortOptions = [
-  { label: 'Newest first', value: 'createdAt' },
-  { label: 'Oldest first', value: '+createdAt' },
-  { label: 'Title A-Z', value: '+title' },
-  { label: 'Title Z-A', value: 'title' },
+  { get label() { return t('views.searchPastes.options.newestFirst') }, value: 'createdAt' },
+  { get label() { return t('views.searchPastes.options.oldestFirst') }, value: '+createdAt' },
+  { get label() { return t('views.searchPastes.options.titleAZ') }, value: '+title' },
+  { get label() { return t('views.searchPastes.options.titleZA') }, value: 'title' },
 ]
 
 const pageLimitOptions = [
-  { label: '12 per page', value: 12 },
-  { label: '24 per page', value: 24 },
-  { label: '48 per page', value: 48 },
+  { get label() { return t('views.searchPastes.options.12PerPage') }, value: 12 },
+  { get label() { return t('views.searchPastes.options.24PerPage') }, value: 24 },
+  { get label() { return t('views.searchPastes.options.48PerPage') }, value: 48 },
 ]
 
 const visibilityOptions = [
-  { label: 'All visibilities', value: 'all' as VisibilityFilter },
-  { label: 'Public', value: 'PUBLIC' as VisibilityFilter },
-  { label: 'Unlisted', value: 'UNLISTED' as VisibilityFilter },
-  { label: 'Private', value: 'PRIVATE' as VisibilityFilter },
+  { get label() { return t('views.searchPastes.options.allVisibilities') }, value: 'all' as VisibilityFilter },
+  { get label() { return t('views.searchPastes.options.public') }, value: 'PUBLIC' as VisibilityFilter },
+  { get label() { return t('views.searchPastes.options.unlisted') }, value: 'UNLISTED' as VisibilityFilter },
+  { get label() { return t('views.searchPastes.options.private') }, value: 'PRIVATE' as VisibilityFilter },
 ]
 
 const typeOptions = [
-  { label: 'All paste types', value: 'all' as TypeFilter },
-  { label: 'Single pastes', value: 'PASTE' as TypeFilter },
-  { label: 'Multi pastes', value: 'MULTI_PASTE' as TypeFilter },
+  { get label() { return t('views.searchPastes.options.allPasteTypes') }, value: 'all' as TypeFilter },
+  { get label() { return t('views.searchPastes.options.singlePastes') }, value: 'PASTE' as TypeFilter },
+  { get label() { return t('views.searchPastes.options.multiPastes') }, value: 'MULTI_PASTE' as TypeFilter },
 ]
 
 const encryptionOptions = [
-  { label: 'All encryption states', value: 'all' as EncryptionFilter },
-  { label: 'Plain only', value: 'plain' as EncryptionFilter },
-  { label: 'Encrypted only', value: 'encrypted' as EncryptionFilter },
+  { get label() { return t('views.searchPastes.options.allEncryptionStates') }, value: 'all' as EncryptionFilter },
+  { get label() { return t('views.searchPastes.options.plainOnly') }, value: 'plain' as EncryptionFilter },
+  { get label() { return t('views.searchPastes.options.encryptedOnly') }, value: 'encrypted' as EncryptionFilter },
 ]
 
 const folderOptions = [
-  { label: 'All folder states', value: 'all' as FolderFilter },
-  { label: 'Root level only', value: 'root' as FolderFilter },
-  { label: 'Only inside folders', value: 'foldered' as FolderFilter },
+  { get label() { return t('views.searchPastes.options.allFolderStates') }, value: 'all' as FolderFilter },
+  { get label() { return t('views.searchPastes.options.rootLevelOnly') }, value: 'root' as FolderFilter },
+  { get label() { return t('views.searchPastes.options.onlyInsideFolders') }, value: 'foldered' as FolderFilter },
 ]
 
 const endpoint = computed(() => {
@@ -284,9 +286,9 @@ const openModalSearch = () => {
 }
 
 const resultDescription = computed(() => {
-  if (scope.value === 'mine') return 'Search across your own pastes with deeper filters.'
-  if (scope.value === 'starred') return 'Search the pastes you have starred and want to revisit.'
-  return 'Search public pastes with richer filters than the quick modal.'
+  if (scope.value === 'mine') return t('search.descriptions.mine')
+  if (scope.value === 'starred') return t('search.descriptions.starred')
+  return t('search.descriptions.public')
 })
 </script>
 
@@ -297,9 +299,9 @@ const resultDescription = computed(() => {
     >
       <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div class="max-w-[52rem]">
-          <div class="text-sm font-medium text-neutral-500 dark:text-neutral-400">Search</div>
+          <div class="text-sm font-medium text-neutral-500 dark:text-neutral-400">{{ $t('nav.search') }}</div>
           <h1 class="mt-1 text-3xl font-bold tracking-tight md:text-4xl">
-            Find the right paste faster
+            {{ $t('views.searchPastes.findTheRightPasteFaster') }}
           </h1>
           <p class="mt-2 text-neutral-600 dark:text-neutral-300">
             {{ resultDescription }}
@@ -310,14 +312,14 @@ const resultDescription = computed(() => {
           <Button
             @click="openModalSearch"
             icon="ti ti-search"
-            label="quick modal"
+            :label="$t('views.searchPastes.quickModal')"
             severity="contrast"
             outlined
           />
           <Button
             @click="clearFilters"
             icon="ti ti-filter-off"
-            label="clear filters"
+            :label="$t('views.searchPastes.clearFilters')"
             severity="contrast"
             outlined
           />
@@ -330,11 +332,11 @@ const resultDescription = computed(() => {
         <div
           class="rounded-2xl border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-700 dark:bg-neutral-800"
         >
-          <label class="mb-2 block text-sm font-medium">Search query</label>
+          <label class="mb-2 block text-sm font-medium">{{ $t('views.searchPastes.searchQuery') }}</label>
           <InputText
             v-model="searchInput"
             fluid
-            placeholder="Search titles, content, or enter @username"
+            :placeholder="$t('views.searchPastes.searchTitlesContentOrEnterUsername')"
             @update:model-value="commitSearch(String($event || ''))"
             autofocus
           />
@@ -347,7 +349,7 @@ const resultDescription = computed(() => {
         <div
           class="rounded-2xl border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-700 dark:bg-neutral-800"
         >
-          <div class="mb-3 text-sm font-medium">Scope</div>
+          <div class="mb-3 text-sm font-medium">{{ $t('views.searchPastes.scope') }}</div>
           <div class="grid gap-2">
             <button
               v-for="entry of scopeOptions"
@@ -375,10 +377,10 @@ const resultDescription = computed(() => {
         <div
           class="rounded-2xl border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-700 dark:bg-neutral-800"
         >
-          <div class="mb-3 text-sm font-medium">Filters</div>
+          <div class="mb-3 text-sm font-medium">{{ $t('common.filters') }}</div>
           <div class="grid gap-3">
             <div>
-              <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Sort</label>
+              <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('common.sort') }}</label>
               <Select
                 v-model="sort"
                 :options="sortOptions"
@@ -390,7 +392,7 @@ const resultDescription = computed(() => {
 
             <div>
               <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400"
-                >Results per page</label
+                >{{ $t('views.searchPastes.resultsPerPage') }}</label
               >
               <Select
                 v-model="pageLimit"
@@ -403,7 +405,7 @@ const resultDescription = computed(() => {
 
             <div v-if="scope !== 'public'">
               <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400"
-                >Visibility</label
+                >{{ $t('common.visibility') }}</label
               >
               <Select
                 v-model="visibility"
@@ -416,7 +418,7 @@ const resultDescription = computed(() => {
 
             <div>
               <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400"
-                >Paste type</label
+                >{{ $t('views.searchPastes.pasteType') }}</label
               >
               <Select
                 v-model="pasteType"
@@ -429,7 +431,7 @@ const resultDescription = computed(() => {
 
             <div>
               <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400"
-                >Encryption</label
+                >{{ $t('views.searchPastes.encryption') }}</label
               >
               <Select
                 v-model="encryption"
@@ -442,7 +444,7 @@ const resultDescription = computed(() => {
 
             <div>
               <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400"
-                >Folder state</label
+                >{{ $t('views.searchPastes.folderState') }}</label
               >
               <Select
                 v-model="folder"
@@ -454,15 +456,15 @@ const resultDescription = computed(() => {
             </div>
 
             <div>
-              <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Tags</label>
+              <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('common.tags') }}</label>
               <InputText
                 v-model="tagsInput"
                 fluid
-                placeholder="markdown,json,lang-ts"
+                :placeholder="$t('views.searchPastes.markdownJsonLangTs')"
                 @update:model-value="commitTags(String($event || ''))"
               />
               <p class="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-                Separate multiple tags with commas.
+                {{ $t('views.searchPastes.separateMultipleTagsWithCommas') }}
               </p>
             </div>
           </div>
@@ -482,7 +484,7 @@ const resultDescription = computed(() => {
               class="h-12 w-12 rounded-full border border-neutral-200 object-cover dark:border-neutral-700"
             />
             <div>
-              <div class="text-sm text-neutral-500 dark:text-neutral-400">User match</div>
+              <div class="text-sm text-neutral-500 dark:text-neutral-400">{{ $t('views.searchPastes.userMatch') }}</div>
               <h2 class="font-semibold">{{ matchedUser.display_name }}</h2>
               <p class="text-sm text-neutral-500 dark:text-neutral-400">@{{ matchedUser.name }}</p>
             </div>
@@ -494,7 +496,7 @@ const resultDescription = computed(() => {
           v-else-if="matchedUser === null"
           class="rounded-2xl border border-dashed border-neutral-300 bg-white/70 p-4 text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-900/40 dark:text-neutral-400"
         >
-          No public user matched <span class="font-medium">@{{ userLookupName }}</span
+          {{ $t('views.searchPastes.noPublicUserMatched') }}<span class="font-medium">@{{ userLookupName }}</span
           >.
         </div>
 
@@ -503,7 +505,7 @@ const resultDescription = computed(() => {
         >
           <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 class="text-xl font-bold">Results</h2>
+              <h2 class="text-xl font-bold">{{ $t('common.results') }}</h2>
               <p class="text-sm text-neutral-500 dark:text-neutral-400">
                 {{ endpoint === '/api/v2/public-pastes/latest' ? 'Public endpoint' : endpoint }}
               </p>

@@ -148,10 +148,10 @@ const diagram = computed(() => {
     <template #controls>
       <label class="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900">
         <Checkbox v-model="includeTypes" binary />
-        <span class="text-sm">Show SQL field types</span>
+        <span class="text-sm">{{ $t('utility.sqlToMermaidErTool.showSqlFieldTypes') }}</span>
       </label>
       <div>
-        <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">SQL schema</label>
+        <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.sqlToMermaidErTool.sqlSchema') }}</label>
         <Textarea v-model="source" auto-resize rows="20" fluid />
       </div>
     </template>

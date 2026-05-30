@@ -28,7 +28,7 @@ const {
 <template>
   <main class="mx-auto w-full max-w-[1200px]">
     <div class="mb-8 flex items-center justify-between">
-      <h1 class="text-3xl font-bold">Explore Pastefy</h1>
+      <h1 class="text-3xl font-bold">{{ $t('explore.title') }}</h1>
       <div>
         <ShowSearchButton public-pastes />
       </div>
@@ -43,12 +43,12 @@ const {
     </div>
 
     <div class="mb-14">
-      <h2 class="mb-3 text-2xl font-bold">Pastes</h2>
+      <h2 class="mb-3 text-2xl font-bold">{{ $t('paste.pastes') }}</h2>
       <PasteList route="/api/v2/public-pastes/latest" :params="{ page_limit: 3 }" />
     </div>
 
     <div class="mb-14">
-      <h2 class="mb-3 text-2xl font-bold">Trending</h2>
+      <h2 class="mb-3 text-2xl font-bold">{{ $t('paste.trending') }}</h2>
       <PasteList
         route="/api/v2/public-pastes/trending"
         :params="{ trending: 'true', page_limit: 3 }"
@@ -56,7 +56,7 @@ const {
     </div>
 
     <div class="mb-14">
-      <h2 class="mb-3 text-2xl font-bold">All time Trending</h2>
+      <h2 class="mb-3 text-2xl font-bold">{{ $t('paste.allTimeTrending') }}</h2>
       <PasteList route="/api/v2/public-pastes/trending" :params="{ page_limit: 3 }" />
     </div>
   </main>

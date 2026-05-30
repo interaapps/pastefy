@@ -156,17 +156,17 @@ const { isLoading, error } = useAsyncState(async () => {
       @submit.prevent="decrypt"
     >
       <i class="ti ti-lock text-5xl opacity-60" />
-      <h1 class="text-2xl font-bold">This preview is encrypted</h1>
+      <h1 class="text-2xl font-bold">{{ $t('views.previewPresentationView.thisPreviewIsEncrypted') }}</h1>
       <p class="text-sm text-neutral-500 dark:text-neutral-400">
         Add the password to the URL hash or unlock it here to open the presentation view.
       </p>
       <input
         v-model="password"
         type="password"
-        placeholder="Password"
+        :placeholder="$t('auth.password')"
         class="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 outline-none dark:border-neutral-700 dark:bg-neutral-800"
       />
-      <Button type="submit" label="Unlock Preview" />
+      <Button type="submit" :label="$t('views.previewPresentationView.unlockPreview')" />
     </form>
   </main>
 
@@ -178,7 +178,7 @@ const { isLoading, error } = useAsyncState(async () => {
       <Button
         as="router-link"
         :to="{ name: 'paste', params: { paste: paste.id } }"
-        label="Open Regular Paste View"
+        :label="$t('views.previewPresentationView.openRegularPasteView')"
         icon="ti ti-arrow-right"
       />
     </div>
@@ -197,7 +197,7 @@ const { isLoading, error } = useAsyncState(async () => {
             class="inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-3 py-1 font-semibold tracking-[0.2em] uppercase dark:border-neutral-700 dark:bg-neutral-900"
           >
             <i :class="`ti ti-${previewMeta?.icon || 'presentation'}`" />
-            Presentation View
+            {{ $t('views.previewPresentationView.presentationView') }}
           </span>
           <span v-if="paste.created_at">{{ formatDate(paste.created_at) }}</span>
         </div>
@@ -234,7 +234,7 @@ const { isLoading, error } = useAsyncState(async () => {
               as="a"
               :href="`${paste.raw_url}${paste.type === 'MULTI_PASTE' && previewFileName ? `?part=${previewFileName}` : ''}`"
               target="_blank"
-              label="Raw File"
+              :label="$t('views.previewPresentationView.rawFile')"
               icon="ti ti-file-text"
               size="small"
               text
@@ -244,7 +244,7 @@ const { isLoading, error } = useAsyncState(async () => {
             <Button
               as="router-link"
               :to="{ name: 'paste', params: { paste: paste.id } }"
-              label="View Code"
+              :label="$t('views.previewPresentationView.viewCode')"
               size="small"
               text
               rounded

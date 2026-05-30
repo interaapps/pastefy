@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import InputNumber from 'primevue/inputnumber'
 import Select from 'primevue/select'
 import Textarea from 'primevue/textarea'
@@ -9,6 +10,7 @@ import MermaidToolResult from '@/components/tools/utility/MermaidToolResult.vue'
 import UtilityShell from '@/components/tools/utility/UtilityShell.vue'
 import { toMermaidQuotedLabel, toMermaidSafeIdentifier } from '@/utils/mermaid.ts'
 
+const { t } = useTranslation()
 type Mode = 'mindmap' | 'flowchart'
 
 const source = useStorage(
@@ -26,13 +28,13 @@ const maxDepth = useStorage('pastefy-utility-markdown-mermaid-depth', 4)
 const direction = useStorage('pastefy-utility-markdown-mermaid-direction', 'TD')
 
 const modeOptions = [
-  { label: 'Mindmap', value: 'mindmap' as Mode },
-  { label: 'Flowchart', value: 'flowchart' as Mode },
+  { get label() { return t('utility.markdownToMermaidTool.options.mindmap') }, value: 'mindmap' as Mode },
+  { get label() { return t('utility.markdownToMermaidTool.options.flowchart') }, value: 'flowchart' as Mode },
 ]
 
 const directionOptions = [
-  { label: 'Top to bottom', value: 'TD' },
-  { label: 'Left to right', value: 'LR' },
+  { get label() { return t('utility.markdownToMermaidTool.options.topToBottom') }, value: 'TD' },
+  { get label() { return t('utility.markdownToMermaidTool.options.leftToRight') }, value: 'LR' },
 ]
 
 const diagram = computed(() => {
@@ -94,20 +96,20 @@ const diagram = computed(() => {
     <template #controls>
       <div class="grid gap-3 md:grid-cols-3">
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Mode</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.markdownToMermaidTool.mode') }}</label>
           <Select v-model="mode" :options="modeOptions" option-label="label" option-value="value" fluid />
         </div>
         <div v-if="mode === 'flowchart'">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Direction</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.markdownToMermaidTool.direction') }}</label>
           <Select v-model="direction" :options="directionOptions" option-label="label" option-value="value" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Max depth</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.markdownToMermaidTool.maxDepth') }}</label>
           <InputNumber v-model="maxDepth" :min="1" :max="10" fluid />
         </div>
       </div>
       <div>
-        <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Markdown</label>
+        <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.markdownToMermaidTool.markdown') }}</label>
         <Textarea v-model="source" auto-resize rows="20" fluid />
       </div>
     </template>

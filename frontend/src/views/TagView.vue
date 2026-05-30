@@ -60,7 +60,7 @@ const {
       </div>
 
       <div>
-        <h2 class="mb-3 text-2xl font-bold">Public Pastes</h2>
+        <h2 class="mb-3 text-2xl font-bold">{{ $t('views.tagView.publicPastes') }}</h2>
         <PasteList route="/api/v2/public-pastes/latest" :params="{ filter_tags: tag.tag }" />
       </div>
     </div>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import Highlighted from '@/components/Highlighted.vue'
 import GeneratorToggleField from '@/components/tools/utility/GeneratorToggleField.vue'
 import KeyValueListField from '@/components/tools/utility/KeyValueListField.vue'
@@ -21,6 +22,7 @@ import {
   type RestartPolicy,
 } from '@/utils/container-generators.ts'
 
+const { t } = useTranslation()
 const preset = useStorage<ComposePreset>('pastefy-utility-compose-preset', 'proxy-app-postgres')
 const serviceName = useStorage('pastefy-utility-compose-service-name', 'app')
 const image = useStorage('pastefy-utility-compose-image', 'ghcr.io/acme/app:latest')
@@ -49,12 +51,12 @@ const postgresEnv = useStorage<KeyValueEntry[]>('pastefy-utility-compose-postgre
 ])
 
 const presetOptions = [
-  { label: 'Blank service', value: 'blank' as ComposePreset },
-  { label: 'Node web app', value: 'node-web' as ComposePreset },
-  { label: 'Python web app', value: 'python-web' as ComposePreset },
-  { label: 'Java app', value: 'java-app' as ComposePreset },
-  { label: 'Static NGINX site', value: 'static-nginx' as ComposePreset },
-  { label: 'Proxy + app + Postgres', value: 'proxy-app-postgres' as ComposePreset },
+  { get label() { return t('utility.composeStackGeneratorTool.options.blankService') }, value: 'blank' as ComposePreset },
+  { get label() { return t('utility.composeStackGeneratorTool.options.nodeWebApp') }, value: 'node-web' as ComposePreset },
+  { get label() { return t('utility.composeStackGeneratorTool.options.pythonWebApp') }, value: 'python-web' as ComposePreset },
+  { get label() { return t('utility.composeStackGeneratorTool.options.javaApp') }, value: 'java-app' as ComposePreset },
+  { get label() { return t('utility.composeStackGeneratorTool.options.staticNginxSite') }, value: 'static-nginx' as ComposePreset },
+  { get label() { return t('utility.composeStackGeneratorTool.options.proxyAppPostgres') }, value: 'proxy-app-postgres' as ComposePreset },
 ]
 
 watch(
@@ -205,67 +207,67 @@ const composeFile = computed(() => {
     <template #controls>
       <div class="grid gap-3 md:grid-cols-2">
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Preset</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.composeStackGeneratorTool.preset') }}</label>
           <Select v-model="preset" :options="presetOptions" option-label="label" option-value="value" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Service name</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.composeStackGeneratorTool.serviceName') }}</label>
           <InputText v-model="serviceName" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Image</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.composeStackGeneratorTool.image') }}</label>
           <InputText v-model="image" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Container name</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.composeStackGeneratorTool.containerName') }}</label>
           <InputText v-model="containerName" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Restart policy</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.composeStackGeneratorTool.restartPolicy') }}</label>
           <Select v-model="restartPolicy" :options="restartPolicyOptions" option-label="label" option-value="value" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Replicas</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.composeStackGeneratorTool.replicas') }}</label>
           <InputNumber v-model="replicas" :min="1" :max="20" fluid />
         </div>
       </div>
 
       <div class="grid gap-3 md:grid-cols-3">
-        <GeneratorToggleField v-model="includeProxy" label="Include proxy service" />
-        <GeneratorToggleField v-model="includePostgres" label="Include Postgres service" />
-        <GeneratorToggleField v-model="includeRedis" label="Include Redis service" />
+        <GeneratorToggleField v-model="includeProxy" :label="$t('utility.composeStackGeneratorTool.includeProxyService')" />
+        <GeneratorToggleField v-model="includePostgres" :label="$t('utility.composeStackGeneratorTool.includePostgresService')" />
+        <GeneratorToggleField v-model="includeRedis" :label="$t('utility.composeStackGeneratorTool.includeRedisService')" />
       </div>
 
-      <StringListField v-model="portMappings" label="Port mappings" placeholder="3000:3000" add-label="add port" />
-      <KeyValueListField v-model="environmentEntries" label="Environment variables" key-placeholder="NODE_ENV" value-placeholder="production" />
-      <StringListField v-model="volumeEntries" label="Volumes" placeholder="./data:/app/data" add-label="add volume" />
-      <StringListField v-model="networkEntries" label="Networks" placeholder="app" add-label="add network" />
-      <StringListField v-model="dependsOnEntries" label="Depends on services" placeholder="postgres" add-label="add dependency" />
-      <InputText v-model="command" placeholder="Command" fluid />
-      <InputText v-model="entrypoint" placeholder="Entrypoint" fluid />
+      <StringListField v-model="portMappings" :label="$t('utility.composeStackGeneratorTool.portMappings')" placeholder="3000:3000" :add-label="$t('utility.composeStackGeneratorTool.addPort')" />
+      <KeyValueListField v-model="environmentEntries" :label="$t('utility.composeStackGeneratorTool.environmentVariables')" key-placeholder="NODE_ENV" :value-placeholder="$t('utility.composeStackGeneratorTool.production')" />
+      <StringListField v-model="volumeEntries" :label="$t('utility.composeStackGeneratorTool.volumes')" placeholder="./data:/app/data" :add-label="$t('utility.composeStackGeneratorTool.addVolume')" />
+      <StringListField v-model="networkEntries" :label="$t('utility.composeStackGeneratorTool.networks')" :placeholder="$t('utility.composeStackGeneratorTool.app')" :add-label="$t('utility.composeStackGeneratorTool.addNetwork')" />
+      <StringListField v-model="dependsOnEntries" :label="$t('utility.composeStackGeneratorTool.dependsOnServices')" :placeholder="$t('utility.composeStackGeneratorTool.postgres')" :add-label="$t('utility.composeStackGeneratorTool.addDependency')" />
+      <InputText v-model="command" :placeholder="$t('utility.composeStackGeneratorTool.command')" fluid />
+      <InputText v-model="entrypoint" :placeholder="$t('utility.composeStackGeneratorTool.entrypoint')" fluid />
 
       <div>
-        <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Working directory</label>
+        <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.composeStackGeneratorTool.workingDirectory') }}</label>
         <InputText v-model="workingDir" fluid />
       </div>
 
       <div v-if="includeProxy || includePostgres || includeRedis" class="grid gap-3 md:grid-cols-2">
         <div v-if="includeProxy">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Proxy image</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.composeStackGeneratorTool.proxyImage') }}</label>
           <InputText v-model="proxyImage" fluid />
         </div>
         <div v-if="includePostgres">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Postgres image</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.composeStackGeneratorTool.postgresImage') }}</label>
           <InputText v-model="postgresImage" fluid />
         </div>
         <div v-if="includeRedis">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Redis image</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.composeStackGeneratorTool.redisImage') }}</label>
           <InputText v-model="redisImage" fluid />
         </div>
       </div>
 
-      <StringListField v-if="includeProxy" v-model="proxyPorts" label="Proxy ports" placeholder="80:80" add-label="add proxy port" />
-      <KeyValueListField v-if="includePostgres" v-model="postgresEnv" label="Postgres environment" key-placeholder="POSTGRES_DB" value-placeholder="app" />
+      <StringListField v-if="includeProxy" v-model="proxyPorts" :label="$t('utility.composeStackGeneratorTool.proxyPorts')" placeholder="80:80" :add-label="$t('utility.composeStackGeneratorTool.addProxyPort')" />
+      <KeyValueListField v-if="includePostgres" v-model="postgresEnv" :label="$t('utility.composeStackGeneratorTool.postgresEnvironment')" key-placeholder="POSTGRES_DB" :value-placeholder="$t('utility.composeStackGeneratorTool.app')" />
     </template>
 
     <template #result>

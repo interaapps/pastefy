@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useTranslation } from 'i18next-vue'
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
 import InputNumber from 'primevue/inputnumber'
@@ -16,6 +17,7 @@ import UtilityResultActions from '@/components/tools/utility/UtilityResultAction
 import UtilityShell from '@/components/tools/utility/UtilityShell.vue'
 import { parseYamlDocument } from '@/utils/yaml.ts'
 
+const { t } = useTranslation()
 type InputFormat = 'auto' | 'json' | 'yaml' | 'csv'
 type ChartType = 'pie' | 'bar' | 'line' | 'grouped-bar' | 'multi-line' | 'combo'
 type Aggregation = 'sum' | 'avg' | 'min' | 'max' | 'count'
@@ -120,47 +122,47 @@ const pieShowData = useStorage('pastefy-utility-data-mermaid-pie-show-data', tru
 const selectedPresetId = ref<string | null>(null)
 
 const formatOptions = [
-  { label: 'Auto detect', value: 'auto' as InputFormat },
-  { label: 'JSON', value: 'json' as InputFormat },
-  { label: 'YAML', value: 'yaml' as InputFormat },
-  { label: 'CSV', value: 'csv' as InputFormat },
+  { get label() { return t('utility.dataToMermaidTool.options.autoDetect') }, value: 'auto' as InputFormat },
+  { get label() { return t('utility.dataToMermaidTool.options.json') }, value: 'json' as InputFormat },
+  { get label() { return t('utility.dataToMermaidTool.options.yaml') }, value: 'yaml' as InputFormat },
+  { get label() { return t('utility.dataToMermaidTool.options.csv') }, value: 'csv' as InputFormat },
 ]
 
 const chartTypeOptions = [
-  { label: 'Pie chart', value: 'pie' as ChartType },
-  { label: 'Bar chart', value: 'bar' as ChartType },
-  { label: 'Line chart', value: 'line' as ChartType },
-  { label: 'Grouped bars', value: 'grouped-bar' as ChartType },
-  { label: 'Multi-line', value: 'multi-line' as ChartType },
-  { label: 'Combo chart', value: 'combo' as ChartType },
+  { get label() { return t('utility.dataToMermaidTool.options.pieChart') }, value: 'pie' as ChartType },
+  { get label() { return t('utility.dataToMermaidTool.options.barChart') }, value: 'bar' as ChartType },
+  { get label() { return t('utility.dataToMermaidTool.options.lineChart') }, value: 'line' as ChartType },
+  { get label() { return t('utility.dataToMermaidTool.options.groupedBars') }, value: 'grouped-bar' as ChartType },
+  { get label() { return t('utility.dataToMermaidTool.options.multiLine') }, value: 'multi-line' as ChartType },
+  { get label() { return t('utility.dataToMermaidTool.options.comboChart') }, value: 'combo' as ChartType },
 ]
 
 const aggregationOptions = [
-  { label: 'Sum', value: 'sum' as Aggregation },
-  { label: 'Average', value: 'avg' as Aggregation },
-  { label: 'Min', value: 'min' as Aggregation },
-  { label: 'Max', value: 'max' as Aggregation },
-  { label: 'Count', value: 'count' as Aggregation },
+  { get label() { return t('utility.dataToMermaidTool.options.sum') }, value: 'sum' as Aggregation },
+  { get label() { return t('utility.dataToMermaidTool.options.average') }, value: 'avg' as Aggregation },
+  { get label() { return t('utility.dataToMermaidTool.options.min') }, value: 'min' as Aggregation },
+  { get label() { return t('utility.dataToMermaidTool.options.max') }, value: 'max' as Aggregation },
+  { get label() { return t('utility.dataToMermaidTool.options.count') }, value: 'count' as Aggregation },
 ]
 
 const sortOptions = [
-  { label: 'Keep input order', value: 'input' as SortMode },
-  { label: 'Label A-Z', value: 'label-asc' as SortMode },
-  { label: 'Label Z-A', value: 'label-desc' as SortMode },
-  { label: 'Value high -> low', value: 'value-desc' as SortMode },
-  { label: 'Value low -> high', value: 'value-asc' as SortMode },
+  { get label() { return t('utility.dataToMermaidTool.options.keepInputOrder') }, value: 'input' as SortMode },
+  { get label() { return t('utility.dataToMermaidTool.options.labelAZ') }, value: 'label-asc' as SortMode },
+  { get label() { return t('utility.dataToMermaidTool.options.labelZA') }, value: 'label-desc' as SortMode },
+  { get label() { return t('utility.dataToMermaidTool.options.valueHighLow') }, value: 'value-desc' as SortMode },
+  { get label() { return t('utility.dataToMermaidTool.options.valueLowHigh') }, value: 'value-asc' as SortMode },
 ]
 
 const yAxisModeOptions = [
-  { label: 'Auto range', value: 'auto' as const },
-  { label: 'Manual range', value: 'manual' as const },
+  { get label() { return t('utility.dataToMermaidTool.options.autoRange') }, value: 'auto' as const },
+  { get label() { return t('utility.dataToMermaidTool.options.manualRange') }, value: 'manual' as const },
 ]
 
 const examplePresets: ExamplePreset[] = [
   {
     id: 'grouped-bar-sales',
-    label: 'Grouped bars',
-    description: 'Revenue by month and region.',
+    get label() { return t('utility.dataToMermaidTool.options.groupedBars') },
+    get description() { return t('utility.dataToMermaidTool.descriptions.revenueByMonthAndRegion') },
     format: 'json',
     source: jsonExample,
     chartType: 'grouped-bar',
@@ -173,8 +175,8 @@ const examplePresets: ExamplePreset[] = [
   },
   {
     id: 'multi-line-profit',
-    label: 'Multi-line trends',
-    description: 'Profit trend per region over time.',
+    get label() { return t('utility.dataToMermaidTool.options.multiLineTrends') },
+    get description() { return t('utility.dataToMermaidTool.descriptions.profitTrendPerRegionOverTime') },
     format: 'json',
     source: jsonExample,
     chartType: 'multi-line',
@@ -187,8 +189,8 @@ const examplePresets: ExamplePreset[] = [
   },
   {
     id: 'pie-orders',
-    label: 'Pie share',
-    description: 'Order share by region.',
+    get label() { return t('utility.dataToMermaidTool.options.pieShare') },
+    get description() { return t('utility.dataToMermaidTool.descriptions.orderShareByRegion') },
     format: 'csv',
     source: csvExample,
     chartType: 'pie',
@@ -199,8 +201,8 @@ const examplePresets: ExamplePreset[] = [
   },
   {
     id: 'combo-revenue-profit',
-    label: 'Combo chart',
-    description: 'Revenue bars with profit line.',
+    get label() { return t('utility.dataToMermaidTool.options.comboChart') },
+    get description() { return t('utility.dataToMermaidTool.descriptions.revenueBarsWithProfitLine') },
     format: 'json',
     source: jsonExample,
     chartType: 'combo',
@@ -212,8 +214,8 @@ const examplePresets: ExamplePreset[] = [
   },
   {
     id: 'yaml-bars',
-    label: 'YAML bar chart',
-    description: 'Revenue values from YAML grouped by month and region.',
+    get label() { return t('utility.dataToMermaidTool.options.yamlBarChart') },
+    get description() { return t('utility.dataToMermaidTool.descriptions.revenueValuesFromYamlGroupedByMonthAndRegion') },
     format: 'yaml',
     source: yamlExample,
     chartType: 'bar',
@@ -805,13 +807,13 @@ const applyPreset = (preset: ExamplePreset) => {
     <template #controls>
       <div class="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Example preset</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.examplePreset') }}</label>
           <Select
             v-model="selectedPresetId"
             :options="examplePresets"
             option-label="label"
             option-value="id"
-            placeholder="Choose a chart preset"
+            :placeholder="$t('utility.dataToMermaidTool.chooseAChartPreset')"
             fluid
           />
           <p v-if="selectedPreset" class="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
@@ -822,7 +824,7 @@ const applyPreset = (preset: ExamplePreset) => {
           <Button
             @click="selectedPreset && applyPreset(selectedPreset)"
             :disabled="!selectedPreset"
-            label="load preset"
+            :label="$t('utility.dataToMermaidTool.loadPreset')"
             icon="ti ti-wand"
             severity="contrast"
             outlined
@@ -832,7 +834,7 @@ const applyPreset = (preset: ExamplePreset) => {
 
       <div class="grid gap-3 md:grid-cols-2">
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Input format</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.inputFormat') }}</label>
           <Select
             v-model="inputFormat"
             :options="formatOptions"
@@ -843,7 +845,7 @@ const applyPreset = (preset: ExamplePreset) => {
         </div>
 
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Chart type</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.chartType') }}</label>
           <Select
             v-model="chartType"
             :options="chartTypeOptions"
@@ -854,24 +856,24 @@ const applyPreset = (preset: ExamplePreset) => {
         </div>
 
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Chart title</label>
-          <InputText v-model="chartTitle" fluid placeholder="Revenue by Month" />
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.chartTitle') }}</label>
+          <InputText v-model="chartTitle" fluid :placeholder="$t('utility.dataToMermaidTool.revenueByMonth')" />
         </div>
 
         <div v-if="chartType !== 'pie'">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Y axis label</label>
-          <InputText v-model="yAxisLabel" fluid placeholder="Value" />
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.yAxisLabel') }}</label>
+          <InputText v-model="yAxisLabel" fluid :placeholder="$t('utility.dataToMermaidTool.value')" />
         </div>
       </div>
 
       <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Decimals</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.decimals') }}</label>
           <InputNumber v-model="decimalPlaces" :min="0" :max="6" fluid />
         </div>
 
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Y axis range</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.yAxisRange') }}</label>
           <Select
             v-model="yAxisMode"
             :options="yAxisModeOptions"
@@ -882,35 +884,35 @@ const applyPreset = (preset: ExamplePreset) => {
         </div>
 
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Empty label</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.emptyLabel') }}</label>
           <InputText v-model="emptyLabelText" fluid placeholder="(empty)" />
         </div>
 
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Field separator</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.fieldSeparator') }}</label>
           <InputText v-model="labelSeparator" fluid placeholder=" / " />
         </div>
       </div>
 
       <div v-if="chartType !== 'pie' && yAxisMode === 'manual'" class="grid gap-3 md:grid-cols-2">
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Y axis min</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.yAxisMin') }}</label>
           <InputNumber v-model="yAxisMin" fluid />
         </div>
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Y axis max</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.yAxisMax') }}</label>
           <InputNumber v-model="yAxisMax" fluid />
         </div>
       </div>
 
       <div>
-        <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Source data</label>
+        <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.sourceData') }}</label>
         <Textarea v-model="source" auto-resize rows="18" fluid />
       </div>
 
       <div class="grid gap-3 md:grid-cols-2">
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Category / group fields</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.categoryGroupFields') }}</label>
           <MultiSelect
             v-model="categoryFields"
             :options="dimensionFieldOptions"
@@ -918,12 +920,12 @@ const applyPreset = (preset: ExamplePreset) => {
             option-value="value"
             display="chip"
             fluid
-            placeholder="Select one or more fields"
+            :placeholder="$t('utility.dataToMermaidTool.selectOneOrMoreFields')"
           />
         </div>
 
         <div v-if="chartType !== 'pie'">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Split into series by fields</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.splitIntoSeriesByFields') }}</label>
           <MultiSelect
             v-model="splitFields"
             :options="dimensionFieldOptions"
@@ -931,12 +933,12 @@ const applyPreset = (preset: ExamplePreset) => {
             option-value="value"
             display="chip"
             fluid
-            placeholder="Optional series grouping"
+            :placeholder="$t('utility.dataToMermaidTool.optionalSeriesGrouping')"
           />
         </div>
 
         <div class="md:col-span-2">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Numeric fields to visualize</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.numericFieldsToVisualize') }}</label>
           <MultiSelect
             v-model="valueFields"
             :options="numericFieldOptions"
@@ -944,12 +946,12 @@ const applyPreset = (preset: ExamplePreset) => {
             option-value="value"
             display="chip"
             fluid
-            placeholder="Pick one or more numeric fields"
+            :placeholder="$t('utility.dataToMermaidTool.pickOneOrMoreNumericFields')"
           />
         </div>
 
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Aggregation</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.aggregation') }}</label>
           <Select
             v-model="aggregation"
             :options="aggregationOptions"
@@ -960,7 +962,7 @@ const applyPreset = (preset: ExamplePreset) => {
         </div>
 
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Sort groups</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.sortGroups') }}</label>
           <Select
             v-model="sortMode"
             :options="sortOptions"
@@ -971,7 +973,7 @@ const applyPreset = (preset: ExamplePreset) => {
         </div>
 
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Max groups</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.maxGroups') }}</label>
           <InputNumber v-model="limit" :min="1" :max="100" fluid />
         </div>
 
@@ -979,16 +981,16 @@ const applyPreset = (preset: ExamplePreset) => {
           class="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900"
         >
           <Checkbox v-model="includeEverythingElse" binary />
-          <span class="text-sm">Group hidden entries into “everything else”</span>
+          <span class="text-sm">{{ $t('utility.dataToMermaidTool.groupHiddenEntriesIntoEverythingElse') }}</span>
         </label>
 
         <div v-if="includeEverythingElse">
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Everything else label</label>
-          <InputText v-model="everythingElseLabel" fluid placeholder="Everything else" />
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.everythingElseLabel') }}</label>
+          <InputText v-model="everythingElseLabel" fluid :placeholder="$t('utility.dataToMermaidTool.everythingElse')" />
         </div>
 
         <div>
-          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">Max series</label>
+          <label class="mb-1 block text-sm text-neutral-500 dark:text-neutral-400">{{ $t('utility.dataToMermaidTool.maxSeries') }}</label>
           <InputNumber v-model="maxSeries" :min="1" :max="50" fluid />
         </div>
 
@@ -996,21 +998,21 @@ const applyPreset = (preset: ExamplePreset) => {
           class="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900"
         >
           <Checkbox v-model="includeSeriesComments" binary />
-          <span class="text-sm">Include series comments in Mermaid code</span>
+          <span class="text-sm">{{ $t('utility.dataToMermaidTool.includeSeriesCommentsInMermaidCode') }}</span>
         </label>
 
         <label
           class="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900"
         >
           <Checkbox v-model="hideZeroSeries" binary />
-          <span class="text-sm">Hide zero-only series</span>
+          <span class="text-sm">{{ $t('utility.dataToMermaidTool.hideZeroOnlySeries') }}</span>
         </label>
 
         <label
           class="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900"
         >
           <Checkbox v-model="hideZeroCategories" binary />
-          <span class="text-sm">Hide zero-only groups</span>
+          <span class="text-sm">{{ $t('utility.dataToMermaidTool.hideZeroOnlyGroups') }}</span>
         </label>
 
         <label
@@ -1018,7 +1020,7 @@ const applyPreset = (preset: ExamplePreset) => {
           class="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900"
         >
           <Checkbox v-model="pieShowData" binary />
-          <span class="text-sm">Show values in the pie chart</span>
+          <span class="text-sm">{{ $t('utility.dataToMermaidTool.showValuesInThePieChart') }}</span>
         </label>
       </div>
 

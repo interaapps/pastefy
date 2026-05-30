@@ -32,28 +32,28 @@
         </svg>
       </div>
 
-      <h2 class="text-xl">Connecting your account with Asciicema.</h2>
+      <h2 class="text-xl">{{ $t('views.asciinemaConnectView.connectingYourAccountWithAsciicema') }}</h2>
     </div>
 
     <div class="mb-7">
-      <h3 class="mb-2 text-lg">Create Api Key</h3>
+      <h3 class="mb-2 text-lg">{{ $t('views.asciinemaConnectView.createApiKey') }}</h3>
 
       <Button
         as="router-link"
         :to="{ name: 'api-keys' }"
-        label="Visit API-Keys page"
+        :label="$t('views.asciinemaConnectView.visitApiKeysPage')"
         outlined
         size="small"
       />
     </div>
 
     <div class="mb-7">
-      <h3 class="mb-2 text-lg">Add Api-Key to Asciicema Config</h3>
+      <h3 class="mb-2 text-lg">{{ $t('views.asciinemaConnectView.addApiKeyToAsciicemaConfig') }}</h3>
       <div
         class="rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
       >
         <div class="w-full border-b border-neutral-200 p-1 px-3 dark:border-neutral-700">
-          <span class="text-sm">bash</span>
+          <span class="text-sm">{{ $t('views.asciinemaConnectView.bash') }}</span>
         </div>
         <Highlighted
           file-name="example.bash"
