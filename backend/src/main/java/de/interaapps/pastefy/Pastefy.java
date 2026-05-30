@@ -192,6 +192,7 @@ public class Pastefy {
                 .map("PASTEFY_PUBLIC_STATS", "pastefy.publicstats")
                 .map("PASTEFY_PUBLIC_PASTES", "pastefy.publicpastes")
                 .map("PASTEFY_META_TAGS", "pastefy.metatags")
+                .map("PASTEFY_META_TAGS_PREVIEW_LENGTH", "pastefy.metatags.previewlength")
                 .map("PASTEFY_CUSTOM_BODY", "pastefy.custombody")
                 .map("PASTEFY_CUSTOM_HEADER", "pastefy.customheader")
                 .map("PASTEFY_PAGINATION_PAGE_LIMIT", "pastefy.paginaton.pagelimit")
