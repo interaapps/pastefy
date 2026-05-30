@@ -61,15 +61,56 @@
       </plugin>
     </plugins>
   </build>
-  <repositories>
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-    </repository>
-    <repository>
-      <id>ossrh-snapshots</id>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-    </repository>
-  </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>org.javawebstack</groupId>
+      <artifactId>http-router</artifactId>
+      <version>1.0.3-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/temp-libs/http-router-1.0.3-SNAPSHOT.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.javawebstack</groupId>
+      <artifactId>http-router-undertow</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/temp-libs/http-router-undertow-1.0.0-SNAPSHOT.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.javawebstack</groupId>
+      <artifactId>abstract-data</artifactId>
+      <version>1.0.7-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/temp-libs/abstract-data-1.0.7-SNAPSHOT.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.javawebstack</groupId>
+      <artifactId>http-client</artifactId>
+      <version>1.0.2-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/temp-libs/http-client-1.0.2-SNAPSHOT.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.javawebstack</groupId>
+      <artifactId>web-utils</artifactId>
+      <version>1.0.2-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/temp-libs/web-utils-1.0.2-SNAPSHOT.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.javawebstack</groupId>
+      <artifactId>orm</artifactId>
+      <version>1.0.3-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/temp-libs/orm-1.0.3-SNAPSHOT.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.javawebstack</groupId>
+      <artifactId>validator</artifactId>
+      <version>1.0.3-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/temp-libs/validator-1.0.3-SNAPSHOT.jar</systemPath>
+    </dependency>
+  </dependencies>
 </project>
 
