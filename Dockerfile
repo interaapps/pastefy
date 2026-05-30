@@ -13,6 +13,7 @@ FROM maven:3.9.14-eclipse-temurin-17 AS build
 WORKDIR /
 
 COPY backend/src /home/app/src
+COPY backend/temp-libs /home/app/temp-libs
 COPY backend/pom.xml /home/app
 COPY --from=frontend backend/src/main/resources/static /home/app/src/main/resources/static
 RUN rm -rf /home/app/.m2/repository
