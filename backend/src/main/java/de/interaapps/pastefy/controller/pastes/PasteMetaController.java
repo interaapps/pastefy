@@ -3,6 +3,7 @@ package de.interaapps.pastefy.controller.pastes;
 import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.model.database.Paste;
+import de.interaapps.pastefy.model.database.User;
 import org.apache.commons.text.StringEscapeUtils;
 import org.javawebstack.http.router.Exchange;
 import org.javawebstack.http.router.router.annotation.params.Path;
@@ -11,6 +12,7 @@ import org.javawebstack.http.router.router.annotation.verbs.Get;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -75,12 +77,14 @@ public class PasteMetaController extends HttpController {
         if (paste == null || paste.isPrivate() || paste.isEncrypted()) return null;
 
         String title = getTitle(paste);
-        String description = getDescription(title);
+        SeoAuthor author = paste.isPublic() ? getAuthor(paste) : null;
+        String description = getDescription(title, author);
         String canonicalUrl = getBaseUrl() + "/" + pasteId;
         String imageUrl = canonicalUrl + "/thumbnail.png";
 
         Map<String, String> seoTags = new LinkedHashMap<>();
         seoTags.put("description", description);
+        if (author != null) seoTags.put("author", author.displayName + " (@" + author.username + ")");
 
         Map<String, String> openGraphTags = new LinkedHashMap<>();
         openGraphTags.put("og:site_name", "Pastefy");
@@ -89,6 +93,7 @@ public class PasteMetaController extends HttpController {
         openGraphTags.put("og:description", description);
         openGraphTags.put("og:url", canonicalUrl);
         openGraphTags.put("og:image", imageUrl);
+        if (author != null) openGraphTags.put("article:author", author.profileUrl);
 
         Map<String, String> twitterTags = new LinkedHashMap<>();
         twitterTags.put("twitter:card", "summary_large_image");
@@ -96,10 +101,11 @@ public class PasteMetaController extends HttpController {
         twitterTags.put("twitter:description", description);
         twitterTags.put("twitter:url", canonicalUrl);
         twitterTags.put("twitter:image", imageUrl);
+        if (author != null) twitterTags.put("twitter:creator", "@" + author.username);
 
         String seoContent = "";
         if (paste.isPublic()) {
-            seoContent = getSeoContent(paste, title);
+            seoContent = getSeoContent(paste, title, author);
             if (seoContent == null) return null;
         }
 
@@ -198,12 +204,31 @@ public class PasteMetaController extends HttpController {
         return truncate(title.trim().replaceAll("\\s+", " "), 120);
     }
 
-    private String getDescription(String title) {
-        if (DEFAULT_TITLE.equals(title)) return "View this paste on Pastefy.";
+    private String getDescription(String title, SeoAuthor author) {
+        if (DEFAULT_TITLE.equals(title)) {
+            return author == null ? "View this paste on Pastefy." : "View this paste by @" + author.username + " on Pastefy.";
+        }
+        if (author != null) {
+            return truncate("View \"" + title + "\" by @" + author.username + " on Pastefy.", DESCRIPTION_MAX_LENGTH);
+        }
         return truncate("View \"" + title + "\" on Pastefy.", DESCRIPTION_MAX_LENGTH);
     }
 
-    private String getSeoContent(Paste paste, String title) {
+    private SeoAuthor getAuthor(Paste paste) {
+        if (paste.getUserId() == null) return null;
+
+        User user = paste.getUser();
+        if (user == null || user.getUniqueName() == null || user.getUniqueName().trim().isEmpty()) return null;
+
+        String username = user.getUniqueName().trim();
+        String displayName = user.getName() == null || user.getName().trim().isEmpty()
+                ? username
+                : user.getName().trim();
+        String encodedUsername = URLEncoder.encode(username, StandardCharsets.UTF_8).replace("+", "%20");
+        return new SeoAuthor(displayName, username, getBaseUrl() + "/@" + encodedUsername);
+    }
+
+    private String getSeoContent(Paste paste, String title, SeoAuthor author) {
         String content;
         try {
             content = paste.getContent(false);
@@ -216,8 +241,13 @@ public class PasteMetaController extends HttpController {
         previewLength = Math.max(0, Math.min(previewLength, MAX_PREVIEW_LENGTH));
 
         String preview = content == null ? "" : truncateWithoutEllipsis(content, previewLength);
+        String authorHtml = author == null
+                ? ""
+                : "<p>By <a href=\"" + escapeHtml(author.profileUrl) + "\">"
+                + escapeHtml(author.displayName) + " (@" + escapeHtml(author.username) + ")</a></p>";
         return "<main id=\"seo-content\">"
                 + "<h1 title=\"paste-title\">" + escapeHtml(title) + "</h1>"
+                + authorHtml
                 + "<p>View and share code snippets on Pastefy.</p>"
                 + "<pre><code>" + escapeHtml(preview) + "</code></pre>"
                 + "</main>";
@@ -239,5 +269,17 @@ public class PasteMetaController extends HttpController {
 
     private String escapeHtml(String value) {
         return StringEscapeUtils.escapeHtml4(value == null ? "" : value);
+    }
+
+    private static class SeoAuthor {
+        private final String displayName;
+        private final String username;
+        private final String profileUrl;
+
+        private SeoAuthor(String displayName, String username, String profileUrl) {
+            this.displayName = displayName;
+            this.username = username;
+            this.profileUrl = profileUrl;
+        }
     }
 }

@@ -82,6 +82,7 @@ And you can configure multiple providers at the same time if wanted.
 | `PASTEFY_PUBLIC_STATS`          | Make `/app/stats` public                 | `false` |
 | `PASTEFY_PUBLIC_PASTES`         | Show public pastes section               | `false` |
 | `PASTEFY_META_TAGS`             | Meta tags for the instance               | `none`  |
+| `PASTEFY_META_TAGS_PREVIEW_LENGTH` | Maximum SEO paste preview length       | `4096`  |
 | `PASTEFY_CUSTOM_BODY`           | Custom HTML body content                 | `none`  |
 | `PASTEFY_CUSTOM_HEADER`         | Custom HTML header content               | `none`  |
 | `PASTEFY_PAGINATION_PAGE_LIMIT` | Pastes per page in pagination            | `none`  |
