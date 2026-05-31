@@ -1,0 +1,15 @@
+services:
+  mysql:
+    image: 'mysql:latest'
+    environment:
+      - 'MYSQL_DATABASE=mydatabase'
+      - 'MYSQL_PASSWORD=secret'
+      - 'MYSQL_ROOT_PASSWORD=verysecret'
+      - 'MYSQL_USER=myuser'
+    ports:
+      - '3306:3306'
+    volumes:
+      - 'pastefy-test-mysql-data:/var/lib/mysql'
+volumes:
+  pastefy-test-mysql-data:
+    driver: local
