@@ -255,4 +255,15 @@ public class PasteController extends HttpController {
     public ActionResponse addFriend(Exchange exchange, @Body AddFriendToPasteRequest request, @Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey requestAuthKey) {
         throw new RuntimeException("NOT IMPLEMENTED");
     }
+
+    @Post("/{id}/ai-analysis")
+    @With({"admin"})
+    public ActionResponse createAiAnalysisJob(@Path("id") String id, @Attrib("user") User user, @Attrib("authkey") AuthKey requestAuthKey) {
+        requestAuthKey.checkPermission("pastes.ai_analysis:create");
+        if (!Pastefy.getInstance().aiEnabled()) {
+            throw new RuntimeException("AI features are disabled");
+        }
+        Pastefy.getInstance().getPasteAIInfoService().enqueue(Paste.getAccessiblePasteOrFail(id, user));
+        return new ActionResponse(true);
+    }
 }

@@ -26,6 +26,8 @@ import ComponentInjection from '@/components/ComponentInjection.vue'
 import PasteSharingPopover from '@/components/popovers/PasteSharingPopover.vue'
 import PasteStarButton from '@/components/paste/PasteStarButton.vue'
 import { useTranslation } from 'i18next-vue'
+import PasteAiSummary from '@/components/PasteAiSummary.vue'
+import SeverityScore from '@/components/paste/SeverityScore.vue'
 const Highlighted = defineAsyncComponent(() => import('@/components/Highlighted.vue'))
 
 const props = defineProps<{
@@ -69,6 +71,7 @@ const { isLoading, error } = useAsyncState(async () => {
     await client.get(`/api/v2/paste/${props.pasteId}`, {
       params: {
         from_frontend: 'true',
+        with_ai_analysis: 'true',
       },
     })
   ).data as Paste
@@ -87,6 +90,14 @@ const { isLoading, error } = useAsyncState(async () => {
   }
   eventBus.emit('pageLoaded', 'paste')
 }, undefined)
+
+const { isLoading: aiSummaryLoading, execute: generateAiSummary } = useAsyncState(
+  async () => {
+    await client.post(`/api/v2/paste/${props.pasteId}/ai-analysis`)
+  },
+  undefined,
+  { immediate: false },
+)
 
 const fetchTags = () => {
   let i = 0
@@ -179,6 +190,7 @@ const permission = computed(() => ({
   showVisibility:
     currentUser.user?.type === 'ADMIN' ||
     (paste.value?.user_id && currentUser.user?.id === paste.value?.user_id),
+  isAdmin: currentUser.user?.type === 'ADMIN',
 }))
 
 const newTab = (u: string) => window.open(u)
@@ -208,9 +220,7 @@ const canPreview = computed(
       'hcl',
       'http',
       'log',
-    ].includes(
-      currentLang.value,
-    ) ||
+    ].includes(currentLang.value) ||
     currentFileName.value?.endsWith('.tf') ||
     currentFileName.value?.endsWith('.tfvars') ||
     currentFileName.value?.endsWith('.hcl') ||
@@ -244,6 +254,13 @@ watch(
   },
   { immediate: true },
 )
+
+const averageAiSeverity = computed(() => {
+  const warnings = paste.value?.ai_info?.warnings || []
+  if (!warnings.length) return 0
+
+  return Math.round(warnings.reduce((sum, warning) => sum + warning.severity, 0) / warnings.length)
+})
 </script>
 <template>
   <div v-if="appInfo.appInfo?.login_required_for_read && !currentUser.user">
@@ -266,7 +283,14 @@ watch(
         v-model="password"
         type="password"
       />
-      <Button type="submit" :label="$t('paste.decrypt')" fluid size="small" outlined severity="contrast" />
+      <Button
+        type="submit"
+        :label="$t('paste.decrypt')"
+        fluid
+        size="small"
+        outlined
+        severity="contrast"
+      />
     </form>
 
     <Button
@@ -283,23 +307,33 @@ watch(
   </main>
   <div v-else-if="paste" class="flex h-full w-full justify-center">
     <div class="flex w-full flex-col gap-2" :class="config.sideBarShown ? '' : 'xl:pl-[3.75rem]'">
-      <div class="flex items-center gap-3" v-if="!hideTitle">
-        <h1
-          class="text-2xl font-bold break-all"
-          id="paste-title"
-          v-if="title"
-          v-view-transition-name="`paste-${paste.id}-title`"
-        >
-          {{ title }}
-        </h1>
-        <div
-          class="flex items-center gap-1 rounded-md bg-neutral-100 px-1 py-0.5 dark:bg-neutral-800"
-          v-if="permission.showVisibility"
-          v-animate-css="{ classes: 'fadeIn', delay: 500 }"
-        >
-          <PasteVisibilityIcon :visibility="paste.visibility" />
-          <span class="text-sm font-normal">{{ $t(`paste.visibility.${paste.visibility.toLowerCase()}`) }}</span>
+      <div class="flex items-center justify-between gap-3" v-if="!hideTitle">
+        <div class="flex items-center gap-3">
+          <h1
+            class="text-2xl font-bold break-all"
+            id="paste-title"
+            v-if="title"
+            v-view-transition-name="`paste-${paste.id}-title`"
+          >
+            {{ title }}
+          </h1>
+          <div
+            class="flex items-center gap-1 rounded-md bg-neutral-100 px-1 py-0.5 dark:bg-neutral-800"
+            v-if="permission.showVisibility"
+            v-animate-css="{ classes: 'fadeIn', delay: 500 }"
+          >
+            <PasteVisibilityIcon :visibility="paste.visibility" />
+            <span class="text-sm font-normal">{{
+              $t(`paste.visibility.${paste.visibility.toLowerCase()}`)
+            }}</span>
+          </div>
         </div>
+        <a
+          v-if="content && averageAiSeverity >= 5 && content.split('\n').length > 20"
+          href="#paste-ai-summary"
+        >
+          <SeverityScore :severity="averageAiSeverity" single />
+        </a>
       </div>
       <ComponentInjection type="paste-below-title" :value="paste" />
       <div class="relative flex w-full flex-col gap-3 md:flex-row-reverse">
@@ -425,6 +459,16 @@ watch(
             @shortkey="deletePaste"
             :aria-label="$t('common.delete')"
           />
+          <Button
+            severity="contrast"
+            @click="generateAiSummary()"
+            :loading="aiSummaryLoading"
+            text
+            rounded
+            v-if="!asEmbed && permission.isAdmin"
+            icon="ti ti-sparkle text-xl"
+            :aria-label="$t('paste.generateAiSummary')"
+          />
           <ComponentInjection type="paste-actions-before-profile" :value="paste" />
           <component
             :is="asEmbed ? 'a' : 'router-link'"
@@ -443,7 +487,7 @@ watch(
           </component>
           <ComponentInjection type="paste-actions-last" :value="paste" />
         </div>
-        <div class="w-full overflow-hidden">
+        <div class="w-full space-y-5 overflow-hidden">
           <div
             class="group relative w-full rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
             :style="{
@@ -524,6 +568,7 @@ watch(
               />
             </div>
           </div>
+          <PasteAiSummary v-if="paste.ai_info" :ai-info="paste.ai_info" />
         </div>
       </div>
 

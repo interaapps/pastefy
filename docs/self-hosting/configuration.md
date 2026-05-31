@@ -130,9 +130,13 @@ Pastefy does not auto migrate your database to use Elasticsearch. You need to se
 
 ## **8. AI / Integrations** (Optional)
 
-| Variable             | Description                             | Notes |
-|----------------------|-----------------------------------------|-------|
-| `AI_ANTHROPIC_TOKEN` | API token for Anthropics AI integration | -     |
+| Variable             | Description                                      | Notes                                     |
+|----------------------|--------------------------------------------------|-------------------------------------------|
+| `AI_PROVIDER`        | Optional AI provider selection                    | `anthropic` or `google`; inferred by token |
+| `AI_MODEL`           | Optional provider-specific model override        | Uses the provider default when omitted    |
+| `AI_ANTHROPIC_TOKEN` | API token for Anthropic AI integration            | Required when using `anthropic`           |
+| `AI_GOOGLE_TOKEN`    | API token for the Google Gemini API integration   | Required when using `google`              |
+| `AI_JOB_SWEEPER_ENABLED` | Scan existing high-engagement pastes for AI metadata jobs | Defaults to `false`; enable on one pod only |
 
 ---
 

@@ -23,8 +23,12 @@ import org.javawebstack.webutils.util.IO;
 import org.javawebstack.webutils.util.RandomUtil;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -79,6 +83,13 @@ public class Paste extends Model {
     private Integer version = 0;
     @Column
     private Boolean indexedInElastic = false;
+
+    @Column
+    private Integer length = 0;
+
+    @Column(size = 64)
+    private String hash;
+
 
     public Paste() {
         key = RandomUtil.string(8);
@@ -156,7 +167,29 @@ public class Paste extends Model {
 
     public void setContent(String content) {
         this.content = content;
+        updateContentMetadata(content);
         this.storageType = StorageType.DATABASE;
+    }
+
+    public void setStorageReference(String content, StorageType storageType) {
+        this.content = content;
+        this.storageType = storageType;
+    }
+
+    private void updateContentMetadata(String content) {
+        if (content == null) {
+            length = 0;
+            hash = null;
+            return;
+        }
+
+        byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
+        length = contentBytes.length;
+        try {
+            hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(contentBytes));
+        } catch (NoSuchAlgorithmException exception) {
+            throw new IllegalStateException("SHA-256 is not available", exception);
+        }
     }
 
     public String getTitle() {
@@ -330,6 +363,11 @@ public class Paste extends Model {
     public void delete() {
         Repo.get(PasteTag.class).where("paste", key).delete();
         Repo.get(PublicPasteEngagement.class).where("pasteId", id).delete();
+        Repo.get(PasteAIInfo.class).where("pasteId", id).delete();
+        Repo.get(BackgroundJob.class)
+                .where("type", BackgroundJob.Type.PASTE_AI_INFO)
+                .where("entityId", id)
+                .delete();
 
         if (storageType == StorageType.S3) {
             Pastefy.getInstance().executeAsync(() -> MinioPaste.delete(this));
@@ -354,12 +392,24 @@ public class Paste extends Model {
         return version;
     }
 
+    public Integer getLength() {
+        return length;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
     public String getCachedContents() {
         return cachedContents;
     }
 
     public void setCachedContents(String cachedContents) {
         this.cachedContents = cachedContents;
+    }
+
+    public PasteAIInfo getAiInfo() {
+        return Repo.get(PasteAIInfo.class).where("pasteId", id).first();
     }
 
     public enum Type {

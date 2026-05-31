@@ -59,9 +59,18 @@ const {
         </div>
       </div>
 
-      <div>
-        <h2 class="mb-3 text-2xl font-bold">{{ $t('views.tagView.publicPastes') }}</h2>
-        <PasteList route="/api/v2/public-pastes/latest" :params="{ filter_tags: tag.tag }" />
+      <div class="space-y-5">
+        <div>
+          <h2 class="mb-3 text-2xl font-bold">{{ $t('paste.trending') }}</h2>
+          <PasteList
+            route="/api/v2/public-pastes/trending"
+            :params="{ filter_tags: tag.tag, shorten_content: 'true', trending: 'true' }"
+          />
+        </div>
+        <div>
+          <h2 class="mb-3 text-2xl font-bold">{{ $t('views.tagView.publicPastes') }}</h2>
+          <PasteList route="/api/v2/public-pastes/latest" :params="{ filter_tags: tag.tag }" />
+        </div>
       </div>
     </div>
   </main>
