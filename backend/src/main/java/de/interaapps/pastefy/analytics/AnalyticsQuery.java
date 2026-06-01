@@ -19,6 +19,8 @@ public class AnalyticsQuery {
     public Instant to = Instant.now();
     public String interval = "day";
     public String groupBy = "country";
+    public boolean includeSummary = true;
+    public boolean includeBreakdown = true;
     public final Map<String, String> filters = new LinkedHashMap<>();
 
     public static AnalyticsQuery from(Exchange exchange) {
@@ -40,6 +42,8 @@ public class AnalyticsQuery {
         if (AnalyticsService.GROUPABLE_FIELDS.contains(groupBy)) {
             query.groupBy = groupBy;
         }
+        query.includeSummary = !"false".equalsIgnoreCase(exchange.query("include_summary", "true"));
+        query.includeBreakdown = !"false".equalsIgnoreCase(exchange.query("include_breakdown", "true"));
 
         FILTERS.forEach(filter -> {
             String value = exchange.query(filter);

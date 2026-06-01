@@ -158,39 +158,43 @@ public class AnalyticsService {
         String where = buildWhere(query);
         AnalyticsResponse response = new AnalyticsResponse();
 
-        JsonObject totals = firstRow(select("SELECT count() AS total_visits, uniqExact(ip_hash) AS unique_visitors, "
-                + "countIf(is_bot = 1) AS bot_visits FROM " + fullTable() + where + " FORMAT JSONEachRow"));
-        if (totals != null) {
-            response.totalVisits = totals.get("total_visits").getAsLong();
-            response.uniqueVisitors = totals.get("unique_visitors").getAsLong();
-            response.botVisits = totals.get("bot_visits").getAsLong();
+        if (query.includeSummary) {
+            JsonObject totals = firstRow(select("SELECT count() AS total_visits, uniqExact(ip_hash) AS unique_visitors, "
+                    + "countIf(is_bot = 1) AS bot_visits FROM " + fullTable() + where + " FORMAT JSONEachRow"));
+            if (totals != null) {
+                response.totalVisits = totals.get("total_visits").getAsLong();
+                response.uniqueVisitors = totals.get("unique_visitors").getAsLong();
+                response.botVisits = totals.get("bot_visits").getAsLong();
+            }
+
+            String bucket = switch (query.interval) {
+                case "hour" -> "toStartOfHour(visited_at)";
+                case "week" -> "toStartOfWeek(visited_at)";
+                case "month" -> "toStartOfMonth(visited_at)";
+                default -> "toStartOfDay(visited_at)";
+            };
+            for (JsonObject row : rows(select("SELECT formatDateTime(" + bucket + ", '%FT%TZ', 'UTC') AS bucket, "
+                    + "count() AS visits, uniqExact(ip_hash) AS unique_visitors FROM " + fullTable() + where
+                    + " GROUP BY bucket ORDER BY bucket FORMAT JSONEachRow"))) {
+                AnalyticsResponse.SeriesPoint point = new AnalyticsResponse.SeriesPoint();
+                point.bucket = row.get("bucket").getAsString();
+                point.visits = row.get("visits").getAsLong();
+                point.uniqueVisitors = row.get("unique_visitors").getAsLong();
+                response.series.add(point);
+            }
         }
 
-        String bucket = switch (query.interval) {
-            case "hour" -> "toStartOfHour(visited_at)";
-            case "week" -> "toStartOfWeek(visited_at)";
-            case "month" -> "toStartOfMonth(visited_at)";
-            default -> "toStartOfDay(visited_at)";
-        };
-        for (JsonObject row : rows(select("SELECT formatDateTime(" + bucket + ", '%FT%TZ', 'UTC') AS bucket, "
-                + "count() AS visits, uniqExact(ip_hash) AS unique_visitors FROM " + fullTable() + where
-                + " GROUP BY bucket ORDER BY bucket FORMAT JSONEachRow"))) {
-            AnalyticsResponse.SeriesPoint point = new AnalyticsResponse.SeriesPoint();
-            point.bucket = row.get("bucket").getAsString();
-            point.visits = row.get("visits").getAsLong();
-            point.uniqueVisitors = row.get("unique_visitors").getAsLong();
-            response.series.add(point);
-        }
-
-        String groupExpression = query.groupBy.equals("paste_tag") ? "arrayJoin(paste_tags)" : query.groupBy;
-        for (JsonObject row : rows(select("SELECT toString(" + groupExpression + ") AS value, count() AS visits, "
-                + "uniqExact(ip_hash) AS unique_visitors FROM " + fullTable() + where
-                + " GROUP BY value ORDER BY visits DESC LIMIT 25 FORMAT JSONEachRow"))) {
-            AnalyticsResponse.BreakdownPoint point = new AnalyticsResponse.BreakdownPoint();
-            point.value = row.get("value").getAsString();
-            point.visits = row.get("visits").getAsLong();
-            point.uniqueVisitors = row.get("unique_visitors").getAsLong();
-            response.breakdown.add(point);
+        if (query.includeBreakdown) {
+            String groupExpression = query.groupBy.equals("paste_tag") ? "arrayJoin(paste_tags)" : query.groupBy;
+            for (JsonObject row : rows(select("SELECT toString(" + groupExpression + ") AS value, count() AS visits, "
+                    + "uniqExact(ip_hash) AS unique_visitors FROM " + fullTable() + where
+                    + " GROUP BY value ORDER BY visits DESC LIMIT 25 FORMAT JSONEachRow"))) {
+                AnalyticsResponse.BreakdownPoint point = new AnalyticsResponse.BreakdownPoint();
+                point.value = row.get("value").getAsString();
+                point.visits = row.get("visits").getAsLong();
+                point.uniqueVisitors = row.get("unique_visitors").getAsLong();
+                response.breakdown.add(point);
+            }
         }
         return response;
     }
