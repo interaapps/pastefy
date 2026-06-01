@@ -67,11 +67,7 @@ const rowColor = computed(
 
 const displayValue = (value: string) => {
   if (!value) return '(direct / unknown)'
-  if (
-    props.active === 'paste_key' ||
-    props.active === 'referer_host'
-  )
-    return value
+  if (props.active === 'paste_key' || props.active === 'referer_host') return value
   if (props.active === 'country' || props.active === 'region') return value.toUpperCase()
   return value
     .replace(/_/g, ' ')
@@ -138,7 +134,7 @@ const countryFlag = (value: string) =>
             v-if="countryFlag(row.value)"
             :src="countryFlag(row.value)"
             :alt="`${row.value.toUpperCase()} flag`"
-            class="h-5 w-5 shrink-0 rounded-full rounded-xs object-cover"
+            class="h-4 w-4 shrink-0 rounded-full object-cover"
           />
           <i v-else :class="icon" class="shrink-0" />
           <span class="truncate">{{ displayValue(row.value) }}</span>
