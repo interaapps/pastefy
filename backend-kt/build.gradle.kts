@@ -45,7 +45,7 @@ dependencies {
     implementation("io.minio:minio:8.5.5")
 
     implementation("redis.clients:jedis:5.2.0")
-    implementation("org.apache.xmlgraphics:batik-code:1.16")
+    implementation("org.apache.xmlgraphics:batik-codec:1.16")
     implementation("org.apache.xmlgraphics:batik-transcoder:1.17")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
