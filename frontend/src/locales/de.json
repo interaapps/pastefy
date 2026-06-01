@@ -121,7 +121,7 @@
     "line": "Zeile {{line}}",
     "lines": "Zeilen {{from}}-{{to}}",
     "fromLine": "Ab Zeile {{line}}",
-    "optionalEndLine": "Endzeile (optional)",
+    "optionalEndLine": "Endzeile",
     "commentLine": "Zeile {{line}} kommentieren",
     "showMore": "Mehr anzeigen",
     "showLess": "Weniger anzeigen",

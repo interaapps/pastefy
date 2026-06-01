@@ -135,6 +135,55 @@ const fields = [
   { label: 'Bot', value: 'is_bot' },
 ]
 
+const filterOptions: Record<string, { label: string; value: string }[]> = {
+  paste_visibility: [
+    { label: 'Public', value: 'PUBLIC' },
+    { label: 'Unlisted', value: 'UNLISTED' },
+    { label: 'Private', value: 'PRIVATE' },
+  ],
+  visit_type: [
+    { label: 'Page', value: 'PAGE' },
+    { label: 'RAW', value: 'RAW' },
+  ],
+  browser: [
+    { label: 'Chrome', value: 'CHROME' },
+    { label: 'Firefox', value: 'FIREFOX' },
+    { label: 'Safari', value: 'SAFARI' },
+    { label: 'Edge', value: 'EDGE' },
+    { label: 'cURL', value: 'CURL' },
+    { label: 'Bot', value: 'BOT' },
+    { label: 'Unknown', value: 'UNKNOWN' },
+  ],
+  device_type: [
+    { label: 'Desktop', value: 'DESKTOP' },
+    { label: 'Mobile', value: 'MOBILE' },
+    { label: 'Tablet', value: 'TABLET' },
+    { label: 'Bot', value: 'BOT' },
+  ],
+  os: [
+    { label: 'Windows', value: 'WINDOWS' },
+    { label: 'macOS', value: 'MACOS' },
+    { label: 'Linux', value: 'LINUX' },
+    { label: 'Android', value: 'ANDROID' },
+    { label: 'iOS', value: 'IOS' },
+    { label: 'Unknown', value: 'UNKNOWN' },
+  ],
+  acquisition: [
+    { label: 'Direct', value: 'DIRECT' },
+    { label: 'Internal', value: 'INTERNAL' },
+    { label: 'Organic search', value: 'ORGANIC_SEARCH' },
+    { label: 'Developer referral', value: 'DEVELOPER_REFERRAL' },
+    { label: 'Social', value: 'SOCIAL' },
+    { label: 'Referral', value: 'REFERRAL' },
+  ],
+  is_bot: [
+    { label: 'Bots only', value: 'true' },
+    { label: 'Humans only', value: 'false' },
+  ],
+}
+
+const optionsForFilter = (filter: Filter) => filterOptions[filter.field]
+
 const presets = [
   { label: 'Last 24 hours', amount: 24, unit: 'hour', interval: 'hour', shortcut: 'D' },
   { label: 'Last 7 days', amount: 7, unit: 'day', interval: 'day', shortcut: 'W' },
@@ -201,6 +250,10 @@ const switchPanelDimension = async (panel: Panel, dimension: string) => {
 
 const addFilter = () => filters.push({ field: 'country', value: '' })
 const removeFilter = (index: number) => filters.splice(index, 1)
+const changeFilterField = (filter: Filter, field: string) => {
+  filter.field = field
+  filter.value = ''
+}
 
 const toggleFilterPopover = (event: Event) => {
   rangePopover.value?.hide()
@@ -322,37 +375,57 @@ onMounted(fetchAnalytics)
         @click="fetchAnalytics"
       />
 
-      <Popover ref="filterPopover" class="w-[42rem] max-w-[calc(100vw-3rem)]">
-        <div class="mb-3 flex items-center justify-between">
-          <h2 class="font-bold">Filters</h2>
-          <Button icon="ti ti-plus" label="Add filter" size="small" text @click="addFilter" />
-        </div>
-        <p v-if="!filters.length" class="py-4 text-sm text-neutral-500">
-          Add filters to narrow analytics by paste metadata, audience or acquisition.
-        </p>
-        <div v-for="(filter, index) in filters" :key="index" class="mb-2 flex gap-2">
-          <Select
-            v-model="filter.field"
-            :options="fields"
-            option-label="label"
-            option-value="value"
-            class="w-[14rem]"
-          />
-          <InputText v-model="filter.value" class="min-w-0 flex-1" placeholder="Exact value" />
-          <Button
-            icon="ti ti-trash"
-            severity="contrast"
-            text
-            aria-label="Remove filter"
-            @click="removeFilter(index)"
-          />
-        </div>
-        <div class="mt-3 flex justify-end">
-          <Button
-            label="Apply filters"
-            size="small"
-            @click="(filterPopover?.hide(), fetchAnalytics())"
-          />
+      <Popover ref="filterPopover" class="w-[32rem] max-w-[calc(100vw-3rem)]">
+        <div class="flex min-h-[16rem] flex-col">
+          <div class="mb-3 flex items-center justify-between">
+            <h2 class="font-bold">Filters</h2>
+            <Button icon="ti ti-plus" label="Add filter" size="small" text @click="addFilter" />
+          </div>
+          <div class="flex-1 overflow-auto">
+            <p v-if="!filters.length" class="py-4 text-sm text-neutral-500">
+              Add filters to narrow analytics by paste metadata, audience or acquisition.
+            </p>
+            <div v-for="(filter, index) in filters" :key="index" class="mb-2 flex gap-2">
+              <Select
+                :model-value="filter.field"
+                :options="fields"
+                option-label="label"
+                option-value="value"
+                class="w-[14rem]"
+                @update:model-value="changeFilterField(filter, $event)"
+              />
+              <Select
+                v-if="optionsForFilter(filter)"
+                v-model="filter.value"
+                :options="optionsForFilter(filter)"
+                option-label="label"
+                option-value="value"
+                class="min-w-0 flex-1"
+                placeholder="Select value"
+              />
+              <InputText
+                v-else
+                v-model="filter.value"
+                class="min-w-0 flex-1"
+                placeholder="Exact value"
+              />
+              <Button
+                icon="ti ti-trash"
+                severity="contrast"
+                text
+                aria-label="Remove filter"
+                @click="removeFilter(index)"
+              />
+            </div>
+          </div>
+
+          <div class="mt-3 flex justify-end">
+            <Button
+              label="Apply filters"
+              size="small"
+              @click="(filterPopover?.hide(), fetchAnalytics())"
+            />
+          </div>
         </div>
       </Popover>
 
