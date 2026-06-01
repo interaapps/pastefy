@@ -475,6 +475,21 @@ const averageAiSeverity = computed(() => {
             :aria-label="$t('common.delete')"
           />
           <Button
+            as="router-link"
+            :to="{ name: 'paste-analytics', params: { paste: paste.id } }"
+            severity="contrast"
+            text
+            rounded
+            v-if="
+              appInfo.appInfo?.analytics_enabled &&
+              !asEmbed &&
+              (permission.canEdit || permission.isAdmin)
+            "
+            icon="ti ti-chart-line text-xl"
+            v-tooltip="{ value: 'Analytics', showDelay: 500 }"
+            aria-label="Analytics"
+          />
+          <Button
             severity="contrast"
             @click="generateAiSummary()"
             :loading="aiSummaryLoading"
@@ -567,7 +582,9 @@ const averageAiSeverity = computed(() => {
                 :contents="content"
                 :line-comment-markers="paste.type === 'PASTE' && !asEmbed ? lineCommentMarkers : []"
                 :enable-line-comments="paste.type === 'PASTE' && !asEmbed"
-                @line-click="(event, line, target) => comments?.openLineComment(event, line, target)"
+                @line-click="
+                  (event, line, target) => comments?.openLineComment(event, line, target)
+                "
               />
             </template>
 

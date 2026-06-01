@@ -11,6 +11,7 @@ export type Config = {
   public_pastes_enabled?: boolean
   custom_name?: string
   ai_enabled: boolean
+  analytics_enabled: boolean
 }
 
 export const useAppInfoStore = defineStore('app-info', () => {

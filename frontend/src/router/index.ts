@@ -91,6 +91,11 @@ const router = createRouter({
           component: () => import('@/views/developers/ApiKeysPage.vue'),
         },
         {
+          path: '/analytics',
+          name: 'user-analytics',
+          component: () => import('@/views/UserAnalyticsView.vue'),
+        },
+        {
           path: '/connect/asciinema',
           name: 'connect-asciinema',
           component: () => import('@/views/extra/AsciinemaConnectView.vue'),
@@ -133,6 +138,11 @@ const router = createRouter({
               name: 'admin-users',
               component: () => import('@/views/admin/AdminUsers.vue'),
             },
+            {
+              path: 'analytics',
+              name: 'admin-analytics',
+              component: () => import('@/views/admin/AdminAnalytics.vue'),
+            },
           ],
         },
 
@@ -153,6 +163,11 @@ const router = createRouter({
           component: () => import('@/views/TagView.vue'),
         },
 
+        {
+          path: '/:paste/analytics',
+          name: 'paste-analytics',
+          component: () => import('@/views/PasteAnalyticsView.vue'),
+        },
         {
           path: '/:paste/article',
           name: 'paste-article',

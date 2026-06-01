@@ -2,9 +2,11 @@
 import Button from 'primevue/button'
 import { useCurrentUserStore } from '@/stores/current-user.ts'
 import { useAppStore } from '@/stores/app.ts'
+import { useAppInfoStore } from '@/stores/app-info.ts'
 
 const currentUserStore = useCurrentUserStore()
 const appStore = useAppStore()
+const appInfo = useAppInfoStore()
 import { useConfirm } from 'primevue/useconfirm'
 import { useTranslation } from 'i18next-vue'
 const confirm = useConfirm()
@@ -56,6 +58,19 @@ const emit = defineEmits(['elementClicked'])
     text
     icon="ti ti-key text-lg"
     :label="$t('nav.apiKeys')"
+    severity="contrast"
+    size="small"
+    fluid
+    class="justify-start"
+    @click="emit('elementClicked')"
+  />
+  <Button
+    as="router-link"
+    :to="{ name: 'user-analytics' }"
+    v-if="appInfo.appInfo?.analytics_enabled && currentUserStore.user?.logged_in"
+    text
+    icon="ti ti-chart-line text-lg"
+    label="Analytics"
     severity="contrast"
     size="small"
     fluid

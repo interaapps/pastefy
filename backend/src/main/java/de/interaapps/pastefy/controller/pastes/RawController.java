@@ -40,6 +40,10 @@ public class RawController extends HttpController {
             Pastefy.getInstance().executeAsync(() -> PublicPasteEngagement.addInterestFromPaste(paste, 1));
         }
 
+        if (Pastefy.getInstance().analyticsEnabled()) {
+            Pastefy.getInstance().getAnalyticsService().track(exchange, paste, user, de.interaapps.pastefy.analytics.AnalyticsService.VisitType.RAW);
+        }
+
         if (exchange.query("part") != null && paste.getType() == Paste.Type.MULTI_PASTE) {
             AbstractObject part = paste.getMultiPasteParts()
                     .stream()

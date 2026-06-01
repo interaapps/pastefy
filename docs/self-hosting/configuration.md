@@ -140,6 +140,31 @@ Pastefy does not auto migrate your database to use Elasticsearch. You need to se
 
 ---
 
+## **9. Analytics / ClickHouse** (Optional)
+
+Analytics is disabled unless `ANALYTICS_CLICKHOUSE_URL` and `ANALYTICS_IP_HASH_SALT` are set. Visits are buffered in memory and inserted into ClickHouse in batches. The ClickHouse table uses a TTL so raw visit rows are deleted automatically.
+
+| Variable | Description | Default / Notes |
+|----------|-------------|-----------------|
+| `ANALYTICS_CLICKHOUSE_URL` | ClickHouse HTTP endpoint | Example: `http://clickhouse:8123` |
+| `ANALYTICS_CLICKHOUSE_DATABASE` | ClickHouse database | `default` |
+| `ANALYTICS_CLICKHOUSE_TABLE` | ClickHouse visits table | `pastefy_analytics_visits` |
+| `ANALYTICS_CLICKHOUSE_USER` | ClickHouse HTTP user | `default` |
+| `ANALYTICS_CLICKHOUSE_PASSWORD` | ClickHouse HTTP password | Empty |
+| `ANALYTICS_CLICKHOUSE_AUTOMIGRATE` | Create the analytics table on startup | `true` |
+| `ANALYTICS_RETENTION_DAYS` | Retention for raw analytics rows | `90` |
+| `ANALYTICS_BATCH_SIZE` | Maximum rows per ClickHouse insert | `1000` |
+| `ANALYTICS_FLUSH_INTERVAL_MILLIS` | Batch flush interval | `1000` |
+| `ANALYTICS_QUEUE_CAPACITY` | Maximum buffered rows before new events are dropped | `100000` |
+| `ANALYTICS_IP_HASH_SALT` | Secret salt for SHA-256 IP hashes | Required when analytics is enabled |
+| `ANALYTICS_IP_SOURCE` | Client IP source: `direct`, `x-forwarded-for`, or `cloudflare` | `direct` |
+| `ANALYTICS_IP_HEADER` | Optional custom client IP header; overrides `ANALYTICS_IP_SOURCE` | Empty |
+| `ANALYTICS_GEOIP_MMDB_PATH` | Path to a GeoIP2 or GeoLite2 City `.mmdb` file | Empty; location fields stay empty |
+| `ANALYTICS_TAG_CACHE_MILLIS` | TTL for hot paste tag snapshots | `300000` |
+| `ANALYTICS_TAG_CACHE_MAX_ENTRIES` | Maximum number of hot paste tag snapshots | `10000` |
+
+---
+
 ### ✅ Notes
 
 * Can be used in `.env` or as Docker environment variables.

@@ -4,6 +4,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.google.gson.Gson;
 import de.interaapps.pastefy.ai.PasteAI;
 import de.interaapps.pastefy.ai.PasteAIInfoService;
+import de.interaapps.pastefy.analytics.AnalyticsService;
 import de.interaapps.pastefy.auth.*;
 import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Strategy;
 import de.interaapps.pastefy.auth.strategies.oauth2.providers.*;
@@ -88,6 +89,7 @@ public class Pastefy {
     private PasteAI pasteAI;
     private BackgroundJobService backgroundJobService;
     private PasteAIInfoService pasteAIInfoService;
+    private AnalyticsService analyticsService;
 
     private String homeHTML;
 
@@ -117,6 +119,7 @@ public class Pastefy {
         setupElastic();
         setupMinio();
         setupRedis();
+        analyticsService = AnalyticsService.create(this);
 
         pasteAI = PasteAI.create(this);
         backgroundJobService = new BackgroundJobService(this);
@@ -240,6 +243,25 @@ public class Pastefy {
                 .map("AI_JOB_LEASE_SECONDS", "ai.jobs.leaseseconds")
                 .map("AI_JOB_MAX_ATTEMPTS", "ai.jobs.maxattempts")
                 .map("AI_JOB_RETRY_DELAY_SECONDS", "ai.jobs.retrydelayseconds")
+
+                .map("ANALYTICS_CLICKHOUSE_URL", "analytics.clickhouse.url")
+                .map("ANALYTICS_CLICKHOUSE_DATABASE", "analytics.clickhouse.database")
+                .map("ANALYTICS_CLICKHOUSE_TABLE", "analytics.clickhouse.table")
+                .map("ANALYTICS_CLICKHOUSE_USER", "analytics.clickhouse.user")
+                .map("ANALYTICS_CLICKHOUSE_PASSWORD", "analytics.clickhouse.password")
+                .map("ANALYTICS_CLICKHOUSE_AUTOMIGRATE", "analytics.clickhouse.automigrate")
+                .map("ANALYTICS_RETENTION_DAYS", "analytics.retentiondays")
+                .map("ANALYTICS_BATCH_SIZE", "analytics.batchsize")
+                .map("ANALYTICS_FLUSH_INTERVAL_MILLIS", "analytics.flushintervalmillis")
+                .map("ANALYTICS_QUEUE_CAPACITY", "analytics.queuecapacity")
+                .map("ANALYTICS_HTTP_CONNECT_TIMEOUT_MILLIS", "analytics.http.connecttimeoutmillis")
+                .map("ANALYTICS_HTTP_REQUEST_TIMEOUT_MILLIS", "analytics.http.requesttimeoutmillis")
+                .map("ANALYTICS_IP_HASH_SALT", "analytics.iphashsalt")
+                .map("ANALYTICS_IP_SOURCE", "analytics.ipsource")
+                .map("ANALYTICS_IP_HEADER", "analytics.ipheader")
+                .map("ANALYTICS_GEOIP_MMDB_PATH", "analytics.geoip.mmdbpath")
+                .map("ANALYTICS_TAG_CACHE_MILLIS", "analytics.tagcachemillis")
+                .map("ANALYTICS_TAG_CACHE_MAX_ENTRIES", "analytics.tagcachemaxentries")
 
                 .map("DATABASE_CUSTOMPARAMS_CACHE_PREP_STMTS", "database.customparams.cachePrepStmts")
                 .map("DATABASE_CUSTOMPARAMS_PREP_STMT_CACHE_SIZE", "database.customparams.prepStmtCacheSize")
@@ -692,6 +714,14 @@ public class Pastefy {
     }
     public boolean isRedisEnabled() {
         return redisPool != null;
+    }
+
+    public AnalyticsService getAnalyticsService() {
+        return analyticsService;
+    }
+
+    public boolean analyticsEnabled() {
+        return analyticsService != null;
     }
 
     public ExecutorService getExecutor() {

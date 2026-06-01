@@ -205,6 +205,10 @@ public class PasteController extends HttpController {
             }
         }
 
+        if (Pastefy.getInstance().analyticsEnabled() && "true".equalsIgnoreCase(exchange.query("from_frontend", "false"))) {
+            Pastefy.getInstance().getAnalyticsService().track(exchange, paste, user, de.interaapps.pastefy.analytics.AnalyticsService.VisitType.PAGE);
+        }
+
         return PasteResponse.create(paste, exchange, user);
     }
 
