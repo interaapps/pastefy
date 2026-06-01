@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, reactive, watchEffect } from 'vue'
 import type { AnalyticsBreakdownPoint } from '@/types/analytics.ts'
 import ProgressSpinner from 'primevue/progressspinner'
 
 const countryFlagModules = import.meta.glob('../../../node_modules/ia-flag-icons/states/*.svg', {
-  eager: true,
   import: 'default',
   query: '?url',
-}) as Record<string, string>
+}) as Record<string, () => Promise<string>>
 
-const countryFlags = Object.fromEntries(
-  Object.entries(countryFlagModules)
-    .map(([path, url]) => [path.match(/\/([A-Z]{2})\.svg$/)?.[1], url])
-    .filter(([country]) => country),
-) as Record<string, string>
+const countryFlagLoaders = Object.entries(countryFlagModules).reduce<
+  Record<string, () => Promise<string>>
+>((loaders, [path, loader]) => {
+  const country = path.match(/\/([A-Z]{2})\.svg$/)?.[1]
+  if (country) loaders[country] = loader
+  return loaders
+}, {})
 
 const props = defineProps<{
   title: string
@@ -24,6 +25,30 @@ const props = defineProps<{
   rows: AnalyticsBreakdownPoint[]
   loading?: boolean
 }>()
+
+const countryFlags = reactive<Record<string, string>>({})
+const loadingCountryFlags = new Set<string>()
+
+const loadCountryFlag = (value: string) => {
+  const code = value.toUpperCase()
+  if (!/^[A-Z]{2}$/.test(code) || countryFlags[code] || loadingCountryFlags.has(code)) return
+
+  const loader = countryFlagLoaders[code]
+  if (!loader) return
+
+  loadingCountryFlags.add(code)
+  loader()
+    .then((url) => {
+      countryFlags[code] = url
+    })
+    .catch(() => {})
+    .finally(() => loadingCountryFlags.delete(code))
+}
+
+watchEffect(() => {
+  if (props.active !== 'country') return
+  props.rows.forEach(({ value }) => loadCountryFlag(value))
+})
 
 defineEmits<{
   'update:active': [value: string]

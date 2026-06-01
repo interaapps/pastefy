@@ -593,6 +593,9 @@ public class Pastefy {
 
         httpRouter.get("/", requestHandler);
         httpRouter.staticResourceDirectory("/", "static");
+        httpRouter.get("/assets/{*:path}", e -> {
+            throw new NotFoundException();
+        });
 
         httpRouter.get("/api/{*:path}", e -> {
             throw new NotFoundException();
