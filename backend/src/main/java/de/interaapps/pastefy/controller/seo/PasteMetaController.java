@@ -103,7 +103,7 @@ public class PasteMetaController extends HttpController {
                 : "<p>By <a href=\"" + seo.escapeHtml(author.profileUrl) + "\">"
                 + seo.escapeHtml(author.displayName) + " (@" + seo.escapeHtml(author.username) + ")</a></p>";
 
-        String tagsHtml = "";
+        String tagsHtml = "<h2>Tags</h2>";
 
         for (String t : paste.getTags()) {
             String tag = t.trim();
