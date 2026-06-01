@@ -219,6 +219,7 @@ public class User extends Model {
         Repo.get(Folder.class).where("userId", id).delete();
         Repo.get(AuthKey.class).where("userId", id).delete();
         Repo.get(Notification.class).where("userId", id).delete();
+        Repo.get(PasteComment.class).where("userId", id).delete();
         Repo.get(SharedPaste.class).where("targetId", id).orWhere("userId", id).delete();
         super.delete();
     }
