@@ -102,11 +102,23 @@ public class PasteMetaController extends HttpController {
                 ? ""
                 : "<p>By <a href=\"" + seo.escapeHtml(author.profileUrl) + "\">"
                 + seo.escapeHtml(author.displayName) + " (@" + seo.escapeHtml(author.username) + ")</a></p>";
+
+        String tagsHtml = "";
+
+        for (String t : paste.getTags()) {
+            String tag = t.trim();
+            if (!tag.isEmpty()) {
+                String tagUrl = seo.absoluteUrl("/tags/" + seo.pathSegment(tag));
+                tagsHtml += "<a href=\"" + seo.escapeHtml(tagUrl) + "\" class=\"seo-tag\">" + seo.escapeHtml(tag) + "</a> ";
+            }
+        }
+
         return "<main id=\"seo-content\">"
                 + "<h1 title=\"paste-title\">" + seo.escapeHtml(title) + "</h1>"
                 + authorHtml
                 + "<p>View and share code snippets on Pastefy.</p>"
                 + "<pre><code>" + seo.escapeHtml(preview) + "</code></pre>"
+                + tagsHtml
                 + "</main>";
     }
 
