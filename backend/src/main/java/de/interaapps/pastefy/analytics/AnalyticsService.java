@@ -12,6 +12,7 @@ import org.javawebstack.http.router.Exchange;
 import org.javawebstack.webutils.config.Config;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -25,8 +26,8 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -205,7 +206,7 @@ public class AnalyticsService {
                 + "paste_tags Array(String), visit_type LowCardinality(String), visited_at DateTime64(3, 'UTC'), "
                 + "country LowCardinality(String), region LowCardinality(String), city LowCardinality(String), "
                 + "visitor_user_id Nullable(String), browser LowCardinality(String), device_type LowCardinality(String), "
-                + "os LowCardinality(String), ip_hash FixedString(64), referer_host String, "
+                + "os LowCardinality(String), ip_hash UInt64, referer_host String, "
                 + "acquisition LowCardinality(String), is_bot UInt8, "
                 + "INDEX paste_tags_idx paste_tags TYPE bloom_filter GRANULARITY 4"
                 + ") ENGINE = MergeTree PARTITION BY toYYYYMM(visited_at) ORDER BY (paste_key, visited_at) "
@@ -307,10 +308,11 @@ public class AnalyticsService {
         return value;
     }
 
-    private String hashIp(String ip) {
+    private BigInteger hashIp(String ip) {
         try {
-            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
-                    .digest((ipSalt + ":" + ip).getBytes(StandardCharsets.UTF_8)));
+            byte[] digest = MessageDigest.getInstance("SHA-256")
+                    .digest((ipSalt + ":" + ip).getBytes(StandardCharsets.UTF_8));
+            return new BigInteger(1, Arrays.copyOf(digest, Long.BYTES));
         } catch (Exception exception) {
             throw new IllegalStateException("SHA-256 is not available", exception);
         }
@@ -429,7 +431,7 @@ public class AnalyticsService {
         String browser;
         String device_type;
         String os;
-        String ip_hash;
+        BigInteger ip_hash;
         String referer_host;
         String acquisition;
         int is_bot;
