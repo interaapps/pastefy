@@ -109,6 +109,21 @@
     "viewOnPastefy": "auf Pastefy anzeigen",
     "openInEditor": "im Paste-Editor öffnen"
   },
+  "comments": {
+    "title": "Kommentare",
+    "placeholder": "Kommentar schreiben ...",
+    "submit": "Kommentieren",
+    "reply": "Antworten",
+    "empty": "Noch keine Kommentare.",
+    "emptyForLine": "Für diese Zeile gibt es noch keine Kommentare.",
+    "loginRequired": "Melde dich an, um Kommentare zu schreiben.",
+    "deletedUser": "Gelöschter Nutzer",
+    "line": "Zeile {{line}}",
+    "lines": "Zeilen {{from}}-{{to}}",
+    "fromLine": "Ab Zeile {{line}}",
+    "optionalEndLine": "Endzeile (optional)",
+    "commentLine": "Zeile {{line}} kommentieren"
+  },
   "layout": {
     "toggleSidebar": "Sidebar ein-/ausblenden"
   },

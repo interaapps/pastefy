@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { findFromFileName } from '@/utils/lang-replacements.ts'
 import { highlight } from '@/utils/highlight.ts'
 import '@/utils/highlight-imports.ts'
 import highlightWorker from '@/utils/workers/highlight.worker.ts?worker'
 import CopyButton from '@/components/CopyButton.vue'
+import PasteLineCommentAvatars from '@/components/paste/PasteLineCommentAvatars.vue'
+import type { PasteCommentMarker } from '@/types/paste-comment.ts'
 
 const props = defineProps<{
   contents: string
@@ -16,11 +18,36 @@ const props = defineProps<{
   hideColorPreview?: boolean
   showCopyButton?: boolean
   getCopyContents?: () => Promise<string>
+  lineCommentMarkers?: PasteCommentMarker[]
+  enableLineComments?: boolean
+}>()
+
+const emit = defineEmits<{
+  lineClick: [event: Event, line: number]
 }>()
 
 const highlightedContents = ref<string | undefined>(undefined)
+const markerByLine = computed(
+  () => new Map(props.lineCommentMarkers?.map((marker) => [marker.line, marker]) || []),
+)
 
 const id = Math.random().toString(36).substring(7)
+
+const selectCodeLine = (event: MouseEvent) => {
+  if (!props.enableLineComments) return
+
+  const pre = (event.currentTarget as HTMLElement).querySelector('pre')
+  if (!pre) return
+
+  const style = window.getComputedStyle(pre)
+  const lineHeight = Number.parseFloat(style.lineHeight) || Number.parseFloat(style.fontSize) * 1.2
+  const line = Math.floor((event.clientY - pre.getBoundingClientRect().top) / lineHeight) + 1
+  const lineCount = props.contents.split('\n').length
+
+  if (line >= 1 && line <= lineCount) {
+    emit('lineClick', event, line + (props.startingLineNumber || 0))
+  }
+}
 
 const addColorIndicators = () => {
   setTimeout(() => {
@@ -121,15 +148,27 @@ onMounted(async () => {
       class="p-3 text-right select-none"
       :class="hideDivider ? ' ' : 'border-r-1 border-neutral-200 dark:border-neutral-700'"
     >
-      <span
-        class="block opacity-30"
+      <button
+        class="group flex w-full cursor-pointer items-center justify-between gap-1"
         v-for="(_, line) of (highlightedContents !== undefined
           ? highlightedContents
           : contents
         )?.split('\n') || []"
         :key="line + 1"
-        >{{ line + 1 + (startingLineNumber || 0) }}</span
+        type="button"
+        :disabled="!enableLineComments"
+        @click="(event) => emit('lineClick', event, line + 1 + (startingLineNumber || 0))"
       >
+        <PasteLineCommentAvatars
+          v-if="markerByLine.get(line + 1 + (startingLineNumber || 0))"
+          :marker="markerByLine.get(line + 1 + (startingLineNumber || 0))!"
+          class="-ml-2"
+        />
+        <span v-else aria-hidden="true" />
+        <span class="opacity-30 transition-opacity group-hover:opacity-100">{{
+          line + 1 + (startingLineNumber || 0)
+        }}</span>
+      </button>
     </div>
     <code class="w-full p-3">
       <pre v-if="highlightedContents !== undefined" v-html="highlightedContents" />

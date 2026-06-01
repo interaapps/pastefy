@@ -28,6 +28,8 @@ import PasteStarButton from '@/components/paste/PasteStarButton.vue'
 import { useTranslation } from 'i18next-vue'
 import PasteAiSummary from '@/components/PasteAiSummary.vue'
 import SeverityScore from '@/components/paste/SeverityScore.vue'
+import PasteComments from '@/components/paste/PasteComments.vue'
+import type { PasteCommentMarker } from '@/types/paste-comment.ts'
 const Highlighted = defineAsyncComponent(() => import('@/components/Highlighted.vue'))
 
 const props = defineProps<{
@@ -199,6 +201,8 @@ const config = useConfig()
 
 const tagsPopover = useTemplateRef<PopoverMethods>('tagsPopover')
 const sharePopover = useTemplateRef<PopoverMethods>('sharePopover')
+const comments = useTemplateRef<InstanceType<typeof PasteComments>>('comments')
+const lineCommentMarkers = ref<PasteCommentMarker[]>([])
 
 const canPreview = computed(
   () =>
@@ -355,6 +359,17 @@ const averageAiSeverity = computed(() => {
             :aria-label="$t('common.copy')"
           />
           <PasteStarButton v-if="paste" :paste="paste" :paste-id="props.pasteId" />
+
+          <Button
+            v-if="!asEmbed"
+            @click="comments?.openDialog()"
+            severity="contrast"
+            text
+            rounded
+            icon="ti ti-messages text-xl"
+            v-tooltip="{ value: $t('comments.title'), showDelay: 500 }"
+            :aria-label="$t('comments.title')"
+          />
           <Button
             v-if="paste.tags?.includes('codebox')"
             target="_blank"
@@ -550,6 +565,9 @@ const averageAiSeverity = computed(() => {
                 :file-name="currentFileName"
                 :key="multiPartIndex"
                 :contents="content"
+                :line-comment-markers="paste.type === 'PASTE' && !asEmbed ? lineCommentMarkers : []"
+                :enable-line-comments="paste.type === 'PASTE' && !asEmbed"
+                @line-click="(event, line) => comments?.openLineComment(event, line)"
               />
             </template>
 
@@ -584,6 +602,15 @@ const averageAiSeverity = computed(() => {
     :asEmbed
     :currentFileName="currentFileName!"
     :pasteId
+  />
+
+  <PasteComments
+    v-if="paste && !asEmbed"
+    ref="comments"
+    :paste-id="props.pasteId"
+    :paste-user-id="paste.user_id"
+    :enable-line-comments="paste.type === 'PASTE'"
+    @markers-updated="lineCommentMarkers = $event"
   />
 
   <Popover ref="tagsPopover">

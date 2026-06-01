@@ -361,6 +361,7 @@ public class Paste extends Model {
 
     @Override
     public void delete() {
+        Repo.get(PasteComment.class).where("paste", key).delete();
         Repo.get(PasteTag.class).where("paste", key).delete();
         Repo.get(PublicPasteEngagement.class).where("pasteId", id).delete();
         Repo.get(PasteAIInfo.class).where("pasteId", id).delete();

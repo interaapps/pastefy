@@ -136,7 +136,9 @@ defineExpose({
 
         <div>
           <span class="overflow-hidden text-sm">{{ paste.title }}</span> <br />
-          <span class="text-[10px] opacity-60">{{ $t('components.pasteSharingPopover.shareCodeWithPastefy') }}</span>
+          <span class="text-[10px] opacity-60">{{
+            $t('components.pasteSharingPopover.shareCodeWithPastefy')
+          }}</span>
         </div>
       </div>
       <InputGroup>
