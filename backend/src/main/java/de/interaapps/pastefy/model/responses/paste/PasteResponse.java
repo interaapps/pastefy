@@ -3,6 +3,7 @@ package de.interaapps.pastefy.model.responses.paste;
 import com.google.gson.annotations.SerializedName;
 import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.model.database.Paste;
+import de.interaapps.pastefy.model.database.PasteAIInfo;
 import de.interaapps.pastefy.model.database.User;
 import de.interaapps.pastefy.model.elastic.ElasticPaste;
 import de.interaapps.pastefy.model.responses.user.PublicUserResponse;
@@ -32,6 +33,8 @@ public class PasteResponse {
     public PublicUserResponse user;
 
     public Boolean starred = null;
+
+    public PasteAiInfoResponse aiInfo;
 
     public PasteResponse(ElasticPaste paste) {
         if (paste == null) {
@@ -107,6 +110,13 @@ public class PasteResponse {
         if (exchange != null) {
             if ("true".equalsIgnoreCase(exchange.query("shorten_content", "false"))) {
                 pasteResponse.shortenContent();
+            }
+            if ("true".equalsIgnoreCase(exchange.query("with_ai_analysis", "false"))) {
+                PasteAIInfo aiInfo = paste.getAiInfo();
+                System.out.println(aiInfo);
+                if (aiInfo != null) {
+                    pasteResponse.aiInfo = new PasteAiInfoResponse(paste.getAiInfo());
+                }
             }
         }
         return pasteResponse;

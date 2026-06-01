@@ -3,6 +3,8 @@ package de.interaapps.pastefy;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.google.gson.Gson;
 import de.interaapps.pastefy.ai.PasteAI;
+import de.interaapps.pastefy.ai.PasteAIInfoService;
+import de.interaapps.pastefy.analytics.AnalyticsService;
 import de.interaapps.pastefy.auth.*;
 import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Strategy;
 import de.interaapps.pastefy.auth.strategies.oauth2.providers.*;
@@ -11,6 +13,7 @@ import de.interaapps.pastefy.controller.AppController;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.exceptions.*;
 import de.interaapps.pastefy.helper.elastic.ElasticMigrator;
+import de.interaapps.pastefy.jobs.BackgroundJobService;
 import de.interaapps.pastefy.model.database.AuthKey;
 import de.interaapps.pastefy.model.database.Paste;
 import de.interaapps.pastefy.model.database.User;
@@ -84,6 +87,9 @@ public class Pastefy {
     private MinioClient minioClient;
 
     private PasteAI pasteAI;
+    private BackgroundJobService backgroundJobService;
+    private PasteAIInfoService pasteAIInfoService;
+    private AnalyticsService analyticsService;
 
     private String homeHTML;
 
@@ -113,10 +119,11 @@ public class Pastefy {
         setupElastic();
         setupMinio();
         setupRedis();
+        analyticsService = AnalyticsService.create(this);
 
-        if (config.has("ai.antrophic.token")) {
-            pasteAI = new PasteAI(this);
-        }
+        pasteAI = PasteAI.create(this);
+        backgroundJobService = new BackgroundJobService(this);
+        pasteAIInfoService = new PasteAIInfoService(this, backgroundJobService);
     }
 
     private void setupRedis() {
@@ -225,6 +232,35 @@ public class Pastefy {
                 .map("MINIO_PASTESIZE_THRESHOLD", "minio.pastesize.threshold")
 
                 .map("AI_ANTHROPIC_TOKEN", "ai.antrophic.token")
+                .map("AI_GOOGLE_TOKEN", "ai.google.token")
+                .map("AI_PROVIDER", "ai.provider")
+                .map("AI_MODEL", "ai.model")
+                .map("AI_ENGAGEMENT_THRESHOLD", "ai.engagement.threshold")
+                .map("AI_JOB_WORKERS", "ai.jobs.workers")
+                .map("AI_JOB_POLL_INTERVAL_MILLIS", "ai.jobs.pollintervalmillis")
+                .map("AI_JOB_SWEEPER_ENABLED", "ai.jobs.sweeperenabled")
+                .map("AI_JOB_SWEEP_INTERVAL_MILLIS", "ai.jobs.sweepintervalmillis")
+                .map("AI_JOB_LEASE_SECONDS", "ai.jobs.leaseseconds")
+                .map("AI_JOB_MAX_ATTEMPTS", "ai.jobs.maxattempts")
+                .map("AI_JOB_RETRY_DELAY_SECONDS", "ai.jobs.retrydelayseconds")
+
+                .map("ANALYTICS_CLICKHOUSE_URL", "analytics.clickhouse.url")
+                .map("ANALYTICS_CLICKHOUSE_DATABASE", "analytics.clickhouse.database")
+                .map("ANALYTICS_CLICKHOUSE_TABLE", "analytics.clickhouse.table")
+                .map("ANALYTICS_CLICKHOUSE_USER", "analytics.clickhouse.user")
+                .map("ANALYTICS_CLICKHOUSE_PASSWORD", "analytics.clickhouse.password")
+                .map("ANALYTICS_CLICKHOUSE_AUTOMIGRATE", "analytics.clickhouse.automigrate")
+                .map("ANALYTICS_RETENTION_DAYS", "analytics.retentiondays")
+                .map("ANALYTICS_BATCH_SIZE", "analytics.batchsize")
+                .map("ANALYTICS_FLUSH_INTERVAL_MILLIS", "analytics.flushintervalmillis")
+                .map("ANALYTICS_QUEUE_CAPACITY", "analytics.queuecapacity")
+                .map("ANALYTICS_HTTP_CONNECT_TIMEOUT_MILLIS", "analytics.http.connecttimeoutmillis")
+                .map("ANALYTICS_HTTP_REQUEST_TIMEOUT_MILLIS", "analytics.http.requesttimeoutmillis")
+                .map("ANALYTICS_IP_HASH_SALT", "analytics.iphashsalt")
+                .map("ANALYTICS_IP_SOURCE", "analytics.ipsource")
+                .map("ANALYTICS_IP_HEADER", "analytics.ipheader")
+                .map("ANALYTICS_GEOIP_MMDB_PATH", "analytics.geoip.mmdbpath")
+                .map("ANALYTICS_TRACK_BOTS", "analytics.trackbots")
 
                 .map("DATABASE_CUSTOMPARAMS_CACHE_PREP_STMTS", "database.customparams.cachePrepStmts")
                 .map("DATABASE_CUSTOMPARAMS_PREP_STMT_CACHE_SIZE", "database.customparams.prepStmtCacheSize")
@@ -304,14 +340,14 @@ public class Pastefy {
             SQLPool sqlPool = new SQLPool(new MinMaxScaler(config.getInt("database.pool.min", 20), config.getInt("database.pool.max", 50)), factory);
 
 
-            if (this.isDevMode()) sqlPool.addQueryLogger((query, parameters) -> {
+            /*if (this.isDevMode()) sqlPool.addQueryLogger((query, parameters) -> {
                 System.out.println(query + " | " + Arrays.toString(parameters));
-            });
+            });*/
 
             Handler handler = new ConsoleHandler();
             handler.setLevel(Level.ALL);
-            Logger.getLogger("ORM").addHandler(handler);
-            Logger.getLogger("ORM").setLevel(Level.ALL);
+            // Logger.getLogger("ORM").addHandler(handler);
+            // Logger.getLogger("ORM").setLevel(Level.ALL);
             ORMConfig ormConfig = new ORMConfig()
                     .setTablePrefix("pastefy_")
                     .addTypeMapper(new AbstractDataTypeMapper());
@@ -556,6 +592,9 @@ public class Pastefy {
 
         httpRouter.get("/", requestHandler);
         httpRouter.staticResourceDirectory("/", "static");
+        httpRouter.get("/assets/{*:path}", e -> {
+            throw new NotFoundException();
+        });
 
         httpRouter.get("/api/{*:path}", e -> {
             throw new NotFoundException();
@@ -575,6 +614,10 @@ public class Pastefy {
                         .forEach(Paste::delete);
             }
         }, 0, 1000 * 60);
+        if (aiEnabled()) {
+            backgroundJobService.start();
+            pasteAIInfoService.start();
+        }
         getBackendPlugins().forEach(PastefyBackendPlugin::setupServer);
     }
 
@@ -625,6 +668,10 @@ public class Pastefy {
         return pasteAI != null;
     }
 
+    public PasteAIInfoService getPasteAIInfoService() {
+        return pasteAIInfoService;
+    }
+
     public String getHomeHTML() {
         return homeHTML;
     }
@@ -669,6 +716,14 @@ public class Pastefy {
     }
     public boolean isRedisEnabled() {
         return redisPool != null;
+    }
+
+    public AnalyticsService getAnalyticsService() {
+        return analyticsService;
+    }
+
+    public boolean analyticsEnabled() {
+        return analyticsService != null;
     }
 
     public ExecutorService getExecutor() {

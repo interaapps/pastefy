@@ -13,10 +13,9 @@ FROM maven:3.9.14-eclipse-temurin-17 AS build
 WORKDIR /
 
 COPY backend/src /home/app/src
-COPY backend/temp-libs /home/app/temp-libs
+COPY backend/vendor-maven-repository /home/app/vendor-maven-repository
 COPY backend/pom.xml /home/app
 COPY --from=frontend backend/src/main/resources/static /home/app/src/main/resources/static
-RUN rm -rf /home/app/.m2/repository
 RUN mvn -U -f /home/app/pom.xml clean package
 
 FROM eclipse-temurin:17
@@ -25,4 +24,3 @@ COPY --from=build /home/app/target/backend.jar /usr/local/lib/backend.jar
 
 EXPOSE 1337
 ENTRYPOINT ["java","-jar","/usr/local/lib/backend.jar", "start"]
-

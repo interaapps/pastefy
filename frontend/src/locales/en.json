@@ -109,6 +109,25 @@
     "viewOnPastefy": "view on Pastefy",
     "openInEditor": "open in paste editor"
   },
+  "comments": {
+    "title": "Comments",
+    "placeholder": "Write a comment...",
+    "submit": "Comment",
+    "reply": "Reply",
+    "empty": "No comments yet.",
+    "emptyForLine": "No comments for this line yet.",
+    "loginRequired": "Log in to write comments.",
+    "deletedUser": "Deleted user",
+    "line": "Line {{line}}",
+    "lines": "Lines {{from}}-{{to}}",
+    "fromLine": "From line {{line}}",
+    "optionalEndLine": "End line",
+    "commentLine": "Comment line {{line}}",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "showReplies": "Show replies ({{count}})",
+    "hideReplies": "Hide replies ({{count}})"
+  },
   "layout": {
     "toggleSidebar": "Toggle Sidebar"
   },

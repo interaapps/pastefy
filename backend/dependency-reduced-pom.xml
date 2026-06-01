@@ -61,56 +61,15 @@
       </plugin>
     </plugins>
   </build>
-  <dependencies>
-    <dependency>
-      <groupId>org.javawebstack</groupId>
-      <artifactId>http-router</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/temp-libs/http-router-1.0.3-SNAPSHOT.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>org.javawebstack</groupId>
-      <artifactId>http-router-undertow</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/temp-libs/http-router-undertow-1.0.0-SNAPSHOT.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>org.javawebstack</groupId>
-      <artifactId>abstract-data</artifactId>
-      <version>1.0.7-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/temp-libs/abstract-data-1.0.7-SNAPSHOT.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>org.javawebstack</groupId>
-      <artifactId>http-client</artifactId>
-      <version>1.0.2-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/temp-libs/http-client-1.0.2-SNAPSHOT.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>org.javawebstack</groupId>
-      <artifactId>web-utils</artifactId>
-      <version>1.0.2-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/temp-libs/web-utils-1.0.2-SNAPSHOT.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>org.javawebstack</groupId>
-      <artifactId>orm</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/temp-libs/orm-1.0.3-SNAPSHOT.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>org.javawebstack</groupId>
-      <artifactId>validator</artifactId>
-      <version>1.0.3-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/temp-libs/validator-1.0.3-SNAPSHOT.jar</systemPath>
-    </dependency>
-  </dependencies>
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots />
+      <id>vendored-javawebstack-snapshots</id>
+      <url>file://${project.basedir}/vendor-maven-repository</url>
+    </repository>
+  </repositories>
 </project>
 

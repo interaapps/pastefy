@@ -10,14 +10,16 @@
 
     <repositories>
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
+            <id>vendored-javawebstack-snapshots</id>
+            <url>file://${project.basedir}/vendor-maven-repository</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
 
-        <repository>
-            <id>central-snapshots</id>
-            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -40,6 +42,11 @@
             <groupId>org.xerial.snappy</groupId>
             <artifactId>snappy-java</artifactId>
             <version>1.1.10.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.genai</groupId>
+            <artifactId>google-genai</artifactId>
+            <version>1.56.0</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
@@ -124,6 +131,11 @@
             <artifactId>jedis</artifactId>
             <version>5.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.maxmind.geoip2</groupId>
+            <artifactId>geoip2</artifactId>
+            <version>5.1.0</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>backend</finalName>
@@ -186,4 +198,3 @@
         </plugins>
     </build>
 </project>
-

@@ -10,6 +10,7 @@ import org.javawebstack.orm.Repo;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -62,7 +63,7 @@ public class MinioPaste extends AbstractObject {
         if (Pastefy.getInstance().isMinioEnabled()) {
             paste.setCachedContents(paste.getContent(false));
 
-            byte[] bytes = paste.getCachedContents().getBytes();
+            byte[] bytes = paste.getCachedContents().getBytes(StandardCharsets.UTF_8);
             try {
                 ObjectWriteResponse objectWriteResponse = Pastefy.getInstance().getMinioClient().putObject(
                         PutObjectArgs.builder()
@@ -85,8 +86,7 @@ public class MinioPaste extends AbstractObject {
                         .setETAG(objectWriteResponse.etag())
                         .toJsonString();
 
-                paste.setContent(jsonString);
-                paste.setStorageType(Paste.StorageType.S3);
+                paste.setStorageReference(jsonString, Paste.StorageType.S3);
 
                 Map<String, Object> update = new HashMap<>();
                 update.put("content", jsonString);

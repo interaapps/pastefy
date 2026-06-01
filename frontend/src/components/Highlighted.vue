@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { findFromFileName } from '@/utils/lang-replacements.ts'
 import { highlight } from '@/utils/highlight.ts'
 import '@/utils/highlight-imports.ts'
 import highlightWorker from '@/utils/workers/highlight.worker.ts?worker'
 import CopyButton from '@/components/CopyButton.vue'
+import PasteLineCommentAvatars from '@/components/paste/PasteLineCommentAvatars.vue'
+import type { PasteCommentMarker } from '@/types/paste-comment.ts'
 
 const props = defineProps<{
   contents: string
@@ -16,11 +18,38 @@ const props = defineProps<{
   hideColorPreview?: boolean
   showCopyButton?: boolean
   getCopyContents?: () => Promise<string>
+  lineCommentMarkers?: PasteCommentMarker[]
+  enableLineComments?: boolean
+}>()
+
+const emit = defineEmits<{
+  lineClick: [event: Event, line: number, target: HTMLElement]
 }>()
 
 const highlightedContents = ref<string | undefined>(undefined)
+const markerByLine = computed(
+  () => new Map(props.lineCommentMarkers?.map((marker) => [marker.line, marker]) || []),
+)
+const lineCount = computed(() => {
+  let count = 1
+  for (let index = 0; index < props.contents.length; index++) {
+    if (props.contents.charCodeAt(index) === 10) count++
+  }
+  return count
+})
 
 const id = Math.random().toString(36).substring(7)
+
+const selectGutterLine = (event: MouseEvent) => {
+  if (!props.enableLineComments) return
+
+  const target = event.target
+  if (!(target instanceof Element)) return
+
+  const lineElement = target.closest<HTMLElement>('[data-comment-line]')
+  const line = Number(lineElement?.dataset.commentLine)
+  if (lineElement && Number.isInteger(line)) emit('lineClick', event, line, lineElement)
+}
 
 const addColorIndicators = () => {
   setTimeout(() => {
@@ -120,16 +149,23 @@ onMounted(async () => {
       v-if="!hideLineNumbering"
       class="p-3 text-right select-none"
       :class="hideDivider ? ' ' : 'border-r-1 border-neutral-200 dark:border-neutral-700'"
+      @click="selectGutterLine"
     >
       <span
-        class="block opacity-30"
-        v-for="(_, line) of (highlightedContents !== undefined
-          ? highlightedContents
-          : contents
-        )?.split('\n') || []"
-        :key="line + 1"
-        >{{ line + 1 + (startingLineNumber || 0) }}</span
+        v-for="line of lineCount"
+        :key="line"
+        class="flex w-full items-center justify-between gap-1"
+        :class="enableLineComments ? 'cursor-pointer' : ''"
+        :data-comment-line="line + (startingLineNumber || 0)"
       >
+        <PasteLineCommentAvatars
+          v-if="markerByLine.get(line + (startingLineNumber || 0))"
+          :marker="markerByLine.get(line + (startingLineNumber || 0))!"
+          class="-ml-2"
+        />
+        <span v-else aria-hidden="true" />
+        <span class="opacity-30">{{ line + (startingLineNumber || 0) }}</span>
+      </span>
     </div>
     <code class="w-full p-3">
       <pre v-if="highlightedContents !== undefined" v-html="highlightedContents" />

@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
+import { useAppInfoStore } from '@/stores/app-info.ts'
+
+const appInfo = useAppInfoStore()
 </script>
 <template>
   <div class="mx-auto max-w-[1200px]">
@@ -26,6 +29,15 @@ import Button from 'primevue/button'
           as="router-link"
           :to="{ name: 'admin-pastes' }"
           :label="$t('paste.pastes')"
+          size="small"
+          outlined
+          severity="contrast"
+        />
+        <Button
+          v-if="appInfo.appInfo?.analytics_enabled"
+          as="router-link"
+          :to="{ name: 'admin-analytics' }"
+          label="Analytics"
           size="small"
           outlined
           severity="contrast"

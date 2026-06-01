@@ -28,7 +28,7 @@ const language = computed({
 const getCurrentLanguageIcon = (l: string) => {
   if (l === 'browser') l = resolveLanguagePreference()
 
-  return languageOptions.find((a) => a.value === l)!.icon
+  return languageOptions.find((a) => a.value === l)?.icon
 }
 </script>
 
@@ -55,7 +55,7 @@ const getCurrentLanguageIcon = (l: string) => {
         <img
           :src="
             option.value === 'browser'
-              ? languageOptions.find((a) => a.value === resolveLanguagePreference())!.icon ||
+              ? languageOptions.find((a) => a.value === resolveLanguagePreference())?.icon ||
                 option.icon
               : option.icon
           "

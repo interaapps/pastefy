@@ -3,6 +3,7 @@ import Button from 'primevue/button'
 
 defineProps<{
   loading?: boolean
+  nextDisabled?: boolean
 }>()
 
 const page = defineModel<number>('page', {
@@ -32,7 +33,7 @@ const previous = () => {
       />
       <Button
         @click="next"
-        :disabled="loading"
+        :disabled="loading || nextDisabled"
         size="small"
         outlined
         severity="contrast"

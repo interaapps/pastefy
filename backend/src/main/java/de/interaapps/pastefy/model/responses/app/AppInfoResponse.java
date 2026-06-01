@@ -12,6 +12,7 @@ public class AppInfoResponse {
     public String customLogo;
     public String customName;
     public boolean aiEnabled = false;
+    public boolean analyticsEnabled = false;
     public Map<String, String> customFooter;
     public boolean loginRequiredForRead;
     public boolean loginRequiredForCreate;
@@ -29,6 +30,7 @@ public class AppInfoResponse {
             customName = config.get("pastefy.info.custom.name");
 
         aiEnabled = pastefy.aiEnabled();
+        analyticsEnabled = pastefy.analyticsEnabled();
 
         encryptionIsDefault = config.get("pastefy.encryption.default", "false").toLowerCase(Locale.ROOT).equals("true");
 

@@ -26,6 +26,10 @@ import ComponentInjection from '@/components/ComponentInjection.vue'
 import PasteSharingPopover from '@/components/popovers/PasteSharingPopover.vue'
 import PasteStarButton from '@/components/paste/PasteStarButton.vue'
 import { useTranslation } from 'i18next-vue'
+import PasteAiSummary from '@/components/PasteAiSummary.vue'
+import SeverityScore from '@/components/paste/SeverityScore.vue'
+import PasteComments from '@/components/paste/PasteComments.vue'
+import type { PasteCommentMarker } from '@/types/paste-comment.ts'
 const Highlighted = defineAsyncComponent(() => import('@/components/Highlighted.vue'))
 
 const props = defineProps<{
@@ -69,6 +73,7 @@ const { isLoading, error } = useAsyncState(async () => {
     await client.get(`/api/v2/paste/${props.pasteId}`, {
       params: {
         from_frontend: 'true',
+        with_ai_analysis: 'true',
       },
     })
   ).data as Paste
@@ -87,6 +92,14 @@ const { isLoading, error } = useAsyncState(async () => {
   }
   eventBus.emit('pageLoaded', 'paste')
 }, undefined)
+
+const { isLoading: aiSummaryLoading, execute: generateAiSummary } = useAsyncState(
+  async () => {
+    await client.post(`/api/v2/paste/${props.pasteId}/ai-analysis`)
+  },
+  undefined,
+  { immediate: false },
+)
 
 const fetchTags = () => {
   let i = 0
@@ -179,6 +192,7 @@ const permission = computed(() => ({
   showVisibility:
     currentUser.user?.type === 'ADMIN' ||
     (paste.value?.user_id && currentUser.user?.id === paste.value?.user_id),
+  isAdmin: currentUser.user?.type === 'ADMIN',
 }))
 
 const newTab = (u: string) => window.open(u)
@@ -187,6 +201,8 @@ const config = useConfig()
 
 const tagsPopover = useTemplateRef<PopoverMethods>('tagsPopover')
 const sharePopover = useTemplateRef<PopoverMethods>('sharePopover')
+const comments = useTemplateRef<InstanceType<typeof PasteComments>>('comments')
+const lineCommentMarkers = ref<PasteCommentMarker[]>([])
 
 const canPreview = computed(
   () =>
@@ -208,9 +224,7 @@ const canPreview = computed(
       'hcl',
       'http',
       'log',
-    ].includes(
-      currentLang.value,
-    ) ||
+    ].includes(currentLang.value) ||
     currentFileName.value?.endsWith('.tf') ||
     currentFileName.value?.endsWith('.tfvars') ||
     currentFileName.value?.endsWith('.hcl') ||
@@ -244,6 +258,13 @@ watch(
   },
   { immediate: true },
 )
+
+const averageAiSeverity = computed(() => {
+  const warnings = paste.value?.ai_info?.warnings || []
+  if (!warnings.length) return 0
+
+  return Math.round(warnings.reduce((sum, warning) => sum + warning.severity, 0) / warnings.length)
+})
 </script>
 <template>
   <div v-if="appInfo.appInfo?.login_required_for_read && !currentUser.user">
@@ -266,7 +287,14 @@ watch(
         v-model="password"
         type="password"
       />
-      <Button type="submit" :label="$t('paste.decrypt')" fluid size="small" outlined severity="contrast" />
+      <Button
+        type="submit"
+        :label="$t('paste.decrypt')"
+        fluid
+        size="small"
+        outlined
+        severity="contrast"
+      />
     </form>
 
     <Button
@@ -283,23 +311,33 @@ watch(
   </main>
   <div v-else-if="paste" class="flex h-full w-full justify-center">
     <div class="flex w-full flex-col gap-2" :class="config.sideBarShown ? '' : 'xl:pl-[3.75rem]'">
-      <div class="flex items-center gap-3" v-if="!hideTitle">
-        <h1
-          class="text-2xl font-bold break-all"
-          id="paste-title"
-          v-if="title"
-          v-view-transition-name="`paste-${paste.id}-title`"
-        >
-          {{ title }}
-        </h1>
-        <div
-          class="flex items-center gap-1 rounded-md bg-neutral-100 px-1 py-0.5 dark:bg-neutral-800"
-          v-if="permission.showVisibility"
-          v-animate-css="{ classes: 'fadeIn', delay: 500 }"
-        >
-          <PasteVisibilityIcon :visibility="paste.visibility" />
-          <span class="text-sm font-normal">{{ $t(`paste.visibility.${paste.visibility.toLowerCase()}`) }}</span>
+      <div class="flex items-center justify-between gap-3" v-if="!hideTitle">
+        <div class="flex items-center gap-3">
+          <h1
+            class="text-2xl font-bold break-all"
+            id="paste-title"
+            v-if="title"
+            v-view-transition-name="`paste-${paste.id}-title`"
+          >
+            {{ title }}
+          </h1>
+          <div
+            class="flex items-center gap-1 rounded-md bg-neutral-100 px-1 py-0.5 dark:bg-neutral-800"
+            v-if="permission.showVisibility"
+            v-animate-css="{ classes: 'fadeIn', delay: 500 }"
+          >
+            <PasteVisibilityIcon :visibility="paste.visibility" />
+            <span class="text-sm font-normal">{{
+              $t(`paste.visibility.${paste.visibility.toLowerCase()}`)
+            }}</span>
+          </div>
         </div>
+        <a
+          v-if="content && averageAiSeverity >= 5 && content.split('\n').length > 20"
+          href="#paste-ai-summary"
+        >
+          <SeverityScore :severity="averageAiSeverity" single />
+        </a>
       </div>
       <ComponentInjection type="paste-below-title" :value="paste" />
       <div class="relative flex w-full flex-col gap-3 md:flex-row-reverse">
@@ -321,6 +359,17 @@ watch(
             :aria-label="$t('common.copy')"
           />
           <PasteStarButton v-if="paste" :paste="paste" :paste-id="props.pasteId" />
+
+          <Button
+            v-if="!asEmbed"
+            @click="comments?.openDialog()"
+            severity="contrast"
+            text
+            rounded
+            icon="ti ti-messages text-xl"
+            v-tooltip="{ value: $t('comments.title'), showDelay: 500 }"
+            :aria-label="$t('comments.title')"
+          />
           <Button
             v-if="paste.tags?.includes('codebox')"
             target="_blank"
@@ -425,6 +474,31 @@ watch(
             @shortkey="deletePaste"
             :aria-label="$t('common.delete')"
           />
+          <Button
+            as="router-link"
+            :to="{ name: 'paste-analytics', params: { paste: paste.id } }"
+            severity="contrast"
+            text
+            rounded
+            v-if="
+              appInfo.appInfo?.analytics_enabled &&
+              !asEmbed &&
+              (permission.canEdit || permission.isAdmin)
+            "
+            icon="ti ti-chart-line text-xl"
+            v-tooltip="{ value: 'Analytics', showDelay: 500 }"
+            aria-label="Analytics"
+          />
+          <Button
+            severity="contrast"
+            @click="generateAiSummary()"
+            :loading="aiSummaryLoading"
+            text
+            rounded
+            v-if="!asEmbed && permission.isAdmin"
+            icon="ti ti-sparkle text-xl"
+            :aria-label="$t('paste.generateAiSummary')"
+          />
           <ComponentInjection type="paste-actions-before-profile" :value="paste" />
           <component
             :is="asEmbed ? 'a' : 'router-link'"
@@ -443,7 +517,7 @@ watch(
           </component>
           <ComponentInjection type="paste-actions-last" :value="paste" />
         </div>
-        <div class="w-full overflow-hidden">
+        <div class="w-full space-y-5 overflow-hidden">
           <div
             class="group relative w-full rounded-xl border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"
             :style="{
@@ -506,6 +580,11 @@ watch(
                 :file-name="currentFileName"
                 :key="multiPartIndex"
                 :contents="content"
+                :line-comment-markers="paste.type === 'PASTE' && !asEmbed ? lineCommentMarkers : []"
+                :enable-line-comments="paste.type === 'PASTE' && !asEmbed"
+                @line-click="
+                  (event, line, target) => comments?.openLineComment(event, line, target)
+                "
               />
             </template>
 
@@ -524,6 +603,7 @@ watch(
               />
             </div>
           </div>
+          <PasteAiSummary v-if="paste.ai_info" :ai-info="paste.ai_info" />
         </div>
       </div>
 
@@ -539,6 +619,17 @@ watch(
     :asEmbed
     :currentFileName="currentFileName!"
     :pasteId
+  />
+
+  <PasteComments
+    v-if="paste && !asEmbed"
+    ref="comments"
+    :paste-id="props.pasteId"
+    :paste-user-id="paste.user_id"
+    :paste-contents="content"
+    :paste-file-name="currentFileName"
+    :enable-line-comments="paste.type === 'PASTE'"
+    @markers-updated="lineCommentMarkers = $event"
   />
 
   <Popover ref="tagsPopover">

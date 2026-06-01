@@ -36,6 +36,7 @@
     "diff2html": "^3.4.51",
     "dom-to-image": "^2.6.0",
     "dompurify": "^3.2.5",
+    "echarts": "^6.1.0",
     "highlight.js": "^11.11.1",
     "i18next": "^26.3.0",
     "i18next-vue": "^5.4.0",
@@ -54,6 +55,7 @@
     "tailwindcss-primeui": "^0.5.1",
     "v-animate-css": "^1.0.1",
     "vue": "^3.5.13",
+    "vue-echarts": "^8.0.1",
     "vue-router": "^4.5.0",
     "vue-view-transitions": "^1.2.1",
     "vue3-shortkey": "^4.0.0"
