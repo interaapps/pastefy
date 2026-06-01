@@ -122,7 +122,11 @@
     "lines": "Zeilen {{from}}-{{to}}",
     "fromLine": "Ab Zeile {{line}}",
     "optionalEndLine": "Endzeile (optional)",
-    "commentLine": "Zeile {{line}} kommentieren"
+    "commentLine": "Zeile {{line}} kommentieren",
+    "showMore": "Mehr anzeigen",
+    "showLess": "Weniger anzeigen",
+    "showReplies": "Antworten anzeigen ({{count}})",
+    "hideReplies": "Antworten ausblenden ({{count}})"
   },
   "layout": {
     "toggleSidebar": "Sidebar ein-/ausblenden"

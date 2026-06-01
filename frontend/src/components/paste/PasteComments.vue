@@ -16,6 +16,8 @@ import PasteCommentItem from '@/components/paste/PasteCommentItem.vue'
 const props = defineProps<{
   pasteId: string
   pasteUserId?: string
+  pasteContents?: string
+  pasteFileName?: string
   enableLineComments?: boolean
 }>()
 
@@ -127,10 +129,10 @@ const submitLine = (content: string, lineTo?: number) => {
 
 const submitReply = (parentId: number, content: string) => submit({ content, parent_id: parentId })
 
-const openLineComment = async (event: Event, line: number) => {
+const openLineComment = async (event: Event, line: number, target: HTMLElement) => {
   if (!props.enableLineComments) return
   selectedLine.value = line
-  lineCommentPopover.value?.show(event)
+  lineCommentPopover.value?.show(event, target)
   await loadLineComments()
 }
 
@@ -171,6 +173,8 @@ defineExpose({ openDialog, openLineComment })
         :can-reply="!!currentUser.user"
         :submitting="isSubmitting"
         :current-user-id="currentUser.user?.id"
+        :paste-contents
+        :paste-file-name
         @reply="submitReply"
         @delete="(commentId) => deleteComment(0, commentId)"
       />
@@ -211,6 +215,8 @@ defineExpose({ openDialog, openLineComment })
           :can-reply="!!currentUser.user"
           :submitting="isSubmitting"
           :current-user-id="currentUser.user?.id"
+          :paste-contents
+          :paste-file-name
           @reply="submitReply"
           @delete="(commentId) => deleteComment(0, commentId)"
         />

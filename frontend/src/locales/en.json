@@ -122,7 +122,11 @@
     "lines": "Lines {{from}}-{{to}}",
     "fromLine": "From line {{line}}",
     "optionalEndLine": "End line (optional)",
-    "commentLine": "Comment line {{line}}"
+    "commentLine": "Comment line {{line}}",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "showReplies": "Show replies ({{count}})",
+    "hideReplies": "Hide replies ({{count}})"
   },
   "layout": {
     "toggleSidebar": "Toggle Sidebar"

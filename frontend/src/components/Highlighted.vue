@@ -23,30 +23,32 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  lineClick: [event: Event, line: number]
+  lineClick: [event: Event, line: number, target: HTMLElement]
 }>()
 
 const highlightedContents = ref<string | undefined>(undefined)
 const markerByLine = computed(
   () => new Map(props.lineCommentMarkers?.map((marker) => [marker.line, marker]) || []),
 )
+const lineCount = computed(() => {
+  let count = 1
+  for (let index = 0; index < props.contents.length; index++) {
+    if (props.contents.charCodeAt(index) === 10) count++
+  }
+  return count
+})
 
 const id = Math.random().toString(36).substring(7)
 
-const selectCodeLine = (event: MouseEvent) => {
+const selectGutterLine = (event: MouseEvent) => {
   if (!props.enableLineComments) return
 
-  const pre = (event.currentTarget as HTMLElement).querySelector('pre')
-  if (!pre) return
+  const target = event.target
+  if (!(target instanceof Element)) return
 
-  const style = window.getComputedStyle(pre)
-  const lineHeight = Number.parseFloat(style.lineHeight) || Number.parseFloat(style.fontSize) * 1.2
-  const line = Math.floor((event.clientY - pre.getBoundingClientRect().top) / lineHeight) + 1
-  const lineCount = props.contents.split('\n').length
-
-  if (line >= 1 && line <= lineCount) {
-    emit('lineClick', event, line + (props.startingLineNumber || 0))
-  }
+  const lineElement = target.closest<HTMLElement>('[data-comment-line]')
+  const line = Number(lineElement?.dataset.commentLine)
+  if (lineElement && Number.isInteger(line)) emit('lineClick', event, line, lineElement)
 }
 
 const addColorIndicators = () => {
@@ -147,28 +149,23 @@ onMounted(async () => {
       v-if="!hideLineNumbering"
       class="p-3 text-right select-none"
       :class="hideDivider ? ' ' : 'border-r-1 border-neutral-200 dark:border-neutral-700'"
+      @click="selectGutterLine"
     >
-      <button
-        class="group flex w-full cursor-pointer items-center justify-between gap-1"
-        v-for="(_, line) of (highlightedContents !== undefined
-          ? highlightedContents
-          : contents
-        )?.split('\n') || []"
-        :key="line + 1"
-        type="button"
-        :disabled="!enableLineComments"
-        @click="(event) => emit('lineClick', event, line + 1 + (startingLineNumber || 0))"
+      <span
+        v-for="line of lineCount"
+        :key="line"
+        class="flex w-full items-center justify-between gap-1"
+        :class="enableLineComments ? 'cursor-pointer' : ''"
+        :data-comment-line="line + (startingLineNumber || 0)"
       >
         <PasteLineCommentAvatars
-          v-if="markerByLine.get(line + 1 + (startingLineNumber || 0))"
-          :marker="markerByLine.get(line + 1 + (startingLineNumber || 0))!"
+          v-if="markerByLine.get(line + (startingLineNumber || 0))"
+          :marker="markerByLine.get(line + (startingLineNumber || 0))!"
           class="-ml-2"
         />
         <span v-else aria-hidden="true" />
-        <span class="opacity-30 transition-opacity group-hover:opacity-100">{{
-          line + 1 + (startingLineNumber || 0)
-        }}</span>
-      </button>
+        <span class="opacity-30">{{ line + (startingLineNumber || 0) }}</span>
+      </span>
     </div>
     <code class="w-full p-3">
       <pre v-if="highlightedContents !== undefined" v-html="highlightedContents" />

@@ -567,7 +567,7 @@ const averageAiSeverity = computed(() => {
                 :contents="content"
                 :line-comment-markers="paste.type === 'PASTE' && !asEmbed ? lineCommentMarkers : []"
                 :enable-line-comments="paste.type === 'PASTE' && !asEmbed"
-                @line-click="(event, line) => comments?.openLineComment(event, line)"
+                @line-click="(event, line, target) => comments?.openLineComment(event, line, target)"
               />
             </template>
 
@@ -609,6 +609,8 @@ const averageAiSeverity = computed(() => {
     ref="comments"
     :paste-id="props.pasteId"
     :paste-user-id="paste.user_id"
+    :paste-contents="content"
+    :paste-file-name="currentFileName"
     :enable-line-comments="paste.type === 'PASTE'"
     @markers-updated="lineCommentMarkers = $event"
   />

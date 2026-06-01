@@ -3,6 +3,7 @@ package de.interaapps.pastefy.controller.seo;
 import de.interaapps.pastefy.Pastefy;
 import de.interaapps.pastefy.controller.HttpController;
 import de.interaapps.pastefy.model.database.Paste;
+import de.interaapps.pastefy.model.database.PasteAIInfo;
 import de.interaapps.pastefy.model.database.User;
 import org.javawebstack.http.router.Exchange;
 import org.javawebstack.http.router.router.annotation.params.Path;
@@ -28,11 +29,13 @@ public class PasteMetaController extends HttpController {
             if (pasteId == null || !VALID_PASTE_ID_PATTERN.matcher(pasteId).matches()) return null;
 
             Paste paste = Paste.get(pasteId);
+            PasteAIInfo aiInfo = paste.getAiInfo();
+
             if (paste == null || paste.isPrivate() || paste.isEncrypted()) return null;
 
             String title = getTitle(paste);
             SeoAuthor author = paste.isPublic() ? getAuthor(paste) : null;
-            String description = getDescription(title, author);
+            String description = getDescription(title + (aiInfo != null && aiInfo.description != null ? " | " + aiInfo.description : ""), author);
             String path = "/" + pasteId;
 
             String seoContent = "";
@@ -85,7 +88,7 @@ public class PasteMetaController extends HttpController {
         return new SeoAuthor(displayName, username, seo.absoluteUrl("/@" + seo.pathSegment(username)));
     }
 
-    private String getSeoContent(Paste paste, String title, SeoAuthor author) {
+    private String getSeoContent(Paste paste, String title, SeoAuthor author, String aiDescription) {
         String content;
         try {
             content = paste.getContent(false);
@@ -113,12 +116,18 @@ public class PasteMetaController extends HttpController {
             }
         }
 
+        String descriptionHtml = "";
+        if (aiDescription != null) {
+            descriptionHtml += "<h2>Description</h2><p>" + seo.escapeHtml(aiDescription) + "</p>";
+        }
+
         return "<main id=\"seo-content\">"
                 + "<h1 title=\"paste-title\">" + seo.escapeHtml(title) + "</h1>"
                 + authorHtml
                 + "<p>View and share code snippets on Pastefy.</p>"
                 + "<pre><code>" + seo.escapeHtml(preview) + "</code></pre>"
                 + tagsHtml
+                +descriptionHtml
                 + "</main>";
     }
 

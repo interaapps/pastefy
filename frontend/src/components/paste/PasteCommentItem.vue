@@ -3,6 +3,7 @@ import Button from 'primevue/button'
 import { computed, ref } from 'vue'
 import type { PasteComment } from '@/types/paste-comment.ts'
 import PasteCommentForm from '@/components/paste/PasteCommentForm.vue'
+import PasteCommentLinePreview from '@/components/paste/PasteCommentLinePreview.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -11,6 +12,8 @@ const props = withDefaults(
     canReply?: boolean
     submitting?: boolean
     currentUserId?: string
+    pasteContents?: string
+    pasteFileName?: string
   }>(),
   { canReply: true },
 )
@@ -21,6 +24,7 @@ const emit = defineEmits<{
 }>()
 
 const replying = ref(false)
+const repliesExpanded = ref(false)
 const showDelete = computed(
   () =>
     props.canDelete || (!!props.currentUserId && props.comment.user?.id === props.currentUserId),
@@ -55,17 +59,6 @@ const formatDate = (value: string) => new Date(value).toLocaleString()
           comment.user?.display_name || comment.user?.name || $t('comments.deletedUser')
         }}</strong>
         <span class="text-xs text-neutral-500">{{ formatDate(comment.created_at) }}</span>
-        <span
-          v-if="comment.line_from"
-          class="rounded bg-neutral-100 px-1.5 py-0.5 text-xs text-neutral-500 dark:bg-neutral-800"
-        >
-          {{
-            comment.line_to
-              ? $t('comments.lines', { from: comment.line_from, to: comment.line_to })
-              : $t('comments.line', { line: comment.line_from })
-          }}
-        </span>
-
         <Button
           v-if="canReply"
           :label="$t('comments.reply')"
@@ -85,6 +78,13 @@ const formatDate = (value: string) => new Date(value).toLocaleString()
           @click="emit('delete', comment.id)"
         />
       </div>
+      <PasteCommentLinePreview
+        v-if="comment.line_from && pasteContents"
+        :contents="pasteContents"
+        :file-name="pasteFileName"
+        :line-from="comment.line_from"
+        :line-to="comment.line_to"
+      />
       <p class="mt-1 text-sm break-words whitespace-pre-wrap">{{ comment.content }}</p>
       <PasteCommentForm
         v-if="replying"
@@ -94,8 +94,21 @@ const formatDate = (value: string) => new Date(value).toLocaleString()
         @submit="reply"
         @cancel="replying = false"
       />
-      <div
+      <Button
         v-if="comment.replies?.length"
+        :label="
+          $t(repliesExpanded ? 'comments.hideReplies' : 'comments.showReplies', {
+            count: comment.replies.length,
+          })
+        "
+        size="small"
+        severity="contrast"
+        text
+        class="mt-1 px-0 py-0 text-xs"
+        @click="repliesExpanded = !repliesExpanded"
+      />
+      <div
+        v-if="comment.replies?.length && repliesExpanded"
         class="mt-3 flex flex-col gap-3 border-l border-neutral-200 pl-3 dark:border-neutral-700"
       >
         <PasteCommentItem
@@ -106,6 +119,8 @@ const formatDate = (value: string) => new Date(value).toLocaleString()
           :can-reply
           :submitting
           :current-user-id
+          :paste-contents
+          :paste-file-name
           @reply="(commentId, content) => emit('reply', commentId, content)"
           @delete="(commentId) => emit('delete', commentId)"
         />
