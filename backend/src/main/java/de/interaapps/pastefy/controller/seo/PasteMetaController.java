@@ -40,7 +40,7 @@ public class PasteMetaController extends HttpController {
 
             String seoContent = "";
             if (paste.isPublic()) {
-                seoContent = getSeoContent(paste, title, author);
+                seoContent = getSeoContent(paste, title, author, aiInfo != null && aiInfo.description != null ? aiInfo.description : null);
                 if (seoContent == null) return null;
             }
 
