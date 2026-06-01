@@ -75,7 +75,6 @@ const panels = reactive<Panel[]>([
     active: 'paste_key',
     dimensions: [
       { label: 'Pastes', value: 'paste_key' },
-      { label: 'Tags', value: 'paste_tag' },
       { label: 'Visibility', value: 'paste_visibility' },
     ],
   },
@@ -121,7 +120,6 @@ const fields = [
   { label: 'Paste key', value: 'paste_key' },
   { label: 'Paste visibility', value: 'paste_visibility' },
   { label: 'Paste owner', value: 'paste_user_id' },
-  { label: 'Paste tag', value: 'paste_tag' },
   { label: 'Visit type', value: 'visit_type' },
   { label: 'Country', value: 'country' },
   { label: 'Region', value: 'region' },
@@ -134,6 +132,11 @@ const fields = [
   { label: 'Acquisition', value: 'acquisition' },
   { label: 'Bot', value: 'is_bot' },
 ]
+
+const botTrackingEnabled = computed(() => summary.value?.bot_tracking_enabled !== false)
+const availableFields = computed(() =>
+  fields.filter(({ value }) => botTrackingEnabled.value || value !== 'is_bot'),
+)
 
 const filterOptions: Record<string, { label: string; value: string }[]> = {
   paste_visibility: [
@@ -182,7 +185,8 @@ const filterOptions: Record<string, { label: string; value: string }[]> = {
   ],
 }
 
-const optionsForFilter = (filter: Filter) => filterOptions[filter.field]
+const optionsForFilter = (filter: Filter) =>
+  filterOptions[filter.field]?.filter(({ value }) => botTrackingEnabled.value || value !== 'BOT')
 
 const presets = [
   { label: 'Last 24 hours', amount: 24, unit: 'hour', interval: 'hour', shortcut: 'D' },
@@ -231,6 +235,15 @@ const fetchAnalytics = async () => {
       ...panels.map(fetchPanel),
     ])
     summary.value = nextSummary.data as AnalyticsResponse
+    if (!summary.value.bot_tracking_enabled) {
+      filters.splice(
+        0,
+        filters.length,
+        ...filters.filter(
+          ({ field, value }) => field !== 'is_bot' && value.toUpperCase() !== 'BOT',
+        ),
+      )
+    }
   } catch (fetchError) {
     error.value = fetchError
   } finally {
@@ -388,7 +401,7 @@ onMounted(fetchAnalytics)
             <div v-for="(filter, index) in filters" :key="index" class="mb-2 flex gap-2">
               <Select
                 :model-value="filter.field"
-                :options="fields"
+                :options="availableFields"
                 option-label="label"
                 option-value="value"
                 class="w-[14rem]"
@@ -481,7 +494,8 @@ onMounted(fetchAnalytics)
         class="overflow-hidden rounded-2xl border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900"
       >
         <div
-          class="grid grid-cols-1 border-b border-neutral-200 sm:grid-cols-3 dark:border-neutral-800"
+          class="grid grid-cols-1 border-b border-neutral-200 dark:border-neutral-800"
+          :class="botTrackingEnabled ? 'sm:grid-cols-3' : 'sm:grid-cols-2'"
         >
           <button
             class="relative flex min-h-[8.5rem] flex-col items-start justify-center gap-2 border-b border-neutral-200 px-6 text-left sm:border-r sm:border-b-0 dark:border-neutral-800"
@@ -513,7 +527,10 @@ onMounted(fetchAnalytics)
             </span>
             <strong class="text-4xl font-semibold">{{ summary.unique_visitors }}</strong>
           </button>
-          <div class="flex min-h-[8.5rem] flex-col items-start justify-center gap-2 px-6 text-left">
+          <div
+            v-if="botTrackingEnabled"
+            class="flex min-h-[8.5rem] flex-col items-start justify-center gap-2 px-6 text-left"
+          >
             <span class="flex items-center gap-2 text-neutral-600 dark:text-neutral-300">
               <span class="h-2.5 w-2.5 rounded-sm bg-rose-300" />
               Bot visits

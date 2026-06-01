@@ -9,6 +9,6 @@ useTitle('Analytics - Admin | pastefy')
   <AnalyticsDashboard
     endpoint="/api/v2/analytics/admin"
     title="Admin analytics"
-    description="Analyze paste traffic across the instance. Bot traffic remains available as an explicit filter."
+    description="Analyze paste traffic across the instance."
   />
 </template>

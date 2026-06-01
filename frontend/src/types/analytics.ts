@@ -14,6 +14,7 @@ export type AnalyticsResponse = {
   total_visits: number
   unique_visitors: number
   bot_visits: number
+  bot_tracking_enabled: boolean
   series: AnalyticsSeriesPoint[]
   breakdown: AnalyticsBreakdownPoint[]
 }

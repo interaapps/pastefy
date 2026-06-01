@@ -69,7 +69,6 @@ const displayValue = (value: string) => {
   if (!value) return '(direct / unknown)'
   if (
     props.active === 'paste_key' ||
-    props.active === 'paste_tag' ||
     props.active === 'referer_host'
   )
     return value

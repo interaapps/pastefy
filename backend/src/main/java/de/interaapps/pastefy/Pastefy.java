@@ -260,8 +260,7 @@ public class Pastefy {
                 .map("ANALYTICS_IP_SOURCE", "analytics.ipsource")
                 .map("ANALYTICS_IP_HEADER", "analytics.ipheader")
                 .map("ANALYTICS_GEOIP_MMDB_PATH", "analytics.geoip.mmdbpath")
-                .map("ANALYTICS_TAG_CACHE_MILLIS", "analytics.tagcachemillis")
-                .map("ANALYTICS_TAG_CACHE_MAX_ENTRIES", "analytics.tagcachemaxentries")
+                .map("ANALYTICS_TRACK_BOTS", "analytics.trackbots")
 
                 .map("DATABASE_CUSTOMPARAMS_CACHE_PREP_STMTS", "database.customparams.cachePrepStmts")
                 .map("DATABASE_CUSTOMPARAMS_PREP_STMT_CACHE_SIZE", "database.customparams.prepStmtCacheSize")

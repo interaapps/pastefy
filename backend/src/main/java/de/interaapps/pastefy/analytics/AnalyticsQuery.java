@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class AnalyticsQuery {
     private static final Set<String> FILTERS = Set.of(
-            "paste_key", "paste_visibility", "paste_user_id", "paste_tag", "visit_type",
+            "paste_key", "paste_visibility", "paste_user_id", "visit_type",
             "country", "region", "city", "visitor_user_id", "browser", "device_type", "os",
             "referer_host", "acquisition", "is_bot"
     );

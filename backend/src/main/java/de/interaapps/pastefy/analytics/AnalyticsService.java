@@ -33,7 +33,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -43,13 +42,14 @@ import java.util.logging.Logger;
 
 public class AnalyticsService {
     public static final Set<String> GROUPABLE_FIELDS = Set.of(
-            "paste_key", "paste_visibility", "paste_user_id", "paste_tag", "visit_type",
+            "paste_key", "paste_visibility", "paste_user_id", "visit_type",
             "country", "region", "city", "visitor_user_id", "browser", "device_type", "os",
             "referer_host", "acquisition", "is_bot"
     );
 
     private static final DateTimeFormatter CLICKHOUSE_DATE_TIME =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS").withZone(ZoneOffset.UTC);
+    private static final int MAX_REFERER_HOST_LENGTH = 253;
     private static final Logger LOGGER = Logger.getLogger(AnalyticsService.class.getName());
     private static final Gson GSON = new Gson();
 
@@ -61,12 +61,10 @@ public class AnalyticsService {
     private final String ipSalt;
     private final String ipSource;
     private final String ipHeader;
+    private final boolean trackBots;
     private final int batchSize;
     private final Duration requestTimeout;
     private final BlockingQueue<VisitEvent> queue;
-    private final ConcurrentHashMap<String, CachedTags> tagCache = new ConcurrentHashMap<>();
-    private final long tagCacheMillis;
-    private final int tagCacheMaxEntries;
     private final ScheduledExecutorService writer;
     private final DatabaseReader geoIpReader;
     private final AtomicLong droppedEvents = new AtomicLong();
@@ -98,10 +96,9 @@ public class AnalyticsService {
         ipSalt = config.get("analytics.iphashsalt");
         ipSource = config.get("analytics.ipsource", "direct").toLowerCase(Locale.ROOT);
         ipHeader = config.get("analytics.ipheader", "");
+        trackBots = config.get("analytics.trackbots", "true").equalsIgnoreCase("true");
         batchSize = Math.max(1, config.getInt("analytics.batchsize", 1000));
         queue = new ArrayBlockingQueue<>(Math.max(batchSize, config.getInt("analytics.queuecapacity", 100000)));
-        tagCacheMillis = Math.max(1000, config.getInt("analytics.tagcachemillis", 300000));
-        tagCacheMaxEntries = Math.max(1, config.getInt("analytics.tagcachemaxentries", 10000));
         requestTimeout = Duration.ofMillis(config.getInt("analytics.http.requesttimeoutmillis", 5000));
         httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofMillis(config.getInt("analytics.http.connecttimeoutmillis", 2000)))
@@ -126,16 +123,17 @@ public class AnalyticsService {
     }
 
     public void track(Exchange exchange, Paste paste, User visitor, VisitType visitType) {
+        UserAgentInfo userAgent = UserAgentInfo.parse(exchange.header("User-Agent"));
+        if (!trackBots && userAgent.bot) return;
+
         String ip = resolveIp(exchange);
         GeoLocation geo = lookupGeo(ip);
-        UserAgentInfo userAgent = UserAgentInfo.parse(exchange.header("User-Agent"));
         String refererHost = refererHost(exchange.header("Referer"));
 
         VisitEvent event = new VisitEvent();
         event.paste_key = paste.getKey();
         event.paste_visibility = paste.getVisibility().name();
         event.paste_user_id = paste.getUserId();
-        event.paste_tags = tagsFor(paste);
         event.visit_type = visitType.name();
         event.visited_at = CLICKHOUSE_DATE_TIME.format(Instant.now());
         event.country = geo.country;
@@ -156,16 +154,22 @@ public class AnalyticsService {
     }
 
     public AnalyticsResponse query(AnalyticsQuery query) {
+        if (!trackBots) {
+            query.filters.remove("is_bot");
+            if (query.groupBy.equals("is_bot")) query.groupBy = "country";
+        }
         String where = buildWhere(query);
         AnalyticsResponse response = new AnalyticsResponse();
+        response.botTrackingEnabled = trackBots;
 
         if (query.includeSummary) {
-            JsonObject totals = firstRow(select("SELECT count() AS total_visits, uniqExact(ip_hash) AS unique_visitors, "
-                    + "countIf(is_bot = 1) AS bot_visits FROM " + fullTable() + where + " FORMAT JSONEachRow"));
+            String botVisits = trackBots ? ", countIf(is_bot = 1) AS bot_visits" : "";
+            JsonObject totals = firstRow(select("SELECT count() AS total_visits, uniqExact(ip_hash) AS unique_visitors"
+                    + botVisits + " FROM " + fullTable() + where + " FORMAT JSONEachRow"));
             if (totals != null) {
                 response.totalVisits = totals.get("total_visits").getAsLong();
                 response.uniqueVisitors = totals.get("unique_visitors").getAsLong();
-                response.botVisits = totals.get("bot_visits").getAsLong();
+                if (trackBots) response.botVisits = totals.get("bot_visits").getAsLong();
             }
 
             String bucket = switch (query.interval) {
@@ -186,8 +190,7 @@ public class AnalyticsService {
         }
 
         if (query.includeBreakdown) {
-            String groupExpression = query.groupBy.equals("paste_tag") ? "arrayJoin(paste_tags)" : query.groupBy;
-            for (JsonObject row : rows(select("SELECT toString(" + groupExpression + ") AS value, count() AS visits, "
+            for (JsonObject row : rows(select("SELECT toString(" + query.groupBy + ") AS value, count() AS visits, "
                     + "uniqExact(ip_hash) AS unique_visitors FROM " + fullTable() + where
                     + " GROUP BY value ORDER BY visits DESC LIMIT 25 FORMAT JSONEachRow"))) {
                 AnalyticsResponse.BreakdownPoint point = new AnalyticsResponse.BreakdownPoint();
@@ -202,13 +205,12 @@ public class AnalyticsService {
 
     private void initializeSchema(int retentionDays) {
         execute("CREATE TABLE IF NOT EXISTS " + fullTable() + " ("
-                + "paste_key String, paste_visibility LowCardinality(String), paste_user_id Nullable(String), "
-                + "paste_tags Array(String), visit_type LowCardinality(String), visited_at DateTime64(3, 'UTC'), "
+                + "paste_key FixedString(8), paste_visibility LowCardinality(String), paste_user_id Nullable(FixedString(8)), "
+                + "visit_type LowCardinality(String), visited_at DateTime64(3, 'UTC') CODEC(DoubleDelta, ZSTD(1)), "
                 + "country LowCardinality(String), region LowCardinality(String), city LowCardinality(String), "
-                + "visitor_user_id Nullable(String), browser LowCardinality(String), device_type LowCardinality(String), "
-                + "os LowCardinality(String), ip_hash UInt64, referer_host String, "
-                + "acquisition LowCardinality(String), is_bot UInt8, "
-                + "INDEX paste_tags_idx paste_tags TYPE bloom_filter GRANULARITY 4"
+                + "visitor_user_id Nullable(FixedString(8)), browser LowCardinality(String), device_type LowCardinality(String), "
+                + "os LowCardinality(String), ip_hash Nullable(UInt64), referer_host String, "
+                + "acquisition LowCardinality(String), is_bot UInt8"
                 + ") ENGINE = MergeTree PARTITION BY toYYYYMM(visited_at) ORDER BY (paste_key, visited_at) "
                 + "TTL visited_at + INTERVAL " + retentionDays + " DAY DELETE");
     }
@@ -247,10 +249,9 @@ public class AnalyticsService {
         List<String> clauses = new ArrayList<>();
         clauses.add("visited_at >= parseDateTime64BestEffort('" + CLICKHOUSE_DATE_TIME.format(query.from) + "')");
         clauses.add("visited_at <= parseDateTime64BestEffort('" + CLICKHOUSE_DATE_TIME.format(query.to) + "')");
+        if (!trackBots) clauses.add("is_bot = 0");
         query.filters.forEach((field, value) -> {
-            if (field.equals("paste_tag")) {
-                clauses.add("has(paste_tags, '" + escape(value) + "')");
-            } else if (field.equals("is_bot")) {
+            if (field.equals("is_bot")) {
                 clauses.add("is_bot = " + (Boolean.parseBoolean(value) || value.equals("1") ? "1" : "0"));
             } else {
                 clauses.add(field + " = '" + escape(value) + "'");
@@ -309,6 +310,7 @@ public class AnalyticsService {
     }
 
     private BigInteger hashIp(String ip) {
+        if (ip.isBlank()) return null;
         try {
             byte[] digest = MessageDigest.getInstance("SHA-256")
                     .digest((ipSalt + ":" + ip).getBytes(StandardCharsets.UTF_8));
@@ -316,18 +318,6 @@ public class AnalyticsService {
         } catch (Exception exception) {
             throw new IllegalStateException("SHA-256 is not available", exception);
         }
-    }
-
-    private List<String> tagsFor(Paste paste) {
-        long now = System.currentTimeMillis();
-        CachedTags cached = tagCache.get(paste.getKey());
-        if (cached != null && cached.expiresAt > now) return cached.tags;
-
-        List<String> tags = List.copyOf(paste.getTags());
-        if (cached != null || tagCache.size() < tagCacheMaxEntries) {
-            tagCache.put(paste.getKey(), new CachedTags(tags, now + tagCacheMillis));
-        }
-        return tags;
     }
 
     private GeoLocation lookupGeo(String ip) {
@@ -359,7 +349,8 @@ public class AnalyticsService {
         if (value == null || value.isBlank()) return "";
         try {
             String host = URI.create(value).getHost();
-            return host == null ? "" : host.toLowerCase(Locale.ROOT);
+            if (host == null || host.length() > MAX_REFERER_HOST_LENGTH) return "";
+            return host.toLowerCase(Locale.ROOT);
         } catch (RuntimeException ignored) {
             return "";
         }
@@ -421,7 +412,6 @@ public class AnalyticsService {
         String paste_key;
         String paste_visibility;
         String paste_user_id;
-        List<String> paste_tags;
         String visit_type;
         String visited_at;
         String country;
@@ -442,8 +432,6 @@ public class AnalyticsService {
         String region = "";
         String city = "";
     }
-
-    private record CachedTags(List<String> tags, long expiresAt) {}
 
     private static class UserAgentInfo {
         String browser = "UNKNOWN";

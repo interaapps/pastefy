@@ -160,8 +160,7 @@ Analytics is disabled unless `ANALYTICS_CLICKHOUSE_URL` and `ANALYTICS_IP_HASH_S
 | `ANALYTICS_IP_SOURCE` | Client IP source: `direct`, `x-forwarded-for`, or `cloudflare` | `direct` |
 | `ANALYTICS_IP_HEADER` | Optional custom client IP header; overrides `ANALYTICS_IP_SOURCE` | Empty |
 | `ANALYTICS_GEOIP_MMDB_PATH` | Path to a GeoIP2 or GeoLite2 City `.mmdb` file | Empty; location fields stay empty |
-| `ANALYTICS_TAG_CACHE_MILLIS` | TTL for hot paste tag snapshots | `300000` |
-| `ANALYTICS_TAG_CACHE_MAX_ENTRIES` | Maximum number of hot paste tag snapshots | `10000` |
+| `ANALYTICS_TRACK_BOTS` | Store visits detected as bot or crawler traffic | `true` |
 
 ---
 
