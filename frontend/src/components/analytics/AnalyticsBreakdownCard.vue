@@ -3,6 +3,18 @@ import { computed } from 'vue'
 import type { AnalyticsBreakdownPoint } from '@/types/analytics.ts'
 import ProgressSpinner from 'primevue/progressspinner'
 
+const countryFlagModules = import.meta.glob('../../../node_modules/ia-flag-icons/states/*.svg', {
+  eager: true,
+  import: 'default',
+  query: '?url',
+}) as Record<string, string>
+
+const countryFlags = Object.fromEntries(
+  Object.entries(countryFlagModules)
+    .map(([path, url]) => [path.match(/\/([A-Z]{2})\.svg$/)?.[1], url])
+    .filter(([country]) => country),
+) as Record<string, string>
+
 const props = defineProps<{
   title: string
   icon: string
@@ -42,6 +54,9 @@ const displayValue = (value: string) => {
     .toLowerCase()
     .replace(/(^|\s)\S/g, (character: string) => character.toUpperCase())
 }
+
+const countryFlag = (value: string) =>
+  props.active === 'country' ? countryFlags[value.toUpperCase()] : undefined
 </script>
 
 <template>
@@ -95,7 +110,13 @@ const displayValue = (value: string) => {
           }"
         />
         <span class="relative z-1 flex min-w-0 items-center gap-2 truncate">
-          <i :class="icon" class="shrink-0" />
+          <img
+            v-if="countryFlag(row.value)"
+            :src="countryFlag(row.value)"
+            :alt="`${row.value.toUpperCase()} flag`"
+            class="h-5 w-5 shrink-0 rounded-xs object-cover"
+          />
+          <i v-else :class="icon" class="shrink-0" />
           <span class="truncate">{{ displayValue(row.value) }}</span>
         </span>
         <strong class="relative z-1 ml-3 font-semibold">{{ row.visits }}</strong>
