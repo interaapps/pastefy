@@ -1,10 +1,20 @@
 package de.interaapps.pastefy.service
 
 import de.interaapps.pastefy.entities.User
-import de.interaapps.pastefy.model.database.*
+import de.interaapps.pastefy.dto.folder.FolderResponse
+import de.interaapps.pastefy.entities.Folder
+import de.interaapps.pastefy.entities.Notification
+import de.interaapps.pastefy.entities.Paste
+import de.interaapps.pastefy.entities.PasteStar
+import de.interaapps.pastefy.infrastructure.elastic.ElasticPasteService
 import de.interaapps.pastefy.repositories.PasteRepository
 import de.interaapps.pastefy.repositories.PasteStarRepository
 import de.interaapps.pastefy.repositories.UserRepository
+import de.interaapps.pastefy.repositories.AuthKeyRepository
+import de.interaapps.pastefy.repositories.FolderRepository
+import de.interaapps.pastefy.repositories.NotificationRepository
+import de.interaapps.pastefy.repositories.SharedPasteRepository
+import org.springframework.beans.factory.ObjectProvider
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,8 +27,7 @@ class UserService(
     private val authKeyRepository: AuthKeyRepository,
     private val notificationRepository: NotificationRepository,
     private val sharedPasteRepository: SharedPasteRepository,
-    // private val elasticStarsService: ElasticStarsService,
-    // private val publicPasteEngagementService: PublicPasteEngagementService,
+    private val elasticProvider: ObjectProvider<ElasticPasteService>,
 ) {
 
     fun get(id: String): User? {
@@ -46,11 +55,11 @@ class UserService(
         return folderRepository.findAllByUserIdAndParentIsNull(user.id)
             .map { folder ->
                 FolderResponse(
-                    folder,
-                    fetchChildren,
-                    fetchSubChildren,
-                    fetchPastes,
-                    true
+                    id = folder.key,
+                    name = folder.name,
+                    userId = folder.userId,
+                    created = folder.createdAt?.toString() ?: "0000-00-00 00:00:00",
+                    exists = true,
                 )
             }
     }
@@ -59,11 +68,11 @@ class UserService(
         return folderRepository.findAllByUserIdAndParentIsNull(user.id)
             .map { folder ->
                 FolderResponse(
-                    folder,
-                    true,
-                    true,
-                    false,
-                    true
+                    id = folder.key,
+                    name = folder.name,
+                    userId = folder.userId,
+                    created = folder.createdAt?.toString() ?: "0000-00-00 00:00:00",
+                    exists = true,
                 )
             }
     }
@@ -90,21 +99,13 @@ class UserService(
         )
 
         pasteStarRepository.save(pasteStar)
-
-        // async {
-        //     elasticStarsService.addStarCount(paste, user)
-        //     publicPasteEngagementService.addInterestFromPaste(paste, 20)
-        // }
+        elasticProvider.ifAvailable?.updateStars(paste)
     }
 
     @Transactional
     fun unstar(user: User, paste: Paste) {
         pasteStarRepository.deleteByPasteAndUserId(paste.key, user.id)
-
-        // async {
-        //     elasticStarsService.removeStarCount(paste, user)
-        //     publicPasteEngagementService.addInterestFromPaste(paste, -20)
-        // }
+        elasticProvider.ifAvailable?.updateStars(paste)
     }
 
     @Transactional

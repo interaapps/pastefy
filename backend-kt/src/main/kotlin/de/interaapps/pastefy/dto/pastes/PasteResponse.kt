@@ -5,12 +5,12 @@ import de.interaapps.pastefy.enums.PasteType
 import de.interaapps.pastefy.enums.PasteVisibility
 
 data class PasteResponse(
-    var id: String,
-    var content: String,
-    var title: String,
+    var id: String? = null,
+    var content: String? = null,
+    var title: String? = null,
 
-    var visibility: PasteVisibility,
-    var type: PasteType,
+    var visibility: PasteVisibility = PasteVisibility.UNLISTED,
+    var type: PasteType = PasteType.PASTE,
 
     var createdAt: String = "0000-00-00 00:00:00",
     var encrypted: Boolean = false,
@@ -21,13 +21,12 @@ data class PasteResponse(
     var forkedFrom: String? = null,
 
     var expireAt: String? = null,
-    var tags: MutableList<String?>? = null,
+    var tags: List<String>? = null,
 
     var user: PublicUserDto? = null,
 
     var starred: Boolean? = null,
+    var aiInfo: PasteAiInfoResponse? = null,
 
     var exists: Boolean = true,
-    var success: Boolean = true,
-) {
-}
+)

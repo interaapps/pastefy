@@ -26,10 +26,13 @@ repositories {
     mavenCentral()
 }
 
-extra["springAiVersion"] = "1.0.3"
+extra["springAiVersion"] = "1.1.7"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     // implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -37,14 +40,18 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
-    // implementation("org.springframework.ai:spring-ai-starter-model-openai")
+    implementation("org.springframework.ai:spring-ai-starter-model-anthropic")
+    implementation("org.springframework.ai:spring-ai-starter-model-google-genai")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
     implementation("com.vladmihalcea:hibernate-types-60:2.21.1")
 
-    implementation("co.elastic.clients:elasticsearch-java:9.0.0")
     implementation("io.minio:minio:8.5.5")
+    implementation("com.clickhouse:clickhouse-jdbc:0.9.8:all")
+    implementation("com.maxmind.geoip2:geoip2:4.3.1")
+    implementation("org.flywaydb:flyway-core:11.9.0")
+    implementation("org.flywaydb:flyway-database-clickhouse:10.24.0")
+    implementation("org.liquibase:liquibase-core")
 
-    implementation("redis.clients:jedis:5.2.0")
     implementation("org.apache.xmlgraphics:batik-codec:1.16")
     implementation("org.apache.xmlgraphics:batik-transcoder:1.17")
 

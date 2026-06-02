@@ -1,22 +1,40 @@
-package de.interaapps.pastefy.model.database
+package de.interaapps.pastefy.entities
 
 import de.interaapps.pastefy.enums.PasteType
 import de.interaapps.pastefy.enums.PasteVisibility
 import de.interaapps.pastefy.enums.StorageType
+import de.interaapps.pastefy.util.RandomStrings
 import jakarta.persistence.*
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
 import java.time.Instant
-import java.util.UUID
+import java.util.HexFormat
 
 @Entity
-@Table(name = "pastes")
+@Table(
+    name = "pastefy_pastes",
+    indexes = [
+        Index(name = "pastefy_pastes_expire_at_index", columnList = "expire_at"),
+        Index(name = "pastefy_pastes_folder_index", columnList = "folder"),
+        Index(name = "pastefy_pastes_hash_index", columnList = "hash"),
+        Index(name = "pastefy_pastes_id_index", columnList = "id"),
+        Index(name = "pastefy_pastes_indexed_in_elastic_index", columnList = "indexed_in_elastic"),
+        Index(name = "pastefy_pastes_key_index", columnList = "`key`"),
+        Index(name = "pastefy_pastes_length_index", columnList = "length"),
+        Index(name = "pastefy_pastes_storage_type_index", columnList = "storage_type"),
+        Index(name = "pastefy_pastes_user_folder_index", columnList = "user_id, folder"),
+        Index(name = "pastefy_pastes_user_id_index", columnList = "user_id"),
+        Index(name = "pastefy_pastes_visibility_index", columnList = "visibility"),
+    ],
+)
 class Paste(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
 
-    @Column(length = 8, nullable = false, unique = true)
-    var key: String = randomKey(),
+    @Column(name = "`key`", length = 8, nullable = false, unique = true)
+    var key: String = RandomStrings.alphanumeric(8),
 
     @Column(length = 8)
     var folder: String? = null,
@@ -60,7 +78,13 @@ class Paste(
     var version: Int = 0,
 
     @Column(nullable = false)
-    var indexedInElastic: Boolean = false
+    var indexedInElastic: Boolean = false,
+
+    @Column(nullable = false)
+    var length: Int = 0,
+
+    @Column(length = 64)
+    var hash: String? = null,
 
 ) {
 
@@ -79,6 +103,12 @@ class Paste(
     fun setDatabaseContent(content: String?) {
         this.content = content
         this.storageType = StorageType.DATABASE
+        updateContentMetadata(content)
+    }
+
+    fun setStorageReference(reference: String?, storageType: StorageType) {
+        content = reference
+        this.storageType = storageType
     }
 
     @PrePersist
@@ -94,8 +124,9 @@ class Paste(
         indexedInElastic = false
 
         if (key.isBlank()) {
-            key = randomKey()
+            key = RandomStrings.alphanumeric(8)
         }
+        if (storageType == StorageType.DATABASE) updateContentMetadata(content)
     }
 
     @PreUpdate
@@ -103,14 +134,17 @@ class Paste(
         updatedAt = Instant.now()
         version += 1
         indexedInElastic = false
+        if (storageType == StorageType.DATABASE) updateContentMetadata(content)
     }
 
-
-    companion object {
-        fun randomKey(): String =
-            UUID.randomUUID()
-                .toString()
-                .replace("-", "")
-                .substring(0, 8)
+    private fun updateContentMetadata(content: String?) {
+        if (content == null) {
+            length = 0
+            hash = null
+            return
+        }
+        val bytes = content.toByteArray(StandardCharsets.UTF_8)
+        length = bytes.size
+        hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes))
     }
 }

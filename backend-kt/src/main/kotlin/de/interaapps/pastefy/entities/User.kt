@@ -1,17 +1,17 @@
 package de.interaapps.pastefy.entities
 
-import de.interaapps.pastefy.auth.strategies.oauth2.OAuth2Provider
-import de.interaapps.pastefy.auth.strategies.oauth2.providers.*
+import de.interaapps.pastefy.auth.oauth.OAuth2Provider
+import de.interaapps.pastefy.auth.oauth.providers.*
+import de.interaapps.pastefy.util.RandomStrings
 import jakarta.persistence.*
 import java.time.Instant
-import java.util.UUID
 
 @Entity
-@Table(name = "users")
+@Table(name = "pastefy_users")
 class User(
     @Id
     @Column(length = 8)
-    var id: String = randomId(),
+    var id: String = RandomStrings.alphanumeric(8),
 
     @Column
     var name: String? = null,
@@ -96,11 +96,4 @@ class User(
         AWAITING_ACCESS
     }
 
-    companion object {
-        fun randomId(): String =
-            UUID.randomUUID()
-                .toString()
-                .replace("-", "")
-                .substring(0, 8)
-    }
 }

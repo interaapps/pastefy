@@ -7,6 +7,8 @@ interface UserRepository : JpaRepository<User, String> {
 
     fun findByUniqueName(uniqueName: String): User?
 
+    fun existsByUniqueName(uniqueName: String): Boolean
+
     fun findByAuthIdAndAuthProvider(
         authId: String,
         authProvider: User.AuthenticationProvider

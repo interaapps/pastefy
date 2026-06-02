@@ -4,13 +4,12 @@ import de.interaapps.pastefy.enums.PasteType
 import de.interaapps.pastefy.enums.PasteVisibility
 
 data class EditPasteRequest(
-    val title: String,
-    val content: String,
-
-    val encrypted: Boolean? = false,
-    val folder: String?,
-    val expireAt: String?,
-    val tags: List<String>?,
-    val visibility: PasteVisibility? = PasteVisibility.UNLISTED,
-    val type: PasteType? = PasteType.PASTE,
+    val title: String? = null,
+    val content: String? = null,
+    val encrypted: Boolean? = null,
+    val folder: String? = null,
+    val expireAt: String? = null,
+    val tags: List<String>? = null,
+    val visibility: PasteVisibility? = null,
+    val type: PasteType? = null,
 )

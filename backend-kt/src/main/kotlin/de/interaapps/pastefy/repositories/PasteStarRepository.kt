@@ -1,5 +1,6 @@
 package de.interaapps.pastefy.repositories
 
+import de.interaapps.pastefy.entities.PasteStar
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface PasteStarRepository : JpaRepository<PasteStar, Int> {
@@ -9,4 +10,8 @@ interface PasteStarRepository : JpaRepository<PasteStar, Int> {
     fun deleteByPasteAndUserId(paste: String, userId: String)
 
     fun countByPaste(paste: String): Int
+
+    fun findAllByPaste(paste: String): List<PasteStar>
+
+    fun deleteByPaste(paste: String)
 }
