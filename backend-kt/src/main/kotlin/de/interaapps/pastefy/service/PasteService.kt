@@ -68,11 +68,14 @@ class PasteService(
         redisCacheProvider.ifAvailable?.evictContent(saved)
 
         val s3 = s3Provider.ifAvailable
+
         if (s3 != null && s3.shouldStore(saved)) {
             val content = getContent(saved, withCache = false).orEmpty()
             val reference = s3.store(saved, content)
+
             saved.cachedContents = content
             saved.setStorageReference(s3.encode(reference), StorageType.S3)
+
             saved = pasteRepository.saveAndFlush(saved)
         }
 

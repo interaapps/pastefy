@@ -3,6 +3,9 @@ package de.interaapps.pastefy.infrastructure.elastic
 import de.interaapps.pastefy.config.PastefyProperties
 import de.interaapps.pastefy.entities.Paste
 import de.interaapps.pastefy.entities.User
+import de.interaapps.pastefy.enums.PasteType
+import de.interaapps.pastefy.enums.PasteVisibility
+import de.interaapps.pastefy.enums.StorageType
 import de.interaapps.pastefy.repositories.PasteStarRepository
 import de.interaapps.pastefy.repositories.PasteTagRepository
 import de.interaapps.pastefy.repositories.PublicPasteEngagementRepository
@@ -84,13 +87,13 @@ class ElasticPasteService(
         forkedFrom = paste.forkedFrom,
         encrypted = paste.encrypted,
         folder = paste.folder,
-        type = paste.type,
-        visibility = paste.visibility,
+        type = paste.type ?: PasteType.PASTE,
+        visibility = paste.visibility ?: PasteVisibility.UNLISTED,
         expireAt = paste.expireAt,
         createdAt = paste.createdAt,
         updatedAt = paste.updatedAt,
-        storageType = paste.storageType,
-        version = paste.version,
+        storageType = paste.storageType ?: StorageType.DATABASE,
+        version = paste.version ?: 1,
         engagementScore = engagement(paste),
         tags = tags(paste),
         starCount = starredBy(paste).size,

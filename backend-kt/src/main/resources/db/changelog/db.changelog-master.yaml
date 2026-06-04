@@ -1,1 +1,7 @@
-databaseChangeLog: []
+databaseChangeLog:
+  - include:
+      file: 001-baseline.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 002-json-transformations.yaml
+      relativeToChangelogFile: true

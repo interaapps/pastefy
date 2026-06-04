@@ -8,8 +8,10 @@ import org.junit.jupiter.api.Test
 class SeoRendererTest {
     @Test
     fun `injects escaped metadata and canonical url`() {
+        val properties = PastefyProperties(metaTagsEnabled = true, serverName = "https://pastefy.example/")
         val renderer = SeoRenderer(
-            PastefyProperties(metaTagsEnabled = true, serverName = "https://pastefy.example/"),
+            properties,
+            FrontendIndexService(properties),
         )
 
         val html = renderer.render(

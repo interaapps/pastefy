@@ -4,6 +4,7 @@ import de.interaapps.pastefy.config.PastefyProperties
 import de.interaapps.pastefy.repositories.PasteAIInfoRepository
 import de.interaapps.pastefy.repositories.PasteTagRepository
 import de.interaapps.pastefy.repositories.UserRepository
+import de.interaapps.pastefy.service.FrontendIndexService
 import de.interaapps.pastefy.service.PasteService
 import de.interaapps.pastefy.service.SeoRenderer
 import org.springframework.http.MediaType
@@ -20,14 +21,15 @@ class PasteMetaSSRController(
     private val aiInfoRepository: PasteAIInfoRepository,
     private val properties: PastefyProperties,
     private val seo: SeoRenderer,
+    private val frontendIndex: FrontendIndexService,
 ) {
     @GetMapping("/{id}")
     fun getPasteMetaSSR(@PathVariable id: String): ResponseEntity<String> {
-        if (!id.matches(Regex("^[A-Za-z0-9_-]{8}$"))) return ResponseEntity.notFound().build()
+        if (!id.matches(Regex("^[A-Za-z0-9_-]{8}$"))) return frontend()
 
-        val paste = pasteService.get(id) ?: return ResponseEntity.notFound().build()
+        val paste = pasteService.get(id) ?: return frontend()
 
-        if (paste.isPrivate || paste.encrypted) return ResponseEntity.notFound().build()
+        if (paste.isPrivate || paste.encrypted) return frontend()
 
         val aiInfo = paste.id?.let(aiInfoRepository::findById)?.orElse(null)
 
@@ -77,7 +79,12 @@ class PasteMetaSSRController(
 
         return seo.render(page)?.let {
             ResponseEntity.ok().contentType(MediaType("text", "html", Charsets.UTF_8)).body(it)
-        } ?: ResponseEntity.notFound().build()
+        } ?: frontend()
+    }
+
+    private fun frontend(): ResponseEntity<String> {
+        val html = frontendIndex.html ?: return ResponseEntity.notFound().build()
+        return ResponseEntity.ok().contentType(MediaType("text", "html", Charsets.UTF_8)).body(html)
     }
 
     private fun seoContent(

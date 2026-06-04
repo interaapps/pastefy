@@ -19,16 +19,16 @@ Ziel: `backend-kt` ersetzt `backend` ohne Verhaltensänderungen für bestehende 
 ## P0: Listenabfragen und Response-Mapping
 
 - [x] Einen gemeinsamen Mapper `Paste -> PasteResponse` implementieren, inklusive `raw_url`, Tags, User, Starred-Status, optionaler AI-Analyse und Inhaltskürzung.
-- [ ] `shorten_content=true` exakt nachbauen: Inhalte über 303 Zeichen auf 300 Zeichen plus `...` kürzen.
-- [ ] `with_ai_analysis=true` exakt nachbauen und `PasteAiInfoResponse` nur dann einbetten.
-- [ ] Einen gemeinsamen Listen-Query-Service für SQL und Elasticsearch implementieren.
-- [ ] Legacy-Query-Parameter unterstützen: `page`, `page_limit`, `search`, `sort`, `filter`, `filters`, `filter_tags`, `shorten_content`.
-- [ ] Das konfigurierte Maximum `PASTEFY_PAGINATION_PAGE_LIMIT` nachbauen.
-- [ ] Legacy-Sichtbarkeitsregeln nachbauen: Nicht-Admins sehen öffentliche Pastes sowie eigene und selbst markierte Pastes; Admins dürfen ungefiltert lesen.
+- [x] `shorten_content=true` exakt nachbauen: Inhalte über 303 Zeichen auf 300 Zeichen plus `...` kürzen.
+- [x] `with_ai_analysis=true` exakt nachbauen und `PasteAiInfoResponse` nur dann einbetten.
+- [x] Einen gemeinsamen Listen-Query-Service für SQL und Elasticsearch implementieren.
+- [x] Legacy-Query-Parameter unterstützen: `page`, `page_limit`, `search`, `sort`, `filter`, `filters`, `filter_tags`, `shorten_content`.
+- [x] Das konfigurierte Maximum `PASTEFY_PAGINATION_PAGE_LIMIT` nachbauen.
+- [x] Legacy-Sichtbarkeitsregeln nachbauen: Nicht-Admins sehen öffentliche Pastes sowie eigene und selbst markierte Pastes; Admins dürfen ungefiltert lesen.
 - [ ] SQL- und Elasticsearch-Ergebnisse auf identische Reihenfolge, Filterung und DTOs bringen.
-- [ ] Elasticsearch-Volltextsuche mit Legacy-Gewichtung nachbauen: `title^3`, `content`, `user.name`, `user.uniqueName`.
-- [ ] Elasticsearch-Filter für Tags, Sichtbarkeit, Verschlüsselung, User, Stars, Folder und Zeitwerte nachbauen.
-- [ ] SQL-Fallback für `starredBy`, Tagfilter und Sortierung nach `engagementScore` nachbauen.
+- [x] Elasticsearch-Volltextsuche mit Legacy-Gewichtung nachbauen: `title^3`, `content`, `user.name`, `user.uniqueName`.
+- [x] Elasticsearch-Filter für Tags, Sichtbarkeit, Verschlüsselung, User, Stars, Folder und Zeitwerte nachbauen.
+- [x] SQL-Fallback für `starredBy`, Tagfilter und Sortierung nach `engagementScore` nachbauen.
 - [ ] Prüfen, ob `PASTEFY_LIST_PASTES` weiterhin benötigt wird, und das Legacy-Verhalten für anonyme Listenabfragen übernehmen.
 
 ## Paste-API

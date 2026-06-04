@@ -1,6 +1,7 @@
 package de.interaapps.pastefy.controller.user
 
 import de.interaapps.pastefy.auth.annotations.*
+import de.interaapps.pastefy.auth.oauth.OAuth2ProviderRegistry
 import de.interaapps.pastefy.dto.folder.FolderResponse
 import de.interaapps.pastefy.dto.pastes.PasteResponse
 import de.interaapps.pastefy.dto.user.UserPastesResponse
@@ -27,6 +28,7 @@ class UserController(
     private val queries: PasteQueryService,
     private val pasteRepository: PasteRepository,
     private val sharedPasteRepository: SharedPasteRepository,
+    private val oauth2Providers: OAuth2ProviderRegistry,
 ) {
     @GetMapping
     fun getUser(@CurrentUser user: User?): UserResponse = user?.let {
@@ -38,10 +40,10 @@ class UserController(
             color = "#f52966",
             profilePicture = it.avatar,
             authType = it.authProvider?.providerName,
-            authTypes = listOfNotNull(it.authProvider?.providerName),
+            authTypes = oauth2Providers.names().toList(),
             type = it.type,
         )
-    } ?: UserResponse()
+    } ?: UserResponse(authTypes = oauth2Providers.names().toList())
 
     @GetMapping("/overview")
     @Authenticated

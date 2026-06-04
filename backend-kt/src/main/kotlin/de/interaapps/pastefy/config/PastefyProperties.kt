@@ -17,6 +17,8 @@ data class PastefyProperties(
     var customLogo: String? = null,
     var customName: String? = null,
     var customFooter: String = "",
+    var customHeader: String = "",
+    var customBody: String = "",
     var grantAccessRequired: Boolean = false,
     var oauthStateSecret: String = "",
     var oauth: OAuth = OAuth(),
@@ -26,7 +28,12 @@ data class PastefyProperties(
     var elasticsearch: Elasticsearch = Elasticsearch(),
     var ai: AI = AI(),
     var analytics: Analytics = Analytics(),
+    var seeding: Seeding = Seeding(),
 ) {
+    data class Seeding(
+        var enabled: Boolean = false,
+    )
+
     data class RateLimiter(
         var enabled: Boolean = true,
         var windowMillis: Long = 5_000,
@@ -48,6 +55,7 @@ data class PastefyProperties(
         var bucket: String = "pastefy",
         var region: String? = null,
         var pasteSizeThreshold: Int = -1,
+        var createBucket: Boolean = false,
     )
 
     data class Elasticsearch(

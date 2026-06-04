@@ -2,7 +2,6 @@ package de.interaapps.pastefy.service
 
 import de.interaapps.pastefy.config.PastefyProperties
 import org.slf4j.LoggerFactory
-import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import org.springframework.web.util.HtmlUtils
 import java.net.URLEncoder
@@ -11,8 +10,13 @@ import java.nio.charset.StandardCharsets
 @Service
 class SeoRenderer(
     private val properties: PastefyProperties,
+    frontendIndex: FrontendIndexService,
 ) {
-    private val html = loadHtml()
+    private val html = frontendIndex.html?.let { source ->
+        runCatching { prepareHtml(source) }
+            .onFailure { LOGGER.warn("Unable to prepare frontend index for SEO metadata", it) }
+            .getOrNull()
+    }
 
     fun render(page: SeoPage?): String? {
         if (!properties.metaTagsEnabled || page == null) return null
@@ -28,21 +32,18 @@ class SeoRenderer(
 
     fun pathSegment(value: String): String = URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20")
 
-    fun truncate(value: String, maxLength: Int): String =
-        if (value.codePointCount(0, value.length) <= maxLength) value
-        else value.substring(0, value.offsetByCodePoints(0, maxLength - 3)) + "..."
+    fun truncate(value: String, maxLength: Int): String {
+        if (value.codePointCount(0, value.length) <= maxLength) {
+            return value
+        }
+        return "${value.substring(0, value.offsetByCodePoints(0, maxLength - 3))}..."
+    }
 
     fun truncateWithoutEllipsis(value: String, maxLength: Int): String =
         if (value.codePointCount(0, value.length) <= maxLength) value
         else value.substring(0, value.offsetByCodePoints(0, maxLength))
 
     fun escapeHtml(value: String?) = HtmlUtils.htmlEscape(value.orEmpty())
-
-    private fun loadHtml(): String? = runCatching {
-        prepareHtml(ClassPathResource("static/index.html").inputStream.bufferedReader().use { it.readText() })
-    }.onFailure {
-        LOGGER.warn("Unable to prepare static/index.html for SEO metadata", it)
-    }.getOrNull()
 
     private fun prepareHtml(source: String): String {
         val start = source.indexOf(META_START_TAG)
@@ -52,9 +53,13 @@ class SeoRenderer(
 
         var prepared = source.substring(0, start) + META_REPLACEMENT + source.substring(end + META_END_TAG.length)
 
-        prepared = APP_MOUNT.replace(prepared) { result -> result.groupValues[1] + SEO_CONTENT_REPLACEMENT + "</div>" }
+        prepared = APP_MOUNT.replace(prepared) {
+            result -> result.groupValues[1] + SEO_CONTENT_REPLACEMENT + "</div>"
+        }
 
-        require(SEO_CONTENT_REPLACEMENT in prepared) { "Vue app mount is missing in static/index.html" }
+        require(SEO_CONTENT_REPLACEMENT in prepared) {
+            "Frontend mount is missing in static/index.html"
+        }
 
         return if (TITLE.containsMatchIn(prepared)) {
             TITLE.replaceFirst(prepared, "<title>$TITLE_REPLACEMENT</title>")
@@ -77,11 +82,13 @@ class SeoRenderer(
     fun absoluteUrl(pathOrUrl: String): String {
         if (pathOrUrl.startsWith("http://", true) || pathOrUrl.startsWith("https://", true)) return pathOrUrl
         val configured = properties.serverName.trim().ifBlank { "http://localhost" }
+
         val base = if (configured.startsWith("http://", true) || configured.startsWith(
                 "https://",
                 true
             )
         ) configured else "https://$configured"
+
         return base.trimEnd('/') + "/" + pathOrUrl.trimStart('/')
     }
 
@@ -91,6 +98,7 @@ class SeoRenderer(
         description: String,
     ) {
         val seoTags = linkedMapOf("description" to description)
+
         val openGraphTags = linkedMapOf(
             "og:site_name" to "Pastefy",
             "og:type" to "website",
@@ -98,22 +106,30 @@ class SeoRenderer(
             "og:description" to description,
             "og:url" to canonicalUrl,
         )
+
         val twitterTags = linkedMapOf(
             "twitter:card" to "summary",
             "twitter:title" to title,
             "twitter:description" to description,
             "twitter:url" to canonicalUrl,
         )
+
         var content: String = ""
             private set
 
         fun content(value: String) = apply { content = value }
 
-        fun meta(name: String, value: String?) = apply { value?.let { seoTags[name] = it } }
+        fun meta(name: String, value: String?) = apply {
+            value?.let { seoTags[name] = it }
+        }
 
-        fun openGraph(name: String, value: String?) = apply { value?.let { openGraphTags[name] = it } }
+        fun openGraph(name: String, value: String?) = apply {
+            value?.let { openGraphTags[name] = it }
+        }
 
-        fun twitter(name: String, value: String?) = apply { value?.let { twitterTags[name] = it } }
+        fun twitter(name: String, value: String?) = apply {
+            value?.let { twitterTags[name] = it }
+        }
 
         fun type(value: String) = openGraph("og:type", value)
 

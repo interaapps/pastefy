@@ -4,19 +4,32 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import de.interaapps.pastefy.auth.annotations.CurrentAuthKey
 import de.interaapps.pastefy.auth.annotations.CurrentUser
+import de.interaapps.pastefy.auth.oauth.OAuth2ProviderRegistry
 import de.interaapps.pastefy.config.PastefyProperties
 import de.interaapps.pastefy.controller.public.PublicUserController
+import de.interaapps.pastefy.controller.pastes.PasteMetaSSRController
 import de.interaapps.pastefy.controller.pastes.PasteRawController
 import de.interaapps.pastefy.controller.stats.StatsController
+import de.interaapps.pastefy.controller.user.UserController
 import de.interaapps.pastefy.dto.app.StatsResponse
 import de.interaapps.pastefy.entities.AuthKey
 import de.interaapps.pastefy.entities.User
 import de.interaapps.pastefy.infrastructure.ai.PasteAI
 import de.interaapps.pastefy.infrastructure.analytics.AnalyticsService
+import de.interaapps.pastefy.repositories.PasteAIInfoRepository
+import de.interaapps.pastefy.repositories.PasteRepository
+import de.interaapps.pastefy.repositories.PasteTagRepository
+import de.interaapps.pastefy.repositories.SharedPasteRepository
+import de.interaapps.pastefy.repositories.UserRepository
+import de.interaapps.pastefy.service.FolderService
+import de.interaapps.pastefy.service.FrontendIndexService
 import de.interaapps.pastefy.service.PasteService
+import de.interaapps.pastefy.service.PasteQueryService
 import de.interaapps.pastefy.service.PublicPasteEngagementService
+import de.interaapps.pastefy.service.SeoRenderer
 import de.interaapps.pastefy.service.StatsService
 import de.interaapps.pastefy.service.UserService
+import jakarta.servlet.RequestDispatcher
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
@@ -114,6 +127,110 @@ class ControllerHttpTest {
                 status { isOk() }
                 jsonPath("$.name") { value("julian") }
                 jsonPath("$.display_name") { value("Julian") }
+            }
+    }
+
+    @Test
+    fun `logged out user response still exposes configured auth types`() {
+        val providers = mock(OAuth2ProviderRegistry::class.java)
+        `when`(providers.names()).thenReturn(linkedSetOf("interaapps", "github"))
+        val mvc = mockMvc(
+            UserController(
+                mock(UserService::class.java),
+                mock(FolderService::class.java),
+                mock(PasteQueryService::class.java),
+                mock(PasteRepository::class.java),
+                mock(SharedPasteRepository::class.java),
+                providers,
+            ),
+        )
+
+        mvc.get("/api/v2/user")
+            .andExpect {
+                status { isOk() }
+                jsonPath("$.logged_in") { value(false) }
+                jsonPath("$.auth_types[0]") { value("interaapps") }
+                jsonPath("$.auth_types[1]") { value("github") }
+            }
+    }
+
+    @Test
+    fun `frontend root serves prepared index`() {
+        val properties = PastefyProperties(customHeader = "<meta name=\"x-test\" content=\"ok\">")
+        val mvc = mockMvc(FrontendController(FrontendIndexService(properties)))
+
+        mvc.get("/")
+            .andExpect {
+                status { isOk() }
+                content { contentType("text/html;charset=UTF-8") }
+                content { string(org.hamcrest.Matchers.containsString("<div id=\"app\"></div>")) }
+                content { string(org.hamcrest.Matchers.containsString("<meta name=\"x-test\" content=\"ok\">")) }
+            }
+    }
+
+    @Test
+    fun `frontend error fallback serves prepared index for spa routes`() {
+        val mvc = mockMvc(FrontendController(FrontendIndexService(PastefyProperties())))
+
+        mvc.get("/error") {
+            requestAttr(RequestDispatcher.ERROR_STATUS_CODE, 404)
+            requestAttr(RequestDispatcher.ERROR_REQUEST_URI, "/fewnadscfknjajsf/whrsdefncwas")
+        }.andExpect {
+            status { isOk() }
+            content { contentType("text/html;charset=UTF-8") }
+            content { string(org.hamcrest.Matchers.containsString("<div id=\"app\"></div>")) }
+        }
+    }
+
+    @Test
+    fun `frontend fallback does not swallow api routes`() {
+        val mvc = mockMvc(FrontendController(FrontendIndexService(PastefyProperties())))
+
+        mvc.get("/error") {
+            requestAttr(RequestDispatcher.ERROR_STATUS_CODE, 404)
+            requestAttr(RequestDispatcher.ERROR_REQUEST_URI, "/api/does-not-exist")
+        }
+            .andExpect {
+                status { isNotFound() }
+            }
+    }
+
+    @Test
+    fun `frontend error fallback also serves prepared index for missing assets`() {
+        val mvc = mockMvc(FrontendController(FrontendIndexService(PastefyProperties())))
+
+        mvc.get("/error") {
+            requestAttr(RequestDispatcher.ERROR_STATUS_CODE, 404)
+            requestAttr(RequestDispatcher.ERROR_REQUEST_URI, "/assets/missing.js")
+        }.andExpect {
+            status { isOk() }
+            content { contentType("text/html;charset=UTF-8") }
+        }
+    }
+
+    @Test
+    fun `missing paste seo route falls back to frontend index`() {
+        val pasteService = mock(PasteService::class.java)
+        `when`(pasteService.get("missing1")).thenReturn(null)
+        val properties = PastefyProperties()
+        val frontend = FrontendIndexService(properties)
+        val mvc = mockMvc(
+            PasteMetaSSRController(
+                pasteService,
+                mock(UserRepository::class.java),
+                mock(PasteTagRepository::class.java),
+                mock(PasteAIInfoRepository::class.java),
+                properties,
+                SeoRenderer(properties, frontend),
+                frontend,
+            ),
+        )
+
+        mvc.get("/missing1")
+            .andExpect {
+                status { isOk() }
+                content { contentType("text/html;charset=UTF-8") }
+                content { string(org.hamcrest.Matchers.containsString("<div id=\"app\"></div>")) }
             }
     }
 

@@ -32,7 +32,7 @@ class PasteAIInfoService(
     fun enqueueIfEligible(paste: Paste, force: Boolean = false) {
         if (!force && !isEligible(paste)) return
         val pasteId = requireNotNull(paste.id)
-        if (!force && isCurrent(infoRepository.findById(pasteId).orElse(null), paste.version)) return
+        if (!force && isCurrent(infoRepository.findById(pasteId).orElse(null), paste.version ?: 1)) return
         jobs.enqueue(type, pasteId, paste.version, PROMPT_VERSION)
     }
 
@@ -54,7 +54,7 @@ class PasteAIInfoService(
             enqueueIfEligible(paste)
             return
         }
-        if (isCurrent(infoRepository.findById(job.entityId).orElse(null), paste.version)) return
+        if (isCurrent(infoRepository.findById(job.entityId).orElse(null), paste.version ?: 1)) return
 
         val generated = pasteAI.generateInfo(paste, pasteService.getContent(paste, withCache = false).orEmpty())
         val freshPaste = pasteRepository.findById(job.entityId).orElse(null) ?: return
@@ -69,7 +69,7 @@ class PasteAIInfoService(
             .take(10)
             .toMutableList()
         val info = infoRepository.findById(job.entityId).orElse(PasteAIInfo(pasteId = job.entityId))
-        info.sourcePasteVersion = freshPaste.version
+        info.sourcePasteVersion = freshPaste.version ?: 1
         info.promptVersion = PROMPT_VERSION
         info.provider = pasteAI.provider.take(30)
         info.model = pasteAI.model.take(100)

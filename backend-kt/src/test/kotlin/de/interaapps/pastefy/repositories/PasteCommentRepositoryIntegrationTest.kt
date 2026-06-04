@@ -1,15 +1,23 @@
 package de.interaapps.pastefy.repositories
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import de.interaapps.pastefy.entities.AuthKey
 import de.interaapps.pastefy.entities.Paste
 import de.interaapps.pastefy.entities.PasteComment
+import de.interaapps.pastefy.entities.PasteStar
 import de.interaapps.pastefy.entities.PublicPasteEngagement
 import de.interaapps.pastefy.enums.PasteVisibility
+import de.interaapps.pastefy.config.PastefyProperties
+import de.interaapps.pastefy.service.query.JpaPasteQueryAdapter
+import de.interaapps.pastefy.service.query.LegacyPasteQueryParser
+import jakarta.persistence.EntityManager
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.data.domain.PageRequest
+import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.MySQLContainer
@@ -29,6 +37,8 @@ class PasteCommentRepositoryIntegrationTest(
     @Autowired private val pastes: PasteRepository,
     @Autowired private val engagements: PublicPasteEngagementRepository,
     @Autowired private val authKeys: AuthKeyRepository,
+    @Autowired private val stars: PasteStarRepository,
+    @Autowired private val entityManager: EntityManager,
 ) {
     @Test
     fun `loads top level comments newest first and replies oldest first`() {
@@ -77,8 +87,48 @@ class PasteCommentRepositoryIntegrationTest(
         )
     }
 
+    @Test
+    fun `legacy paste query filters with bracket parameters`() {
+        pastes.save(paste("query001", "Kotlin Public", PasteVisibility.PUBLIC))
+        pastes.save(paste("query002", "Kotlin Private", PasteVisibility.PRIVATE))
+        entityManager.flush()
+
+        val request = MockHttpServletRequest().apply {
+            addParameter("search", "kotlin")
+            addParameter("filter[visibility]", "PUBLIC")
+        }
+
+        assertEquals(
+            listOf("query001"),
+            queryAdapter().find(parser().parse(request, MockHttpServletResponse(), user = null, guarded = false)).map(Paste::key),
+        )
+    }
+
+    @Test
+    fun `legacy paste query supports starredBy filters json`() {
+        val paste = pastes.save(paste("query003", "Starred Paste", PasteVisibility.UNLISTED))
+        stars.save(PasteStar(paste = paste.key, userId = "user-001"))
+        entityManager.flush()
+
+        val request = MockHttpServletRequest().apply {
+            addParameter("filters", """{"starredBy":"user-001"}""")
+        }
+
+        assertEquals(
+            listOf("query003"),
+            queryAdapter().find(parser().parse(request, MockHttpServletResponse(), user = null, guarded = false)).map(Paste::key),
+        )
+    }
+
     private fun comment(paste: String, content: String, parentId: Int? = null, createdAt: Instant) =
         PasteComment(paste = paste, userId = "user-001", content = content, parentId = parentId, createdAt = createdAt)
+
+    private fun paste(key: String, title: String, visibility: PasteVisibility): Paste =
+        Paste(key = key, title = title, visibility = visibility).apply { setDatabaseContent(title.lowercase()) }
+
+    private fun parser() = LegacyPasteQueryParser(ObjectMapper(), PastefyProperties())
+
+    private fun queryAdapter() = JpaPasteQueryAdapter(entityManager)
 
     companion object {
         @Container

@@ -58,6 +58,7 @@ class S3PasteService(
 
     fun delete(paste: Paste) {
         val reference = reference(paste)
+
         client.removeObject(
             RemoveObjectArgs.builder()
                 .bucket(reference.bucket)
@@ -70,13 +71,21 @@ class S3PasteService(
     fun encode(reference: S3PasteReference): String = objectMapper.writeValueAsString(reference)
 
     private fun reference(paste: Paste): S3PasteReference {
-        require(paste.storageType == StorageType.S3) { "Paste ${paste.id} is not stored in S3" }
+        require(paste.storageType == StorageType.S3) {
+            "Paste ${paste.id} is not stored in S3"
+        }
+
         return objectMapper.readValue(requireNotNull(paste.rawContent), S3PasteReference::class.java)
     }
 
     private fun objectName(paste: Paste): String {
         val prefix =
-            paste.key.takeIf { it.length >= 4 }?.let { "${it.substring(0, 2)}/${it.substring(2, 4)}/" }.orEmpty()
+            paste.key.takeIf {
+                it.length >= 4
+            }?.let {
+                "${it.substring(0, 2)}/${it.substring(2, 4)}/"
+            }.orEmpty()
+
         return "pastes/${paste.userId ?: "anonymous"}/$prefix${paste.key}/contents.txt"
     }
 }

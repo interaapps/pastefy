@@ -1,6 +1,8 @@
 package de.interaapps.pastefy.infrastructure.s3
 
 import de.interaapps.pastefy.config.PastefyProperties
+import io.minio.BucketExistsArgs
+import io.minio.MakeBucketArgs
 import io.minio.MinioClient
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
@@ -23,5 +25,25 @@ class S3Configuration {
                 s3.region?.takeIf { it.isNotBlank() }?.let(::region)
             }
             .build()
+            .also { client ->
+                if (s3.createBucket) {
+                    ensureBucketExists(client, s3)
+                }
+            }
+    }
+
+    private fun ensureBucketExists(client: MinioClient, s3: PastefyProperties.S3) {
+        val exists = client.bucketExists(
+            BucketExistsArgs.builder()
+                .bucket(s3.bucket)
+                .build()
+        )
+        if (!exists) {
+            client.makeBucket(
+                MakeBucketArgs.builder()
+                    .bucket(s3.bucket)
+                    .build()
+            )
+        }
     }
 }

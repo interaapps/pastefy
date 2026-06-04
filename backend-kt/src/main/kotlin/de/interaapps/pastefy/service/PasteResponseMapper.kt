@@ -6,6 +6,8 @@ import de.interaapps.pastefy.dto.pastes.PasteResponse
 import de.interaapps.pastefy.dto.user.PublicUserDto
 import de.interaapps.pastefy.entities.Paste
 import de.interaapps.pastefy.entities.User
+import de.interaapps.pastefy.enums.PasteType
+import de.interaapps.pastefy.enums.PasteVisibility
 import de.interaapps.pastefy.repositories.PasteAIInfoRepository
 import de.interaapps.pastefy.repositories.PasteTagRepository
 import de.interaapps.pastefy.repositories.UserRepository
@@ -41,10 +43,10 @@ class PasteResponseMapper(
             encrypted = paste.encrypted,
             folder = paste.folder,
             userId = paste.userId,
-            visibility = paste.visibility,
+            visibility = paste.visibility ?: PasteVisibility.UNLISTED,
             forkedFrom = paste.forkedFrom,
             rawUrl = "$serverName/${paste.key}/raw",
-            type = paste.type,
+            type = paste.type ?: PasteType.PASTE,
             createdAt = paste.createdAt?.toString() ?: "0000-00-00 00:00:00",
             expireAt = paste.expireAt?.toString(),
             tags = pasteTagRepository.findAllByPaste(paste.key).map { it.tag },

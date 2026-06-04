@@ -28,7 +28,6 @@ import java.util.HexFormat
     ],
 )
 class Paste(
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
@@ -47,10 +46,11 @@ class Paste(
     @Column(nullable = false)
     var updatedAt: Instant? = null,
 
+    @Column(columnDefinition = "TEXT")
     var title: String? = null,
 
     @Lob
-    @Column(columnDefinition = "MEDIUMTEXT")
+    @Column(columnDefinition = "LONGTEXT")
     var content: String? = null,
 
     @Column(length = 8)
@@ -59,29 +59,29 @@ class Paste(
     @Column(length = 8)
     var forkedFrom: String? = null,
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     var encrypted: Boolean = false,
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "ENUM('PASTE','MULTI_PASTE')")
-    var type: PasteType = PasteType.PASTE,
+    @Column(nullable = true, columnDefinition = "ENUM('PASTE','MULTI_PASTE')")
+    var type: PasteType? = PasteType.PASTE,
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "ENUM('UNLISTED','PUBLIC','PRIVATE')")
-    var visibility: PasteVisibility = PasteVisibility.UNLISTED,
+    @Column(nullable = true, columnDefinition = "ENUM('UNLISTED','PUBLIC','PRIVATE')")
+    var visibility: PasteVisibility? = PasteVisibility.UNLISTED,
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "ENUM('S3','DATABASE','HTTP')")
-    var storageType: StorageType = StorageType.DATABASE,
+    @Column(nullable = true, columnDefinition = "ENUM('S3','DATABASE','HTTP')")
+    var storageType: StorageType? = StorageType.DATABASE,
 
-    @Column(nullable = false)
-    var version: Int = 0,
+    @Column(nullable = true)
+    var version: Int? = 0,
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     var indexedInElastic: Boolean = false,
 
-    @Column(nullable = false)
-    var length: Int = 0,
+    @Column(nullable = true)
+    var length: Int? = 0,
 
     @Column(length = 64)
     var hash: String? = null,
@@ -120,21 +120,27 @@ class Paste(
         }
 
         updatedAt = now
-        version += 1
+        version = version?.plus(1) ?: 1
         indexedInElastic = false
 
         if (key.isBlank()) {
             key = RandomStrings.alphanumeric(8)
         }
-        if (storageType == StorageType.DATABASE) updateContentMetadata(content)
+
+        if (storageType == StorageType.DATABASE) {
+            updateContentMetadata(content)
+        }
     }
 
     @PreUpdate
     fun preUpdate() {
         updatedAt = Instant.now()
-        version += 1
+        version = version?.plus(1) ?: 1
         indexedInElastic = false
-        if (storageType == StorageType.DATABASE) updateContentMetadata(content)
+
+        if (storageType == StorageType.DATABASE) {
+            updateContentMetadata(content)
+        }
     }
 
     private fun updateContentMetadata(content: String?) {

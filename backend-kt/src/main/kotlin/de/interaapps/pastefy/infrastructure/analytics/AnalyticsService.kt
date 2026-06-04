@@ -6,6 +6,7 @@ import de.interaapps.pastefy.config.PastefyProperties
 import de.interaapps.pastefy.dto.analytics.*
 import de.interaapps.pastefy.entities.Paste
 import de.interaapps.pastefy.entities.User
+import de.interaapps.pastefy.enums.PasteVisibility
 import jakarta.annotation.PreDestroy
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
@@ -50,7 +51,7 @@ class AnalyticsService(
         val refererHost = refererHost(request.getHeader("Referer"))
         val event = VisitEvent(
             pasteKey = paste.key,
-            pasteVisibility = paste.visibility.name,
+            pasteVisibility = paste.visibility?.name ?: PasteVisibility.UNLISTED.name,
             pasteUserId = paste.userId,
             visitType = visitType.name,
             visitedAt = Instant.now(),

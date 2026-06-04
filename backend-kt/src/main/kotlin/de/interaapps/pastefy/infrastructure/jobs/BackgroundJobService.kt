@@ -28,7 +28,7 @@ class BackgroundJobService(
     private val transaction = TransactionTemplate(transactionManager)
     private val activeWorkers = AtomicInteger()
 
-    fun enqueue(type: BackgroundJob.Type, entityId: Int, sourceVersion: Int, promptVersion: Int) {
+    fun enqueue(type: BackgroundJob.Type, entityId: Int, sourceVersion: Int?, promptVersion: Int) {
         transaction.executeWithoutResult {
             val key = "$type:$entityId:$sourceVersion:$promptVersion"
             val existing = repository.findById(key).orElse(null)
@@ -49,7 +49,7 @@ class BackgroundJobService(
                         key = key,
                         type = type,
                         entityId = entityId,
-                        sourceVersion = sourceVersion,
+                        sourceVersion = sourceVersion ?: 1,
                         promptVersion = promptVersion,
                         availableAt = Instant.now(),
                     ),
