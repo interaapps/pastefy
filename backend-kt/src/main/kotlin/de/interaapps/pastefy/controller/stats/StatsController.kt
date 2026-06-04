@@ -23,6 +23,7 @@ class StatsController(
         if (!properties.publicStats && authKey?.hasPermission("stats:read") != true && user?.isAdmin != true) {
             throw PermissionsDeniedException()
         }
+
         return statsService.get()
     }
 }

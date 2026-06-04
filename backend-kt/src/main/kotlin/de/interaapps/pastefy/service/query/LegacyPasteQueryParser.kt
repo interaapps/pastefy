@@ -35,9 +35,12 @@ class LegacyPasteQueryParser(
         response.setHeader("PAGINATION_PAGE", (page - 1).toString())
 
         val filters = mutableListOf<LegacyFilter>()
+
         parseClientFilter(request)?.let(filters::add)
+
         request.getParameter("folder")?.takeIf(String::isNotBlank)
             ?.let { filters += LegacyFieldFilter("folder", LegacyFilterOperator.EQ, it) }
+
         visibility?.let { filters += LegacyFieldFilter("visibility", LegacyFilterOperator.EQ, it.name) }
         encrypted?.let { filters += LegacyFieldFilter("encrypted", LegacyFilterOperator.EQ, it.toString()) }
         userId?.let { filters += LegacyFieldFilter("userId", LegacyFilterOperator.EQ, it) }
@@ -84,20 +87,21 @@ class LegacyPasteQueryParser(
         }
 
         request.getParameter("filter")?.trim()?.takeIf { it.startsWith("{") }?.let {
-            return parseJsonObject(objectMapper.readTree(it)).let { filter ->
-                LegacyFilterGroup(LegacyGroupOperator.AND, listOf(filter))
-            }
+            return LegacyFilterGroup(LegacyGroupOperator.AND, listOf(parseJsonObject(objectMapper.readTree(it))))
         }
 
         val formFilter = mutableMapOf<String, Any?>()
+
         request.parameterMap.forEach { (name, values) ->
             val tokens = BRACKET_TOKEN.findAll(name).map { it.groupValues[1] }.toList()
             if (tokens.firstOrNull() == "filter" && tokens.size > 1) {
                 insert(formFilter, tokens.drop(1), values.map(String::trim).filter(String::isNotEmpty))
             }
         }
+
         if (formFilter.isEmpty()) return null
-        return parseObject(formFilter).let { LegacyFilterGroup(LegacyGroupOperator.AND, listOf(it)) }
+
+        return LegacyFilterGroup(LegacyGroupOperator.AND, listOf(parseObject(formFilter)))
     }
 
     private fun insert(target: MutableMap<String, Any?>, path: List<String>, values: List<String>) {

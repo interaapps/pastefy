@@ -4,7 +4,10 @@ import de.interaapps.pastefy.enums.PasteType
 import de.interaapps.pastefy.enums.PasteVisibility
 import de.interaapps.pastefy.enums.StorageType
 import org.springframework.data.annotation.Id
+import org.springframework.data.elasticsearch.annotations.DateFormat
 import org.springframework.data.elasticsearch.annotations.Document
+import org.springframework.data.elasticsearch.annotations.Field
+import org.springframework.data.elasticsearch.annotations.FieldType
 import org.springframework.data.elasticsearch.annotations.WriteTypeHint
 import java.time.Instant
 
@@ -22,9 +25,16 @@ data class ElasticPasteDocument(
     val folder: String? = null,
     val type: PasteType = PasteType.PASTE,
     val visibility: PasteVisibility = PasteVisibility.UNLISTED,
+
+    @Field(type = FieldType.Date, format = [DateFormat.epoch_millis])
     val expireAt: Instant? = null,
+
+    @Field(type = FieldType.Date, format = [DateFormat.epoch_millis])
     val createdAt: Instant? = null,
+
+    @Field(type = FieldType.Date, format = [DateFormat.epoch_millis])
     val updatedAt: Instant? = null,
+
     val storageType: StorageType = StorageType.DATABASE,
     val version: Int = 0,
     val engagementScore: Int = 0,

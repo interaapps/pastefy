@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import de.interaapps.pastefy.repositories.TagListingRepository
 import de.interaapps.pastefy.service.TagListingService
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
 
 @RestController
@@ -19,6 +20,7 @@ class TagsController(
     private val tags: TagListingService,
 ) {
     @GetMapping
+    @Cacheable("public-tags")
     fun getTags(
         @RequestParam("search") search: String? = null,
         @RequestParam("page", defaultValue = "1") page: Int,
@@ -35,5 +37,6 @@ class TagsController(
     }
 
     @GetMapping("/{tag}")
+    @Cacheable("public-tag", key = "#tag")
     fun getTag(@PathVariable tag: String): TagListing = tags.getOrCreate(tag)
 }

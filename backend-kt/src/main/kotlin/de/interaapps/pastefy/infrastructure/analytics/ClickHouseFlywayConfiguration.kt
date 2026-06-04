@@ -10,9 +10,9 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource
 @Configuration
 @ConditionalOnProperty(prefix = "pastefy.analytics.migrations", name = ["enabled"], havingValue = "true")
 class ClickHouseFlywayConfiguration {
-    @Bean(initMethod = "migrate")
-    fun clickHouseFlyway(properties: PastefyProperties): Flyway =
-        Flyway.configure()
+    @Bean
+    fun clickHouseFlyway(properties: PastefyProperties): Flyway {
+        val flyway = Flyway.configure()
             .dataSource(
                 DriverManagerDataSource().apply {
                     require(properties.analytics.jdbcUrl.isNotBlank()) {
@@ -33,6 +33,12 @@ class ClickHouseFlywayConfiguration {
                 ),
             )
             .load()
+        if (properties.analytics.migrations.repairFailedHistory) {
+            flyway.repair()
+        }
+        flyway.migrate()
+        return flyway
+    }
 
     private fun identifier(value: String): String =
         value.takeIf { it.matches(Regex("[A-Za-z_][A-Za-z0-9_]*")) }

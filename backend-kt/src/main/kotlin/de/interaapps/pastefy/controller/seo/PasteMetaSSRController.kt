@@ -1,4 +1,4 @@
-package de.interaapps.pastefy.controller.pastes
+package de.interaapps.pastefy.controller.seo
 
 import de.interaapps.pastefy.config.PastefyProperties
 import de.interaapps.pastefy.repositories.PasteAIInfoRepository
@@ -25,11 +25,11 @@ class PasteMetaSSRController(
 ) {
     @GetMapping("/{id}")
     fun getPasteMetaSSR(@PathVariable id: String): ResponseEntity<String> {
-        if (!id.matches(Regex("^[A-Za-z0-9_-]{8}$"))) return frontend()
+        if (!id.matches(Regex("^[A-Za-z0-9_-]{8}$"))) return frontendIndex.frontend()
 
-        val paste = pasteService.get(id) ?: return frontend()
+        val paste = pasteService.get(id) ?: return frontendIndex.frontend()
 
-        if (paste.isPrivate || paste.encrypted) return frontend()
+        if (paste.isPrivate || paste.encrypted) return frontendIndex.frontend()
 
         val aiInfo = paste.id?.let(aiInfoRepository::findById)?.orElse(null)
 
@@ -79,12 +79,7 @@ class PasteMetaSSRController(
 
         return seo.render(page)?.let {
             ResponseEntity.ok().contentType(MediaType("text", "html", Charsets.UTF_8)).body(it)
-        } ?: frontend()
-    }
-
-    private fun frontend(): ResponseEntity<String> {
-        val html = frontendIndex.html ?: return ResponseEntity.notFound().build()
-        return ResponseEntity.ok().contentType(MediaType("text", "html", Charsets.UTF_8)).body(html)
+        } ?: frontendIndex.frontend()
     }
 
     private fun seoContent(

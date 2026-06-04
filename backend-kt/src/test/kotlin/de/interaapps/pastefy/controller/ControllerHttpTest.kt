@@ -7,7 +7,7 @@ import de.interaapps.pastefy.auth.annotations.CurrentUser
 import de.interaapps.pastefy.auth.oauth.OAuth2ProviderRegistry
 import de.interaapps.pastefy.config.PastefyProperties
 import de.interaapps.pastefy.controller.public.PublicUserController
-import de.interaapps.pastefy.controller.pastes.PasteMetaSSRController
+import de.interaapps.pastefy.controller.seo.PasteMetaSSRController
 import de.interaapps.pastefy.controller.pastes.PasteRawController
 import de.interaapps.pastefy.controller.stats.StatsController
 import de.interaapps.pastefy.controller.user.UserController

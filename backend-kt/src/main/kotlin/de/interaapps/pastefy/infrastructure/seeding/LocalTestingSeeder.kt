@@ -30,6 +30,7 @@ import de.interaapps.pastefy.repositories.PublicPasteEngagementRepository
 import de.interaapps.pastefy.repositories.SharedPasteRepository
 import de.interaapps.pastefy.repositories.TagListingRepository
 import de.interaapps.pastefy.repositories.UserRepository
+import de.interaapps.pastefy.service.PasteService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
@@ -48,6 +49,7 @@ class LocalTestingSeeder(
     private val authKeys: AuthKeyRepository,
     private val folders: FolderRepository,
     private val pastes: PasteRepository,
+    private val pastesService: PasteService,
     private val pasteTags: PasteTagRepository,
     private val pasteStars: PasteStarRepository,
     private val comments: PasteCommentRepository,
@@ -85,7 +87,7 @@ class LocalTestingSeeder(
             type = User.Type.ADMIN,
             provider = User.AuthenticationProvider.INTERAAPPS,
             authId = "seed-interaapps-admin",
-            avatar = "https://pastefy.local/avatars/admin.png",
+            avatar = "https://accounts.interaapps.de/avatars/A.png",
         )
         state.user = user(
             id = USER_ID,
@@ -95,7 +97,7 @@ class LocalTestingSeeder(
             type = User.Type.USER,
             provider = User.AuthenticationProvider.GITHUB,
             authId = "seed-github-user",
-            avatar = "https://pastefy.local/avatars/user.png",
+            avatar = "https://accounts.interaapps.de/avatars/U.png",
         )
         state.blocked = user(
             id = BLOCKED_ID,
@@ -136,7 +138,7 @@ class LocalTestingSeeder(
                 type = User.Type.USER,
                 provider = providers[index % providers.size],
                 authId = "seed-generated-user-$number",
-                avatar = "https://pastefy.local/avatars/user-$number.png",
+                avatar = "https://accounts.interaapps.de/avatars/${number.toString().substring(1)}.png",
             )
         }
     }
@@ -185,7 +187,7 @@ class LocalTestingSeeder(
     private fun seedPastes(state: SeedState) {
         state.publicPaste = paste(
             key = PUBLIC_PASTE_KEY,
-            title = "Public Kotlin example",
+            title = "Public Kotlin example.kt",
             content = """
                 fun main() {
                     println("Hello from Pastefy seed data")
@@ -205,7 +207,7 @@ class LocalTestingSeeder(
         )
         state.unlistedPaste = paste(
             key = UNLISTED_PASTE_KEY,
-            title = "Unlisted JSON fixture",
+            title = "Unlisted JSON fixture.json",
             content = """{"environment":"local","seeded":true,"items":[1,2,3]}""",
             userId = ADMIN_ID,
             folder = ADMIN_FOLDER_KEY,
@@ -384,19 +386,18 @@ class LocalTestingSeeder(
     ): Paste {
         val existing = pastes.findByKey(key)
         if (existing != null) return existing
-        return pastes.save(
-            Paste(
-                key = key,
-                title = title,
-                userId = userId,
-                folder = folder,
-                encrypted = encrypted,
-                type = type,
-                visibility = visibility,
-                storageType = StorageType.DATABASE,
-                expireAt = expireAt,
-            ).apply { setDatabaseContent(content) }
-        )
+
+        return pastesService.save(Paste(
+            key = key,
+            title = title,
+            userId = userId,
+            folder = folder,
+            encrypted = encrypted,
+            type = type,
+            visibility = visibility,
+            storageType = StorageType.DATABASE,
+            expireAt = expireAt,
+        ).apply { setDatabaseContent(content) })
     }
 
     private fun tags(paste: String, vararg tags: String) {

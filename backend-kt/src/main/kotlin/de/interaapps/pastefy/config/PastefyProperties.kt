@@ -110,6 +110,7 @@ data class PastefyProperties(
     ) {
         data class Migrations(
             var enabled: Boolean = false,
+            var repairFailedHistory: Boolean = false,
         )
     }
 

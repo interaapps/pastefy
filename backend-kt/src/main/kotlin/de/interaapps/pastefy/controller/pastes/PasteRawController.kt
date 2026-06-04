@@ -37,17 +37,24 @@ class PasteRawController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         val paste = pasteService.get(id) ?: return text("404 - Paste not found", HttpStatus.NOT_FOUND)
+
         pasteService.getAccessiblePasteOrFail(id, user)
+
         if (paste.isPublic) engagement.addInterest(paste, 1)
+
         analyticsProvider.ifAvailable?.track(request, paste, user, AnalyticsService.VisitType.RAW)
+
         val content = pasteService.getContent(paste).orEmpty()
+
         val part = request.getParameter("part")
+
         if (part != null && paste.type == PasteType.MULTI_PASTE) {
             val contents = objectMapper.readValue(content, object : TypeReference<List<MultiPastesElement>>() {})
                 .firstOrNull { it.name == part }?.contents
                 ?: return text("404 - Paste part not found", HttpStatus.NOT_FOUND)
             return text(contents)
         }
+
         return text(content)
     }
 

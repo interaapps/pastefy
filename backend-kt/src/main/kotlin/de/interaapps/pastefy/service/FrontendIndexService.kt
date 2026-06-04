@@ -2,7 +2,10 @@ package de.interaapps.pastefy.service
 
 import de.interaapps.pastefy.config.PastefyProperties
 import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.core.io.ClassPathResource
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service
@@ -20,6 +23,12 @@ class FrontendIndexService(
     }.onFailure {
         LOGGER.warn("Unable to load static/index.html for frontend serving", it)
     }.getOrNull()
+
+    @Cacheable
+    fun frontend(): ResponseEntity<String> {
+        val html = html ?: return ResponseEntity.notFound().build()
+        return ResponseEntity.ok().contentType(MediaType("text", "html", Charsets.UTF_8)).body(html)
+    }
 
     companion object {
         private val LOGGER = LoggerFactory.getLogger(FrontendIndexService::class.java)
