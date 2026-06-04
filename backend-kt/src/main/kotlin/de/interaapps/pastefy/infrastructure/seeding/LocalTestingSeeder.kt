@@ -107,6 +107,7 @@ class LocalTestingSeeder(
             type = User.Type.BLOCKED,
             provider = User.AuthenticationProvider.GOOGLE,
             authId = "seed-google-blocked",
+            avatar = "https://accounts.interaapps.de/avatars/B.png",
         )
         state.awaiting = user(
             id = AWAITING_ID,
@@ -116,6 +117,7 @@ class LocalTestingSeeder(
             type = User.Type.AWAITING_ACCESS,
             provider = User.AuthenticationProvider.DISCORD,
             authId = "seed-discord-awaiting",
+            avatar = "https://accounts.interaapps.de/avatars/W.png",
         )
     }
 
@@ -138,7 +140,7 @@ class LocalTestingSeeder(
                 type = User.Type.USER,
                 provider = providers[index % providers.size],
                 authId = "seed-generated-user-$number",
-                avatar = "https://accounts.interaapps.de/avatars/${number.toString().substring(1)}.png",
+                avatar = "https://accounts.interaapps.de/avatars/${number.toString().take(1).uppercase()}.png",
             )
         }
     }
