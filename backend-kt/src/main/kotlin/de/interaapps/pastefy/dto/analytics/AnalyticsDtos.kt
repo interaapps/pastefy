@@ -40,7 +40,8 @@ data class AnalyticsQuery(
                 result.from = result.to
                 result.to = from
             }
-            result.interval = request.getParameter("interval")?.takeIf { it in setOf("hour", "day", "week", "month") } ?: "day"
+            result.interval =
+                request.getParameter("interval")?.takeIf { it in setOf("hour", "day", "week", "month") } ?: "day"
             result.groupBy = request.getParameter("group_by")?.takeIf { it in FILTERS } ?: "country"
             result.includeSummary = !request.getParameter("include_summary").equals("false", ignoreCase = true)
             result.includeBreakdown = !request.getParameter("include_breakdown").equals("false", ignoreCase = true)

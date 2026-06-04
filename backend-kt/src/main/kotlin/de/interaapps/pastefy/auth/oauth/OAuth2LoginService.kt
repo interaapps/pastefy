@@ -18,8 +18,9 @@ class OAuth2LoginService(
     @Transactional
     fun login(provider: OAuth2Provider, tokens: OAuth2Tokens): AuthKey {
         val profile = provider.loadProfile(tokens)
-        val authenticationProvider = User.AuthenticationProvider.entries.firstOrNull { it.providerName == provider.name }
-            ?: throw OAuth2Exception("Unsupported OAuth2 provider")
+        val authenticationProvider =
+            User.AuthenticationProvider.entries.firstOrNull { it.providerName == provider.name }
+                ?: throw OAuth2Exception("Unsupported OAuth2 provider")
         val user = userRepository.findByAuthIdAndAuthProvider(profile.id, authenticationProvider)
             ?: User(
                 authId = profile.id,

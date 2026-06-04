@@ -21,8 +21,16 @@ class NotificationController(
 
     @GetMapping
     @RequiresPermission("notifications:read")
-    fun getNotifications(request: HttpServletRequest, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): List<Notification> =
-        notifications.list(user, request.parameterMap.containsKey("not_received"), request.parameterMap.containsKey("not_read"))
+    fun getNotifications(
+        request: HttpServletRequest,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): List<Notification> =
+        notifications.list(
+            user,
+            request.parameterMap.containsKey("not_received"),
+            request.parameterMap.containsKey("not_read")
+        )
 
     @GetMapping("/readall")
     @RequiresPermission("notifications:edit")

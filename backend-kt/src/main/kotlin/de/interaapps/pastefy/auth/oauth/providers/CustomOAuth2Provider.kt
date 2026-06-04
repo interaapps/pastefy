@@ -15,17 +15,34 @@ class CustomOAuth2Provider(
 
     override fun authorizationUrl(callbackUrl: String, state: String): String = authorizationUrl(
         authorizationEndpoint,
-        mapOf("response_type" to "code", "client_id" to clientId, "redirect_uri" to callbackUrl, "scope" to scopes.joinToString(" "), "state" to state),
+        mapOf(
+            "response_type" to "code",
+            "client_id" to clientId,
+            "redirect_uri" to callbackUrl,
+            "scope" to scopes.joinToString(" "),
+            "state" to state
+        ),
     )
 
     override fun exchangeCode(code: String, callbackUrl: String): OAuth2Tokens = requireHttp().postForm(
         tokenEndpoint,
-        mapOf("client_id" to clientId, "client_secret" to clientSecret, "code" to code, "grant_type" to "authorization_code", "redirect_uri" to callbackUrl),
+        mapOf(
+            "client_id" to clientId,
+            "client_secret" to clientSecret,
+            "code" to code,
+            "grant_type" to "authorization_code",
+            "redirect_uri" to callbackUrl
+        ),
     ).tokens()
 
     override fun loadProfile(tokens: OAuth2Tokens): OAuth2Profile {
         val profile = requireHttp().get(userInfoEndpoint, mapOf("Authorization" to "Bearer ${tokens.accessToken}"))
-        return OAuth2Profile(profile.requiredText("sub"), profile.requiredText("name"), profile.optionalText("email"), profile.optionalText("picture"))
+        return OAuth2Profile(
+            profile.requiredText("sub"),
+            profile.requiredText("name"),
+            profile.optionalText("email"),
+            profile.optionalText("picture")
+        )
     }
 
     private fun requireHttp() = requireNotNull(http) { "OAuth HTTP client is required" }

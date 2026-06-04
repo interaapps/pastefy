@@ -26,7 +26,11 @@ class TagsController(
     ): List<TagListing> {
         val pageable = PageRequest.of(page.coerceAtLeast(1) - 1, pageLimit.coerceIn(1, 100))
         return search?.trim()?.takeIf(String::isNotEmpty)?.let {
-            repository.findAllByTagContainingIgnoreCaseOrDisplayNameContainingIgnoreCaseOrderByPasteCountDesc(it, it, pageable)
+            repository.findAllByTagContainingIgnoreCaseOrDisplayNameContainingIgnoreCaseOrderByPasteCountDesc(
+                it,
+                it,
+                pageable
+            )
         } ?: repository.findAllByOrderByPasteCountDesc(pageable)
     }
 

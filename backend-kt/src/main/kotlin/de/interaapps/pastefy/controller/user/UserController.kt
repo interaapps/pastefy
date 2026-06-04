@@ -48,10 +48,17 @@ class UserController(
     @RejectAwaitingAccess
     @RejectBlocked
     @RequiresPermission(allOf = ["pastes:read", "folders:read"])
-    fun overview(request: HttpServletRequest, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): UserPastesResponse {
+    fun overview(
+        request: HttpServletRequest,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): UserPastesResponse {
         val page = request.getParameter("page")?.toIntOrNull()?.coerceAtLeast(1) ?: 1
         return UserPastesResponse(
-            pastes = pasteRepository.findAllByUserIdAndFolderIsNullOrderByUpdatedAtDesc(user.id, PageRequest.of(page - 1, 10))
+            pastes = pasteRepository.findAllByUserIdAndFolderIsNullOrderByUpdatedAtDesc(
+                user.id,
+                PageRequest.of(page - 1, 10)
+            )
                 .map { queries.map(it, request, user) },
             folder = foldersForUser(request, user),
         )
@@ -62,7 +69,11 @@ class UserController(
     @RejectAwaitingAccess
     @RejectBlocked
     @RequiresPermission("folders:read")
-    fun getFolders(request: HttpServletRequest, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): List<FolderResponse> =
+    fun getFolders(
+        request: HttpServletRequest,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): List<FolderResponse> =
         foldersForUser(request, user)
 
     @GetMapping("/pastes")
@@ -70,7 +81,12 @@ class UserController(
     @RejectAwaitingAccess
     @RejectBlocked
     @RequiresPermission("pastes:read")
-    fun getPastes(request: HttpServletRequest, response: HttpServletResponse, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): List<PasteResponse> =
+    fun getPastes(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): List<PasteResponse> =
         queries.list(request, response, user, guarded = false, userId = user.id)
 
     @GetMapping("/sharedpastes")
@@ -78,14 +94,19 @@ class UserController(
     @RejectAwaitingAccess
     @RejectBlocked
     @RequiresPermission("sharedpastes:read")
-    fun getSharedPastes(request: HttpServletRequest, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): List<PasteResponse> {
+    fun getSharedPastes(
+        request: HttpServletRequest,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): List<PasteResponse> {
         val page = request.getParameter("page")?.toIntOrNull()?.coerceAtLeast(1) ?: 1
-        return sharedPasteRepository.findAllByTargetIdOrderByUpdatedAtDesc(user.id, PageRequest.of(page - 1, 10)).mapNotNull { shared ->
-            pasteRepository.findByKey(shared.paste)?.let { queries.map(it, request, user) } ?: run {
-                sharedPasteRepository.delete(shared)
-                null
+        return sharedPasteRepository.findAllByTargetIdOrderByUpdatedAtDesc(user.id, PageRequest.of(page - 1, 10))
+            .mapNotNull { shared ->
+                pasteRepository.findByKey(shared.paste)?.let { queries.map(it, request, user) } ?: run {
+                    sharedPasteRepository.delete(shared)
+                    null
+                }
             }
-        }
     }
 
     @GetMapping("/starred-pastes")
@@ -93,7 +114,12 @@ class UserController(
     @RejectAwaitingAccess
     @RejectBlocked
     @RequiresPermission("stars:read")
-    fun getStarredPastes(request: HttpServletRequest, response: HttpServletResponse, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): List<PasteResponse> =
+    fun getStarredPastes(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): List<PasteResponse> =
         queries.list(request, response, user, guarded = false, starredBy = user.id)
 
     private fun foldersForUser(request: HttpServletRequest, user: User): List<FolderResponse> =

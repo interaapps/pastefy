@@ -13,7 +13,12 @@ class InteraAppsOAuth2Provider(
 
     override fun authorizationUrl(callbackUrl: String, state: String): String = authorizationUrl(
         "https://accounts.interaapps.de/auth/oauth2",
-        mapOf("client_id" to clientId, "scope" to scopes.joinToString(" "), "redirect_uri" to callbackUrl, "state" to state),
+        mapOf(
+            "client_id" to clientId,
+            "scope" to scopes.joinToString(" "),
+            "redirect_uri" to callbackUrl,
+            "state" to state
+        ),
     )
 
     override fun exchangeCode(code: String, callbackUrl: String): OAuth2Tokens {
@@ -28,8 +33,16 @@ class InteraAppsOAuth2Provider(
     }
 
     override fun loadProfile(tokens: OAuth2Tokens): OAuth2Profile {
-        val user = requireHttp().get("https://accounts.interaapps.de/api/v2/user", mapOf("Authorization" to "Bearer ${tokens.accessToken}"))
-        return OAuth2Profile(user.requiredText("id"), user.requiredText("name"), user.optionalText("mail"), user.optionalText("profile_picture"))
+        val user = requireHttp().get(
+            "https://accounts.interaapps.de/api/v2/user",
+            mapOf("Authorization" to "Bearer ${tokens.accessToken}")
+        )
+        return OAuth2Profile(
+            user.requiredText("id"),
+            user.requiredText("name"),
+            user.optionalText("mail"),
+            user.optionalText("profile_picture")
+        )
     }
 
     private fun requireHttp() = requireNotNull(http) { "OAuth HTTP client is required" }

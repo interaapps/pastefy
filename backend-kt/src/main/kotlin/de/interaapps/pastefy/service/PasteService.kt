@@ -100,5 +100,6 @@ class PasteService(
     }
 
     private fun requireS3(): S3PasteService =
-        s3Provider.ifAvailable ?: error("S3 storage is required to access paste content but pastefy.s3.enabled is false")
+        s3Provider.ifAvailable
+            ?: error("S3 storage is required to access paste content but pastefy.s3.enabled is false")
 }

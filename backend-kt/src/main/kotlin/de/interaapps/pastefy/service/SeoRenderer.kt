@@ -47,10 +47,15 @@ class SeoRenderer(
     private fun prepareHtml(source: String): String {
         val start = source.indexOf(META_START_TAG)
         val end = source.indexOf(META_END_TAG, start + META_START_TAG.length)
+
         require(start >= 0 && end >= 0) { "SEO metadata placeholders are missing in static/index.html" }
+
         var prepared = source.substring(0, start) + META_REPLACEMENT + source.substring(end + META_END_TAG.length)
+
         prepared = APP_MOUNT.replace(prepared) { result -> result.groupValues[1] + SEO_CONTENT_REPLACEMENT + "</div>" }
+
         require(SEO_CONTENT_REPLACEMENT in prepared) { "Vue app mount is missing in static/index.html" }
+
         return if (TITLE.containsMatchIn(prepared)) {
             TITLE.replaceFirst(prepared, "<title>$TITLE_REPLACEMENT</title>")
         } else {
@@ -72,7 +77,11 @@ class SeoRenderer(
     fun absoluteUrl(pathOrUrl: String): String {
         if (pathOrUrl.startsWith("http://", true) || pathOrUrl.startsWith("https://", true)) return pathOrUrl
         val configured = properties.serverName.trim().ifBlank { "http://localhost" }
-        val base = if (configured.startsWith("http://", true) || configured.startsWith("https://", true)) configured else "https://$configured"
+        val base = if (configured.startsWith("http://", true) || configured.startsWith(
+                "https://",
+                true
+            )
+        ) configured else "https://$configured"
         return base.trimEnd('/') + "/" + pathOrUrl.trimStart('/')
     }
 

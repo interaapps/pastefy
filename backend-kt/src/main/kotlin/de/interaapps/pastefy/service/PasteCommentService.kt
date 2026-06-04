@@ -27,7 +27,11 @@ class PasteCommentService(
         val comments = if (line == null) {
             commentRepository.findAllByPasteAndParentIdIsNullOrderByCreatedAtDesc(pasteId, pageable)
         } else {
-            commentRepository.findAllByPasteAndParentIdIsNullAndLineFromOrderByCreatedAtDesc(pasteId, line.coerceAtLeast(1), pageable)
+            commentRepository.findAllByPasteAndParentIdIsNullAndLineFromOrderByCreatedAtDesc(
+                pasteId,
+                line.coerceAtLeast(1),
+                pageable
+            )
         }
         return comments.map { map(it, fetchReplies = true) }
     }
@@ -99,9 +103,10 @@ class PasteCommentService(
             lineTo = comment.lineTo,
             createdAt = comment.createdAt?.toString() ?: "0000-00-00 00:00:00",
             user = userRepository.findById(comment.userId).orElse(null)?.toPublicDto(),
-            replies = if (fetchReplies) commentRepository.findAllByParentIdOrderByCreatedAtAsc(requireNotNull(comment.id)).map {
-                map(it, fetchReplies = false)
-            } else emptyList(),
+            replies = if (fetchReplies) commentRepository.findAllByParentIdOrderByCreatedAtAsc(requireNotNull(comment.id))
+                .map {
+                    map(it, fetchReplies = false)
+                } else emptyList(),
         )
 
     private fun badRequest(message: String): Nothing = throw HttpException(HttpStatus.BAD_REQUEST, message)

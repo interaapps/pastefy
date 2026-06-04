@@ -25,12 +25,17 @@ class PasteAIInfo(
     @Column(nullable = false, updatable = false) var createdAt: Instant? = null,
     @Column(nullable = false) var updatedAt: Instant? = null,
 ) {
-    @PrePersist fun prePersist() {
+    @PrePersist
+    fun prePersist() {
         val now = Instant.now()
         if (createdAt == null) createdAt = now
         updatedAt = now
     }
-    @PreUpdate fun preUpdate() { updatedAt = Instant.now() }
+
+    @PreUpdate
+    fun preUpdate() {
+        updatedAt = Instant.now()
+    }
 }
 
 data class AIWarning(
@@ -44,7 +49,8 @@ class StringListJsonConverter : AttributeConverter<MutableList<String>?, String?
         attribute?.let(MAPPER::writeValueAsString)
 
     override fun convertToEntityAttribute(dbData: String?): MutableList<String>? =
-        dbData?.takeIf(String::isNotBlank)?.let { MAPPER.readValue(it, object : TypeReference<MutableList<String>>() {}) }
+        dbData?.takeIf(String::isNotBlank)
+            ?.let { MAPPER.readValue(it, object : TypeReference<MutableList<String>>() {}) }
 }
 
 @Converter
@@ -53,7 +59,8 @@ class AIWarningListJsonConverter : AttributeConverter<MutableList<AIWarning>?, S
         attribute?.let(MAPPER::writeValueAsString)
 
     override fun convertToEntityAttribute(dbData: String?): MutableList<AIWarning>? =
-        dbData?.takeIf(String::isNotBlank)?.let { MAPPER.readValue(it, object : TypeReference<MutableList<AIWarning>>() {}) }
+        dbData?.takeIf(String::isNotBlank)
+            ?.let { MAPPER.readValue(it, object : TypeReference<MutableList<AIWarning>>() {}) }
 }
 
 private val MAPPER = jacksonObjectMapper()

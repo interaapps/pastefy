@@ -75,7 +75,8 @@ class S3PasteService(
     }
 
     private fun objectName(paste: Paste): String {
-        val prefix = paste.key.takeIf { it.length >= 4 }?.let { "${it.substring(0, 2)}/${it.substring(2, 4)}/" }.orEmpty()
+        val prefix =
+            paste.key.takeIf { it.length >= 4 }?.let { "${it.substring(0, 2)}/${it.substring(2, 4)}/" }.orEmpty()
         return "pastes/${paste.userId ?: "anonymous"}/$prefix${paste.key}/contents.txt"
     }
 }

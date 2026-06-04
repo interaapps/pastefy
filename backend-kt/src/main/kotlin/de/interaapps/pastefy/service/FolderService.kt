@@ -54,7 +54,15 @@ class FolderService(
         return folderRepository.findAll(
             specification,
             PageRequest.of(page - 1, pageLimit, Sort.by(Sort.Direction.DESC, "createdAt")),
-        ).content.map { map(it, fetchChildren = false, fetchSubChildren = false, fetchPastes = false, showPrivate = false) }
+        ).content.map {
+            map(
+                it,
+                fetchChildren = false,
+                fetchSubChildren = false,
+                fetchPastes = false,
+                showPrivate = false
+            )
+        }
     }
 
     fun get(id: String): Folder = folderRepository.findByKey(id) ?: throw NotFoundException()

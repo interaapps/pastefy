@@ -14,7 +14,7 @@ import org.springframework.web.method.support.ModelAndViewContainer
 class AuthArgumentResolver : HandlerMethodArgumentResolver {
     override fun supportsParameter(parameter: MethodParameter): Boolean =
         parameter.hasParameterAnnotation(CurrentUser::class.java) && parameter.parameterType == User::class.java ||
-            parameter.hasParameterAnnotation(CurrentAuthKey::class.java) && parameter.parameterType == AuthKey::class.java
+                parameter.hasParameterAnnotation(CurrentAuthKey::class.java) && parameter.parameterType == AuthKey::class.java
 
     override fun resolveArgument(
         parameter: MethodParameter,

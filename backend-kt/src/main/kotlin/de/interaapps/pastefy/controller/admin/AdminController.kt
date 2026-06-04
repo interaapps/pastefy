@@ -38,7 +38,10 @@ class AdminController(
                 )
             } ?: builder.conjunction()
         }
-        return repository.findAll(specification, PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "createdAt"))).content
+        return repository.findAll(
+            specification,
+            PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "createdAt"))
+        ).content
     }
 
     @GetMapping("/users/{id}")
@@ -55,7 +58,11 @@ class AdminController(
 
     @PutMapping("/users/{id}")
     @RequiresPermission("admin.users:edit")
-    fun editUser(@PathVariable id: String, @Valid @RequestBody request: EditUserRequest, @CurrentAuthKey authKey: AuthKey): ActionResponse {
+    fun editUser(
+        @PathVariable id: String,
+        @Valid @RequestBody request: EditUserRequest,
+        @CurrentAuthKey authKey: AuthKey
+    ): ActionResponse {
         val user = repository.findById(id).orElseThrow(::NotFoundException)
         request.name?.let { user.name = it }
         request.uniqueName?.let { user.uniqueName = it }

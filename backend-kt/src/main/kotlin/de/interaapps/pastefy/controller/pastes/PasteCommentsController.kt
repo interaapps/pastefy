@@ -20,7 +20,11 @@ class PasteCommentsController(
     @LoginRequiredForRead
     @RejectAwaitingAccess
     @RejectBlocked
-    fun getComments(@PathVariable pasteId: String, request: HttpServletRequest, @CurrentUser user: User?): List<PasteCommentResponse> =
+    fun getComments(
+        @PathVariable pasteId: String,
+        request: HttpServletRequest,
+        @CurrentUser user: User?
+    ): List<PasteCommentResponse> =
         comments.list(
             pasteId,
             user,
@@ -42,7 +46,12 @@ class PasteCommentsController(
     @RejectAwaitingAccess
     @RejectBlocked
     @RequiresPermission("comments:create")
-    fun createComment(@PathVariable pasteId: String, @RequestBody request: CreatePasteCommentRequest, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): PasteCommentResponse =
+    fun createComment(
+        @PathVariable pasteId: String,
+        @RequestBody request: CreatePasteCommentRequest,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): PasteCommentResponse =
         comments.create(pasteId, request, user)
 
     @DeleteMapping("/{pasteId}/comments/{commentId}")
@@ -51,7 +60,12 @@ class PasteCommentsController(
     @RejectAwaitingAccess
     @RejectBlocked
     @RequiresPermission("comments:delete")
-    fun deleteComment(@PathVariable pasteId: String, @PathVariable commentId: Int, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): ActionResponse {
+    fun deleteComment(
+        @PathVariable pasteId: String,
+        @PathVariable commentId: Int,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): ActionResponse {
         comments.delete(pasteId, commentId, user)
         return ActionResponse(success = true)
     }

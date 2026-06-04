@@ -45,7 +45,8 @@ class PasteController(
         @CurrentUser user: User?,
         @CurrentAuthKey authKey: AuthKey?,
         servletRequest: HttpServletRequest,
-    ): CreatePasteResponse = CreatePasteResponse(paste = queries.map(commands.create(request, user), servletRequest, user), success = true)
+    ): CreatePasteResponse =
+        CreatePasteResponse(paste = queries.map(commands.create(request, user), servletRequest, user), success = true)
 
     @GetMapping
     @RequiresPermission("pastes:read")
@@ -94,7 +95,11 @@ class PasteController(
     @RejectAwaitingAccess
     @RejectBlocked
     @RequiresPermission("pastes:delete")
-    fun deletePaste(@PathVariable id: String, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): ActionResponse {
+    fun deletePaste(
+        @PathVariable id: String,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): ActionResponse {
         commands.delete(id, user)
         return ActionResponse(success = true)
     }
@@ -105,7 +110,11 @@ class PasteController(
     @RejectAwaitingAccess
     @RejectBlocked
     @RequiresPermission("stars:create")
-    fun addStarToPaste(@PathVariable id: String, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): ActionResponse {
+    fun addStarToPaste(
+        @PathVariable id: String,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): ActionResponse {
         users.star(user, pasteService.getAccessiblePasteOrFail(id, user))
         return ActionResponse(success = true)
     }
@@ -116,7 +125,11 @@ class PasteController(
     @RejectAwaitingAccess
     @RejectBlocked
     @RequiresPermission("stars:delete")
-    fun removeStarFromPaste(@PathVariable id: String, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): ActionResponse {
+    fun removeStarFromPaste(
+        @PathVariable id: String,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): ActionResponse {
         users.unstar(user, pasteService.getAccessiblePasteOrFail(id, user))
         return ActionResponse(success = true)
     }
@@ -125,13 +138,22 @@ class PasteController(
     @Authenticated
     @RejectAwaitingAccess
     @RejectBlocked
-    fun addFriend(@PathVariable id: String, @RequestBody request: AddFriendToPasteRequest, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): ActionResponse =
+    fun addFriend(
+        @PathVariable id: String,
+        @RequestBody request: AddFriendToPasteRequest,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): ActionResponse =
         throw UnsupportedOperationException("NOT IMPLEMENTED")
 
     @PostMapping("/{id}/ai-analysis")
     @AdminRoute
     @RequiresPermission("pastes.ai_analysis:create")
-    fun createAiAnalysisJob(@PathVariable id: String, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): ActionResponse {
+    fun createAiAnalysisJob(
+        @PathVariable id: String,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): ActionResponse {
         val ai = aiProvider.ifAvailable ?: throw FeatureDisabledException("AI features are disabled")
         ai.enqueueIfEligible(pasteService.getAccessiblePasteOrFail(id, user), force = true)
         return ActionResponse(success = true)

@@ -12,7 +12,12 @@ class GitHubOAuth2Provider(
 
     override fun authorizationUrl(callbackUrl: String, state: String): String = authorizationUrl(
         "https://github.com/login/oauth/authorize",
-        mapOf("client_id" to clientId, "scope" to scopes.joinToString(" "), "redirect_uri" to callbackUrl, "state" to state),
+        mapOf(
+            "client_id" to clientId,
+            "scope" to scopes.joinToString(" "),
+            "redirect_uri" to callbackUrl,
+            "state" to state
+        ),
     )
 
     override fun exchangeCode(code: String, callbackUrl: String): OAuth2Tokens = requireHttp().postForm(
@@ -22,13 +27,22 @@ class GitHubOAuth2Provider(
     ).tokens()
 
     override fun loadProfile(tokens: OAuth2Tokens): OAuth2Profile {
-        val headers = mapOf("Authorization" to "Bearer ${tokens.accessToken}", "Accept" to "application/vnd.github+json")
+        val headers =
+            mapOf("Authorization" to "Bearer ${tokens.accessToken}", "Accept" to "application/vnd.github+json")
         val user = requireHttp().get("https://api.github.com/user", headers)
-        val emails = if (user.optionalText("email") == null) requireHttp().get("https://api.github.com/user/emails", headers) else null
+        val emails = if (user.optionalText("email") == null) requireHttp().get(
+            "https://api.github.com/user/emails",
+            headers
+        ) else null
         val email = user.optionalText("email")
             ?: emails?.firstOrNull { it.path("primary").asBoolean(false) }?.optionalText("email")
             ?: emails?.firstOrNull()?.optionalText("email")
-        return OAuth2Profile(user.requiredText("id"), user.optionalText("name") ?: user.requiredText("login"), email, user.optionalText("avatar_url"))
+        return OAuth2Profile(
+            user.requiredText("id"),
+            user.optionalText("name") ?: user.requiredText("login"),
+            email,
+            user.optionalText("avatar_url")
+        )
     }
 
     private fun requireHttp() = requireNotNull(http) { "OAuth HTTP client is required" }

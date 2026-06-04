@@ -19,7 +19,8 @@ class ApiExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidationException(exception: MethodArgumentNotValidException): ResponseEntity<ExceptionResponse> {
         val message = exception.bindingResult.fieldErrors.joinToString("; ") { "${it.field}: ${it.defaultMessage}" }
-        return ResponseEntity.badRequest().body(ExceptionResponse(exception::class.simpleName ?: "ValidationException", message))
+        return ResponseEntity.badRequest()
+            .body(ExceptionResponse(exception::class.simpleName ?: "ValidationException", message))
     }
 
     @ExceptionHandler(Exception::class)

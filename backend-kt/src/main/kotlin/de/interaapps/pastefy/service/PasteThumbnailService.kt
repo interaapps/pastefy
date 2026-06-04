@@ -14,7 +14,8 @@ import java.nio.charset.StandardCharsets
 
 @Service
 class PasteThumbnailService {
-    private val template = ClassPathResource("templates/thumbnail-svg.svg").inputStream.bufferedReader().use { it.readText() }
+    private val template =
+        ClassPathResource("templates/thumbnail-svg.svg").inputStream.bufferedReader().use { it.readText() }
 
     init {
         registerFont("fonts/PlusJakartaSans.ttf")

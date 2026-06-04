@@ -6,7 +6,8 @@ import de.interaapps.pastefy.exceptions.OAuth2Exception
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 internal fun authorizationUrl(endpoint: String, fields: Map<String, String>): String =
-    endpoint.toHttpUrl().newBuilder().apply { fields.forEach { (name, value) -> addQueryParameter(name, value) } }.build().toString()
+    endpoint.toHttpUrl().newBuilder().apply { fields.forEach { (name, value) -> addQueryParameter(name, value) } }
+        .build().toString()
 
 internal fun JsonNode.requiredText(name: String): String =
     path(name).takeUnless { it.isMissingNode || it.isNull }?.asText()?.takeIf { it.isNotBlank() }

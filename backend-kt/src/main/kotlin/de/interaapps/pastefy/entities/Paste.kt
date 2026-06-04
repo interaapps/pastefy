@@ -86,7 +86,7 @@ class Paste(
     @Column(length = 64)
     var hash: String? = null,
 
-) {
+    ) {
 
     @Transient
     var cachedContents: String? = null

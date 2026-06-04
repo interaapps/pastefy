@@ -26,11 +26,17 @@ class AnalyticsController(
     @GetMapping("/admin")
     @AdminRoute
     @RequiresPermission("analytics:read")
-    fun admin(request: HttpServletRequest, @CurrentAuthKey authKey: AuthKey): AnalyticsResponse = query(AnalyticsQuery.from(request))
+    fun admin(request: HttpServletRequest, @CurrentAuthKey authKey: AuthKey): AnalyticsResponse =
+        query(AnalyticsQuery.from(request))
 
     @GetMapping("/pastes/{id}")
     @RequiresPermission("analytics:read")
-    fun paste(@PathVariable id: String, request: HttpServletRequest, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): AnalyticsResponse {
+    fun paste(
+        @PathVariable id: String,
+        request: HttpServletRequest,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): AnalyticsResponse {
         val paste = pasteService.get(id)
         if (paste == null || (!user.isAdmin && user.id != paste.userId)) throw PermissionsDeniedException()
         return query(AnalyticsQuery.from(request).apply { filters["paste_key"] = paste.key })
@@ -38,7 +44,11 @@ class AnalyticsController(
 
     @GetMapping("/user")
     @RequiresPermission("analytics:read")
-    fun user(request: HttpServletRequest, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): AnalyticsResponse =
+    fun user(
+        request: HttpServletRequest,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): AnalyticsResponse =
         query(AnalyticsQuery.from(request).apply { filters["paste_user_id"] = user.id })
 
     private fun query(query: AnalyticsQuery): AnalyticsResponse =

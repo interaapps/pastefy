@@ -47,7 +47,12 @@ class FormDataPasteController(
         val host = request.getHeader("Host")
         return if (asciicast) {
             ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(
-                objectMapper.writeValueAsString(mapOf("url" to "$host/${paste.key}", "message" to "Created paste on https://$host/${paste.key}")),
+                objectMapper.writeValueAsString(
+                    mapOf(
+                        "url" to "$host/${paste.key}",
+                        "message" to "Created paste on https://$host/${paste.key}"
+                    )
+                ),
             )
         } else {
             ResponseEntity.ok("https://$host/${paste.key}\n")

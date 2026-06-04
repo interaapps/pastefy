@@ -22,14 +22,22 @@ class FolderController(
     @RejectAwaitingAccess
     @RejectBlocked
     @RequiresPermission("folders:create")
-    fun createFolder(@Valid @RequestBody request: CreateFolderRequest, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): CreateFolderResponse {
+    fun createFolder(
+        @Valid @RequestBody request: CreateFolderRequest,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): CreateFolderResponse {
         val folder = folders.create(request, user)
         return CreateFolderResponse(folder = folders.map(folder), success = true)
     }
 
     @GetMapping
     @RequiresPermission("folders:read")
-    fun getFolders(request: HttpServletRequest, @CurrentUser user: User?, @CurrentAuthKey authKey: AuthKey?): List<FolderResponse> =
+    fun getFolders(
+        request: HttpServletRequest,
+        @CurrentUser user: User?,
+        @CurrentAuthKey authKey: AuthKey?
+    ): List<FolderResponse> =
         folders.list(request, user)
 
     @GetMapping("/{id}")
@@ -37,7 +45,12 @@ class FolderController(
     @RejectAwaitingAccess
     @RejectBlocked
     @RequiresPermission("folders:read")
-    fun getFolder(@PathVariable id: String, request: HttpServletRequest, @CurrentUser user: User?, @CurrentAuthKey authKey: AuthKey?): FolderResponse {
+    fun getFolder(
+        @PathVariable id: String,
+        request: HttpServletRequest,
+        @CurrentUser user: User?,
+        @CurrentAuthKey authKey: AuthKey?
+    ): FolderResponse {
         val folder = folders.get(id)
         return folders.map(
             folder,
@@ -53,7 +66,11 @@ class FolderController(
     @RejectAwaitingAccess
     @RejectBlocked
     @RequiresPermission("folders:delete")
-    fun deleteFolder(@PathVariable id: String, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): ActionResponse {
+    fun deleteFolder(
+        @PathVariable id: String,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): ActionResponse {
         val folder = folders.get(id)
         if (folder.userId == user.id || user.isAdmin) {
             folders.delete(folder)

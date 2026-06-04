@@ -28,7 +28,11 @@ class ApiKeyController(
 
     @DeleteMapping("/{key}")
     @RequiresPermission("authkeys:delete")
-    fun deleteKey(@PathVariable key: String, @CurrentUser user: User, @CurrentAuthKey authKey: AuthKey): ActionResponse {
+    fun deleteKey(
+        @PathVariable key: String,
+        @CurrentUser user: User,
+        @CurrentAuthKey authKey: AuthKey
+    ): ActionResponse {
         repository.deleteByKeyAndUserId(key, user.id)
         return ActionResponse(success = true)
     }

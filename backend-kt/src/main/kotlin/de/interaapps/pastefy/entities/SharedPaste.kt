@@ -19,10 +19,15 @@ class SharedPaste(
     @Column(nullable = false, updatable = false) var createdAt: Instant? = null,
     @Column(nullable = false) var updatedAt: Instant? = null,
 ) {
-    @PrePersist fun prePersist() {
+    @PrePersist
+    fun prePersist() {
         val now = Instant.now()
         if (createdAt == null) createdAt = now
         updatedAt = now
     }
-    @PreUpdate fun preUpdate() { updatedAt = Instant.now() }
+
+    @PreUpdate
+    fun preUpdate() {
+        updatedAt = Instant.now()
+    }
 }

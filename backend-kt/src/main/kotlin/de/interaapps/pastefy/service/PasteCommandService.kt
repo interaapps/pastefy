@@ -44,13 +44,20 @@ class PasteCommandService(
         ).apply { setDatabaseContent(request.content) }
         val saved = pasteService.save(paste)
         syncTags(saved, request.tags.orEmpty())
-        request.forkedFrom?.let(pasteRepository::findByKey)?.takeIf(Paste::isPublic)?.let { engagement.addInterest(it, 10) }
+        request.forkedFrom?.let(pasteRepository::findByKey)?.takeIf(Paste::isPublic)
+            ?.let { engagement.addInterest(it, 10) }
         if (request.ai && !request.encrypted) aiProvider.ifAvailable?.enqueueIfEligible(saved, force = true)
         return saved
     }
 
     @Transactional
-    fun createUploaded(title: String?, content: String, type: PasteType, user: User?, tags: List<String> = emptyList()): Paste {
+    fun createUploaded(
+        title: String?,
+        content: String,
+        type: PasteType,
+        user: User?,
+        tags: List<String> = emptyList()
+    ): Paste {
         val paste = Paste(title = title, userId = user?.id, type = type).apply { setDatabaseContent(content) }
         val saved = pasteService.save(paste)
         syncTags(saved, tags)
@@ -62,7 +69,9 @@ class PasteCommandService(
         val paste = requireOwned(key, user)
         request.title?.let { paste.title = it }
         request.content?.let(paste::setDatabaseContent)
-        request.folder?.let { paste.folder = folderRepository.findByKey(it)?.takeIf { folder -> folder.userId == user.id }?.key }
+        request.folder?.let {
+            paste.folder = folderRepository.findByKey(it)?.takeIf { folder -> folder.userId == user.id }?.key
+        }
         request.type?.let { paste.type = it }
         request.encrypted?.let { paste.encrypted = it }
         request.visibility?.let { paste.visibility = it }

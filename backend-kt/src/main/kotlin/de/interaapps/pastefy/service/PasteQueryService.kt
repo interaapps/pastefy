@@ -39,12 +39,22 @@ class PasteQueryService(
         val specification = specification(request, user, guarded, visibility, encrypted, userId, starredBy)
         val sort = Sort.by(Sort.Direction.DESC, sortable(request.getParameter("sort")))
         return pasteRepository.findAll(specification, PageRequest.of(paging.page - 1, paging.limit, sort)).content
-            .map { mapper.map(it, user, fetchStar = user != null, fetchUser = true, request.withAiInfo(), request.shortenContent()) }
+            .map {
+                mapper.map(
+                    it,
+                    user,
+                    fetchStar = user != null,
+                    fetchUser = true,
+                    request.withAiInfo(),
+                    request.shortenContent()
+                )
+            }
     }
 
     fun trending(request: HttpServletRequest, response: HttpServletResponse): List<PasteResponse> {
         val paging = paging(request, response)
-        val createdAfter = if (request.parameterMap.containsKey("trending")) Instant.now().minus(4, ChronoUnit.DAYS) else null
+        val createdAfter =
+            if (request.parameterMap.containsKey("trending")) Instant.now().minus(4, ChronoUnit.DAYS) else null
         return pasteRepository.findTrending(createdAfter, PageRequest.of(paging.page - 1, paging.limit))
             .map { mapper.map(it, shortenContent = request.shortenContent(), withAiInfo = request.withAiInfo()) }
     }
@@ -81,7 +91,8 @@ class PasteQueryService(
         }
         starredBy?.let { predicates += starredPredicate(criteriaQuery, builder, root.get("key"), it) }
         if (guarded && user?.isAdmin != true) {
-            val visible = mutableListOf<Predicate>(builder.equal(root.get<PasteVisibility>("visibility"), PasteVisibility.PUBLIC))
+            val visible =
+                mutableListOf<Predicate>(builder.equal(root.get<PasteVisibility>("visibility"), PasteVisibility.PUBLIC))
             user?.let {
                 visible += builder.equal(root.get<String>("userId"), it.id)
                 visible += starredPredicate(criteriaQuery, builder, root.get("key"), it.id)

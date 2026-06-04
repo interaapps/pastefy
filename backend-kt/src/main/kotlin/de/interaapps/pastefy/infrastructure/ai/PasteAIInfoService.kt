@@ -90,11 +90,11 @@ class PasteAIInfoService(
 
     private fun isEligible(paste: Paste): Boolean =
         paste.isPublic && !paste.encrypted &&
-            engagementRepository.findByPasteId(requireNotNull(paste.id))?.score.orZero() >= threshold()
+                engagementRepository.findByPasteId(requireNotNull(paste.id))?.score.orZero() >= threshold()
 
     private fun isCurrent(info: PasteAIInfo?, sourceVersion: Int): Boolean =
         info != null && info.sourcePasteVersion == sourceVersion && info.promptVersion == PROMPT_VERSION &&
-            info.provider == pasteAI.provider.take(30) && info.model == pasteAI.model.take(100)
+                info.provider == pasteAI.provider.take(30) && info.model == pasteAI.model.take(100)
 
     private fun threshold() = properties.ai.engagementThreshold.coerceAtLeast(1)
     private fun Int?.orZero() = this ?: 0

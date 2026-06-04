@@ -34,7 +34,8 @@ class AnalyticsService(
 ) {
     private val config = properties.analytics
     private val table = "${identifier(config.database)}.${identifier(config.table)}"
-    private val queue = ArrayBlockingQueue<VisitEvent>(config.queueCapacity.coerceAtLeast(config.batchSize.coerceAtLeast(1)))
+    private val queue =
+        ArrayBlockingQueue<VisitEvent>(config.queueCapacity.coerceAtLeast(config.batchSize.coerceAtLeast(1)))
     private val droppedEvents = AtomicLong()
     private val writerFailures = AtomicLong()
     private val geoIpReader = createGeoIpReader(config.geoIpMmdbPath)
@@ -92,17 +93,25 @@ class AnalyticsService(
             }
             jdbc.queryForList(
                 "SELECT formatDateTime($bucket, '%FT%TZ', 'UTC') AS bucket, count() AS visits, " +
-                    "uniqExact(ip_hash) AS unique_visitors FROM $table$where GROUP BY bucket ORDER BY bucket",
+                        "uniqExact(ip_hash) AS unique_visitors FROM $table$where GROUP BY bucket ORDER BY bucket",
             ).forEach {
-                response.series += SeriesPoint(it["bucket"].toString(), (it["visits"] as Number).toLong(), (it["unique_visitors"] as Number).toLong())
+                response.series += SeriesPoint(
+                    it["bucket"].toString(),
+                    (it["visits"] as Number).toLong(),
+                    (it["unique_visitors"] as Number).toLong()
+                )
             }
         }
         if (query.includeBreakdown) {
             jdbc.queryForList(
                 "SELECT toString(${query.groupBy}) AS value, count() AS visits, uniqExact(ip_hash) AS unique_visitors " +
-                    "FROM $table$where GROUP BY value ORDER BY visits DESC LIMIT 25",
+                        "FROM $table$where GROUP BY value ORDER BY visits DESC LIMIT 25",
             ).forEach {
-                response.breakdown += BreakdownPoint(it["value"].toString(), (it["visits"] as Number).toLong(), (it["unique_visitors"] as Number).toLong())
+                response.breakdown += BreakdownPoint(
+                    it["value"].toString(),
+                    (it["visits"] as Number).toLong(),
+                    (it["unique_visitors"] as Number).toLong()
+                )
             }
         }
         return response
@@ -117,7 +126,7 @@ class AnalyticsService(
             try {
                 jdbc.batchUpdate(
                     "INSERT INTO $table (paste_key, paste_visibility, paste_user_id, visit_type, visited_at, country, region, city, " +
-                        "visitor_user_id, browser, device_type, os, ip_hash, referer_host, acquisition, is_bot) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            "visitor_user_id, browser, device_type, os, ip_hash, referer_host, acquisition, is_bot) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     batch,
                     batch.size,
                 ) { statement, event ->
@@ -141,7 +150,11 @@ class AnalyticsService(
                 writerFailures.set(0)
             } catch (exception: RuntimeException) {
                 val failures = writerFailures.incrementAndGet()
-                if (failures == 1L || failures % 60L == 0L) LOGGER.warn("Could not write analytics batch ({} consecutive failures)", failures, exception)
+                if (failures == 1L || failures % 60L == 0L) LOGGER.warn(
+                    "Could not write analytics batch ({} consecutive failures)",
+                    failures,
+                    exception
+                )
                 batch.forEach { if (!queue.offer(it)) logDroppedEvent() }
                 return
             }
@@ -162,7 +175,11 @@ class AnalyticsService(
         if (!config.trackBots) clauses += "is_bot = 0"
         query.filters.forEach { (field, value) ->
             require(field in AnalyticsQuery.FILTERS) { "Unsupported analytics filter" }
-            clauses += if (field == "is_bot") "is_bot = ${if (value == "1" || value.toBoolean()) 1 else 0}" else "$field = '${escape(value)}'"
+            clauses += if (field == "is_bot") "is_bot = ${if (value == "1" || value.toBoolean()) 1 else 0}" else "$field = '${
+                escape(
+                    value
+                )
+            }'"
         }
         return " WHERE ${clauses.joinToString(" AND ")}"
     }
@@ -171,7 +188,11 @@ class AnalyticsService(
         val value = when {
             config.ipHeader.isNotBlank() -> request.getHeader(config.ipHeader)
             config.ipSource.lowercase() in setOf("x-forwarded-for", "xff") -> request.getHeader("X-Forwarded-For")
-            config.ipSource.lowercase() in setOf("cloudflare", "cf-connecting-ip") -> request.getHeader("CF-Connecting-IP")
+            config.ipSource.lowercase() in setOf(
+                "cloudflare",
+                "cf-connecting-ip"
+            ) -> request.getHeader("CF-Connecting-IP")
+
             else -> request.remoteAddr
         }?.substringBefore(',')?.trim().orEmpty()
         if (value.startsWith("[") && value.contains(']')) return value.substring(1, value.indexOf(']'))
@@ -179,7 +200,11 @@ class AnalyticsService(
     }
 
     private fun hashIp(ip: String): BigInteger? = ip.takeIf(String::isNotBlank)?.let {
-        BigInteger(1, MessageDigest.getInstance("SHA-256").digest("${config.ipHashSalt}:$it".toByteArray(StandardCharsets.UTF_8)).copyOf(8))
+        BigInteger(
+            1,
+            MessageDigest.getInstance("SHA-256").digest("${config.ipHashSalt}:$it".toByteArray(StandardCharsets.UTF_8))
+                .copyOf(8)
+        )
     }
 
     private fun lookupGeo(ip: String): GeoLocation {
@@ -187,20 +212,32 @@ class AnalyticsService(
         if (ip.isBlank()) return GeoLocation()
         return runCatching {
             val city = reader.tryCity(InetAddress.getByName(ip)).orElse(null) ?: return GeoLocation()
-            GeoLocation(city.country.isoCode.orEmpty(), city.mostSpecificSubdivision.isoCode.orEmpty(), city.city.name.orEmpty())
+            GeoLocation(
+                city.country.isoCode.orEmpty(),
+                city.mostSpecificSubdivision.isoCode.orEmpty(),
+                city.city.name.orEmpty()
+            )
         }.getOrDefault(GeoLocation())
     }
 
     private fun createGeoIpReader(path: String): DatabaseReader? =
         path.takeIf(String::isNotBlank)?.let {
             runCatching { DatabaseReader.Builder(File(it)).withCache(CHMCache()).build() }
-                .onFailure { error -> LOGGER.warn("GeoIP database could not be loaded; location fields stay empty", error) }
+                .onFailure { error ->
+                    LOGGER.warn(
+                        "GeoIP database could not be loaded; location fields stay empty",
+                        error
+                    )
+                }
                 .getOrNull()
         }
 
     private fun logDroppedEvent() {
         val dropped = droppedEvents.incrementAndGet()
-        if (dropped == 1L || dropped % 1_000L == 0L) LOGGER.warn("Analytics queue is full; dropped {} visit event(s)", dropped)
+        if (dropped == 1L || dropped % 1_000L == 0L) LOGGER.warn(
+            "Analytics queue is full; dropped {} visit event(s)",
+            dropped
+        )
     }
 
     private fun refererHost(value: String?): String = runCatching {
@@ -210,14 +247,32 @@ class AnalyticsService(
     private fun acquisition(referer: String, requestHost: String?): String {
         if (referer.isBlank()) return "DIRECT"
         if (referer == requestHost.orEmpty().substringBefore(':').lowercase()) return "INTERNAL"
-        if (referer.containsAny("google.", "bing.", "duckduckgo.", "yahoo.", "ecosia.", "brave.")) return "ORGANIC_SEARCH"
+        if (referer.containsAny(
+                "google.",
+                "bing.",
+                "duckduckgo.",
+                "yahoo.",
+                "ecosia.",
+                "brave."
+            )
+        ) return "ORGANIC_SEARCH"
         if (referer.containsAny("github.com", "gitlab.com")) return "DEVELOPER_REFERRAL"
-        if (referer.containsAny("twitter.com", "x.com", "facebook.com", "linkedin.com", "reddit.com", "mastodon.", "bsky.app")) return "SOCIAL"
+        if (referer.containsAny(
+                "twitter.com",
+                "x.com",
+                "facebook.com",
+                "linkedin.com",
+                "reddit.com",
+                "mastodon.",
+                "bsky.app"
+            )
+        ) return "SOCIAL"
         return "REFERRAL"
     }
 
     private fun identifier(value: String): String = value.takeIf { it.matches(Regex("[A-Za-z_][A-Za-z0-9_]*")) }
         ?: throw IllegalArgumentException("Invalid ClickHouse identifier: $value")
+
     private fun escape(value: String) = value.replace("\\", "\\\\").replace("'", "\\'")
 
     private data class VisitEvent(
@@ -226,12 +281,25 @@ class AnalyticsService(
         val browser: String, val deviceType: String, val os: String, val ipHash: BigInteger?, val refererHost: String,
         val acquisition: String, val isBot: Boolean,
     )
+
     private data class GeoLocation(val country: String = "", val region: String = "", val city: String = "")
     private data class UserAgentInfo(val browser: String, val deviceType: String, val os: String, val bot: Boolean) {
         companion object {
             fun parse(raw: String?): UserAgentInfo {
                 val ua = raw.orEmpty().lowercase()
-                val bot = ua.containsAny("bot", "crawler", "spider", "slurp", "preview", "wget", "curl/", "httpclient", "python-requests", "uptime", "monitoring")
+                val bot = ua.containsAny(
+                    "bot",
+                    "crawler",
+                    "spider",
+                    "slurp",
+                    "preview",
+                    "wget",
+                    "curl/",
+                    "httpclient",
+                    "python-requests",
+                    "uptime",
+                    "monitoring"
+                )
                 val device = when {
                     ua.containsAny("ipad", "tablet") -> "TABLET"
                     ua.containsAny("mobile", "iphone", "android") -> "MOBILE"
@@ -239,11 +307,19 @@ class AnalyticsService(
                     else -> "DESKTOP"
                 }
                 val browser = when {
-                    "edg/" in ua -> "EDGE"; "firefox/" in ua -> "FIREFOX"; ua.containsAny("chrome/", "crios/") -> "CHROME"
+                    "edg/" in ua -> "EDGE"; "firefox/" in ua -> "FIREFOX"; ua.containsAny(
+                        "chrome/",
+                        "crios/"
+                    ) -> "CHROME"
+
                     "safari/" in ua -> "SAFARI"; "curl/" in ua -> "CURL"; bot -> "BOT"; else -> "UNKNOWN"
                 }
                 val os = when {
-                    "windows" in ua -> "WINDOWS"; ua.containsAny("iphone", "ipad", "ios") -> "IOS"; "android" in ua -> "ANDROID"
+                    "windows" in ua -> "WINDOWS"; ua.containsAny(
+                        "iphone",
+                        "ipad",
+                        "ios"
+                    ) -> "IOS"; "android" in ua -> "ANDROID"
                     ua.containsAny("mac os", "macintosh") -> "MACOS"; "linux" in ua -> "LINUX"; else -> "UNKNOWN"
                 }
                 return UserAgentInfo(browser, device, os, bot)

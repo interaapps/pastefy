@@ -110,7 +110,8 @@ class BackgroundJobService(
             } else {
                 status = BackgroundJob.Status.PENDING
                 val exponent = (attempts - 1).coerceIn(0, 10)
-                availableAt = Instant.now().plusSeconds(properties.ai.jobs.retryDelaySeconds.coerceAtLeast(1) * (1L shl exponent))
+                availableAt =
+                    Instant.now().plusSeconds(properties.ai.jobs.retryDelaySeconds.coerceAtLeast(1) * (1L shl exponent))
             }
         }
         LOGGER.warn("Background job failed: {}", job.key, exception)

@@ -48,7 +48,10 @@ class OAuth2Controller(
         if (!error.isNullOrBlank()) throw OAuth2Exception("OAuth2 provider rejected authentication")
         stateService.validate(state, request.cookies?.firstOrNull { it.name == STATE_COOKIE }?.value)
         val oauth = registry.get(provider) ?: throw NotFoundException("OAuth2 provider not found")
-        val tokens = oauth.exchangeCode(code ?: throw OAuth2Exception("Missing OAuth2 authorization code"), callbackUrl(provider))
+        val tokens = oauth.exchangeCode(
+            code ?: throw OAuth2Exception("Missing OAuth2 authorization code"),
+            callbackUrl(provider)
+        )
         val authKey = loginService.login(oauth, tokens)
         val encodedKey = URLEncoder.encode(authKey.key, StandardCharsets.UTF_8)
         return ResponseEntity.status(HttpStatus.FOUND)
