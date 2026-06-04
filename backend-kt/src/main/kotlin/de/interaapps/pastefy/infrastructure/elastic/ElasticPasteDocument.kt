@@ -12,7 +12,7 @@ import java.time.Instant
 data class ElasticPasteDocument(
     @Id
     val documentId: String = "",
-    val id: Int = 0,
+    //val id: Int = 0,
     val key: String = "",
     val title: String? = null,
     val content: String? = null,

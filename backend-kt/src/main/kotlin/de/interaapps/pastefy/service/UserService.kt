@@ -28,6 +28,7 @@ class UserService(
     private val notificationRepository: NotificationRepository,
     private val sharedPasteRepository: SharedPasteRepository,
     private val elasticProvider: ObjectProvider<ElasticPasteService>,
+    private val pasteService: PasteService,
 ) {
 
     fun get(id: String): User? {
@@ -111,7 +112,7 @@ class UserService(
     @Transactional
     fun delete(user: User) {
         pasteRepository.findAllByUserId(user.id)
-            .forEach { pasteRepository.delete(it) }
+            .forEach(pasteService::delete)
 
         folderRepository.deleteByUserId(user.id)
         authKeyRepository.deleteByUserId(user.id)

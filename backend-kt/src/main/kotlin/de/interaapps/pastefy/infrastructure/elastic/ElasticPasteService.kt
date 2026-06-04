@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.DependsOn
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
+import org.springframework.data.elasticsearch.core.query.Query
 import org.springframework.stereotype.Service
 
 @Service
@@ -44,6 +45,8 @@ class ElasticPasteService(
         }
     }
 
+    fun count(): Long = operations.count(Query.findAll(), indexCoordinates)
+
     fun updateTags(paste: Paste) = updateDocument(paste) { document ->
         document.copy(tags = tags(paste))
     }
@@ -73,7 +76,7 @@ class ElasticPasteService(
 
     private fun toDocument(paste: Paste, content: String?) = ElasticPasteDocument(
         documentId = requireNotNull(paste.id).toString(),
-        id = requireNotNull(paste.id),
+        //id = requireNotNull(paste.id),
         key = paste.key,
         title = paste.title,
         content = content,

@@ -3,6 +3,9 @@ package de.interaapps.pastefy.controller.public
 import de.interaapps.pastefy.auth.annotations.PublicPastesEnabled
 import de.interaapps.pastefy.dto.pastes.PasteResponse
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import de.interaapps.pastefy.enums.PasteVisibility
+import de.interaapps.pastefy.service.PasteQueryService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -10,13 +13,18 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/v2/public-pastes")
 @PublicPastesEnabled
-class PublicPastesController {
+class PublicPastesController(
+    private val queries: PasteQueryService,
+) {
     @GetMapping
-    fun getPublicPastes(request: HttpServletRequest): List<PasteResponse> = TODO()
+    fun getPublicPastes(request: HttpServletRequest, response: HttpServletResponse): List<PasteResponse> =
+        queries.list(request, response, null, guarded = false, visibility = PasteVisibility.PUBLIC)
 
     @GetMapping("/trending")
-    fun getTrendingPastes(request: HttpServletRequest): List<PasteResponse> = TODO()
+    fun getTrendingPastes(request: HttpServletRequest, response: HttpServletResponse): List<PasteResponse> =
+        queries.trending(request, response)
 
     @GetMapping("/latest")
-    fun getLatestPastes(request: HttpServletRequest): List<PasteResponse> = TODO()
+    fun getLatestPastes(request: HttpServletRequest, response: HttpServletResponse): List<PasteResponse> =
+        queries.list(request, response, null, guarded = false, visibility = PasteVisibility.PUBLIC)
 }

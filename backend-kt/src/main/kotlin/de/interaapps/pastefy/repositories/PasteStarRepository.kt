@@ -12,6 +12,7 @@ interface PasteStarRepository : JpaRepository<PasteStar, Int> {
     fun countByPaste(paste: String): Int
 
     fun findAllByPaste(paste: String): List<PasteStar>
+    fun findAllByUserId(userId: String): List<PasteStar>
 
     fun deleteByPaste(paste: String)
 }

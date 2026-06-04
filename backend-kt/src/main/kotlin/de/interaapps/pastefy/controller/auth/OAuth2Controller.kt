@@ -20,7 +20,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @RestController
-@RequestMapping("/auth/oauth2")
+@RequestMapping("/auth/oauth2", "/api/v2/auth/oauth2")
 class OAuth2Controller(
     private val properties: PastefyProperties,
     private val registry: OAuth2ProviderRegistry,
@@ -58,14 +58,14 @@ class OAuth2Controller(
     }
 
     private fun callbackUrl(provider: String) =
-        "${properties.oauth.callbackBaseUrl.trimEnd('/')}/auth/oauth2/$provider/callback"
+        "${properties.oauth.callbackBaseUrl.trimEnd('/')}/api/v2/auth/oauth2/$provider/callback"
 
     private fun stateCookie(value: String, maxAgeSeconds: Long = 600): ResponseCookie =
         ResponseCookie.from(STATE_COOKIE, value)
             .httpOnly(true)
             .secure(properties.oauth.callbackBaseUrl.startsWith("https://"))
             .sameSite("Lax")
-            .path("/auth/oauth2")
+            .path("/")
             .maxAge(maxAgeSeconds)
             .build()
 
