@@ -1,13 +1,14 @@
 package de.interaapps.pastefy.infrastructure.jobs
 
 import de.interaapps.pastefy.config.PastefyProperties
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import de.interaapps.pastefy.infrastructure.ai.AiEnabledCondition
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Conditional
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 
 @Configuration
-@ConditionalOnProperty(prefix = "pastefy.ai", name = ["enabled"], havingValue = "true")
+@Conditional(AiEnabledCondition::class)
 class BackgroundJobConfiguration {
     @Bean
     fun backgroundJobExecutor(properties: PastefyProperties): ThreadPoolTaskExecutor =

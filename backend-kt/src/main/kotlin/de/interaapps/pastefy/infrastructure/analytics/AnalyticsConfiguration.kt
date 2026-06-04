@@ -19,7 +19,7 @@ class AnalyticsConfiguration {
         require(properties.analytics.ipHashSalt.isNotBlank()) { "pastefy.analytics.ip-hash-salt is required when analytics are enabled" }
         return DriverManagerDataSource().apply {
             setDriverClassName("com.clickhouse.jdbc.ClickHouseDriver")
-            url = properties.analytics.jdbcUrl
+            url = clickHouseJdbcUrl(properties.analytics.jdbcUrl, properties.analytics.database)
             username = properties.analytics.user
             password = properties.analytics.password
         }

@@ -12,12 +12,12 @@ import de.interaapps.pastefy.repositories.PasteRepository
 import de.interaapps.pastefy.repositories.PublicPasteEngagementRepository
 import de.interaapps.pastefy.service.PasteService
 import org.slf4j.LoggerFactory
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.context.annotation.Conditional
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 
 @Service
-@ConditionalOnProperty(prefix = "pastefy.ai", name = ["enabled"], havingValue = "true")
+@Conditional(AiEnabledCondition::class)
 class PasteAIInfoService(
     private val pasteAI: PasteAI,
     private val pasteService: PasteService,

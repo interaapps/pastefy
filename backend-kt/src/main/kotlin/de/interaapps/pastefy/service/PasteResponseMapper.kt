@@ -11,6 +11,7 @@ import de.interaapps.pastefy.enums.PasteVisibility
 import de.interaapps.pastefy.repositories.PasteAIInfoRepository
 import de.interaapps.pastefy.repositories.PasteTagRepository
 import de.interaapps.pastefy.repositories.UserRepository
+import de.interaapps.pastefy.util.shorten
 import org.springframework.stereotype.Service
 
 @Service
@@ -32,9 +33,15 @@ class PasteResponseMapper(
         withAiInfo: Boolean = false,
         shortenContent: Boolean = false,
     ): PasteResponse {
-        val content = pasteService.getContent(paste).orEmpty().let {
-            if (shortenContent && it.length > 303) it.take(300) + "..." else it
-        }
+        val content = pasteService.getContent(paste)
+            .orEmpty()
+            .let { raw ->
+                if (shortenContent) {
+                    raw.shorten()
+                } else {
+                    raw
+                }
+            }
         return PasteResponse(
             exists = true,
             id = paste.key,

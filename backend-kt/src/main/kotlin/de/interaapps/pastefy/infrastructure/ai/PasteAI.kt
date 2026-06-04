@@ -5,11 +5,11 @@ import de.interaapps.pastefy.config.PastefyProperties
 import de.interaapps.pastefy.entities.Paste
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.ai.chat.model.ChatModel
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.context.annotation.Conditional
 import org.springframework.stereotype.Service
 
 @Service
-@ConditionalOnProperty(prefix = "pastefy.ai", name = ["enabled"], havingValue = "true")
+@Conditional(AiEnabledCondition::class)
 class PasteAI(
     chatModel: ChatModel,
     private val objectMapper: ObjectMapper,

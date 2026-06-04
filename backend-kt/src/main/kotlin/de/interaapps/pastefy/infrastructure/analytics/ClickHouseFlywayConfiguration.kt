@@ -19,7 +19,7 @@ class ClickHouseFlywayConfiguration {
                         "pastefy.analytics.jdbc-url is required when ClickHouse migrations are enabled"
                     }
                     setDriverClassName("com.clickhouse.jdbc.ClickHouseDriver")
-                    url = properties.analytics.jdbcUrl
+                    url = clickHouseJdbcUrl(properties.analytics.jdbcUrl, properties.analytics.database)
                     username = properties.analytics.user
                     password = properties.analytics.password
                 },

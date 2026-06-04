@@ -2,10 +2,11 @@ package de.interaapps.pastefy.infrastructure.jobs
 
 import de.interaapps.pastefy.config.PastefyProperties
 import de.interaapps.pastefy.entities.BackgroundJob
+import de.interaapps.pastefy.infrastructure.ai.AiEnabledCondition
 import de.interaapps.pastefy.repositories.BackgroundJobRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.ObjectProvider
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.context.annotation.Conditional
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
@@ -17,7 +18,7 @@ import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
 @Service
-@ConditionalOnProperty(prefix = "pastefy.ai", name = ["enabled"], havingValue = "true")
+@Conditional(AiEnabledCondition::class)
 class BackgroundJobService(
     private val repository: BackgroundJobRepository,
     private val handlers: ObjectProvider<BackgroundJobHandler>,

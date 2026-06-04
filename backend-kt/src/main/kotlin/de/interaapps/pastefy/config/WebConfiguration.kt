@@ -12,6 +12,7 @@ import java.time.Duration
 @Configuration
 class WebConfiguration(
     private val authInterceptor: AuthInterceptor,
+    private val properties: PastefyProperties,
 ) : WebMvcConfigurer {
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(authInterceptor)
@@ -19,6 +20,19 @@ class WebConfiguration(
 
     override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
         resolvers += AuthArgumentResolver()
+    }
+
+    override fun addCorsMappings(registry: org.springframework.web.servlet.config.annotation.CorsRegistry) {
+        val origins = properties.cors.split(',')
+            .map(String::trim)
+            .filter(String::isNotBlank)
+        if (origins.isEmpty()) return
+
+        registry.addMapping("/**")
+            .allowedOriginPatterns(*origins.toTypedArray())
+            .allowedMethods("*")
+            .allowedHeaders("*")
+            .allowCredentials(false)
     }
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {

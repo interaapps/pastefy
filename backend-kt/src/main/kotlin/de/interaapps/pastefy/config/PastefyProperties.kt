@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties("pastefy")
 data class PastefyProperties(
+    var cors: String = "",
     var loginRequiredRead: Boolean = false,
     var loginRequiredCreate: Boolean = false,
     var publicPastesEnabled: Boolean = true,
@@ -60,6 +61,7 @@ data class PastefyProperties(
 
     data class Elasticsearch(
         var enabled: Boolean = false,
+        var apiKey: String = "",
         var indexName: String = "pastefy_pastes_current",
         var indexPrefix: String = "pastefy_pastes",
         var legacyIndexName: String = "pastefy_pastes",
@@ -101,6 +103,8 @@ data class PastefyProperties(
         var batchSize: Int = 1_000,
         var queueCapacity: Int = 100_000,
         var flushIntervalMillis: Long = 1_000,
+        var httpConnectTimeoutMillis: Long = 2_000,
+        var httpRequestTimeoutMillis: Long = 5_000,
         var ipHashSalt: String = "",
         var ipSource: String = "direct",
         var ipHeader: String = "",

@@ -13,6 +13,7 @@ import de.interaapps.pastefy.service.query.LegacyFilterGroup
 import de.interaapps.pastefy.service.query.LegacyFilterOperator
 import de.interaapps.pastefy.service.query.LegacyGroupOperator
 import de.interaapps.pastefy.service.query.LegacyPasteQuery
+import de.interaapps.pastefy.util.shorten
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -162,14 +163,12 @@ class ElasticPasteQueryAdapter(
             forkedFrom = document.forkedFrom,
             visibility = document.visibility,
             folder = document.folder,
+            tags = document.tags,
             type = document.type,
             user = document.user?.let {
                 PublicUserDto(id = it.id, name = it.uniqueName, displayName = it.name, avatar = it.avatar)
             },
         )
-
-    private fun String?.shorten(): String? =
-        if (this != null && length > 303) take(300) + "..." else this
 
     private fun normalizeField(field: String): String = FIELD_ALIASES[field] ?: field
 
