@@ -458,7 +458,7 @@ class LocalTestingSeeder(
     }
 
     private fun engagement(pasteId: Int, score: Int) {
-        if (engagements.findByPasteId(pasteId) != null) return
+        if (engagements.findFirstByPasteIdOrderByIdAsc(pasteId) != null) return
         engagements.save(PublicPasteEngagement(pasteId = pasteId, score = score))
     }
 

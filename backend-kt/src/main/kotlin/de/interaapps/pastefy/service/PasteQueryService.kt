@@ -44,6 +44,9 @@ class PasteQueryService(
             userId = userId,
             starredBy = starredBy,
         )
+        elasticProvider.ifAvailable {
+            response.addHeader("using-elastic", "true")
+        }
         return elasticProvider.ifAvailable?.find(query)
             ?: jpa.find(query).let { pastes ->
                 val metrics = pasteMetricsService.getMetrics(pastes.map { it.key })

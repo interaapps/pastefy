@@ -32,6 +32,9 @@ class SeoRenderer(
 
     fun pathSegment(value: String): String = URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20")
 
+    fun normalizeText(value: String?, fallback: String = ""): String =
+        value?.trim()?.replace(Regex("\\s+"), " ")?.takeIf(String::isNotEmpty) ?: fallback
+
     fun truncate(value: String, maxLength: Int): String {
         if (value.codePointCount(0, value.length) <= maxLength) {
             return value
@@ -44,6 +47,38 @@ class SeoRenderer(
         else value.substring(0, value.offsetByCodePoints(0, maxLength))
 
     fun escapeHtml(value: String?) = HtmlUtils.htmlEscape(value.orEmpty())
+
+    fun mainContent(vararg parts: String): String =
+        "<main id=\"seo-content\">${parts.joinToString("")}</main>"
+
+    fun section(title: String, vararg parts: String): String =
+        "<section><h2>${escapeHtml(title)}</h2>${parts.joinToString("")}</section>"
+
+    fun heading(level: Int, text: String, attributes: String = ""): String {
+        val safeLevel = level.coerceIn(1, 6)
+        val attrs = attributes.takeIf(String::isNotBlank)?.let { " $it" }.orEmpty()
+        return "<h$safeLevel$attrs>${escapeHtml(text)}</h$safeLevel>"
+    }
+
+    fun paragraph(text: String): String = "<p>${escapeHtml(text)}</p>"
+
+    fun link(url: String, label: String, cssClass: String? = null): String {
+        val classAttribute = cssClass?.takeIf(String::isNotBlank)?.let { " class=\"${escapeHtml(it)}\"" }.orEmpty()
+        return "<a href=\"${escapeHtml(url)}\"$classAttribute>${escapeHtml(label)}</a>"
+    }
+
+    fun unorderedList(items: Collection<String>, cssClass: String? = null): String {
+        if (items.isEmpty()) return ""
+        val classAttribute = cssClass?.takeIf(String::isNotBlank)?.let { " class=\"${escapeHtml(it)}\"" }.orEmpty()
+        return items.joinToString(prefix = "<ul$classAttribute>", postfix = "</ul>") { "<li>$it</li>" }
+    }
+
+    fun definitionList(items: Map<String, String>): String {
+        if (items.isEmpty()) return ""
+        return items.entries.joinToString(prefix = "<dl>", postfix = "</dl>") {
+            "<dt>${escapeHtml(it.key)}</dt><dd>${escapeHtml(it.value)}</dd>"
+        }
+    }
 
     private fun prepareHtml(source: String): String {
         val start = source.indexOf(META_START_TAG)

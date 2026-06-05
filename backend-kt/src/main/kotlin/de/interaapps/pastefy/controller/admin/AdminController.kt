@@ -10,6 +10,8 @@ import jakarta.validation.Valid
 import de.interaapps.pastefy.exceptions.NotFoundException
 import de.interaapps.pastefy.repositories.UserRepository
 import de.interaapps.pastefy.service.UserService
+import de.interaapps.pastefy.service.query.LegacyFilterSpecificationBuilder
+import de.interaapps.pastefy.service.query.LegacyFilterSpecificationBuilder.Companion.USER_FIELDS
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*
 class AdminController(
     private val repository: UserRepository,
     private val users: UserService,
+    private val legacyFilters: LegacyFilterSpecificationBuilder,
 ) {
     @GetMapping("/users")
     @RequiresPermission("admin.users:read")
@@ -29,7 +32,7 @@ class AdminController(
         val page = request.getParameter("page")?.toIntOrNull()?.coerceAtLeast(1) ?: 1
         val limit = request.getParameter("page_limit")?.toIntOrNull()?.coerceIn(1, 100) ?: 10
         val search = request.getParameter("search")?.trim()?.lowercase()?.takeIf(String::isNotEmpty)
-        val specification = Specification<User> { root, _, builder ->
+        val searchSpecification = Specification<User> { root, _, builder ->
             search?.let {
                 builder.or(
                     builder.like(builder.lower(root.get("name")), "%$it%"),
@@ -38,6 +41,7 @@ class AdminController(
                 )
             } ?: builder.conjunction()
         }
+        val specification = searchSpecification.and(legacyFilters.fromRequest(request, USER_FIELDS))
         return repository.findAll(
             specification,
             PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "createdAt"))

@@ -1,8 +1,6 @@
 package de.interaapps.pastefy.infrastructure.elastic.migrations
 
-import co.elastic.clients.elasticsearch._types.Conflicts
 import co.elastic.clients.elasticsearch._types.mapping.TypeMapping
-import co.elastic.clients.elasticsearch.indices.update_aliases.Action
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.io.StringReader
@@ -12,23 +10,19 @@ class ElasticV1PasteIndexMigration : ElasticMigration {
     override val version = 1
 
     override fun migrate(context: ElasticMigrationContext) {
-        val target = context.versionedIndex(version)
-        createIndexIfMissing(context, target)
-
-        val aliasedIndices = aliasIndices(context)
-        if (aliasedIndices == setOf(target)) return
-
-        val sources = when {
-            aliasedIndices.isNotEmpty() -> aliasedIndices
-            context.legacyIndex != target && indexExists(context, context.legacyIndex) -> setOf(context.legacyIndex)
-            else -> emptySet()
+        val index = context.properties.indexName.requireElasticName("index")
+        if (indexExists(context, index)) {
+            context.client.indices().putMapping { request ->
+                request.index(index).withJson(StringReader(LEGACY_MAPPING_JSON))
+            }
+            LOGGER.info("Updated Elasticsearch legacy mapping for index {}", index)
+            return
         }
-        sources.filterNot { it == target }.forEach { source -> reindex(context, source, target) }
-        switchAlias(context, aliasedIndices, target)
+
+        createIndex(context, index)
     }
 
-    private fun createIndexIfMissing(context: ElasticMigrationContext, index: String) {
-        if (indexExists(context, index)) return
+    private fun createIndex(context: ElasticMigrationContext, index: String) {
         try {
             context.client.indices().create { request ->
                 request.index(index)
@@ -46,84 +40,54 @@ class ElasticV1PasteIndexMigration : ElasticMigration {
         }
     }
 
-    private fun reindex(context: ElasticMigrationContext, source: String, target: String) {
-        LOGGER.info("Reindexing Elasticsearch index {} into {}", source, target)
-        val response = context.client.reindex { request ->
-            request
-                .source { it.index(source) }
-                .dest { it.index(target) }
-                .conflicts(Conflicts.Abort)
-                .refresh(true)
-                .waitForCompletion(true)
-        }
-        check(response.timedOut() != true) { "Elasticsearch reindex operation timed out: $source -> $target" }
-        check(response.failures().isEmpty()) {
-            "Elasticsearch reindex operation failed: ${response.failures().joinToString()}"
-        }
-        LOGGER.info("Reindexed {} Elasticsearch document(s) into {}", response.created(), target)
-    }
-
-    private fun switchAlias(context: ElasticMigrationContext, previousIndices: Set<String>, target: String) {
-        val actions = previousIndices.filterNot { it == target }.map { index ->
-            Action.of { action -> action.remove { it.index(index).alias(context.alias) } }
-        } + Action.of { action ->
-            action.add { it.index(target).alias(context.alias).isWriteIndex(true) }
-        }
-        context.client.indices().updateAliases { it.actions(actions) }
-        LOGGER.info("Elasticsearch alias {} now points to {}", context.alias, target)
-    }
-
-    private fun aliasIndices(context: ElasticMigrationContext): Set<String> {
-        val indices = context.client.indices()
-        if (!indices.existsAlias { it.name(context.alias) }.value()) return emptySet()
-        return indices.getAlias { it.name(context.alias) }.result().keys
-    }
-
     private fun indexExists(context: ElasticMigrationContext, index: String): Boolean =
         context.client.indices().exists { it.index(index) }.value()
 
     companion object {
         private val LOGGER = LoggerFactory.getLogger(ElasticV1PasteIndexMigration::class.java)
+        private val LEGACY_MAPPING_JSON =
+            """
+            {
+              "properties": {
+                "key": { "type": "keyword" },
+                "title": { "type": "text", "fields": { "keyword": { "type": "keyword" } } },
+                "content": { "type": "text" },
+                "version": { "type": "integer" },
+                "starCount": { "type": "integer" },
+                "engagementScore": { "type": "integer" },
+                "userId": { "type": "keyword" },
+                "forkedFrom": { "type": "keyword" },
+                "visibility": { "type": "keyword" },
+                "folder": { "type": "keyword" },
+                "type": { "type": "keyword" },
+                "storageType": { "type": "keyword" },
+                "tags": { "type": "keyword" },
+                "starredBy": { "type": "keyword" },
+                "encrypted": { "type": "boolean" },
+                "expireAt": { "type": "date" },
+                "createdAt": { "type": "date" },
+                "updatedAt": { "type": "date" },
+                "user": {
+                  "properties": {
+                    "id": { "type": "keyword" },
+                    "type": { "type": "keyword" },
+                    "authId": { "type": "keyword" },
+                    "authProvider": { "type": "keyword" },
+                    "avatar": { "type": "text" },
+                    "name": { "type": "text", "fields": { "keyword": { "type": "keyword" } } },
+                    "uniqueName": { "type": "text", "fields": { "keyword": { "type": "keyword" } } },
+                    "eMail": { "type": "text", "fields": { "keyword": { "type": "keyword" } } },
+                    "createdAt": { "type": "date" },
+                    "updatedAt": { "type": "date" }
+                  }
+                }
+              }
+            }
+            """.trimIndent()
+
         private val MAPPING = TypeMapping.of { builder ->
             builder.withJson(
-                StringReader(
-                    """
-                    {
-                      "dynamic": "strict",
-                      "properties": {
-                        "documentId": { "type": "keyword" },
-                        "id": { "type": "integer" },
-                        "key": { "type": "keyword" },
-                        "title": { "type": "text", "fields": { "keyword": { "type": "keyword", "ignore_above": 256 } } },
-                        "content": { "type": "text" },
-                        "userId": { "type": "keyword" },
-                        "forkedFrom": { "type": "keyword" },
-                        "encrypted": { "type": "boolean" },
-                        "folder": { "type": "keyword" },
-                        "type": { "type": "keyword" },
-                        "visibility": { "type": "keyword" },
-                        "expireAt": { "type": "date" },
-                        "createdAt": { "type": "date" },
-                        "updatedAt": { "type": "date" },
-                        "storageType": { "type": "keyword" },
-                        "version": { "type": "integer" },
-                        "engagementScore": { "type": "integer" },
-                        "tags": { "type": "keyword" },
-                        "starCount": { "type": "integer" },
-                        "starredBy": { "type": "keyword" },
-                        "user": {
-                          "properties": {
-                            "id": { "type": "keyword" },
-                            "name": { "type": "text", "fields": { "keyword": { "type": "keyword", "ignore_above": 256 } } },
-                            "uniqueName": { "type": "keyword" },
-                            "email": { "type": "keyword" },
-                            "avatar": { "type": "keyword", "index": false }
-                          }
-                        }
-                      }
-                    }
-                    """.trimIndent(),
-                ),
+                StringReader(LEGACY_MAPPING_JSON),
             )
         }
     }

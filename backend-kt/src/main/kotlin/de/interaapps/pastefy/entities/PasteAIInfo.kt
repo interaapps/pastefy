@@ -9,8 +9,8 @@ import java.time.Instant
 @Table(name = "pastefy_paste_ai_info")
 class PasteAIInfo(
     @Id var pasteId: Int = 0,
-    @Column(nullable = false) var sourcePasteVersion: Int = 0,
-    @Column(nullable = false) var promptVersion: Int = 0,
+    @Column(nullable = true) var sourcePasteVersion: Int = 0,
+    @Column(nullable = true) var promptVersion: Int = 0,
     @Column(length = 30) var provider: String? = null,
     @Column(length = 100) var model: String? = null,
     @Column(length = 500) var description: String? = null,
@@ -18,8 +18,8 @@ class PasteAIInfo(
     @Column(length = 2048) var tagsJson: MutableList<String>? = null,
     @Convert(converter = AIWarningListJsonConverter::class)
     @Column(length = 4096) var warningsJson: MutableList<AIWarning>? = null,
-    @Column(nullable = false) var dangerous: Boolean = false,
-    @Column(nullable = false) var maxSeverity: Int = 0,
+    @Column(nullable = true) var dangerous: Boolean = false,
+    @Column(nullable = true) var maxSeverity: Int = 0,
     @Column(length = 255) var suggestedFilename: String? = null,
     var generatedAt: Instant? = null,
     @Column(nullable = false, updatable = false) var createdAt: Instant? = null,

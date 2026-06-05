@@ -81,7 +81,7 @@ class LegacyPasteQueryParser(
         }
     }
 
-    private fun parseClientFilter(request: HttpServletRequest): LegacyFilter? {
+    fun parseClientFilter(request: HttpServletRequest): LegacyFilter? {
         request.getParameter("filters")?.trim()?.takeIf(String::isNotEmpty)?.let {
             return parseJsonObject(objectMapper.readTree(it))
         }

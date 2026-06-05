@@ -90,7 +90,7 @@ class PasteAIInfoService(
 
     private fun isEligible(paste: Paste): Boolean =
         paste.isPublic && !paste.encrypted &&
-                engagementRepository.findByPasteId(requireNotNull(paste.id))?.score.orZero() >= threshold()
+                engagementRepository.findFirstByPasteIdOrderByIdAsc(requireNotNull(paste.id))?.score.orZero() >= threshold()
 
     private fun isCurrent(info: PasteAIInfo?, sourceVersion: Int): Boolean =
         info != null && info.sourcePasteVersion == sourceVersion && info.promptVersion == PROMPT_VERSION &&

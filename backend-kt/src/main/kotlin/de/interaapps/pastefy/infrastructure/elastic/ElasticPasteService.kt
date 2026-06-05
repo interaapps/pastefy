@@ -79,7 +79,7 @@ class ElasticPasteService(
 
     private fun toDocument(paste: Paste, content: String?) = ElasticPasteDocument(
         documentId = requireNotNull(paste.id).toString(),
-        //id = requireNotNull(paste.id),
+        pasteId = requireNotNull(paste.id),
         key = paste.key,
         title = paste.title,
         content = content,
@@ -105,7 +105,8 @@ class ElasticPasteService(
 
     private fun starredBy(paste: Paste): List<String> = pasteStarRepository.findAllByPaste(paste.key).map { it.userId }
 
-    private fun engagement(paste: Paste): Int = paste.id?.let(engagementRepository::findByPasteId)?.score ?: 0
+    private fun engagement(paste: Paste): Int =
+        paste.id?.let(engagementRepository::findFirstByPasteIdOrderByIdAsc)?.score ?: 0
 
     private fun user(paste: Paste): ElasticUserDocument? =
         paste.userId?.let(userRepository::findById)?.orElse(null)?.toDocument()
@@ -114,7 +115,12 @@ class ElasticPasteService(
         id = id,
         name = name,
         uniqueName = uniqueName,
-        email = email,
+        eMail = email,
         avatar = avatar,
+        authId = authId,
+        authProvider = authProvider,
+        type = type,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
     )
 }

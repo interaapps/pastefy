@@ -6,12 +6,12 @@ import jakarta.persistence.*
 @Table(name = "pastefy_tag_listing")
 class TagListing(
     @Id @Column(length = 30) var tag: String = "",
-    var displayName: String? = null,
-    var imageUrl: String? = null,
-    var description: String? = null,
-    var website: String? = null,
-    var icon: String? = null,
-    @Column(nullable = false) var pasteCount: Int = 0,
+    @Column(columnDefinition = "TEXT") var displayName: String? = null,
+    @Column(columnDefinition = "TEXT") var imageUrl: String? = null,
+    @Column(columnDefinition = "TEXT") var description: String? = null,
+    @Column(columnDefinition = "TEXT") var website: String? = null,
+    @Column(columnDefinition = "TEXT") var icon: String? = null,
+    @Column(nullable = true) var pasteCount: Int = 0,
 ) {
     @PrePersist
     @PreUpdate

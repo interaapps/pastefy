@@ -14,11 +14,11 @@ class Notification(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
-    var message: String? = null,
-    @Column(length = 8, nullable = false) var userId: String = "",
-    var url: String? = null,
-    @Column(nullable = false) var alreadyRead: Boolean = false,
-    @Column(nullable = false) var received: Boolean = false,
+    @Column(columnDefinition = "TEXT") var message: String? = null,
+    @Column(length = 8, nullable = true) var userId: String = "",
+    @Column(columnDefinition = "TEXT") var url: String? = null,
+    @Column(nullable = true) var alreadyRead: Boolean = false,
+    @Column(nullable = true) var received: Boolean = false,
     @Column(nullable = false, updatable = false) var createdAt: Instant? = null,
     @Column(nullable = false) var updatedAt: Instant? = null,
 ) {

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
 interface PublicPasteEngagementRepository : JpaRepository<PublicPasteEngagement, Int> {
-    fun findByPasteId(pasteId: Int): PublicPasteEngagement?
+    fun findFirstByPasteIdOrderByIdAsc(pasteId: Int): PublicPasteEngagement?
     fun deleteByPasteId(pasteId: Int)
     fun findAllByScoreGreaterThanEqual(score: Int): List<PublicPasteEngagement>
 

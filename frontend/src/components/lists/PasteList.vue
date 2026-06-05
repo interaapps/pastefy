@@ -69,7 +69,7 @@ watch(
   <section v-else-if="pastes" class="@container mx-auto w-full max-w-[1200px] space-y-5">
     <div
       v-if="pastes?.length"
-      class="grid gap-3 @xl:auto-rows-fr @2xl:grid-cols-2 @4xl:grid-cols-3"
+      class="grid w-full grid-cols-1 gap-3 @xl:auto-rows-fr @2xl:grid-cols-2 @4xl:grid-cols-3"
     >
       <PasteExploreCard v-for="paste of pastes" :paste :key="paste.id" />
     </div>

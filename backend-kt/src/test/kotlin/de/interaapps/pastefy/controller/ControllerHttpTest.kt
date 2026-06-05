@@ -18,14 +18,14 @@ import de.interaapps.pastefy.infrastructure.ai.PasteAI
 import de.interaapps.pastefy.infrastructure.analytics.AnalyticsService
 import de.interaapps.pastefy.repositories.PasteAIInfoRepository
 import de.interaapps.pastefy.repositories.PasteRepository
-import de.interaapps.pastefy.repositories.PasteTagRepository
 import de.interaapps.pastefy.repositories.SharedPasteRepository
-import de.interaapps.pastefy.repositories.UserRepository
 import de.interaapps.pastefy.service.FolderService
 import de.interaapps.pastefy.service.FrontendIndexService
 import de.interaapps.pastefy.service.PasteService
 import de.interaapps.pastefy.service.PasteQueryService
 import de.interaapps.pastefy.service.PublicPasteEngagementService
+import de.interaapps.pastefy.service.SeoPageCacheService
+import de.interaapps.pastefy.service.SeoPageContentService
 import de.interaapps.pastefy.service.SeoRenderer
 import de.interaapps.pastefy.service.StatsService
 import de.interaapps.pastefy.service.UserService
@@ -217,11 +217,11 @@ class ControllerHttpTest {
         val mvc = mockMvc(
             PasteMetaSSRController(
                 pasteService,
-                mock(UserRepository::class.java),
-                mock(PasteTagRepository::class.java),
                 mock(PasteAIInfoRepository::class.java),
                 properties,
                 SeoRenderer(properties, frontend),
+                mock(SeoPageCacheService::class.java),
+                mock(SeoPageContentService::class.java),
                 frontend,
             ),
         )

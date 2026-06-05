@@ -4,6 +4,7 @@ import de.interaapps.pastefy.config.PastefyProperties
 import de.interaapps.pastefy.exceptions.PermissionsDeniedException
 import de.interaapps.pastefy.repositories.FolderRepository
 import de.interaapps.pastefy.repositories.PasteRepository
+import de.interaapps.pastefy.service.query.LegacyFilterSpecificationBuilder
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
@@ -18,6 +19,7 @@ class FolderServiceTest {
             mock(PasteService::class.java),
             mock(PasteResponseMapper::class.java),
             mock(PasteMetricsService::class.java),
+            mock(LegacyFilterSpecificationBuilder::class.java),
             PastefyProperties(listPastes = false),
         )
 

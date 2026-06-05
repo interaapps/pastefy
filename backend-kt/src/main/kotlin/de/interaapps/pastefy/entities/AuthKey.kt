@@ -20,7 +20,7 @@ class AuthKey(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
 
-    @Column(name = "`key`", length = 60, nullable = false, unique = true)
+    @Column(name = "`key`", length = 60, nullable = true, unique = true)
     var key: String = RandomStrings.alphanumeric(60),
 
     @Column(length = 255)
@@ -29,15 +29,18 @@ class AuthKey(
     @Column(length = 255)
     var refreshToken: String? = null,
 
-    @Column(length = 8, nullable = false)
+    @Column(length = 8, nullable = true)
     var userId: String = "",
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = true)
     var type: Type = Type.USER,
 
-    @HibernateType(JsonType::class)
-    @Column(columnDefinition = "json")
+/*    @HibernateType(JsonType::class)
+    @Column(columnDefinition = "json")*/
+
+    @Convert(converter = StringListJsonConverter::class)
+    @Column(name = "scopes", columnDefinition = "text")
     var scopes: MutableList<String>? = null,
 
     @Column(nullable = false, updatable = false)

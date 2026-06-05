@@ -8,7 +8,7 @@ fun String?.shorten(): String? {
     }
 
     return lineSequence?.take(8)?.joinToString("\n") { line ->
-        if (line.length > 40) line.take(37) + "..." else line
+        if (line.length > 70) line.take(67) + "..." else line
     }
         ?: return this
 }

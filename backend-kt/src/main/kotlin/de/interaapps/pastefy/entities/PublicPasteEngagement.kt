@@ -13,8 +13,8 @@ import java.time.Instant
 )
 class PublicPasteEngagement(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Int? = null,
-    @Column(nullable = false) var pasteId: Int = 0,
-    @Column(nullable = false) var score: Int = 0,
+    @Column(nullable = true) var pasteId: Int = 0,
+    @Column(nullable = true) var score: Int = 0,
     @Column(nullable = false, updatable = false) var createdAt: Instant? = null,
     @Column(nullable = false) var updatedAt: Instant? = null,
 ) {

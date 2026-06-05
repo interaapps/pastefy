@@ -13,9 +13,9 @@ import java.time.Instant
 )
 class SharedPaste(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Int? = null,
-    @Column(length = 8, nullable = false) var userId: String = "",
-    @Column(length = 8, nullable = false) var targetId: String = "",
-    @Column(nullable = false) var paste: String = "",
+    @Column(length = 8, nullable = true) var userId: String = "",
+    @Column(length = 8, nullable = true) var targetId: String = "",
+    @Column(columnDefinition = "TEXT", nullable = true) var paste: String = "",
     @Column(nullable = false, updatable = false) var createdAt: Instant? = null,
     @Column(nullable = false) var updatedAt: Instant? = null,
 ) {

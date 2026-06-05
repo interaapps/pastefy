@@ -17,16 +17,16 @@ class Folder(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
 
-    @Column(name = "`key`", length = 8, nullable = false, unique = true)
+    @Column(name = "`key`", length = 8, nullable = true, unique = true)
     var key: String = RandomStrings.alphanumeric(8),
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = true)
     var name: String = "",
 
-    @Column(length = 8, nullable = false)
+    @Column(length = 8, nullable = true)
     var userId: String = "",
 
-    @Column(length = 8)
+    @Column(columnDefinition = "TEXT")
     var parent: String? = null,
 
     @Column(nullable = false, updatable = false)

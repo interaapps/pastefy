@@ -24,6 +24,7 @@ data class PastefyProperties(
     var oauthStateSecret: String = "",
     var oauth: OAuth = OAuth(),
     var rateLimiter: RateLimiter = RateLimiter(),
+    var cache: Cache = Cache(),
     var redis: Redis = Redis(),
     var s3: S3 = S3(),
     var elasticsearch: Elasticsearch = Elasticsearch(),
@@ -39,6 +40,12 @@ data class PastefyProperties(
         var enabled: Boolean = true,
         var windowMillis: Long = 5_000,
         var limit: Int = 5,
+    )
+
+    data class Cache(
+        var defaultTtlSeconds: Long = 300,
+        var seoTtlSeconds: Long = 3_600,
+        var maxSize: Long = 10_000,
     )
 
     data class Redis(
@@ -63,7 +70,7 @@ data class PastefyProperties(
     data class Elasticsearch(
         var enabled: Boolean = false,
         var apiKey: String = "",
-        var indexName: String = "pastefy_pastes_current",
+        var indexName: String = "pastefy_pastes",
         var indexPrefix: String = "pastefy_pastes",
         var legacyIndexName: String = "pastefy_pastes",
         var numberOfShards: Int = 1,

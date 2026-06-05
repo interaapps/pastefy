@@ -1,13 +1,14 @@
 package de.interaapps.pastefy.controller.seo
 
 import de.interaapps.pastefy.config.PastefyProperties
+import de.interaapps.pastefy.entities.Paste
 import de.interaapps.pastefy.repositories.PasteAIInfoRepository
-import de.interaapps.pastefy.repositories.PasteTagRepository
-import de.interaapps.pastefy.repositories.UserRepository
 import de.interaapps.pastefy.service.FrontendIndexService
 import de.interaapps.pastefy.service.PasteService
+import de.interaapps.pastefy.service.SeoAuthor
+import de.interaapps.pastefy.service.SeoPageCacheService
+import de.interaapps.pastefy.service.SeoPageContentService
 import de.interaapps.pastefy.service.SeoRenderer
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -16,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class PasteMetaSSRController(
     private val pasteService: PasteService,
-    private val userRepository: UserRepository,
-    private val tagRepository: PasteTagRepository,
     private val aiInfoRepository: PasteAIInfoRepository,
     private val properties: PastefyProperties,
     private val seo: SeoRenderer,
+    private val seoCache: SeoPageCacheService,
+    private val seoContent: SeoPageContentService,
     private val frontendIndex: FrontendIndexService,
 ) {
     @GetMapping("/{id}")
@@ -33,21 +34,8 @@ class PasteMetaSSRController(
 
         val aiInfo = paste.id?.let(aiInfoRepository::findById)?.orElse(null)
 
-        val title =
-            paste.title?.trim()?.replace(Regex("\\s+"), " ")?.takeIf(String::isNotEmpty)?.let { seo.truncate(it, 120) }
-                ?: "Paste"
-
-        val author = if (paste.isPublic) {
-            paste.userId?.let(userRepository::findById)?.orElse(null)?.uniqueName?.trim()?.takeIf(String::isNotEmpty)
-                ?.let { username ->
-                    Author(
-                        username = username,
-                        displayName = paste.userId?.let(userRepository::findById)?.orElse(null)?.name?.trim()
-                            ?.takeIf(String::isNotEmpty) ?: username,
-                        profileUrl = seo.absoluteUrl("/@${seo.pathSegment(username)}"),
-                    )
-                }
-        } else null
+        val title = seoContent.title(paste)
+        val author = if (paste.isPublic) seoContent.author(paste) else null
 
         val descriptiveTitle = title + aiInfo?.description?.takeIf(String::isNotBlank)?.let { " | $it" }.orEmpty()
 
@@ -58,9 +46,9 @@ class PasteMetaSSRController(
             else -> seo.truncate("View \"$descriptiveTitle\" on Pastefy.", 180)
         }
 
-        val content = if (paste.isPublic) seoContent(
+        val content = if (paste.isPublic) pasteSeoContent(
             pasteService.getContent(paste, withCache = false).orEmpty(),
-            paste.key,
+            paste,
             title,
             author,
             aiInfo?.description
@@ -77,16 +65,14 @@ class PasteMetaSSRController(
                 .twitter("twitter:creator", "@${it.username}")
         }
 
-        return seo.render(page)?.let {
-            ResponseEntity.ok().contentType(MediaType("text", "html", Charsets.UTF_8)).body(it)
-        } ?: frontendIndex.frontend()
+        return seoCache.renderResponse("paste:$id", page) { frontendIndex.frontend() }
     }
 
-    private fun seoContent(
+    private fun pasteSeoContent(
         content: String,
-        pasteKey: String,
+        paste: Paste,
         title: String,
-        author: Author?,
+        author: SeoAuthor?,
         aiDescription: String?
     ): String {
         val preview = seo.truncateWithoutEllipsis(content, properties.metaTagsPreviewLength.coerceIn(0, 16_384))
@@ -95,21 +81,19 @@ class PasteMetaSSRController(
             "<p>By <a href=\"${seo.escapeHtml(it.profileUrl)}\">${seo.escapeHtml(it.displayName)} (@${seo.escapeHtml(it.username)})</a></p>"
         }.orEmpty()
 
-        val tags = tagRepository.findAllByPaste(pasteKey).joinToString(" ") {
-            val url = seo.absoluteUrl("/tags/${seo.pathSegment(it.tag)}")
-            "<a href=\"${seo.escapeHtml(url)}\" class=\"seo-tag\">${seo.escapeHtml(it.tag)}</a>"
-        }
-
         val aiHtml =
             aiDescription?.takeIf(String::isNotBlank)?.let { "<h2>Description</h2><p>${seo.escapeHtml(it)}</p>" }
                 .orEmpty()
+        val tags = seoContent.tagLinks(paste)
 
-        return "<main id=\"seo-content\"><h1 title=\"paste-title\">${seo.escapeHtml(title)}</h1>$authorHtml<p>View and share code snippets on Pastefy.</p><pre><code>${
-            seo.escapeHtml(
-                preview
-            )
-        }</code></pre><h2>Tags</h2>$tags$aiHtml</main>"
+        return seo.mainContent(
+            seo.heading(1, title, "title=\"paste-title\""),
+            authorHtml,
+            seo.paragraph("View and share code snippets on Pastefy."),
+            "<pre><code>${seo.escapeHtml(preview)}</code></pre>",
+            seo.section("Paste details", seoContent.pasteMetadata(paste, author)),
+            seo.section("Tags", tags),
+            aiHtml,
+        )
     }
-
-    private data class Author(val displayName: String, val username: String, val profileUrl: String)
 }

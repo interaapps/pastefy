@@ -9,6 +9,8 @@ import de.interaapps.pastefy.exceptions.NotFoundException
 import de.interaapps.pastefy.exceptions.PermissionsDeniedException
 import de.interaapps.pastefy.repositories.FolderRepository
 import de.interaapps.pastefy.repositories.PasteRepository
+import de.interaapps.pastefy.service.query.LegacyFilterSpecificationBuilder
+import de.interaapps.pastefy.service.query.LegacyFilterSpecificationBuilder.Companion.FOLDER_FIELDS
 import jakarta.persistence.criteria.Predicate
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.data.domain.PageRequest
@@ -24,6 +26,7 @@ class FolderService(
     private val pasteService: PasteService,
     private val pasteResponseMapper: PasteResponseMapper,
     private val pasteMetricsService: PasteMetricsService,
+    private val legacyFilters: LegacyFilterSpecificationBuilder,
     private val properties: PastefyProperties,
 ) {
     @Transactional
@@ -45,13 +48,14 @@ class FolderService(
             user != null -> user.id
             else -> null
         }
-        val specification = Specification<Folder> { root, _, builder ->
+        val baseSpecification = Specification<Folder> { root, _, builder ->
             val predicates = mutableListOf<Predicate>()
             filteredUserId?.let { predicates += builder.equal(root.get<String>("userId"), it) }
             search?.let { predicates += builder.like(builder.lower(root.get("name")), "%${it.lowercase()}%") }
             request.getParameter("parent")?.let { predicates += builder.equal(root.get<String>("parent"), it) }
             builder.and(*predicates.toTypedArray())
         }
+        val specification = baseSpecification.and(legacyFilters.fromRequest(request, FOLDER_FIELDS))
         return folderRepository.findAll(
             specification,
             PageRequest.of(page - 1, pageLimit, Sort.by(Sort.Direction.DESC, "createdAt")),

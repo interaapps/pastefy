@@ -32,7 +32,7 @@ class Paste(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
 
-    @Column(name = "`key`", length = 8, nullable = false, unique = true)
+    @Column(name = "`key`", length = 8, nullable = true, unique = true)
     var key: String = RandomStrings.alphanumeric(8),
 
     @Column(length = 8)

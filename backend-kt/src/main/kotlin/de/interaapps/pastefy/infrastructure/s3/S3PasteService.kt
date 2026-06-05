@@ -1,5 +1,6 @@
 package de.interaapps.pastefy.infrastructure.s3
 
+import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.interaapps.pastefy.config.PastefyProperties
 import de.interaapps.pastefy.entities.Paste
@@ -91,6 +92,7 @@ class S3PasteService(
 }
 
 data class S3PasteReference(
+    @JsonAlias("objectName")
     val objectName: String,
     val bucket: String,
     val server: String,

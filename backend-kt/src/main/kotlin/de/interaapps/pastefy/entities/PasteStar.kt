@@ -12,6 +12,6 @@ import jakarta.persistence.*
 )
 class PasteStar(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Int? = null,
-    @Column(length = 8, nullable = false) var paste: String = "",
-    @Column(length = 8, nullable = false) var userId: String = "",
+    @Column(length = 8, nullable = true) var paste: String = "",
+    @Column(length = 8, nullable = true) var userId: String = "",
 )

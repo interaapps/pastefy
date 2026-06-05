@@ -2,6 +2,7 @@ package de.interaapps.pastefy.repositories
 
 import de.interaapps.pastefy.entities.Paste
 import de.interaapps.pastefy.enums.StorageType
+import de.interaapps.pastefy.enums.PasteVisibility
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
@@ -17,7 +18,19 @@ interface PasteRepository : JpaRepository<Paste, Int>, JpaSpecificationExecutor<
     fun findAllByUserId(userId: String): List<Paste>
     fun findAllByFolderOrderByUpdatedAtDesc(folder: String): List<Paste>
     fun findAllByUserIdAndFolderIsNullOrderByUpdatedAtDesc(userId: String, pageable: Pageable): List<Paste>
+    fun findAllByVisibilityAndEncryptedFalseOrderByCreatedAtDesc(
+        visibility: PasteVisibility,
+        pageable: Pageable,
+    ): List<Paste>
+
+    fun findAllByUserIdAndVisibilityAndEncryptedFalseOrderByCreatedAtDesc(
+        userId: String,
+        visibility: PasteVisibility,
+        pageable: Pageable,
+    ): List<Paste>
+
     fun findAllByKeyIn(keys: Collection<String>): List<Paste>
+    fun findAllByExpireAtBeforeAndExpireAtIsNotNull(expireAt: java.time.Instant): List<Paste>
     fun countByUserIdIsNotNull(): Long
     fun countByStorageType(storageType: StorageType): Long
 
@@ -27,6 +40,11 @@ interface PasteRepository : JpaRepository<Paste, Int>, JpaSpecificationExecutor<
         """
         select p from Paste p
         left join PublicPasteEngagement e on e.pasteId = p.id
+          and e.id = (
+            select min(e2.id)
+            from PublicPasteEngagement e2
+            where e2.pasteId = p.id
+          )
         where p.visibility = de.interaapps.pastefy.enums.PasteVisibility.PUBLIC
           and p.encrypted = false
           and (:createdAfter is null or p.createdAt > :createdAfter)

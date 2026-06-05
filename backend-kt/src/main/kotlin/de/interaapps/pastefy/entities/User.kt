@@ -13,27 +13,27 @@ class User(
     @Column(length = 8)
     var id: String = RandomStrings.alphanumeric(8),
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     var name: String? = null,
 
     @Column(length = 33)
     var uniqueName: String? = null,
 
-    @Column(name = "email")
+    @Column(name = "email", columnDefinition = "TEXT")
     var email: String? = null,
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     var avatar: String? = null,
 
     @Column(length = 455)
     var authId: String? = null,
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = true)
     var authProvider: AuthenticationProvider? = null,
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = true)
     var type: Type = Type.USER,
 
     @Column(nullable = false, updatable = false)

@@ -158,8 +158,12 @@ class JpaPasteQueryAdapter(
     ): Expression<Int> {
         val subquery = query.subquery(Int::class.java)
         val engagement = subquery.from(PublicPasteEngagement::class.java)
+        val firstEngagementId = query.subquery(Int::class.java)
+        val firstEngagement = firstEngagementId.from(PublicPasteEngagement::class.java)
+        firstEngagementId.select(builder.min(firstEngagement.get("id")))
+            .where(builder.equal(firstEngagement.get<Int>("pasteId"), root.get<Int>("id")))
         subquery.select(engagement.get("score"))
-            .where(builder.equal(engagement.get<Int>("pasteId"), root.get<Int>("id")))
+            .where(builder.equal(engagement.get<Int>("id"), firstEngagementId))
         return builder.coalesce(subquery, 0)
     }
 

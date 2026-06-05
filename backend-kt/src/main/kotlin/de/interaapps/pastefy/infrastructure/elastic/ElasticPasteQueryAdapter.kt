@@ -192,6 +192,11 @@ class ElasticPasteQueryAdapter(
             "engagement_score" to "engagementScore",
             "starred_by" to "starredBy",
             "star_count" to "starCount",
+            "user.email" to "user.eMail",
+            "user_email" to "user.eMail",
+            "user.unique_name" to "user.uniqueName",
+            "user.auth_id" to "user.authId",
+            "user.auth_provider" to "user.authProvider",
         )
     }
 }

@@ -59,7 +59,7 @@ onMounted(() => {
 <template>
   <router-link
     :to="{ name: 'paste', params: { paste: paste.id } }"
-    class="relative flex flex-col justify-between gap-3 rounded-xl border py-3 transition-all"
+    class="transition-al w-fulll relative flex flex-col justify-between gap-3 rounded-xl border py-3"
     :class="
       (linkClass ? `${linkClass} ` : '') +
       (selected
@@ -68,7 +68,7 @@ onMounted(() => {
     "
   >
     <div class="space-y-3 px-3">
-      <div class="flex justify-between gap-2">
+      <div class="flex w-full justify-between gap-2">
         <div v-if="paste.encrypted">
           <i class="ti ti-lock" />
           <span class="font-bold">{{ $t('paste.encryptedPaste') }}</span>
@@ -85,7 +85,7 @@ onMounted(() => {
       </div>
 
       <div
-        class="min-h-[8rem] rounded-md bg-neutral-200 dark:bg-neutral-900"
+        class="min-h-[8rem] overflow-hidden rounded-md bg-neutral-200 dark:bg-neutral-900"
         :style="{
           'view-transition-name': `paste-${paste.id}-highlighted`,
         }"
@@ -115,7 +115,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="flex flex-wrap items-center gap-1 px-3" v-if="paste.tags?.length">
+    <div class="flex w-full flex-wrap items-center gap-1 px-3" v-if="paste.tags?.length">
       <SmallCardTag
         v-for="tag of paste.tags"
         :key="tag"
@@ -125,7 +125,7 @@ onMounted(() => {
       />
     </div>
 
-    <div class="flex flex-wrap items-center justify-between gap-1 px-3">
+    <div class="flex w-full flex-wrap items-center justify-between gap-1 px-3">
       <div class="flex flex-wrap items-center gap-2">
         <img
           v-if="paste.user"
