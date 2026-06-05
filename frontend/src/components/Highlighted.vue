@@ -20,6 +20,7 @@ const props = defineProps<{
   getCopyContents?: () => Promise<string>
   lineCommentMarkers?: PasteCommentMarker[]
   enableLineComments?: boolean
+  small?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -31,6 +32,7 @@ const markerByLine = computed(
   () => new Map(props.lineCommentMarkers?.map((marker) => [marker.line, marker]) || []),
 )
 const lineCount = computed(() => {
+  if (!props.contents) return 0
   let count = 1
   for (let index = 0; index < props.contents.length; index++) {
     if (props.contents.charCodeAt(index) === 10) count++
@@ -135,8 +137,8 @@ onMounted(async () => {
 </script>
 <template>
   <div
-    class="highlighted highlighted-group relative flex w-full overflow-auto text-sm"
-    :class="`higlighted-${id}`"
+    class="highlighted highlighted-group relative flex w-full overflow-auto"
+    :class="`higlighted-${id} ${small ? 'text-xs' : 'text-sm'}`"
     dir="ltr"
   >
     <CopyButton

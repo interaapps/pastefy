@@ -17,6 +17,7 @@ out/
 !**/src/test/**/out/
 
 src/main/resources/static
+src/main/resources/application-prod.properties
 
 ### Kotlin ###
 .kotlin
