@@ -15,6 +15,7 @@ class PasteCommentServiceTest {
         mock(PasteService::class.java),
         mock(PasteCommentRepository::class.java),
         mock(UserRepository::class.java),
+        mock(PasteMetricsService::class.java),
     )
 
     @Test

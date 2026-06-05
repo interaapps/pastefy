@@ -21,6 +21,7 @@ class PasteQueryService(
     private val parser: LegacyPasteQueryParser,
     private val jpa: JpaPasteQueryAdapter,
     private val mapper: PasteResponseMapper,
+    private val pasteMetricsService: PasteMetricsService,
     private val elasticProvider: ObjectProvider<ElasticPasteQueryAdapter>,
 ) {
     fun list(
@@ -44,15 +45,19 @@ class PasteQueryService(
             starredBy = starredBy,
         )
         return elasticProvider.ifAvailable?.find(query)
-            ?: jpa.find(query).map {
-                mapper.map(
-                    it,
-                    user,
-                    fetchStar = user != null,
-                    fetchUser = true,
-                    withAiInfo = query.withAiInfo,
-                    shortenContent = query.shortenContent,
-                )
+            ?: jpa.find(query).let { pastes ->
+                val metrics = pasteMetricsService.getMetrics(pastes.map { it.key })
+                pastes.map {
+                    mapper.map(
+                        it,
+                        user,
+                        fetchStar = user != null,
+                        fetchUser = true,
+                        withAiInfo = query.withAiInfo,
+                        shortenContent = query.shortenContent,
+                        metrics = metrics[it.key],
+                    )
+                }
             }
     }
 
@@ -79,8 +84,16 @@ class PasteQueryService(
             additionalFilters = additionalFilters,
         )
         return elasticProvider.ifAvailable?.find(query)
-            ?: jpa.find(query).map {
-                mapper.map(it, shortenContent = query.shortenContent, withAiInfo = query.withAiInfo)
+            ?: jpa.find(query).let { pastes ->
+                val metrics = pasteMetricsService.getMetrics(pastes.map { it.key })
+                pastes.map {
+                    mapper.map(
+                        it,
+                        shortenContent = query.shortenContent,
+                        withAiInfo = query.withAiInfo,
+                        metrics = metrics[it.key],
+                    )
+                }
             }
     }
 

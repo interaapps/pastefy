@@ -30,6 +30,10 @@ export type Paste = {
   user?: PublicUser
   starred?: boolean
 
+  view_count?: number
+  comment_count?: number
+  star_count?: number
+
   ai?: boolean
   ai_info?: PasteAiInfo
 }

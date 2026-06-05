@@ -20,6 +20,7 @@ class PasteCommentService(
     private val pasteService: PasteService,
     private val commentRepository: PasteCommentRepository,
     private val userRepository: UserRepository,
+    private val pasteMetricsService: PasteMetricsService,
 ) {
     fun list(pasteId: String, user: User?, page: Int, pageLimit: Int, line: Int?): List<PasteCommentResponse> {
         pasteService.getAccessiblePasteOrFail(pasteId, user)
@@ -69,6 +70,7 @@ class PasteCommentService(
                 lineTo = request.lineTo,
             ),
         )
+        pasteMetricsService.invalidate(pasteId)
         return map(saved, fetchReplies = false)
     }
 
@@ -80,6 +82,7 @@ class PasteCommentService(
         if (!user.isAdmin && user.id != comment.userId && user.id != paste.userId) throw PermissionsDeniedException()
         commentRepository.deleteByParentId(commentId)
         commentRepository.delete(comment)
+        pasteMetricsService.invalidate(pasteId)
     }
 
     fun validate(request: CreatePasteCommentRequest) {

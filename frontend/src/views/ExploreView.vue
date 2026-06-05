@@ -43,21 +43,21 @@ const {
     </div>
 
     <div class="mb-14">
-      <h2 class="mb-3 text-2xl font-bold">{{ $t('paste.pastes') }}</h2>
-      <PasteList route="/api/v2/public-pastes/latest" :params="{ page_limit: 3 }" />
-    </div>
-
-    <div class="mb-14">
       <h2 class="mb-3 text-2xl font-bold">{{ $t('paste.trending') }}</h2>
       <PasteList
         route="/api/v2/public-pastes/trending"
-        :params="{ trending: 'true', page_limit: 3 }"
+        :params="{ trending: 'true', page_limit: 6 }"
       />
     </div>
 
     <div class="mb-14">
+      <h2 class="mb-3 text-2xl font-bold">{{ $t('paste.pastes') }}</h2>
+      <PasteList route="/api/v2/public-pastes/latest" :params="{ page_limit: 6 }" />
+    </div>
+
+    <div class="mb-14">
       <h2 class="mb-3 text-2xl font-bold">{{ $t('paste.allTimeTrending') }}</h2>
-      <PasteList route="/api/v2/public-pastes/trending" :params="{ page_limit: 3 }" />
+      <PasteList route="/api/v2/public-pastes/trending" :params="{ page_limit: 6 }" />
     </div>
   </main>
 </template>

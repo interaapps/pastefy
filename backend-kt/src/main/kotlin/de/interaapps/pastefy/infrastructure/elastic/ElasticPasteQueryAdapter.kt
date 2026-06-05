@@ -7,6 +7,8 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query as ElasticQuery
 import de.interaapps.pastefy.config.PastefyProperties
 import de.interaapps.pastefy.dto.pastes.PasteResponse
 import de.interaapps.pastefy.dto.user.PublicUserDto
+import de.interaapps.pastefy.service.PasteMetrics
+import de.interaapps.pastefy.service.PasteMetricsService
 import de.interaapps.pastefy.service.query.LegacyFieldFilter
 import de.interaapps.pastefy.service.query.LegacyFilter
 import de.interaapps.pastefy.service.query.LegacyFilterGroup
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Component
 class ElasticPasteQueryAdapter(
     private val operations: ElasticsearchOperations,
     private val properties: PastefyProperties,
+    private val pasteMetricsService: PasteMetricsService,
 ) {
     private val indexCoordinates: IndexCoordinates
         get() = IndexCoordinates.of(properties.elasticsearch.indexName)
@@ -38,9 +41,11 @@ class ElasticPasteQueryAdapter(
             .withSort(toSort(query))
             .build()
 
-        return operations.search(nativeQuery, ElasticPasteDocument::class.java, indexCoordinates)
+        val documents = operations.search(nativeQuery, ElasticPasteDocument::class.java, indexCoordinates)
             .searchHits
-            .map { map(it.content, query) }
+            .map { it.content }
+        val metrics = pasteMetricsService.getMetrics(documents.map { it.key })
+        return documents.map { map(it, query, metrics[it.key]) }
     }
 
     private fun elasticQuery(query: LegacyPasteQuery): ElasticQuery = ElasticQuery.of { root ->
@@ -149,7 +154,7 @@ class ElasticPasteQueryAdapter(
         return if (orders.isEmpty()) Sort.unsorted() else Sort.by(orders)
     }
 
-    private fun map(document: ElasticPasteDocument, query: LegacyPasteQuery): PasteResponse =
+    private fun map(document: ElasticPasteDocument, query: LegacyPasteQuery, metrics: PasteMetrics?): PasteResponse =
         PasteResponse(
             exists = true,
             id = document.key,
@@ -168,6 +173,9 @@ class ElasticPasteQueryAdapter(
             user = document.user?.let {
                 PublicUserDto(id = it.id, name = it.uniqueName, displayName = it.name, avatar = it.avatar)
             },
+            starCount = metrics?.starCount ?: 0,
+            commentCount = metrics?.commentCount ?: 0,
+            viewCount = metrics?.viewCount ?: 0,
         )
 
     private fun normalizeField(field: String): String = FIELD_ALIASES[field] ?: field

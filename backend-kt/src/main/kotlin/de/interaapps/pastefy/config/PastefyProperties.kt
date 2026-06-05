@@ -45,6 +45,7 @@ data class PastefyProperties(
         var enabled: Boolean = false,
         var contentTtlSeconds: Long = 1_800,
         var accessCountTtlSeconds: Long = 1_800,
+        var metricsTtlSeconds: Long = 30,
         var cacheAfterAccesses: Long = 10,
     )
 

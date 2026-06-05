@@ -29,6 +29,7 @@ class UserService(
     private val sharedPasteRepository: SharedPasteRepository,
     private val elasticProvider: ObjectProvider<ElasticPasteService>,
     private val pasteService: PasteService,
+    private val pasteMetricsService: PasteMetricsService,
 ) {
 
     fun get(id: String): User? {
@@ -100,12 +101,14 @@ class UserService(
         )
 
         pasteStarRepository.save(pasteStar)
+        pasteMetricsService.invalidate(paste.key)
         elasticProvider.ifAvailable?.updateStars(paste)
     }
 
     @Transactional
     fun unstar(user: User, paste: Paste) {
         pasteStarRepository.deleteByPasteAndUserId(paste.key, user.id)
+        pasteMetricsService.invalidate(paste.key)
         elasticProvider.ifAvailable?.updateStars(paste)
     }
 

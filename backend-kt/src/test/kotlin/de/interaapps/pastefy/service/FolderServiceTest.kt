@@ -17,6 +17,7 @@ class FolderServiceTest {
             mock(PasteRepository::class.java),
             mock(PasteService::class.java),
             mock(PasteResponseMapper::class.java),
+            mock(PasteMetricsService::class.java),
             PastefyProperties(listPastes = false),
         )
 

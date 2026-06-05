@@ -21,6 +21,7 @@ class PasteResponseMapper(
     private val userRepository: UserRepository,
     private val userService: UserService,
     private val aiInfoRepository: PasteAIInfoRepository,
+    private val pasteMetricsService: PasteMetricsService,
     properties: PastefyProperties,
 ) {
     private val serverName = properties.serverName.trimEnd('/')
@@ -32,7 +33,9 @@ class PasteResponseMapper(
         fetchUser: Boolean = false,
         withAiInfo: Boolean = false,
         shortenContent: Boolean = false,
+        metrics: PasteMetrics? = null,
     ): PasteResponse {
+        val resolvedMetrics = metrics ?: pasteMetricsService.getMetrics(paste.key)
         val content = pasteService.getContent(paste)
             .orEmpty()
             .let { raw ->
@@ -59,6 +62,9 @@ class PasteResponseMapper(
             tags = pasteTagRepository.findAllByPaste(paste.key).map { it.tag },
             user = if (fetchUser) paste.userId?.let(userRepository::findById)?.orElse(null)?.toPublicDto() else null,
             starred = if (fetchStar && currentUser != null) userService.hasStarred(currentUser, paste) else null,
+            starCount = resolvedMetrics.starCount,
+            commentCount = resolvedMetrics.commentCount,
+            viewCount = resolvedMetrics.viewCount,
             aiInfo = if (withAiInfo) paste.id?.let(aiInfoRepository::findById)?.orElse(null)?.let {
                 PasteAiInfoResponse(
                     dangerous = it.dangerous,

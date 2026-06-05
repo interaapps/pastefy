@@ -26,6 +26,9 @@ data class PasteResponse(
     var user: PublicUserDto? = null,
 
     var starred: Boolean? = null,
+    var starCount: Long = 0,
+    var commentCount: Long = 0,
+    var viewCount: Long = 0,
     var aiInfo: PasteAiInfoResponse? = null,
 
     var exists: Boolean = true,

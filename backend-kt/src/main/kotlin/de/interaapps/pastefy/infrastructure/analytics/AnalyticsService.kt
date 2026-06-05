@@ -118,6 +118,18 @@ class AnalyticsService(
         return response
     }
 
+    fun countVisitsByPaste(pasteKeys: Collection<String>): Map<String, Long> {
+        val keys = pasteKeys.filter(String::isNotBlank).distinct()
+        if (keys.isEmpty()) return emptyMap()
+        val placeholders = keys.joinToString(",") { "?" }
+        return jdbc.queryForList(
+            "SELECT toString(paste_key) AS paste_key, count() AS visits FROM $table WHERE paste_key IN ($placeholders) GROUP BY paste_key",
+            *keys.toTypedArray(),
+        ).associate {
+            it["paste_key"].toString().trimEnd('\u0000') to (it["visits"] as Number).toLong()
+        }
+    }
+
     @Scheduled(fixedDelayString = "\${pastefy.analytics.flush-interval-millis:1000}")
     fun flush() {
         do {

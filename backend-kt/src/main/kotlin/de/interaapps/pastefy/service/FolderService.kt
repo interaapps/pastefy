@@ -23,6 +23,7 @@ class FolderService(
     private val pasteRepository: PasteRepository,
     private val pasteService: PasteService,
     private val pasteResponseMapper: PasteResponseMapper,
+    private val pasteMetricsService: PasteMetricsService,
     private val properties: PastefyProperties,
 ) {
     @Transactional
@@ -81,7 +82,10 @@ class FolderService(
         val pastes = if (fetchChildren && fetchPastes) {
             pasteRepository.findAllByFolderOrderByUpdatedAtDesc(folder.key)
                 .filter { showPrivate || !it.isPrivate }
-                .map { pasteResponseMapper.map(it) }
+                .let { folderPastes ->
+                    val metrics = pasteMetricsService.getMetrics(folderPastes.map { it.key })
+                    folderPastes.map { pasteResponseMapper.map(it, metrics = metrics[it.key]) }
+                }
         } else null
         return FolderResponse(
             exists = true,
