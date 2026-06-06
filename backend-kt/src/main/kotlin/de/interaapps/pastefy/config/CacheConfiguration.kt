@@ -4,7 +4,6 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.cache.CacheManager
 import org.springframework.cache.caffeine.CaffeineCache
-import org.springframework.cache.support.CompositeCacheManager
 import org.springframework.cache.support.SimpleCacheManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -12,7 +11,7 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration
 import org.springframework.data.redis.cache.RedisCacheManager
 import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.serializer.RedisSerializationContext
-import org.springframework.data.redis.serializer.StringRedisSerializer
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
 import java.time.Duration
 
 @Configuration
@@ -23,24 +22,25 @@ class CacheConfiguration(
     fun cacheManager(
         redisConnectionFactoryProvider: ObjectProvider<RedisConnectionFactory>,
     ): CacheManager {
-        val caffeine = caffeineCacheManager()
         if (properties.redis.enabled) {
             redisConnectionFactoryProvider.ifAvailable?.let { connectionFactory ->
-                return CompositeCacheManager(redisSeoCacheManager(connectionFactory), caffeine)
+                return redisCacheManager(connectionFactory)
             }
         }
 
-        return caffeine
+        return caffeineCacheManager()
     }
 
-    private fun redisSeoCacheManager(connectionFactory: RedisConnectionFactory): CacheManager {
+    private fun redisCacheManager(connectionFactory: RedisConnectionFactory): CacheManager {
         val cacheProperties = properties.cache
-        val configuration = redisSeoConfiguration(cacheProperties.seoTtlSeconds)
+        val defaultConfiguration = redisConfiguration(cacheProperties.defaultTtlSeconds)
         return RedisCacheManager.builder(connectionFactory)
-            .cacheDefaults(configuration)
+            .cacheDefaults(defaultConfiguration)
             .withInitialCacheConfigurations(
                 mapOf(
-                    "seo-pages" to configuration,
+                    "app-info" to redisConfiguration(cacheProperties.defaultTtlSeconds),
+                    "public-tag" to redisConfiguration(cacheProperties.defaultTtlSeconds),
+                    "seo-pages" to redisConfiguration(cacheProperties.seoTtlSeconds),
                 ),
             )
             .disableCreateOnMissingCache()
@@ -48,13 +48,15 @@ class CacheConfiguration(
             .build()
     }
 
-    private fun redisSeoConfiguration(
+    private fun redisConfiguration(
         ttlSeconds: Long,
     ): RedisCacheConfiguration =
         RedisCacheConfiguration.defaultCacheConfig()
             .disableCachingNullValues()
             .entryTtl(Duration.ofSeconds(ttlSeconds.coerceAtLeast(1)))
-            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer.UTF_8))
+            .serializeValuesWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(GenericJackson2JsonRedisSerializer()),
+            )
             .prefixCacheNameWith("pastefy:cache:")
 
     private fun caffeineCacheManager(): CacheManager {
@@ -62,7 +64,6 @@ class CacheConfiguration(
         return SimpleCacheManager().apply {
             setCaches(
                 listOf(
-                    caffeineCache("frontend-index", cacheProperties.defaultTtlSeconds, 16),
                     caffeineCache("app-info", cacheProperties.defaultTtlSeconds, 64),
                     caffeineCache("public-tag", cacheProperties.defaultTtlSeconds, cacheProperties.maxSize),
                     caffeineCache("seo-pages", cacheProperties.seoTtlSeconds, cacheProperties.maxSize),

@@ -24,7 +24,7 @@ class PasteMetaSSRController(
     private val seoContent: SeoPageContentService,
     private val frontendIndex: FrontendIndexService,
 ) {
-    @GetMapping("/{id}")
+    @GetMapping("/{id:[A-Za-z0-9_-]+}")
     fun getPasteMetaSSR(@PathVariable id: String): ResponseEntity<String> {
         if (!id.matches(Regex("^[A-Za-z0-9_-]{8}$"))) return frontendIndex.frontend()
 

@@ -3,6 +3,7 @@ package de.interaapps.pastefy.config
 import de.interaapps.pastefy.auth.AuthArgumentResolver
 import de.interaapps.pastefy.auth.AuthInterceptor
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.CacheControl
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
@@ -39,9 +40,16 @@ class WebConfiguration(
         registry.addResourceHandler("/assets/**")
             .addResourceLocations("classpath:/static/assets/")
             .setCacheControl(
-                org.springframework.http.CacheControl.maxAge(Duration.ofDays(7))
+                CacheControl.maxAge(Duration.ofDays(7))
                     .cachePublic()
                     .immutable(),
+            )
+
+        registry.addResourceHandler("/**")
+            .addResourceLocations("classpath:/static/")
+            .setCacheControl(
+                CacheControl.maxAge(Duration.ofHours(1))
+                    .cachePublic(),
             )
     }
 }
