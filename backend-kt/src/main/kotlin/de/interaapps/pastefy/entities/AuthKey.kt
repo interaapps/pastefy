@@ -36,11 +36,8 @@ class AuthKey(
     @Column(nullable = true)
     var type: Type = Type.USER,
 
-/*    @HibernateType(JsonType::class)
-    @Column(columnDefinition = "json")*/
-
-    @Convert(converter = StringListJsonConverter::class)
-    @Column(name = "scopes", columnDefinition = "text")
+    @HibernateType(JsonType::class)
+    @Column(columnDefinition = "json")
     var scopes: MutableList<String>? = null,
 
     @Column(nullable = false, updatable = false)
