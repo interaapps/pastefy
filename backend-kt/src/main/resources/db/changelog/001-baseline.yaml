@@ -1,0 +1,910 @@
+databaseChangeLog:
+- changeSet:
+    id: 1780596708247-1
+    author: juliangojani (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+              unique: true
+            name: key
+            type: VARCHAR(60)
+        - column:
+            name: api_key
+            type: VARCHAR(160)
+        - column:
+            name: user_id
+            type: VARCHAR(8)
+        - column:
+            defaultValue: 'API'
+            name: type
+            type: ENUM('API', 'USER', 'ACCESS_TOKEN')
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: current_timestamp() on update current_timestamp()
+            name: created_at
+            type: TIMESTAMP(0)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: CURRENT_TIMESTAMP
+            name: updated_at
+            type: TIMESTAMP(0)
+        - column:
+            name: scopes
+            type: TEXT
+        - column:
+            name: access_token
+            type: VARCHAR(255)
+        - column:
+            name: refresh_token
+            type: VARCHAR(255)
+        tableName: pastefy_auth_keys
+- changeSet:
+    id: 1780596708247-2
+    author: juliangojani (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: key
+            type: VARCHAR(255)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: type
+            type: ENUM('PASTE_AI_INFO')
+        - column:
+            defaultValueComputed: 'NULL'
+            name: entity_id
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: source_version
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: prompt_version
+            type: INT
+        - column:
+            defaultValue: 'PENDING'
+            name: status
+            type: ENUM('PENDING', 'RUNNING', 'DONE', 'FAILED')
+        - column:
+            defaultValueComputed: 'NULL'
+            name: attempts
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: available_at
+            type: TIMESTAMP(0)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: lease_until
+            type: TIMESTAMP(0)
+        - column:
+            name: lease_token
+            type: VARCHAR(64)
+        - column:
+            name: last_error
+            type: VARCHAR(2048)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: current_timestamp()
+            name: created_at
+            type: TIMESTAMP(0)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: current_timestamp() on update current_timestamp()
+            name: updated_at
+            type: TIMESTAMP(0)
+        tableName: pastefy_background_jobs
+- changeSet:
+    id: 1780596708247-3
+    author: juliangojani (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: key
+            type: VARCHAR(8)
+        - column:
+            name: name
+            type: TEXT
+        - column:
+            name: user_id
+            type: VARCHAR(8)
+        - column:
+            name: parent
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: current_timestamp() on update current_timestamp()
+            name: created_at
+            type: TIMESTAMP(0)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: CURRENT_TIMESTAMP
+            name: updated_at
+            type: TIMESTAMP(0)
+        tableName: pastefy_folder
+- changeSet:
+    id: 1780596708247-4
+    author: juliangojani (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: message
+            type: TEXT
+        - column:
+            name: user_id
+            type: VARCHAR(8)
+        - column:
+            name: url
+            type: TEXT
+        - column:
+            name: already_read
+            type: BIT
+        - column:
+            name: received
+            type: BIT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: current_timestamp() on update current_timestamp()
+            name: created_at
+            type: TIMESTAMP(0)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: CURRENT_TIMESTAMP
+            name: updated_at
+            type: TIMESTAMP(0)
+        tableName: pastefy_notification
+- changeSet:
+    id: 1780596708247-5
+    author: juliangojani (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: paste_id
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: source_paste_version
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: prompt_version
+            type: INT
+        - column:
+            name: provider
+            type: VARCHAR(30)
+        - column:
+            name: model
+            type: VARCHAR(100)
+        - column:
+            name: description
+            type: VARCHAR(500)
+        - column:
+            name: tags_json
+            type: VARCHAR(2048)
+        - column:
+            name: warnings_json
+            type: VARCHAR(4096)
+        - column:
+            name: dangerous
+            type: BIT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: max_severity
+            type: INT
+        - column:
+            name: suggested_filename
+            type: VARCHAR(255)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: generated_at
+            type: TIMESTAMP(0)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: current_timestamp()
+            name: created_at
+            type: TIMESTAMP(0)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: current_timestamp() on update current_timestamp()
+            name: updated_at
+            type: TIMESTAMP(0)
+        tableName: pastefy_paste_ai_info
+- changeSet:
+    id: 1780596708247-6
+    author: juliangojani (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: paste
+            type: VARCHAR(8)
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: VARCHAR(8)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: parent_id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: content
+            type: VARCHAR(2000)
+        - column:
+            defaultValueComputed: 'NULL'
+            name: line_from
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: line_to
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: current_timestamp()
+            name: created_at
+            type: TIMESTAMP(0)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: current_timestamp() on update current_timestamp()
+            name: updated_at
+            type: TIMESTAMP(0)
+        tableName: pastefy_paste_comments
+- changeSet:
+    id: 1780596708247-7
+    author: juliangojani (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: paste
+            type: VARCHAR(8)
+        - column:
+            name: user_id
+            type: VARCHAR(8)
+        tableName: pastefy_paste_stars
+- changeSet:
+    id: 1780596708247-8
+    author: juliangojani (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: paste
+            type: VARCHAR(8)
+        - column:
+            name: tag
+            type: VARCHAR(30)
+        tableName: pastefy_paste_tags
+- changeSet:
+    id: 1780596708247-9
+    author: juliangojani (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: key
+            type: VARCHAR(8)
+        - column:
+            name: title
+            type: TEXT
+        - column:
+            name: content
+            type: LONGTEXT
+        - column:
+            name: user_id
+            type: VARCHAR(8)
+        - column:
+            name: encrypted
+            type: BIT
+        - column:
+            name: folder
+            type: VARCHAR(8)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: current_timestamp()
+            name: created_at
+            type: TIMESTAMP(0)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: CURRENT_TIMESTAMP
+            name: updated_at
+            type: TIMESTAMP(0)
+        - column:
+            defaultValue: 'PASTE'
+            name: type
+            type: ENUM('PASTE', 'MULTI_PASTE')
+        - column:
+            name: forked_from
+            type: VARCHAR(8)
+        - column:
+            defaultValue: 'UNLISTED'
+            name: visibility
+            type: ENUM('UNLISTED', 'PUBLIC', 'PRIVATE')
+        - column:
+            defaultValueComputed: 'NULL'
+            name: expire_at
+            type: TIMESTAMP(0)
+        - column:
+            defaultValue: 'DATABASE'
+            name: storage_type
+            type: ENUM('DATABASE', 'S3', 'HTTP')
+        - column:
+            defaultValueComputed: 'NULL'
+            name: version
+            type: INT
+        - column:
+            name: indexed_in_elastic
+            type: BIT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: length
+            type: INT
+        - column:
+            name: hash
+            type: VARCHAR(64)
+        tableName: pastefy_pastes
+- changeSet:
+    id: 1780596708247-10
+    author: juliangojani (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: paste_id
+            type: INT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: score
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: current_timestamp() on update current_timestamp()
+            name: created_at
+            type: TIMESTAMP(0)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: CURRENT_TIMESTAMP
+            name: updated_at
+            type: TIMESTAMP(0)
+        tableName: pastefy_public_paste_engagements
+- changeSet:
+    id: 1780596708247-11
+    author: juliangojani (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: user_id
+            type: VARCHAR(8)
+        - column:
+            name: target_id
+            type: VARCHAR(8)
+        - column:
+            name: paste
+            type: TEXT
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: current_timestamp() on update current_timestamp()
+            name: created_at
+            type: TIMESTAMP(0)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: CURRENT_TIMESTAMP
+            name: updated_at
+            type: TIMESTAMP(0)
+        tableName: pastefy_shared_pastes
+- changeSet:
+    id: 1780596708247-12
+    author: juliangojani (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: tag
+            type: VARCHAR(30)
+        - column:
+            name: display_name
+            type: TEXT
+        - column:
+            name: image_url
+            type: TEXT
+        - column:
+            name: description
+            type: TEXT
+        - column:
+            name: website
+            type: TEXT
+        - column:
+            name: icon
+            type: TEXT
+        - column:
+            defaultValueComputed: 'NULL'
+            name: paste_count
+            type: INT
+        tableName: pastefy_tag_listing
+- changeSet:
+    id: 1780596708247-13
+    author: juliangojani (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: VARCHAR(8)
+        - column:
+            name: name
+            type: TEXT
+        - column:
+            name: unique_name
+            type: VARCHAR(33)
+        - column:
+            name: email
+            type: TEXT
+        - column:
+            name: avatar
+            type: TEXT
+        - column:
+            name: auth_id
+            type: VARCHAR(455)
+        - column:
+            name: auth_provider
+            type: ENUM('INTERAAPPS', 'GOOGLE', 'GITHUB', 'TWITCH', 'DISCORD')
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: current_timestamp() on update current_timestamp()
+            name: created_at
+            type: TIMESTAMP(0)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: CURRENT_TIMESTAMP
+            name: updated_at
+            type: TIMESTAMP(0)
+        - column:
+            defaultValue: 'USER'
+            name: type
+            type: ENUM('USER', 'ADMIN', 'BLOCKED', 'AWAITING_ACCESS')
+        tableName: pastefy_users
+- changeSet:
+    id: 1780596708247-14
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: user_id
+        indexName: pastefy_auth_keys_user_id_index
+        tableName: pastefy_auth_keys
+- changeSet:
+    id: 1780596708247-15
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: status
+        - column:
+            defaultValueComputed: 'NULL'
+            name: available_at
+        indexName: pastefy_background_jobs_status_available_at_index
+        tableName: pastefy_background_jobs
+- changeSet:
+    id: 1780596708247-16
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: status
+        - column:
+            defaultValueComputed: 'NULL'
+            name: lease_until
+        indexName: pastefy_background_jobs_status_lease_until_index
+        tableName: pastefy_background_jobs
+- changeSet:
+    id: 1780596708247-17
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: type
+        - column:
+            defaultValueComputed: 'NULL'
+            name: entity_id
+        indexName: pastefy_background_jobs_type_entity_id_index
+        tableName: pastefy_background_jobs
+- changeSet:
+    id: 1780596708247-18
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: key
+        indexName: pastefy_folder_key_index
+        tableName: pastefy_folder
+- changeSet:
+    id: 1780596708247-19
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: user_id
+        indexName: pastefy_folder_user_id_index
+        tableName: pastefy_folder
+- changeSet:
+    id: 1780596708247-20
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: user_id
+        - column:
+            name: received
+        indexName: pastefy_notification_user_id_received_index
+        tableName: pastefy_notification
+- changeSet:
+    id: 1780596708247-21
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: parent_id
+        indexName: pastefy_paste_comments_parent_id_index
+        tableName: pastefy_paste_comments
+- changeSet:
+    id: 1780596708247-22
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: paste
+        indexName: pastefy_paste_comments_paste_index
+        tableName: pastefy_paste_comments
+- changeSet:
+    id: 1780596708247-23
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: paste
+        - column:
+            defaultValueComputed: 'NULL'
+            name: line_from
+        indexName: pastefy_paste_comments_paste_line_index
+        tableName: pastefy_paste_comments
+- changeSet:
+    id: 1780596708247-24
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: user_id
+        indexName: pastefy_paste_comments_user_id_index
+        tableName: pastefy_paste_comments
+- changeSet:
+    id: 1780596708247-25
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: paste
+        indexName: pastefy_paste_stars_paste_index
+        tableName: pastefy_paste_stars
+- changeSet:
+    id: 1780596708247-26
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: paste
+        - column:
+            name: user_id
+        indexName: pastefy_paste_stars_paste_user_id_index
+        tableName: pastefy_paste_stars
+- changeSet:
+    id: 1780596708247-27
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: paste
+        - column:
+            name: tag
+        indexName: pastefy_paste_tags_paste_tag_index
+        tableName: pastefy_paste_tags
+- changeSet:
+    id: 1780596708247-28
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: expire_at
+        indexName: pastefy_pastes_expire_at_index
+        tableName: pastefy_pastes
+- changeSet:
+    id: 1780596708247-29
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: folder
+        indexName: pastefy_pastes_folder_index
+        tableName: pastefy_pastes
+- changeSet:
+    id: 1780596708247-30
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: hash
+        indexName: pastefy_pastes_hash_index
+        tableName: pastefy_pastes
+- changeSet:
+    id: 1780596708247-31
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: indexed_in_elastic
+        indexName: pastefy_pastes_indexed_in_elastic_index
+        tableName: pastefy_pastes
+- changeSet:
+    id: 1780596708247-32
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: key
+        indexName: pastefy_pastes_key_index
+        tableName: pastefy_pastes
+- changeSet:
+    id: 1780596708247-33
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: length
+        indexName: pastefy_pastes_length_index
+        tableName: pastefy_pastes
+- changeSet:
+    id: 1780596708247-34
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: storage_type
+        indexName: pastefy_pastes_storage_type_index
+        tableName: pastefy_pastes
+- changeSet:
+    id: 1780596708247-35
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: user_id
+        - column:
+            name: folder
+        indexName: pastefy_pastes_user_folder_index
+        tableName: pastefy_pastes
+- changeSet:
+    id: 1780596708247-36
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: user_id
+        indexName: pastefy_pastes_user_id_index
+        tableName: pastefy_pastes
+- changeSet:
+    id: 1780596708247-37
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: visibility
+        indexName: pastefy_pastes_visibility_index
+        tableName: pastefy_pastes
+- changeSet:
+    id: 1780596708247-38
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: paste_id
+        - column:
+            defaultValueComputed: 'NULL'
+            name: score
+        indexName: pastefy_public_paste_engagements_id_score_index
+        tableName: pastefy_public_paste_engagements
+- changeSet:
+    id: 1780596708247-39
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            defaultValueComputed: 'NULL'
+            name: paste_id
+        indexName: pastefy_public_paste_engagements_paste_id_index
+        tableName: pastefy_public_paste_engagements
+- changeSet:
+    id: 1780596708247-40
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: target_id
+        indexName: pastefy_shared_pastes_target_id_index
+        tableName: pastefy_shared_pastes
+- changeSet:
+    id: 1780596708247-41
+    author: juliangojani (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: user_id
+        indexName: pastefy_shared_pastes_user_id_index
+        tableName: pastefy_shared_pastes
+

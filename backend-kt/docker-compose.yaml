@@ -1,0 +1,142 @@
+services:
+  mysql:
+    image: 'mysql:8.4'
+    mem_limit: 768m
+    memswap_limit: 768m
+    cpus: 0.75
+    environment:
+      - 'MYSQL_DATABASE=mydatabase'
+      - 'MYSQL_PASSWORD=secret'
+      - 'MYSQL_ROOT_PASSWORD=verysecret'
+      - 'MYSQL_USER=myuser'
+    ports:
+      - '3306:3306'
+    volumes:
+      - 'pastefy-test-mysql-data:/var/lib/mysql'
+    command:
+      - '--performance-schema=OFF'
+      - '--innodb-buffer-pool-size=256M'
+      - '--max-connections=40'
+      - '--table-open-cache=256'
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'myuser', '-psecret']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: 'redis:7.4-alpine'
+    mem_limit: 128m
+    memswap_limit: 128m
+    cpus: 0.25
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'pastefy-test-redis-data:/data'
+    command:
+      - 'redis-server'
+      - '--appendonly'
+      - 'yes'
+      - '--maxmemory'
+      - '64mb'
+      - '--maxmemory-policy'
+      - 'allkeys-lru'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: 'minio/minio:RELEASE.2025-04-22T22-12-26Z'
+    mem_limit: 256m
+    memswap_limit: 256m
+    cpus: 0.25
+    environment:
+      - 'MINIO_ROOT_USER=minioadmin'
+      - 'MINIO_ROOT_PASSWORD=minioadmin'
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - 'pastefy-test-minio-data:/data'
+    command: ['server', '/data', '--console-address', ':9001']
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  elasticsearch:
+    image: 'docker.elastic.co/elasticsearch/elasticsearch:8.17.4'
+    mem_limit: 1536m
+    memswap_limit: 1536m
+    cpus: 1.0
+    environment:
+      - 'discovery.type=single-node'
+      - 'xpack.security.enabled=false'
+      - 'xpack.security.http.ssl.enabled=false'
+      - 'ES_JAVA_OPTS=-Xms768m -Xmx768m'
+    ports:
+      - '9200:9200'
+    volumes:
+      - 'pastefy-test-elasticsearch-data:/usr/share/elasticsearch/data'
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -fsS http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=1s >/dev/null']
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  clickhouse:
+    image: 'clickhouse/clickhouse-server:26.5'
+    mem_limit: 768m
+    memswap_limit: 768m
+    cpus: 0.75
+    labels:
+      org.springframework.boot.ignore: true
+      org.springframework.boot.service-connection: none
+    environment:
+      - 'CLICKHOUSE_DB=pastefy'
+      - 'CLICKHOUSE_USER=pastefy'
+      - 'CLICKHOUSE_PASSWORD=pastefy'
+      - 'CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1'
+      - 'CLICKHOUSE_MAX_MEMORY_USAGE=536870912'
+    ports:
+      - '8123:8123'
+      - '9002:9000'
+    volumes:
+      - 'pastefy-test-clickhouse-data:/var/lib/clickhouse'
+      - 'pastefy-test-clickhouse-logs:/var/log/clickhouse-server'
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:8123/ping']
+      interval: 10s
+      timeout: 5s
+      retries: 30
+  starquery:
+    image: interaapps/starquery:latest
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8080
+      STARQUERY_MODE: hosted
+      STARQUERY_SERVER_NAME: Pastefy Test Starquery
+      STARQUERY_META_DRIVER: sqlite
+      STARQUERY_META_SQLITE_PATH: /var/lib/starquery/starquery-meta.sqlite
+    ports:
+      - '8081:8080'
+    volumes:
+      - ./development/starquery:/var/lib/starquery
+
+
+volumes:
+  pastefy-test-mysql-data:
+    driver: local
+  pastefy-test-redis-data:
+    driver: local
+  pastefy-test-minio-data:
+    driver: local
+  pastefy-test-elasticsearch-data:
+    driver: local
+  pastefy-test-clickhouse-data:
+    driver: local
+  pastefy-test-clickhouse-logs:
+    driver: local

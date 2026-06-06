@@ -65,21 +65,6 @@ Visit the docs for everything around Pastefy here: https://docs.pastefy.app
 
 See [Self-Hosting](https://docs.pastefy.app/self-hosting/index.html) for more options.
 
-### Container-Less
-```bash
-git clone https://github.com/interaapps/pastefy.git
-cd pastefy/frontend
-npm run install
-npm run build
-cd ../backend
-mvn clean package
-cd ..
-cp .env.example .env
-nano .env
-java -jar backend/target/backend.jar
-```
-Using intelliJ? Look at [Develop](#Develop)
-
 ## Configuration
 See [Configuration](https://docs.pastefy.app/self-hosting/configuration.html) for all options.
 ### Adding login
@@ -106,21 +91,28 @@ OAUTH2_CUSTOM_USERINFO_ENDPOINT=https://accounts.interaapps.de/api/v2/oidc/useri
 
 ## Develop
 
-#### Build frontend into the backend
+#### Backend Development
+Open IntelliJ, go into Main.kt and click on the green play button.
+
+Having docker installed, all dependencies will be automatically started. (MySQL, Redis, MinIO, Elastic, Clickhouse)
+
+The backend will start on port 8080.
+
+#### Bundle frontend into the backend
 ```bash
 # You might want to build the frontend
 cd frontend
-npm build prod
+npm build
 ```
 
 #### Frontend
-Run the backend (On port 1337) and then go to the frontend and run
+Run the backend (On port 8080) and then go to the frontend and run
 ```bash
 cd frontend
-npm run serve
+VITE_APP_BASE_URL=http://localhost:8080 npm run dev
 ```
 
-We are using IntelliJ Idea and Visual Studio code.
+We are using IntelliJ Idea and WebStorm.
 
 ### API
 You can find the docs of the Pastefy-Rest-APi here: [Docs](https://docs.pastefy.app/api/)
