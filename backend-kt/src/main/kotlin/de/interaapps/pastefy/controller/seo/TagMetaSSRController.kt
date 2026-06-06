@@ -23,28 +23,29 @@ class TagMetaSSRController(
     @GetMapping("/{tag}")
     fun tagMeta(@PathVariable tag: String): ResponseEntity<String> {
         if (!properties.publicPastesEnabled || tag.isBlank()) return frontendIndex.frontend()
-        val listing = tags.getOrCreate(tag)
-        val name = seo.truncate(listing.displayName?.takeIf(String::isNotBlank)?.trim() ?: listing.tag, 120)
-        val description = seo.truncate(
-            listing.description?.takeIf(String::isNotBlank)?.trim()
-                ?: "Explore public pastes tagged \"$name\" on Pastefy.",
-            180,
-        )
-        val details = buildMap {
-            put("Public pastes", listing.pasteCount.toString())
-            listing.website?.takeIf(String::isNotBlank)?.let { put("Website", it) }
-            listing.icon?.takeIf(String::isNotBlank)?.let { put("Icon", it) }
-        }
-        val page = seo.page("/tags/${seo.pathSegment(listing.tag)}", "$name | Pastefy", description)
-            .content(
-                seo.mainContent(
-                    seo.heading(1, name),
-                    seo.paragraph(description),
-                    seo.definitionList(details),
-                ),
-            )
-            .image(listing.imageUrl)
 
-        return seoCache.renderResponse("tag:${listing.tag}", page) { frontendIndex.frontend() }
+        return seoCache.renderResponse("tag:${tag.trim().lowercase()}", { frontendIndex.frontend() }) {
+            val listing = tags.getOrCreate(tag)
+            val name = seo.truncate(listing.displayName?.takeIf(String::isNotBlank)?.trim() ?: listing.tag, 120)
+            val description = seo.truncate(
+                listing.description?.takeIf(String::isNotBlank)?.trim()
+                    ?: "Explore public pastes tagged \"$name\" on Pastefy.",
+                180,
+            )
+            val details = buildMap {
+                put("Public pastes", listing.pasteCount.toString())
+                listing.website?.takeIf(String::isNotBlank)?.let { put("Website", it) }
+                listing.icon?.takeIf(String::isNotBlank)?.let { put("Icon", it) }
+            }
+            seo.page("/tags/${seo.pathSegment(listing.tag)}", "$name | Pastefy", description)
+                .content(
+                    seo.mainContent(
+                        seo.heading(1, name),
+                        seo.paragraph(description),
+                        seo.definitionList(details),
+                    ),
+                )
+                .image(listing.imageUrl)
+        }
     }
 }

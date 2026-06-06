@@ -28,44 +28,46 @@ class PasteMetaSSRController(
     fun getPasteMetaSSR(@PathVariable id: String): ResponseEntity<String> {
         if (!id.matches(Regex("^[A-Za-z0-9_-]{8}$"))) return frontendIndex.frontend()
 
-        val paste = pasteService.get(id) ?: return frontendIndex.frontend()
+        return seoCache.renderResponse("paste:$id", { frontendIndex.frontend() }) {
+            val paste = pasteService.get(id) ?: return@renderResponse null
 
-        if (paste.isPrivate || paste.encrypted) return frontendIndex.frontend()
+            if (paste.isPrivate || paste.encrypted) return@renderResponse null
 
-        val aiInfo = paste.id?.let(aiInfoRepository::findById)?.orElse(null)
+            val aiInfo = paste.id?.let(aiInfoRepository::findById)?.orElse(null)
 
-        val title = seoContent.title(paste)
-        val author = if (paste.isPublic) seoContent.author(paste) else null
+            val title = seoContent.title(paste)
+            val author = if (paste.isPublic) seoContent.author(paste) else null
 
-        val descriptiveTitle = title + aiInfo?.description?.takeIf(String::isNotBlank)?.let { " | $it" }.orEmpty()
+            val descriptiveTitle = title + aiInfo?.description?.takeIf(String::isNotBlank)?.let { " | $it" }.orEmpty()
 
-        val description = when {
-            title == "Paste" && author == null -> "View this paste on Pastefy."
-            title == "Paste" -> "View this paste by @${author?.username} on Pastefy."
-            author != null -> seo.truncate("View \"$descriptiveTitle\" by @${author.username} on Pastefy.", 180)
-            else -> seo.truncate("View \"$descriptiveTitle\" on Pastefy.", 180)
+            val description = when {
+                title == "Paste" && author == null -> "View this paste on Pastefy."
+                title == "Paste" -> "View this paste by @${author?.username} on Pastefy."
+                author != null -> seo.truncate("View \"$descriptiveTitle\" by @${author.username} on Pastefy.", 180)
+                else -> seo.truncate("View \"$descriptiveTitle\" on Pastefy.", 180)
+            }
+
+            val content = if (paste.isPublic) pasteSeoContent(
+                pasteService.getContent(paste, withCache = false).orEmpty(),
+                paste,
+                title,
+                author,
+                aiInfo?.description,
+            ) else ""
+
+            val page = seo.page("/$id", title, description)
+                .type("article")
+                .image("/$id/thumbnail.png")
+                .content(content)
+
+            author?.let {
+                page.meta("author", "${it.displayName} (@${it.username})")
+                    .openGraph("article:author", it.profileUrl)
+                    .twitter("twitter:creator", "@${it.username}")
+            }
+
+            page
         }
-
-        val content = if (paste.isPublic) pasteSeoContent(
-            pasteService.getContent(paste, withCache = false).orEmpty(),
-            paste,
-            title,
-            author,
-            aiInfo?.description
-        ) else ""
-
-        val page = seo.page("/$id", title, description)
-            .type("article")
-            .image("/$id/thumbnail.png")
-            .content(content)
-
-        author?.let {
-            page.meta("author", "${it.displayName} (@${it.username})")
-                .openGraph("article:author", it.profileUrl)
-                .twitter("twitter:creator", "@${it.username}")
-        }
-
-        return seoCache.renderResponse("paste:$id", page) { frontendIndex.frontend() }
     }
 
     private fun pasteSeoContent(

@@ -1,5 +1,6 @@
 package de.interaapps.pastefy.service
 
+import de.interaapps.pastefy.dto.pastes.PasteResponse
 import de.interaapps.pastefy.entities.Paste
 import de.interaapps.pastefy.repositories.PasteAIInfoRepository
 import de.interaapps.pastefy.repositories.PasteTagRepository
@@ -46,6 +47,18 @@ class SeoPageContentService(
         )
     }
 
+    fun pasteResponseListSection(title: String, pastes: List<PasteResponse>, emptyText: String): String {
+        if (pastes.isEmpty()) return seo.section(title, seo.paragraph(emptyText))
+
+        return seo.section(
+            title,
+            seo.unorderedList(
+                pastes.map(::pasteResponseListItem),
+                cssClass = "seo-paste-list",
+            ),
+        )
+    }
+
     fun pasteListItem(paste: Paste, metrics: PasteMetrics): String {
         val pasteTitle = title(paste)
         val pasteUrl = seo.absoluteUrl("/${seo.pathSegment(paste.key)}")
@@ -66,6 +79,44 @@ class SeoPageContentService(
             put("Views", metrics.viewCount.toString())
             put("Comments", metrics.commentCount.toString())
             put("Stars", metrics.starCount.toString())
+        }
+
+        return buildString {
+            append("<article>")
+            append(seo.heading(3, pasteTitle))
+            append(seo.paragraph("Public paste on Pastefy."))
+            append(seo.link(pasteUrl, "Open paste"))
+            append(seo.definitionList(metadata))
+            if (tagLinks.isNotBlank()) append("<p>$tagLinks</p>")
+            append(aiDescription)
+            append("</article>")
+        }
+    }
+
+    fun pasteResponseListItem(paste: PasteResponse): String {
+        val pasteKey = paste.id?.takeIf(String::isNotBlank) ?: return ""
+        val pasteTitle = seo.truncate(seo.normalizeText(paste.title, "Paste"), 120)
+        val pasteUrl = seo.absoluteUrl("/${seo.pathSegment(pasteKey)}")
+        val username = seo.normalizeText(paste.user?.name)
+        val displayName = seo.normalizeText(paste.user?.displayName, username)
+        val tagLinks = paste.tags.orEmpty()
+            .mapNotNull { it.trim().takeIf(String::isNotBlank) }
+            .take(8)
+            .joinToString(" ") { tag ->
+                seo.link(seo.absoluteUrl("/tags/${seo.pathSegment(tag)}"), tag, "seo-tag")
+            }
+        val aiDescription = paste.aiInfo?.description
+            ?.let { seo.normalizeText(it) }
+            ?.takeIf(String::isNotBlank)
+            ?.let { seo.paragraph(seo.truncate(it, 180)) }
+            .orEmpty()
+
+        val metadata = buildMap {
+            paste.createdAt.takeIf { it != "0000-00-00 00:00:00" }?.let { put("Created", it) }
+            if (username.isNotBlank()) put("Author", "$displayName (@$username)")
+            put("Views", paste.viewCount.toString())
+            put("Comments", paste.commentCount.toString())
+            put("Stars", paste.starCount.toString())
         }
 
         return buildString {

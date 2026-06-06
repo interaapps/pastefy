@@ -8,6 +8,7 @@ import de.interaapps.pastefy.infrastructure.elastic.ElasticPasteQueryAdapter
 import de.interaapps.pastefy.service.query.JpaPasteQueryAdapter
 import de.interaapps.pastefy.service.query.LegacyFieldFilter
 import de.interaapps.pastefy.service.query.LegacyFilterOperator
+import de.interaapps.pastefy.service.query.LegacyPasteQuery
 import de.interaapps.pastefy.service.query.LegacyPasteQueryParser
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -47,21 +48,7 @@ class PasteQueryService(
         elasticProvider.ifAvailable {
             response.addHeader("using-elastic", "true")
         }
-        return elasticProvider.ifAvailable?.find(query)
-            ?: jpa.find(query).let { pastes ->
-                val metrics = pasteMetricsService.getMetrics(pastes.map { it.key })
-                pastes.map {
-                    mapper.map(
-                        it,
-                        user,
-                        fetchStar = user != null,
-                        fetchUser = true,
-                        withAiInfo = query.withAiInfo,
-                        shortenContent = query.shortenContent,
-                        metrics = metrics[it.key],
-                    )
-                }
-            }
+        return search(query, currentUser = user, fetchStar = user != null, fetchUser = true)
     }
 
     fun trending(request: HttpServletRequest, response: HttpServletResponse): List<PasteResponse> {
@@ -86,19 +73,33 @@ class PasteQueryService(
             defaultSort = "engagementScore",
             additionalFilters = additionalFilters,
         )
-        return elasticProvider.ifAvailable?.find(query)
+        elasticProvider.ifAvailable {
+            response.addHeader("using-elastic", "true")
+        }
+        return search(query, fetchUser = true)
+    }
+
+    fun search(
+        query: LegacyPasteQuery,
+        currentUser: User? = query.currentUser,
+        fetchStar: Boolean = currentUser != null,
+        fetchUser: Boolean = true,
+    ): List<PasteResponse> =
+        elasticProvider.ifAvailable?.find(query)
             ?: jpa.find(query).let { pastes ->
                 val metrics = pasteMetricsService.getMetrics(pastes.map { it.key })
                 pastes.map {
                     mapper.map(
                         it,
+                        currentUser,
+                        fetchStar = fetchStar,
+                        fetchUser = fetchUser,
                         shortenContent = query.shortenContent,
                         withAiInfo = query.withAiInfo,
                         metrics = metrics[it.key],
                     )
                 }
             }
-    }
 
     fun map(paste: Paste, request: HttpServletRequest, user: User?) =
         mapper.map(
