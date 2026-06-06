@@ -24,6 +24,7 @@ data class PastefyProperties(
     var oauthStateSecret: String = "",
     var oauth: OAuth = OAuth(),
     var rateLimiter: RateLimiter = RateLimiter(),
+    var seo: Seo = Seo(),
     var cache: Cache = Cache(),
     var redis: Redis = Redis(),
     var s3: S3 = S3(),
@@ -40,6 +41,13 @@ data class PastefyProperties(
         var enabled: Boolean = true,
         var windowMillis: Long = 5_000,
         var limit: Int = 5,
+    )
+
+    data class Seo(
+        var renderTimeoutEnabled: Boolean = true,
+        var renderTimeoutMillis: Long = 500,
+        var executorThreads: Int = 4,
+        var executorQueueCapacity: Int = 128,
     )
 
     data class Cache(

@@ -24,6 +24,8 @@ class FeatureStartupLogger(
         val aiDetails = "provider=${blank(properties.ai.provider)}, model=${blank(properties.ai.model)}"
         val analyticsDetails =
             "table=${properties.analytics.database}.${properties.analytics.table}, migrations=${enabled(properties.analytics.migrations.enabled)}"
+        val seoDetails =
+            "timeout=${enabled(properties.seo.renderTimeoutEnabled)} ${properties.seo.renderTimeoutMillis}ms, threads=${properties.seo.executorThreads}, queue=${properties.seo.executorQueueCapacity}"
 
         logger.info(
             """
@@ -34,7 +36,7 @@ class FeatureStartupLogger(
                 public pastes: ${enabled(properties.publicPastesEnabled)}
                 public stats: ${enabled(properties.publicStats)}
                 list pastes: ${enabled(properties.listPastes)}
-                meta tags / SEO SSR: ${enabled(properties.metaTagsEnabled)}
+                meta tags / SEO SSR: ${enabled(properties.metaTagsEnabled)}${suffix(properties.metaTagsEnabled, seoDetails)}
                 login required read: ${enabled(properties.loginRequiredRead)}
                 login required create: ${enabled(properties.loginRequiredCreate)}
                 grant access required: ${enabled(properties.grantAccessRequired)}
