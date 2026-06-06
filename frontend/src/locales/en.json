@@ -960,6 +960,21 @@
         "rich": "Rich metadata"
       }
     },
+    "infiniteScrollExploreView": {
+      "eyebrow": "Infinite explore",
+      "title": "A living feed of Pastefy.",
+      "description": "Scroll through fresh public pastes, trending snippets, tag spotlights, creator profiles, and small collections mixed into one discovery feed.",
+      "searchPlaceholder": "Search the feed by paste or tag...",
+      "freshPaste": "Fresh paste",
+      "tagSpotlight": "Tag spotlight",
+      "creatorSpotlight": "Creator spotlight",
+      "collection": "Collection",
+      "tagFallback": "Explore public pastes tagged #{{tag}}.",
+      "seenInFeed": "{{count}} paste in this feed",
+      "openCollection": "Open collection",
+      "loadMore": "Load more",
+      "endOfFeed": "You reached the end of this feed."
+    },
     "toolCategoryView": {
       "categorySummary": "Category summary",
       "previewTools": "Preview Tools",

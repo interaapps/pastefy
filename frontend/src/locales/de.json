@@ -960,6 +960,21 @@
         "rich": "Viele Metadaten"
       }
     },
+    "infiniteScrollExploreView": {
+      "eyebrow": "Infinite Explore",
+      "title": "Ein lebendiger Pastefy-Feed.",
+      "description": "Scrolle durch neue oeffentliche Pastes, Trending-Snippets, Tag-Spotlights, Creator-Profile und kleine Sammlungen in einem gemischten Discovery-Feed.",
+      "searchPlaceholder": "Feed nach Paste oder Tag durchsuchen...",
+      "freshPaste": "Neuer Paste",
+      "tagSpotlight": "Tag-Spotlight",
+      "creatorSpotlight": "Creator-Spotlight",
+      "collection": "Sammlung",
+      "tagFallback": "Entdecke oeffentliche Pastes mit #{{tag}}.",
+      "seenInFeed": "{{count}} Paste in diesem Feed",
+      "openCollection": "Sammlung oeffnen",
+      "loadMore": "Mehr laden",
+      "endOfFeed": "Du hast das Ende dieses Feeds erreicht."
+    },
     "toolCategoryView": {
       "categorySummary": "Category summary",
       "previewTools": "Preview Tools",

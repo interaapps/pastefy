@@ -73,7 +73,17 @@ data class PastefyProperties(
         var region: String? = null,
         var pasteSizeThreshold: Int = -1,
         var createBucket: Boolean = false,
-    )
+        var pool: Pool = Pool(),
+    ) {
+        data class Pool(
+            var maxIdleConnections: Int = 50,
+            var keepAliveMinutes: Long = 2,
+            var connectTimeoutSeconds: Long = 4,
+            var readTimeoutSeconds: Long = 30,
+            var writeTimeoutSeconds: Long = 30,
+            var retryOnConnectionFailure: Boolean = true,
+        )
+    }
 
     data class Elasticsearch(
         var enabled: Boolean = false,
@@ -84,9 +94,15 @@ data class PastefyProperties(
         var numberOfShards: Int = 1,
         var numberOfReplicas: Int = 1,
         var migrations: Migrations = Migrations(),
+        var pool: Pool = Pool(),
     ) {
         data class Migrations(
             var enabled: Boolean = true,
+        )
+
+        data class Pool(
+            var maxConnections: Int = 50,
+            var maxConnectionsPerRoute: Int = 50,
         )
     }
 
@@ -121,6 +137,7 @@ data class PastefyProperties(
         var flushIntervalMillis: Long = 1_000,
         var httpConnectTimeoutMillis: Long = 2_000,
         var httpRequestTimeoutMillis: Long = 5_000,
+        var pool: Pool = Pool(),
         var ipHashSalt: String = "",
         var ipSource: String = "direct",
         var ipHeader: String = "",
@@ -128,6 +145,15 @@ data class PastefyProperties(
         var trackBots: Boolean = true,
         var migrations: Migrations = Migrations(),
     ) {
+        data class Pool(
+            var maximumPoolSize: Int = 5,
+            var minimumIdle: Int = 1,
+            var connectionTimeoutMillis: Long = 5_000,
+            var idleTimeoutMillis: Long = 60_000,
+            var maxLifetimeMillis: Long = 600_000,
+            var validationTimeoutMillis: Long = 2_000,
+        )
+
         data class Migrations(
             var enabled: Boolean = false,
             var repairFailedHistory: Boolean = false,

@@ -4,9 +4,12 @@ import de.interaapps.pastefy.config.PastefyProperties
 import io.minio.BucketExistsArgs
 import io.minio.MakeBucketArgs
 import io.minio.MinioClient
+import okhttp3.ConnectionPool
+import okhttp3.OkHttpClient
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import java.util.concurrent.TimeUnit
 
 @Configuration
 @ConditionalOnProperty(prefix = "pastefy.s3", name = ["enabled"], havingValue = "true")
@@ -18,9 +21,24 @@ class S3Configuration {
         require(s3.accessKey.isNotBlank()) { "pastefy.s3.access-key must be configured when S3 is enabled" }
         require(s3.secretKey.isNotBlank()) { "pastefy.s3.secret-key must be configured when S3 is enabled" }
         require(s3.bucket.isNotBlank()) { "pastefy.s3.bucket must be configured when S3 is enabled" }
+        val pool = s3.pool
+        val httpClient = OkHttpClient.Builder()
+            .connectionPool(
+                ConnectionPool(
+                    pool.maxIdleConnections.coerceAtLeast(1),
+                    pool.keepAliveMinutes.coerceAtLeast(1),
+                    TimeUnit.MINUTES,
+                ),
+            )
+            .connectTimeout(pool.connectTimeoutSeconds.coerceAtLeast(1), TimeUnit.SECONDS)
+            .readTimeout(pool.readTimeoutSeconds.coerceAtLeast(1), TimeUnit.SECONDS)
+            .writeTimeout(pool.writeTimeoutSeconds.coerceAtLeast(1), TimeUnit.SECONDS)
+            .retryOnConnectionFailure(pool.retryOnConnectionFailure)
+            .build()
         return MinioClient.builder()
             .endpoint(s3.endpoint)
             .credentials(s3.accessKey, s3.secretKey)
+            .httpClient(httpClient)
             .apply {
                 s3.region?.takeIf { it.isNotBlank() }?.let(::region)
             }

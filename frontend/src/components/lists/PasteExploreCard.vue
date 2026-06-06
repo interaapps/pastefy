@@ -85,7 +85,7 @@ onMounted(() => {
       </div>
 
       <div
-        class="min-h-[8rem] overflow-hidden rounded-md bg-neutral-200 dark:bg-neutral-900"
+        class="min-h-[9.5rem] overflow-hidden rounded-md bg-neutral-200 dark:bg-neutral-900"
         :style="{
           'view-transition-name': `paste-${paste.id}-highlighted`,
         }"
@@ -117,10 +117,10 @@ onMounted(() => {
 
     <div class="flex w-full flex-wrap items-center gap-1 px-3" v-if="paste.tags?.length">
       <SmallCardTag
-        v-for="tag of paste.tags"
+        v-for="tag of paste.tags.slice(0, 4)"
         :key="tag"
         :icon="tagsStore.tagsCache[tag]?.icon"
-        :label="tagsStore.tagsCache[tag]?.display_name || tag"
+        :label="(tagsStore.tagsCache[tag]?.display_name || tag).substring(0, 15)"
         in-box
       />
     </div>

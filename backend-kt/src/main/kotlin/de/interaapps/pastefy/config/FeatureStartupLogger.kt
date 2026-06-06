@@ -17,13 +17,17 @@ class FeatureStartupLogger(
     fun logEnabledFeatures() {
         val redisHost = environment.getProperty("spring.data.redis.host", "localhost")
         val redisPort = environment.getProperty("spring.data.redis.port", "6379")
-        val s3Details = "bucket=${properties.s3.bucket}, endpoint=${redactUrl(properties.s3.endpoint)}"
-        val redisDetails = "host=$redisHost:$redisPort"
+        val redisMaxActive = environment.getProperty("spring.data.redis.lettuce.pool.max-active", "128")
+        val redisMaxIdle = environment.getProperty("spring.data.redis.lettuce.pool.max-idle", "64")
+        val redisMinIdle = environment.getProperty("spring.data.redis.lettuce.pool.min-idle", "16")
+        val s3Details =
+            "bucket=${properties.s3.bucket}, endpoint=${redactUrl(properties.s3.endpoint)}, pool=${properties.s3.pool.maxIdleConnections}"
+        val redisDetails = "host=$redisHost:$redisPort, pool=$redisMaxActive/$redisMaxIdle/$redisMinIdle"
         val elasticDetails =
-            "index=${properties.elasticsearch.indexName}, migrations=${enabled(properties.elasticsearch.migrations.enabled)}"
+            "index=${properties.elasticsearch.indexName}, pool=${properties.elasticsearch.pool.maxConnections}/${properties.elasticsearch.pool.maxConnectionsPerRoute}, migrations=${enabled(properties.elasticsearch.migrations.enabled)}"
         val aiDetails = "provider=${blank(properties.ai.provider)}, model=${blank(properties.ai.model)}"
         val analyticsDetails =
-            "table=${properties.analytics.database}.${properties.analytics.table}, migrations=${enabled(properties.analytics.migrations.enabled)}"
+            "table=${properties.analytics.database}.${properties.analytics.table}, pool=${properties.analytics.pool.maximumPoolSize}/${properties.analytics.pool.minimumIdle}, migrations=${enabled(properties.analytics.migrations.enabled)}"
         val seoDetails =
             "timeout=${enabled(properties.seo.renderTimeoutEnabled)} ${properties.seo.renderTimeoutMillis}ms, threads=${properties.seo.executorThreads}, queue=${properties.seo.executorQueueCapacity}"
 
