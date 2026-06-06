@@ -18,7 +18,7 @@
     "@fontsource-variable/jetbrains-mono": "^5.2.5",
     "@fontsource-variable/plus-jakarta-sans": "^5.2.5",
     "@primeuix/themes": "^1.0.0",
-    "@tabler/icons-webfont": "^3.31.0",
+    "@tabler/icons-webfont": "^3.44.0",
     "@tailwindcss/vite": "^4.0.14",
     "@types/crypto-js": "^4.2.2",
     "@types/dom-to-image": "^2.6.7",

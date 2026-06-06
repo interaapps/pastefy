@@ -158,6 +158,11 @@ const router = createRouter({
           component: () => import('@/views/PublicUserView.vue'),
         },
         {
+          path: '/tags',
+          name: 'tags',
+          component: () => import('@/views/ExploreTagsView.vue'),
+        },
+        {
           path: '/tags/:tag',
           name: 'tag',
           component: () => import('@/views/TagView.vue'),

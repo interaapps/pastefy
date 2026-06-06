@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import de.interaapps.pastefy.enums.PasteVisibility
 import de.interaapps.pastefy.service.PasteQueryService
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -17,6 +18,7 @@ class PublicPastesController(
     private val queries: PasteQueryService,
 ) {
     @GetMapping
+    //@Cacheable()
     fun getPublicPastes(request: HttpServletRequest, response: HttpServletResponse): List<PasteResponse> =
         queries.list(request, response, null, guarded = false, visibility = PasteVisibility.PUBLIC)
 

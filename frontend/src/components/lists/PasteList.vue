@@ -21,7 +21,7 @@ const props = defineProps<
 >()
 
 const page = useRouteQuery(`${props.queryPrefix || ''}page`, 1, { transform: Number })
-const resolvedPageLimit = computed(() => ('pageLimit' in props ? props.pageLimit || 5 : 5))
+const resolvedPageLimit = computed(() => ('pageLimit' in props ? props.pageLimit || 6 : 6))
 
 const emit = defineEmits(['loaded'])
 

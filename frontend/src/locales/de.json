@@ -944,6 +944,22 @@
     "tagView": {
       "publicPastes": "Public Pastes"
     },
+    "exploreTagsView": {
+      "eyebrow": "Tags entdecken",
+      "title": "Entdecke, worueber Menschen pasten.",
+      "description": "Durchsuche oeffentliche Pastefy-Tags, finde Themen nach Name oder Beschreibung und spring direkt in passende Snippet-Sammlungen.",
+      "searchPlaceholder": "Tags, Themen, Beschreibungen suchen...",
+      "pastesAcrossLoadedTags": "Pastes in geladenen Tags",
+      "fallbackDescription": "Entdecke oeffentliche Pastes mit #{{tag}}.",
+      "noTagsFound": "Keine Tags passen zu deiner Suche.",
+      "loadMoreTags": "Mehr Tags laden",
+      "openExploreTags": "Alle Tags entdecken",
+      "sortOptions": {
+        "popular": "Meistgenutzt",
+        "name": "Name",
+        "rich": "Viele Metadaten"
+      }
+    },
     "toolCategoryView": {
       "categorySummary": "Category summary",
       "previewTools": "Preview Tools",

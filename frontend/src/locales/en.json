@@ -944,6 +944,22 @@
     "tagView": {
       "publicPastes": "Public Pastes"
     },
+    "exploreTagsView": {
+      "eyebrow": "Explore tags",
+      "title": "Discover what people paste about.",
+      "description": "Browse public Pastefy tags, search by name or description, and jump into the topics that collect useful snippets.",
+      "searchPlaceholder": "Search tags, topics, descriptions...",
+      "pastesAcrossLoadedTags": "Pastes across loaded tags",
+      "fallbackDescription": "Explore public pastes tagged #{{tag}}.",
+      "noTagsFound": "No tags match your search yet.",
+      "loadMoreTags": "Load more tags",
+      "openExploreTags": "Explore all tags",
+      "sortOptions": {
+        "popular": "Most used",
+        "name": "Name",
+        "rich": "Rich metadata"
+      }
+    },
     "toolCategoryView": {
       "categorySummary": "Category summary",
       "previewTools": "Preview Tools",

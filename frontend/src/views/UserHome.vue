@@ -22,19 +22,25 @@ const quickActions = computed(() => [
   {
     key: 'create-paste',
     title: t('paste.create'),
-    get description() { return t('views.userHome.descriptions.openTheEditorAndStartaNewPasteRightAway') },
+    get description() {
+      return t('views.userHome.descriptions.openTheEditorAndStartaNewPasteRightAway')
+    },
     icon: 'edit',
   },
   {
     key: 'search-pastes',
     title: t('nav.search'),
-    get description() { return t('views.userHome.descriptions.findSnippetsTitlesAndContentAcrossYourSavedWork') },
+    get description() {
+      return t('views.userHome.descriptions.findSnippetsTitlesAndContentAcrossYourSavedWork')
+    },
     icon: 'search',
   },
   {
     key: 'open-tools',
     title: t('tools.title'),
-    get description() { return t('views.userHome.descriptions.previewConvertAndInspectContentWithoutPublishingIt') },
+    get description() {
+      return t('views.userHome.descriptions.previewConvertAndInspectContentWithoutPublishingIt')
+    },
     icon: 'tool',
     to: { name: 'tool-home' as const },
   },
@@ -42,14 +48,18 @@ const quickActions = computed(() => [
     ? {
         key: 'admin-home',
         title: t('admin.title'),
-        get description() { return t('views.userHome.descriptions.jumpIntoModerationUsersAndRecentPlatformActivity') },
+        get description() {
+          return t('views.userHome.descriptions.jumpIntoModerationUsersAndRecentPlatformActivity')
+        },
         icon: 'shield',
         to: { name: 'admin-home' as const },
       }
     : {
         key: 'explore',
         title: t('nav.explore'),
-        get description() { return t('views.userHome.descriptions.browsePublicPastesAndDiscoverWhatOthersAreSharing') },
+        get description() {
+          return t('views.userHome.descriptions.browsePublicPastesAndDiscoverWhatOthersAreSharing')
+        },
         icon: 'world',
         to: { name: 'explore' as const },
       },
@@ -131,7 +141,7 @@ useTitle(`Home | Pastefy`)
       <PasteList
         @loaded="eventBus.emit('pageLoaded', 'home')"
         route="/api/v2/user/pastes"
-        :params="{ page_limit: 8, hide_children: 'true' }"
+        :params="{ page_limit: 9, hide_children: 'true' }"
       />
     </div>
     <ComponentInjection type="user-home-after-pastes" />
