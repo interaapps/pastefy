@@ -51,6 +51,8 @@ Visit the docs for everything around Pastefy here: https://docs.pastefy.app
   - [Docker](https://docs.pastefy.app/self-hosting/installation/docker.html)
   - [Docker-Compose](https://docs.pastefy.app/self-hosting/installation/docker-compose.html)
   - [Container-Less](#Container-Less)
+  - [RepoCloud](https://repocloud.io/details/Pastefy/)
+  - [Railway](https://railway.com/deploy/pastefy)
 - [Configuration](https://docs.pastefy.app/self-hosting/configuration.html)
 - [Develop](#Develop)
 - [API](https://docs.pastefy.app/api/)
