@@ -36,7 +36,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
+import RegexWorker from '@/utils/workers/regex.worker.ts?worker'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 import Highlighted from '@/components/Highlighted.vue'
@@ -49,24 +50,40 @@ const props = defineProps<{
 const flags = ref('g')
 const testInput = ref('')
 
-const error = computed(() => {
-  try {
-    const re = new RegExp(props.regex, flags.value)
-    testInput.value.replace(re, '')
-    return null
-  } catch (e: unknown) {
-    return (e as { message: string }).message || e
-  }
-})
-const highlightedResult = computed(() => {
-  const re = new RegExp(props.regex, flags.value)
-  if (!testInput.value) return ''
+const error = ref('')
+const highlightedResult = ref('')
 
-  return testInput.value
-    .replace(
-      /[&<>"']/g,
-      (s) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[s]!,
-    )
-    .replace(re, (match) => `<mark class="rounded-sm bg-primary-100">${match}</mark>`)
-})
+const stopWatching = watch(
+  [() => props.regex, flags, testInput],
+  ([pattern, currentFlags, input], _previous, onCleanup) => {
+    error.value = ''
+    highlightedResult.value = ''
+
+    // Untrusted expressions can backtrack indefinitely, so never run them on the UI thread.
+    const worker = new RegexWorker()
+    const stop = () => {
+      clearTimeout(timeout)
+      worker.terminate()
+    }
+    const timeout = setTimeout(() => {
+      stop()
+      error.value = 'The regular expression exceeded the time limit.'
+    }, 1000)
+
+    worker.onmessage = (event: MessageEvent<{ highlighted: string; error: string }>) => {
+      stop()
+      highlightedResult.value = event.data.highlighted
+      error.value = event.data.error
+    }
+    worker.onerror = () => {
+      stop()
+      error.value = 'Could not evaluate this regular expression.'
+    }
+    onCleanup(stop)
+    worker.postMessage({ pattern, flags: currentFlags, input })
+  },
+  { immediate: true },
+)
+
+onBeforeUnmount(stopWatching)
 </script>

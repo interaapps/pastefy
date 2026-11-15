@@ -22,7 +22,8 @@ const sanitizedHtml = computed(() =>
     </div>
     <iframe
       class="h-[36rem] w-full bg-white"
-      sandbox="allow-same-origin"
+      sandbox=""
+      referrerpolicy="no-referrer"
       :srcdoc="sanitizedHtml"
       title="HTML Preview"
     />

@@ -13,42 +13,18 @@ const config = useConfig()
 
 const getBaseConfig = () => ({
   startOnLoad: false,
+  securityLevel: 'strict' as const,
+  // Keep Mermaid's protected defaults and prevent diagrams from changing the sanitizer.
+  secure: [...(mermaid.mermaidAPI.defaultConfig.secure ?? []), 'dompurifyConfig'],
   fontFamily: "'Plus Jakarta Sans Variable', sans-serif",
-  theme: (
-    config.value.theme === 'dark'
-      ? 'dark'
-      : config.value.theme === 'system'
-        ? window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'default'
+  theme: (config.value.theme === 'dark'
+    ? 'dark'
+    : config.value.theme === 'system'
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
         : 'default'
-  ) as 'dark' | 'default',
+      : 'default') as 'dark' | 'default',
 })
-
-const resolveMermaidInput = (raw: string) => {
-  const directiveMatch = raw.match(/^%%\{init:\s*([\s\S]*?)\s*\}%%\s*/)
-  if (!directiveMatch) {
-    return {
-      code: raw,
-      init: undefined as Record<string, unknown> | undefined,
-      error: '',
-    }
-  }
-
-  try {
-    return {
-      code: raw.slice(directiveMatch[0].length).trimStart(),
-      init: JSON.parse(directiveMatch[1]) as Record<string, unknown>,
-      error: '',
-    }
-  } catch {
-    return {
-      code: raw,
-      init: undefined as Record<string, unknown> | undefined,
-      error: 'The Mermaid init directive is not valid JSON.',
-    }
-  }
-}
 
 mermaid.initialize(getBaseConfig())
 
@@ -60,22 +36,13 @@ const render = async () => {
   mermaidError.value = ''
 
   try {
-    const resolvedInput = resolveMermaidInput(props.mermaidCode)
-    if (resolvedInput.error) {
-      mermaidError.value = resolvedInput.error
-      return
-    }
-
     mermaid.mermaidAPI.reset()
     mermaid.initialize(getBaseConfig())
 
-    if (resolvedInput.init) {
-      mermaid.mermaidAPI.updateSiteConfig(resolvedInput.init)
-    }
-
+    // Let Mermaid handle untrusted directives through its own security checks.
     const out = await mermaid.render(
       `mermaid-preview-${Math.random().toString().replace('.', '')}`,
-      resolvedInput.code,
+      props.mermaidCode,
     )
     mermaidHTML.value = out.svg
   } catch (error) {
