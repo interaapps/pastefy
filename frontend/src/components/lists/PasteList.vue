@@ -2,7 +2,7 @@
 import { useAsyncState } from '@vueuse/core'
 import { client } from '@/main.ts'
 import type { Paste } from '@/types/paste.ts'
-import PasteCard from '@/components/lists/PasteCard.vue'
+import PasteExploreCard from '@/components/lists/PasteExploreCard.vue'
 import ErrorContainer from '@/components/ErrorContainer.vue'
 import LoadingContainer from '@/components/LoadingContainer.vue'
 import Pagination from '@/components/Pagination.vue'
@@ -21,7 +21,7 @@ const props = defineProps<
 >()
 
 const page = useRouteQuery(`${props.queryPrefix || ''}page`, 1, { transform: Number })
-const resolvedPageLimit = computed(() => ('pageLimit' in props ? props.pageLimit || 5 : 5))
+const resolvedPageLimit = computed(() => ('pageLimit' in props ? props.pageLimit || 6 : 6))
 
 const emit = defineEmits(['loaded'])
 
@@ -66,9 +66,12 @@ watch(
 <template>
   <ErrorContainer v-if="error" :error="error as any" />
   <LoadingContainer v-else-if="isLoading" />
-  <section v-else-if="pastes" class="mx-auto w-full max-w-[1200px] space-y-5">
-    <div v-if="pastes.length" class="flex flex-col gap-4">
-      <PasteCard v-for="paste of pastes" :paste :key="paste.id" />
+  <section v-else-if="pastes" class="@container mx-auto w-full max-w-[1200px] space-y-5">
+    <div
+      v-if="pastes?.length"
+      class="grid w-full grid-cols-1 gap-3 @xl:auto-rows-fr @2xl:grid-cols-2 @4xl:grid-cols-3"
+    >
+      <PasteExploreCard v-for="paste of pastes" :paste :key="paste.id" />
     </div>
     <div
       v-else

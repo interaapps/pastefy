@@ -81,6 +81,11 @@ const router = createRouter({
           component: () => import('@/views/ExploreView.vue'),
         },
         {
+          path: '/explore/feed',
+          name: 'infinite-explore',
+          component: () => import('@/views/InfiniteScrollExploreView.vue'),
+        },
+        {
           path: '/stars',
           name: 'stars',
           component: () => import('@/views/StarsView.vue'),
@@ -156,6 +161,11 @@ const router = createRouter({
           path: '/@:user',
           name: 'user',
           component: () => import('@/views/PublicUserView.vue'),
+        },
+        {
+          path: '/tags',
+          name: 'tags',
+          component: () => import('@/views/ExploreTagsView.vue'),
         },
         {
           path: '/tags/:tag',

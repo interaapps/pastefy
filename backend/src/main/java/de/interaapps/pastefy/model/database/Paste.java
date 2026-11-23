@@ -346,6 +346,7 @@ public class Paste extends Model {
         super.save();
 
         boolean bigEnoughForS3 = content != null && content.length() > Pastefy.getInstance().getConfig().getInt("minio.pastesize.threshold", -1);
+
         if (Pastefy.getInstance().isMinioEnabled() && (storageType == StorageType.S3 || bigEnoughForS3)) {
             Pastefy.getInstance().executeAsync(() -> MinioPaste.store(this));
         }

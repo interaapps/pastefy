@@ -944,6 +944,37 @@
     "tagView": {
       "publicPastes": "Public Pastes"
     },
+    "exploreTagsView": {
+      "eyebrow": "Explore tags",
+      "title": "Discover what people paste about.",
+      "description": "Browse public Pastefy tags, search by name or description, and jump into the topics that collect useful snippets.",
+      "searchPlaceholder": "Search tags, topics, descriptions...",
+      "pastesAcrossLoadedTags": "Pastes across loaded tags",
+      "fallbackDescription": "Explore public pastes tagged #{{tag}}.",
+      "noTagsFound": "No tags match your search yet.",
+      "loadMoreTags": "Load more tags",
+      "openExploreTags": "Explore all tags",
+      "sortOptions": {
+        "popular": "Most used",
+        "name": "Name",
+        "rich": "Rich metadata"
+      }
+    },
+    "infiniteScrollExploreView": {
+      "eyebrow": "Infinite explore",
+      "title": "A living feed of Pastefy.",
+      "description": "Scroll through fresh public pastes, trending snippets, tag spotlights, creator profiles, and small collections mixed into one discovery feed.",
+      "searchPlaceholder": "Search the feed by paste or tag...",
+      "freshPaste": "Fresh paste",
+      "tagSpotlight": "Tag spotlight",
+      "creatorSpotlight": "Creator spotlight",
+      "collection": "Collection",
+      "tagFallback": "Explore public pastes tagged #{{tag}}.",
+      "seenInFeed": "{{count}} paste in this feed",
+      "openCollection": "Open collection",
+      "loadMore": "Load more",
+      "endOfFeed": "You reached the end of this feed."
+    },
     "toolCategoryView": {
       "categorySummary": "Category summary",
       "previewTools": "Preview Tools",

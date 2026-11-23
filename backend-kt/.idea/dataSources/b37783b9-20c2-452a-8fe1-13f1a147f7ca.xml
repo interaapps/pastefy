@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="0@localhost">
+  <database-model serializer="dbm" dbms="REDIS" family-id="REDIS" format-version="4.55">
+    <root id="1">
+      <ServerVersion>7.4.9</ServerVersion>
+    </root>
+    <schema id="2" parent="1" name="0">
+      <Current>1</Current>
+    </schema>
+    <schema id="3" parent="1" name="1"/>
+    <schema id="4" parent="1" name="10"/>
+    <schema id="5" parent="1" name="11"/>
+    <schema id="6" parent="1" name="12"/>
+    <schema id="7" parent="1" name="13"/>
+    <schema id="8" parent="1" name="14"/>
+    <schema id="9" parent="1" name="15"/>
+    <schema id="10" parent="1" name="2"/>
+    <schema id="11" parent="1" name="3"/>
+    <schema id="12" parent="1" name="4"/>
+    <schema id="13" parent="1" name="5"/>
+    <schema id="14" parent="1" name="6"/>
+    <schema id="15" parent="1" name="7"/>
+    <schema id="16" parent="1" name="8"/>
+    <schema id="17" parent="1" name="9"/>
+  </database-model>
+</dataSource>

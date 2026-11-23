@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-auth-keys-scopes-json
+      author: juliangojani
+      preConditions:
+        - onFail: HALT
+        - sqlCheck:
+            expectedResult: 0
+            sql: >
+              SELECT COUNT(*)
+              FROM pastefy_auth_keys
+              WHERE scopes IS NOT NULL
+                AND JSON_VALID(scopes) = 0
+      changes:
+        - modifyDataType:
+            tableName: pastefy_auth_keys
+            columnName: scopes
+            newDataType: JSON

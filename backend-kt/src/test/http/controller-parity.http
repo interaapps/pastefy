@@ -1,0 +1,36 @@
+@host = http://localhost:8080
+@authKey = replace-me
+@pasteId = replace-me
+@folderId = replace-me
+@tag = kotlin
+
+### Stats
+GET {{host}}/api/v2/app/stats
+Accept: application/json
+
+### Folder list
+GET {{host}}/api/v2/folder?page=1&page_limit=10
+Accept: application/json
+X-Auth-Key: {{authKey}}
+
+### Folder detail
+GET {{host}}/api/v2/folder/{{folderId}}
+Accept: application/json
+X-Auth-Key: {{authKey}}
+
+### Paste comments
+GET {{host}}/api/v2/paste/{{pasteId}}/comments?page=1&page_limit=10
+Accept: application/json
+X-Auth-Key: {{authKey}}
+
+### Raw paste
+GET {{host}}/{{pasteId}}/raw
+Accept: text/plain
+
+### Thumbnail
+GET {{host}}/{{pasteId}}/thumbnail.png
+Accept: image/png
+
+### Tag SEO metadata
+GET {{host}}/tags/{{tag}}
+Accept: text/html

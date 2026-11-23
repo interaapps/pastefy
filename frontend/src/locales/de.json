@@ -944,6 +944,37 @@
     "tagView": {
       "publicPastes": "Public Pastes"
     },
+    "exploreTagsView": {
+      "eyebrow": "Tags entdecken",
+      "title": "Entdecke, worueber Menschen pasten.",
+      "description": "Durchsuche oeffentliche Pastefy-Tags, finde Themen nach Name oder Beschreibung und spring direkt in passende Snippet-Sammlungen.",
+      "searchPlaceholder": "Tags, Themen, Beschreibungen suchen...",
+      "pastesAcrossLoadedTags": "Pastes in geladenen Tags",
+      "fallbackDescription": "Entdecke oeffentliche Pastes mit #{{tag}}.",
+      "noTagsFound": "Keine Tags passen zu deiner Suche.",
+      "loadMoreTags": "Mehr Tags laden",
+      "openExploreTags": "Alle Tags entdecken",
+      "sortOptions": {
+        "popular": "Meistgenutzt",
+        "name": "Name",
+        "rich": "Viele Metadaten"
+      }
+    },
+    "infiniteScrollExploreView": {
+      "eyebrow": "Infinite Explore",
+      "title": "Ein lebendiger Pastefy-Feed.",
+      "description": "Scrolle durch neue oeffentliche Pastes, Trending-Snippets, Tag-Spotlights, Creator-Profile und kleine Sammlungen in einem gemischten Discovery-Feed.",
+      "searchPlaceholder": "Feed nach Paste oder Tag durchsuchen...",
+      "freshPaste": "Neuer Paste",
+      "tagSpotlight": "Tag-Spotlight",
+      "creatorSpotlight": "Creator-Spotlight",
+      "collection": "Sammlung",
+      "tagFallback": "Entdecke oeffentliche Pastes mit #{{tag}}.",
+      "seenInFeed": "{{count}} Paste in diesem Feed",
+      "openCollection": "Sammlung oeffnen",
+      "loadMore": "Mehr laden",
+      "endOfFeed": "Du hast das Ende dieses Feeds erreicht."
+    },
     "toolCategoryView": {
       "categorySummary": "Category summary",
       "previewTools": "Preview Tools",

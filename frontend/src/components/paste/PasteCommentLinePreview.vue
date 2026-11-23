@@ -27,6 +27,8 @@ const inlineContents = computed(() =>
       :file-name
       :starting-line-number="lineFrom - 1"
       hide-color-preview
+      small
+      show-copy-button
     />
     <Button
       v-if="hasMore"

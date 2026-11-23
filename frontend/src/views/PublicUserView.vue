@@ -93,7 +93,7 @@ const {
         <PasteList
           route="/api/v2/public-pastes/latest"
           :params="{ 'filter[userId]': user.id }"
-          :page-limit="10"
+          :page-limit="9"
           empty-message="This user has no public pastes yet."
         />
       </div>
