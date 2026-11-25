@@ -53,7 +53,8 @@
     "explore": "Keşfet",
     "search": "Ara",
     "stars": "Yıldızlılar",
-    "apiKeys": "API anahtarları"
+    "apiKeys": "API anahtarları",
+    "tools": "Araçlar"
   },
   "auth": {
     "login": "giriş yap",
