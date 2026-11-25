@@ -88,7 +88,7 @@ const exportConfig = () => {
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">
+          <div lang="en" class="text-xs font-semibold tracking-[0.2em] uppercase opacity-60">
             {{ type }} View
           </div>
           <div class="mt-1 text-xs opacity-60">{{ $t('previews.configViewer.configExplorerWithSearchAndExport') }}</div>

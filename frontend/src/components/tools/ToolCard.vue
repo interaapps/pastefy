@@ -22,7 +22,7 @@ defineProps<{
           </div>
           <div>
             <h3 class="font-semibold">{{ tool.shortTitle }}</h3>
-            <p class="text-xs uppercase tracking-[0.2em] text-neutral-400">
+            <p lang="en" class="text-xs uppercase tracking-[0.2em] text-neutral-400">
               {{ tool.meta }}
             </p>
           </div>
