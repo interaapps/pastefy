@@ -53,7 +53,8 @@
     "explore": "Khám phá",
     "search": "Tìm kiếm",
     "stars": "Yêu thích",
-    "apiKeys": "Khóa API"
+    "apiKeys": "Khóa API",
+    "tools": "Công cụ"
   },
   "auth": {
     "login": "đăng nhập",

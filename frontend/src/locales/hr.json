@@ -53,7 +53,8 @@
     "explore": "Istraži",
     "search": "Pretraži",
     "stars": "Favoriti",
-    "apiKeys": "API ključevi"
+    "apiKeys": "API ključevi",
+    "tools": "Alati"
   },
   "auth": {
     "login": "prijava",

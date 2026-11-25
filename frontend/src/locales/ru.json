@@ -53,7 +53,8 @@
     "explore": "Обзор",
     "search": "Поиск",
     "stars": "Избранное",
-    "apiKeys": "API-ключи"
+    "apiKeys": "API-ключи",
+    "tools": "Инструменты"
   },
   "auth": {
     "login": "войти",

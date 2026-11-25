@@ -53,7 +53,8 @@
     "explore": "beliebt",
     "search": "Suchen",
     "stars": "Favoriten",
-    "apiKeys": "API-Schlüssel"
+    "apiKeys": "API-Schlüssel",
+    "tools": "Tools"
   },
   "auth": {
     "login": "anmelden",

@@ -53,7 +53,8 @@
     "explore": "探索",
     "search": "検索",
     "stars": "お気に入り",
-    "apiKeys": "API キー"
+    "apiKeys": "API キー",
+    "tools": "ツール"
   },
   "auth": {
     "login": "ログイン",

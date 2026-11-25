@@ -53,7 +53,8 @@
     "explore": "גילוי",
     "search": "חיפוש",
     "stars": "מועדפים",
-    "apiKeys": "מפתחות API"
+    "apiKeys": "מפתחות API",
+    "tools": "כלים"
   },
   "auth": {
     "login": "התחברות",

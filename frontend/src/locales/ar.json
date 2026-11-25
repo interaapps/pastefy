@@ -53,7 +53,8 @@
     "explore": "استكشاف",
     "search": "بحث",
     "stars": "المفضلة",
-    "apiKeys": "مفاتيح API"
+    "apiKeys": "مفاتيح API",
+    "tools": "الأدوات"
   },
   "auth": {
     "login": "تسجيل الدخول",

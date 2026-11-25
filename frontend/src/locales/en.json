@@ -53,7 +53,8 @@
     "explore": "Explore",
     "search": "Search",
     "stars": "Stars",
-    "apiKeys": "Api Keys"
+    "apiKeys": "Api Keys",
+    "tools": "Tools"
   },
   "auth": {
     "login": "login",

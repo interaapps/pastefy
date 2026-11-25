@@ -53,7 +53,8 @@
     "explore": "explorar",
     "search": "pesquisar",
     "stars": "favoritos",
-    "apiKeys": "Chaves de API"
+    "apiKeys": "Chaves de API",
+    "tools": "Ferramentas"
   },
   "auth": {
     "login": "entrar",

@@ -53,7 +53,8 @@
     "explore": "Explorer",
     "search": "Rechercher",
     "stars": "Favoris",
-    "apiKeys": "Clés API"
+    "apiKeys": "Clés API",
+    "tools": "Outils"
   },
   "auth": {
     "login": "se connecter",
