@@ -14,8 +14,10 @@ const config = useConfig()
 const getBaseConfig = () => ({
   startOnLoad: false,
   securityLevel: 'strict' as const,
-  // Keep Mermaid's protected defaults and prevent diagrams from changing the sanitizer.
-  secure: [...(mermaid.mermaidAPI.defaultConfig.secure ?? []), 'dompurifyConfig'],
+  // Keep Mermaid's protected defaults and prevent diagrams from changing the sanitizer
+  // or injecting raw CSS through `themeCSS` init directives (the SVG is inlined into the page).
+  // Font families stay overridable: Mermaid sanitizes them, and the theme builder relies on them.
+  secure: [...(mermaid.mermaidAPI.defaultConfig.secure ?? []), 'dompurifyConfig', 'themeCSS'],
   fontFamily: "'Plus Jakarta Sans Variable', sans-serif",
   theme: (config.value.theme === 'dark'
     ? 'dark'
