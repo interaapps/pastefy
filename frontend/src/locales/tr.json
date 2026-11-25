@@ -1,0 +1,1606 @@
+{
+  "common": {
+    "confirm": "onayla",
+    "cancel": "vazgeç",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "options": "Seçenekler",
+    "preview": "Önizleme",
+    "editor": "Düzenleyici",
+    "export": "Dışa aktar",
+    "content": "İçerik",
+    "colors": "Renkler",
+    "format": "Biçim",
+    "delete": "Sil",
+    "open": "Aç",
+    "profile": "Profil",
+    "users": "Kullanıcılar",
+    "tags": "Etiketler",
+    "page": "Sayfa {{page}}",
+    "download": "İndir",
+    "copyImage": "Görseli kopyala",
+    "copy": "Kopyala",
+    "edit": "Düzenle",
+    "share": "Paylaş",
+    "fork": "Fork",
+    "raw": "Ham içerik",
+    "filename": "Dosya adı",
+    "visibility": "Görünürlük",
+    "source": "Kaynak",
+    "output": "Çıktı",
+    "code": "Kod",
+    "filters": "Filtreler",
+    "sort": "Sıralama",
+    "results": "Sonuçlar",
+    "search": "Ara",
+    "unlock": "Kilidi aç",
+    "hideEditor": "Düzenleyiciyi gizle",
+    "showEditor": "Düzenleyiciyi göster",
+    "unknownDate": "Tarih bilinmiyor",
+    "invalidJson": "Geçersiz JSON"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "app": "Uygulama ayarları",
+    "animations": "Animasyonlar",
+    "theme": "Tema",
+    "defaultVisibility": "Varsayılan görünürlük",
+    "language": "Dil",
+    "browserLanguage": "Tarayıcı dili"
+  },
+  "nav": {
+    "home": "Ana sayfa",
+    "explore": "Keşfet",
+    "search": "Ara",
+    "stars": "Yıldızlılar",
+    "apiKeys": "API anahtarları"
+  },
+  "auth": {
+    "login": "giriş yap",
+    "logout": "Çıkış yap",
+    "signOut": "Çıkış yap",
+    "accountSettings": "Hesap ayarları",
+    "awaitingAccess": "Erişim onayı bekleniyor",
+    "blocked": "Erişim engellendi",
+    "awaitingMessage": "Merhaba {{name}}, bir yönetici hesabınızı etkinleştirene kadar lütfen bekleyin.",
+    "blockedMessage": "Merhaba {{name}}, hesabınız engellendi.",
+    "logoutConfirm": "Çıkış yapmak istediğinizden emin misiniz?",
+    "password": "Parola"
+  },
+  "paste": {
+    "myPastes": "Paste'lerim",
+    "create": "Paste oluştur",
+    "folders": "Klasörler",
+    "pastes": "Paste'ler",
+    "new": "yeni",
+    "encryptedPaste": "Şifreli paste",
+    "noTitle": "başlıksız",
+    "noPreview": "Önizleme yok",
+    "trending": "Popüler",
+    "allTimeTrending": "Tüm zamanların en popülerleri",
+    "visibility": {
+      "public": "HERKESE AÇIK",
+      "private": "GİZLİ",
+      "unlisted": "LİSTE DIŞI"
+    },
+    "files": "DOSYALAR",
+    "filename": "dosya adı",
+    "pasteHere": "Buraya yapıştırın",
+    "encrypted": "Şifrele",
+    "expires": "Geçerlilik süresi",
+    "submit": "oluştur",
+    "edit": "kaydet",
+    "empty": "Bu seçime uygun paste bulunamadı.",
+    "loginRequired": "Paste oluşturmak için giriş yapmalısınız",
+    "passwordOptional": "parola (isteğe bağlı)",
+    "folderOptional": "klasör (isteğe bağlı)",
+    "tagsOptional": "etiketler (isteğe bağlı, virgülle ayırın)",
+    "addMetadataWithAi": "Dosya uzantısını ve etiketleri yapay zeka eklesin",
+    "editing": "Düzenleniyor: {{id}}",
+    "forking": "Fork kaynağı: {{id}}",
+    "enterContentsFirst": "Önce içerik girin",
+    "loginReadRequired": "Paste'leri görüntülemek için giriş yapmalısınız",
+    "passwordProtected": "Bu paste parola korumalı",
+    "decrypt": "şifre çöz",
+    "deleteTitle": "Paste'i sil",
+    "deleteConfirm": "Bu paste'i silmek istediğinizden emin misiniz?",
+    "showCode": "kodu göster",
+    "showPreview": "önizlemeyi göster",
+    "viewOnPastefy": "Pastefy'da görüntüle",
+    "openInEditor": "paste düzenleyicisinde aç"
+  },
+  "comments": {
+    "title": "Yorumlar",
+    "placeholder": "Yorum yazın…",
+    "submit": "Yorum yap",
+    "reply": "Yanıtla",
+    "empty": "Henüz yorum yok.",
+    "emptyForLine": "Bu satıra henüz yorum yapılmamış.",
+    "loginRequired": "Yorum yazmak için giriş yapın.",
+    "deletedUser": "Silinmiş kullanıcı",
+    "line": "Satır {{line}}",
+    "lines": "Satır {{from}}–{{to}}",
+    "fromLine": "Başlangıç satırı: {{line}}",
+    "optionalEndLine": "Son satır",
+    "commentLine": "Satır {{line}} için yorum yap",
+    "showMore": "Daha fazla göster",
+    "showLess": "Daha az göster",
+    "showReplies": "Yanıtları göster ({{count}})",
+    "hideReplies": "Yanıtları gizle ({{count}})"
+  },
+  "layout": {
+    "toggleSidebar": "Kenar çubuğunu göster/gizle"
+  },
+  "home": {
+    "shareCode": "Kodunuzu paylaşın",
+    "organize": "Düzenli tutun",
+    "keepSecret": "Gizli tutun",
+    "integration": "Entegrasyon",
+    "explorePublicPastes": "Herkese açık paste'leri keşfet",
+    "shareCodeDescription": "Kod parçacıklarınızı dünyayla buluşturun: kodunuzu yapıştırıp başkalarına iletin.",
+    "organizeDescription": "Klasörler oluşturup kod parçacıklarınızı derli toplu saklayın.",
+    "keepSecretDescription": "Kod parçacıklarınızı istemci taraflı şifrelemeyle koruyun. Şifreli paste'lerinizi biz bile okuyamayız.",
+    "integrationDescription": "API'mizle Pastefy'ı kendi uygulamalarınıza entegre edin ya da paste'lerinizi kolayca web sitenize yerleştirin."
+  },
+  "tools": {
+    "all": "tüm araçlar",
+    "allUtilities": "tüm yardımcı araçlar",
+    "resetExample": "örneği sıfırla",
+    "focusMode": "Odak modu",
+    "exitFocusMode": "Odak modundan çık",
+    "search": "Araç ara…",
+    "allConversions": "tüm dönüştürücüler",
+    "backToTools": "araçlara dön",
+    "backToConversions": "dönüştürücülere dön",
+    "backToUtilities": "yardımcı araçlara dön",
+    "copySource": "kaynağı kopyala",
+    "copyOutput": "çıktıyı kopyala",
+    "createPaste": "paste oluştur",
+    "conversion": "Dönüştürücü",
+    "previewInspect": "önizleme ve inceleme",
+    "convert": "dönüştürücüler",
+    "utilities": "yardımcı araçlar",
+    "notFound": {
+      "previewTitle": "Araç bulunamadı",
+      "conversionTitle": "Dönüştürücü bulunamadı",
+      "utilityTitle": "Yardımcı araç bulunamadı"
+    },
+    "title": "Pastefy araçları",
+    "categories": "kategoriler"
+  },
+  "share": {
+    "share": "paylaş",
+    "screenshot": "ekran görüntüsü",
+    "embed": "sayfaya yerleştir",
+    "qrCode": "QR kodu",
+    "articleView": "makale görünümü",
+    "presentationView": "sunum görünümü"
+  },
+  "errors": {
+    "pageNotFound": "Sayfa bulunamadı"
+  },
+  "explore": {
+    "title": "Pastefy'ı keşfet"
+  },
+  "folder": {
+    "createTitle": "Klasör oluştur",
+    "name": "klasör adı",
+    "create": "oluştur",
+    "deleteTitle": "Klasörü sil",
+    "deleteConfirm": "Bu klasörü silmek istediğinizden emin misiniz?"
+  },
+  "search": {
+    "title": "Aradığınız paste'i daha hızlı bulun",
+    "query": "Arama sorgusu",
+    "scope": "Kapsam",
+    "clearFilters": "filtreleri temizle",
+    "quickModal": "hızlı arama",
+    "descriptions": {
+      "mine": "Kendi paste'lerinizde ayrıntılı filtrelerle arayın.",
+      "starred": "Tekrar bakmak için yıldızladığınız paste'lerde arayın.",
+      "public": "Herkese açık paste'lerde, hızlı aramadan daha fazla filtreyle arayın."
+    }
+  },
+  "admin": {
+    "quickActions": "Hızlı işlemler",
+    "manageUsers": "Kullanıcıları yönet",
+    "latestPastes": "Son paste'ler",
+    "users": {
+      "changeTypeTitle": "Kullanıcı türünü değiştir",
+      "changeTypeConfirm": "Bu kullanıcının türünü değiştirmek istediğinizden emin misiniz?",
+      "deleteTitle": "Kullanıcıyı sil",
+      "deleteConfirm": "Bu kullanıcıyı silmek istediğinizden emin misiniz?"
+    },
+    "title": "Yönetim"
+  },
+  "components": {
+    "globalSearch": {
+      "mine": "paste'lerim",
+      "public": "herkese açık",
+      "page": "tam sayfa"
+    },
+    "paste": {
+      "openInCodebox": "Codebox'ta aç"
+    },
+    "createPaste": {
+      "detectedUrlYouMayWannaUse": "URL algılandı. Kısaltmak için şunu kullanabilirsiniz:",
+      "punyshort": "punyshort"
+    },
+    "sidebar": {
+      "sourceCode": "Kaynak kodu"
+    },
+    "pasteCard": {
+      "codebox": "Codebox",
+      "multiPaste": "Çoklu paste"
+    },
+    "pasteStarButton": {
+      "star": "Yıldızla"
+    },
+    "pasteSharingPopover": {
+      "createScreenshot": "Ekran görüntüsü al",
+      "embed": "Sayfaya yerleştir",
+      "shareCodeWithPastefy": "Pastefy ile kod paylaşın."
+    },
+    "userMenu": {
+      "admin": "Yönetim"
+    }
+  },
+  "modals": {
+    "embedPasteModal": {
+      "embed": "Sayfaya yerleştir",
+      "hideTitle": "Başlığı gizle",
+      "hideActions": "İşlem düğmelerini gizle",
+      "addPadding": "Kenar boşluğu ekle",
+      "embedViaScript": "Script ile yerleştirme",
+      "embedViaIframeTag": "iframe etiketiyle yerleştirme"
+    },
+    "qrModal": {
+      "qrCode": "QR kodu",
+      "applyPreset": "Hazır ayar seçin",
+      "removeLogo": "Logoyu kaldır",
+      "sizePx": "Boyut (px)",
+      "quietZone": "Kenar boşluğu",
+      "currentPalette": "Mevcut palet",
+      "foregroundColor": "Ön plan rengi",
+      "foregroundPreview": "Ön plan önizlemesi",
+      "qrModulesAndScanPattern": "QR modülleri ve tarama deseni",
+      "backgroundColor": "Arka plan rengi",
+      "backgroundPreview": "Arka plan önizlemesi",
+      "showBackground": "Arka planı göster",
+      "includeQuietZone": "Kenar boşluğunu dahil et",
+      "logo": "Logo",
+      "logoSize": "Logo boyutu",
+      "logoPadding": "Logo iç boşluğu",
+      "logoBackgroundPlate": "Logo zemini"
+    },
+    "screenshotPaste": {
+      "screenshot": "Ekran görüntüsü",
+      "style": "Stil",
+      "background": "Arka plan",
+      "canvasWidthPx": "Tuval genişliği (px)",
+      "outerPaddingPx": "Dış boşluk (px)",
+      "to": "–",
+      "lineRange": "Gösterilecek satırlar",
+      "showTitleBar": "Başlık çubuğunu göster",
+      "showLineNumbers": "Satır numaralarını göster",
+      "sharpness": "Netlik",
+      "options": {
+        "dark": "Koyu",
+        "light": "Açık",
+        "png": "PNG",
+        "jpeg": "JPEG",
+        "1x": "1x",
+        "2x": "2x",
+        "3x": "3x"
+      }
+    }
+  },
+  "previews": {
+    "ansibleViewer": {
+      "ansibleView": "ANSIBLE görünümü",
+      "hostsRolesAndNamedTasksForOperationalPlaybooks": "Playbook'taki host'lar, roller ve adlandırılmış görevler",
+      "roles": "Roller",
+      "namedTasks": "Adlandırılmış görevler",
+      "noNamedTasksDetected": "Adlandırılmış görev bulunamadı."
+    },
+    "configViewer": {
+      "searchSectionsKeysAndValues": "Bölüm, anahtar ve değerlerde ara",
+      "configExplorerWithSearchAndExport": "Arama ve dışa aktarma destekli yapılandırma gezgini",
+      "noMatchingLines": "Eşleşen satır yok."
+    },
+    "gitHubActionsViewer": {
+      "gitHubActions": "GITHUB ACTIONS",
+      "jobs": "İşler",
+      "namedSteps": "Adlandırılmış adımlar",
+      "noNamedStepsDetected": "Adlandırılmış adım bulunamadı."
+    },
+    "hclViewer": {
+      "terraformHcl": "Terraform / HCL",
+      "description": "Kaynaklar, modüller, sağlayıcılar ve değişkenler tek bakışta"
+    },
+    "htmlViewer": {
+      "htmlPreview": "HTML önizlemesi"
+    },
+    "httpViewer": {
+      "httpCurlView": "HTTP / cURL görünümü",
+      "request": "İstek",
+      "headers": "Header'lar",
+      "noHeadersDetected": "Header bulunamadı.",
+      "body": "Gövde",
+      "noBodyDetected": "İstek gövdesi bulunamadı.",
+      "description": "İstek metodunu, endpoint'i, header'ları ve gövdeyi hızlıca inceleyin"
+    },
+    "icsViewer": {
+      "addToCalendar": "Takvime ekle"
+    },
+    "jsonViewer": {
+      "searchKeysPathsAndValues": "Anahtar, yol ve değerlerde ara",
+      "expandAll": "Tümünü genişlet",
+      "collapse": "Tümünü daralt",
+      "copyPretty": "Biçimli kopyala",
+      "jsonView": "JSON görünümü",
+      "options": {
+        "tree": "Ağaç",
+        "pretty": "Biçimli",
+        "raw": "Ham"
+      }
+    },
+    "logViewer": {
+      "searchLogLines": "Log satırlarında ara",
+      "logView": "Log görünümü",
+      "filterLevelsSearchIncidentsAndScanOutputFaster": "Seviyeye göre filtreleyin, olayları arayın, çıktıyı hızla tarayın",
+      "noMatchingLogLines": "Eşleşen log satırı yok."
+    },
+    "monitoringRulesViewer": {
+      "monitoringRules": "İzleme kuralları",
+      "prometheusGrafanaAndAlertRuleOverviews": "Prometheus, Grafana ve uyarı kurallarına genel bakış"
+    },
+    "regexViewer": {
+      "flags": "g, i, m",
+      "insertYourTestStringHere": "test metninizi buraya yazın",
+      "testInput": "Test girdisi"
+    },
+    "xmlViewer": {
+      "searchTagsAttributesTextAndPaths": "Etiket, öznitelik, metin ve yollarda ara",
+      "expandAll": "Tümünü genişlet",
+      "collapse": "Tümünü daralt",
+      "copyPretty": "Biçimli kopyala",
+      "xmlView": "XML görünümü",
+      "options": {
+        "tree": "Ağaç",
+        "pretty": "Biçimli",
+        "raw": "Ham"
+      }
+    },
+    "yamlViewer": {
+      "searchKeysValuesAndPaths": "Anahtar, değer ve yollarda ara",
+      "expandAll": "Tümünü genişlet",
+      "collapse": "Tümünü daralt",
+      "yamlView": "YAML görünümü",
+      "noYamlNodesFound": "YAML düğümü bulunamadı.",
+      "options": {
+        "root": "kök",
+        "tree": "Ağaç",
+        "pretty": "Biçimli",
+        "raw": "Ham"
+      },
+      "description": "YAML dosyaları için daraltılabilir ağaç, arama, kopyalama ve dışa aktarma"
+    },
+    "githubActionsViewer": {
+      "description": "Tetikleyiciler, işler ve adlandırılmış adımlar tek bakışta"
+    }
+  },
+  "utility": {
+    "accessLogInspectorBase": {
+      "searchIpPathStatusReferrer": "IP, yol, durum kodu veya referrer ara…",
+      "accessLogs": "Erişim log'ları",
+      "topStatusCodes": "En sık görülen durum kodları",
+      "noParsedRequestsMatchTheCurrentFilters": "Mevcut filtrelere uyan ayrıştırılmış istek yok.",
+      "topPaths": "En çok istenen yollar",
+      "topIps": "En çok istek gönderen IP'ler",
+      "topUserAgents": "En sık görülen user agent'lar",
+      "requestTable": "İstek tablosu",
+      "status": "Durum",
+      "method": "Metot",
+      "path": "Yol",
+      "options": {
+        "allStatuses": "Tüm durum kodları",
+        "2xx": "2xx",
+        "3xx": "3xx",
+        "4xx": "4xx",
+        "5xx": "5xx"
+      }
+    },
+    "base64Tool": {
+      "mode": "İşlem",
+      "input": "Girdi",
+      "base64": "Base64",
+      "base64Url": "Base64Url",
+      "decoded": "Çözülen metin",
+      "options": {
+        "encode": "Kodla",
+        "decode": "Çöz"
+      }
+    },
+    "caseConverterTool": {
+      "sourceText": "Kaynak metin"
+    },
+    "colorConverterTool": {
+      "hexColor": "Hex renk kodu"
+    },
+    "composeStackGeneratorTool": {
+      "includeProxyService": "Proxy servisi ekle",
+      "includePostgresService": "Postgres servisi ekle",
+      "includeRedisService": "Redis servisi ekle",
+      "portMappings": "Port eşlemeleri",
+      "addPort": "port ekle",
+      "environmentVariables": "Ortam değişkenleri",
+      "production": "production",
+      "volumes": "Volume'lar",
+      "addVolume": "volume ekle",
+      "networks": "Ağlar",
+      "app": "app",
+      "addNetwork": "ağ ekle",
+      "dependsOnServices": "Bağımlı olduğu servisler",
+      "postgres": "postgres",
+      "addDependency": "bağımlılık ekle",
+      "command": "Komut",
+      "entrypoint": "Entrypoint",
+      "proxyPorts": "Proxy portları",
+      "addProxyPort": "proxy portu ekle",
+      "postgresEnvironment": "Postgres ortam değişkenleri",
+      "preset": "Hazır ayar",
+      "serviceName": "Servis adı",
+      "image": "İmaj",
+      "containerName": "Container adı",
+      "restartPolicy": "Yeniden başlatma politikası",
+      "replicas": "Replika sayısı",
+      "workingDirectory": "Çalışma dizini",
+      "proxyImage": "Proxy imajı",
+      "postgresImage": "Postgres imajı",
+      "redisImage": "Redis imajı",
+      "options": {
+        "blankService": "Boş servis",
+        "nodeWebApp": "Node web uygulaması",
+        "pythonWebApp": "Python web uygulaması",
+        "javaApp": "Java uygulaması",
+        "staticNginxSite": "NGINX ile statik site",
+        "proxyAppPostgres": "Proxy + uygulama + Postgres"
+      }
+    },
+    "cronExplainerTool": {
+      "samples": "Örnekler",
+      "cronExpression": "Cron ifadesi",
+      "options": {
+        "custom": "Özel",
+        "everyHour": "Her saat başı",
+        "dailyAtMidnight": "Her gün gece yarısı",
+        "weeklyOnMonday": "Her pazartesi",
+        "monthlyOnThe1st": "Her ayın 1'inde",
+        "every15Minutes": "15 dakikada bir",
+        "weekdayMornings": "Hafta içi her sabah",
+        "yearlyOnJan1st": "Her yıl 1 Ocak'ta"
+      }
+    },
+    "dataToClassDiagramTool": {
+      "inputFormat": "Girdi biçimi",
+      "rootClassName": "Kök sınıf adı",
+      "showInferredFieldTypes": "Algılanan alan türlerini göster",
+      "sourceData": "Kaynak veri",
+      "options": {
+        "autoDetect": "Otomatik algıla",
+        "json": "JSON",
+        "yaml": "YAML",
+        "csv": "CSV"
+      }
+    },
+    "dataToMermaidErTool": {
+      "inputFormat": "Girdi biçimi",
+      "rootEntityName": "Kök varlık adı",
+      "showInferredFieldTypes": "Algılanan alan türlerini göster",
+      "schemaLikeData": "Şema benzeri veri",
+      "options": {
+        "autoDetect": "Otomatik algıla",
+        "json": "JSON",
+        "yaml": "YAML",
+        "csv": "CSV"
+      }
+    },
+    "dataToMermaidTool": {
+      "chooseAChartPreset": "Hazır ayar seçin",
+      "loadPreset": "hazır ayarı yükle",
+      "revenueByMonth": "Aylık gelir",
+      "value": "Değer",
+      "selectOneOrMoreFields": "Bir veya daha fazla alan seçin",
+      "optionalSeriesGrouping": "Seri alanlarını seçin (isteğe bağlı)",
+      "pickOneOrMoreNumericFields": "Bir veya daha fazla sayısal alan seçin",
+      "everythingElse": "Diğer",
+      "examplePreset": "Örnek hazır ayar",
+      "inputFormat": "Girdi biçimi",
+      "chartType": "Grafik türü",
+      "chartTitle": "Grafik başlığı",
+      "yAxisLabel": "Y ekseni etiketi",
+      "decimals": "Ondalık basamak",
+      "yAxisRange": "Y ekseni aralığı",
+      "emptyLabel": "Boş değer etiketi",
+      "fieldSeparator": "Alan ayırıcı",
+      "yAxisMin": "Y ekseni alt sınırı",
+      "yAxisMax": "Y ekseni üst sınırı",
+      "sourceData": "Kaynak veri",
+      "categoryGroupFields": "Kategori / grup alanları",
+      "splitIntoSeriesByFields": "Serileri belirleyen alanlar",
+      "numericFieldsToVisualize": "Görselleştirilecek sayısal alanlar",
+      "aggregation": "Özetleme",
+      "sortGroups": "Grup sıralaması",
+      "maxGroups": "En fazla grup sayısı",
+      "groupHiddenEntriesIntoEverythingElse": "Gizlenen kayıtları “Diğer” grubunda topla",
+      "everythingElseLabel": "“Diğer” etiketi",
+      "maxSeries": "En fazla seri sayısı",
+      "includeSeriesCommentsInMermaidCode": "Mermaid koduna seri yorumlarını ekle",
+      "hideZeroOnlySeries": "Yalnızca sıfır içeren serileri gizle",
+      "hideZeroOnlyGroups": "Yalnızca sıfır içeren grupları gizle",
+      "showValuesInThePieChart": "Pasta grafikte değerleri göster",
+      "options": {
+        "groupedBars": "Gruplu çubuk grafik",
+        "multiLineTrends": "Trend çizgileri",
+        "pieShare": "Pasta grafikte pay dağılımı",
+        "comboChart": "Birleşik grafik",
+        "yamlBarChart": "YAML'dan çubuk grafik",
+        "autoDetect": "Otomatik algıla",
+        "json": "JSON",
+        "yaml": "YAML",
+        "csv": "CSV",
+        "pieChart": "Pasta grafik",
+        "barChart": "Çubuk grafik",
+        "lineChart": "Çizgi grafik",
+        "multiLine": "Çok çizgili grafik",
+        "sum": "Toplam",
+        "average": "Ortalama",
+        "min": "En küçük",
+        "max": "En büyük",
+        "count": "Adet",
+        "keepInputOrder": "Girdi sırasını koru",
+        "labelAZ": "Etiket (A-Z)",
+        "labelZA": "Etiket (Z-A)",
+        "valueHighLow": "Değer (büyükten küçüğe)",
+        "valueLowHigh": "Değer (küçükten büyüğe)",
+        "autoRange": "Otomatik",
+        "manualRange": "Manuel"
+      },
+      "descriptions": {
+        "revenueByMonthAndRegion": "Aya ve bölgeye göre gelir.",
+        "profitTrendPerRegionOverTime": "Her bölgenin zaman içindeki kâr trendi.",
+        "orderShareByRegion": "Bölgelerin sipariş payları.",
+        "revenueBarsWithProfitLine": "Gelir çubukları ve kâr çizgisi.",
+        "revenueValuesFromYamlGroupedByMonthAndRegion": "Aya ve bölgeye göre gruplanmış YAML gelir verileri."
+      }
+    },
+    "diffLabTool": {
+      "before": "Eski metin",
+      "after": "Yeni metin",
+      "options": {
+        "lineDiff": "Satır bazında diff",
+        "wordDiff": "Kelime bazında diff",
+        "characterDiff": "Karakter bazında diff"
+      }
+    },
+    "dockerfileGeneratorTool": {
+      "useMultiStageBuild": "Çok aşamalı build kullan",
+      "addHealthcheck": "Sağlık kontrolü ekle",
+      "runCommands": "RUN komutları",
+      "npmCi": "npm ci",
+      "addCommand": "komut ekle",
+      "healthcheckCommand": "Sağlık kontrolü komutu",
+      "environmentVariables": "Ortam değişkenleri",
+      "production": "production",
+      "imageLabels": "İmaj etiketleri",
+      "volumes": "Volume'lar",
+      "addVolume": "volume ekle",
+      "exposedPorts": "Dışa açılan portlar",
+      "addPort": "port ekle",
+      "entrypointCommand": "Entrypoint komutu",
+      "defaultCommand": "Varsayılan komut",
+      "preset": "Hazır ayar",
+      "baseImage": "Temel imaj",
+      "runtimeImage": "Çalışma zamanı imajı",
+      "buildWorkdir": "WORKDIR (build)",
+      "runtimeWorkdir": "WORKDIR (çalışma zamanı)",
+      "copySource": "COPY kaynağı",
+      "copyTarget": "COPY hedefi",
+      "restartPolicyHint": "Önerilen yeniden başlatma politikası",
+      "networkHint": "Önerilen ağ",
+      "options": {
+        "nodeJsApp": "Node.js uygulaması",
+        "bunApp": "Bun uygulaması",
+        "javaJar": "Java JAR",
+        "pythonApp": "Python uygulaması",
+        "staticSiteOnNginx": "NGINX ile statik site",
+        "goApp": "Go uygulaması",
+        "rustApp": "Rust uygulaması",
+        "phpApache": "PHP Apache",
+        "phpFpm": "PHP-FPM",
+        "dotNetApp": ".NET uygulaması",
+        "customImage": "Özel imaj"
+      }
+    },
+    "hashGeneratorTool": {
+      "inputText": "Girdi metni"
+    },
+    "htmlEntityTool": {
+      "mode": "İşlem",
+      "input": "Girdi",
+      "options": {
+        "encode": "Kodla",
+        "decode": "Çöz"
+      }
+    },
+    "infraToMermaidTool": {
+      "direction": "Yön",
+      "diagramTitle": "Diyagram başlığı",
+      "infraFile": "Altyapı dosyası",
+      "options": {
+        "autoDetect": "Otomatik algıla",
+        "dockerCompose": "Docker Compose",
+        "kubernetes": "Kubernetes",
+        "terraformHcl": "Terraform / HCL",
+        "gitHubActions": "GitHub Actions",
+        "leftToRight": "Soldan sağa",
+        "topToBottom": "Yukarıdan aşağıya"
+      }
+    },
+    "jarStartScriptGeneratorTool": {
+      "useNohupBackgroundLaunch": "Arka planda nohup ile başlat",
+      "scriptType": "Script türü",
+      "appName": "Uygulama adı",
+      "jarFile": "JAR dosyası",
+      "workingDirectory": "Çalışma dizini",
+      "xms": "Xms",
+      "xmx": "Xmx",
+      "springProfile": "Spring profili",
+      "port": "Port",
+      "extraJvmArgs": "Ek JVM argümanları",
+      "extraAppArgs": "Ek uygulama argümanları",
+      "logFile": "Log dosyası",
+      "options": {
+        "startSh": "start.sh",
+        "startBat": "start.bat"
+      }
+    },
+    "jsonStringTool": {
+      "mode": "İşlem",
+      "input": "Girdi",
+      "options": {
+        "escape": "Escape et",
+        "unescape": "Escape'i kaldır"
+      }
+    },
+    "jwtInspectorTool": {
+      "header": "Header",
+      "payload": "Payload"
+    },
+    "keyValueListField": {
+      "removeEntry": "Kaydı kaldır",
+      "noEntriesYet": "Henüz kayıt yok."
+    },
+    "loremIpsumTool": {
+      "generateAgain": "yeniden oluştur",
+      "mode": "Birim",
+      "count": "Adet",
+      "options": {
+        "paragraphs": "Paragraf",
+        "sentences": "Cümle",
+        "words": "Kelime"
+      }
+    },
+    "markdownToMermaidTool": {
+      "mode": "Diyagram türü",
+      "direction": "Yön",
+      "maxDepth": "En fazla derinlik",
+      "markdown": "Markdown",
+      "options": {
+        "mindmap": "Zihin haritası",
+        "flowchart": "Akış şeması",
+        "topToBottom": "Yukarıdan aşağıya",
+        "leftToRight": "Soldan sağa"
+      }
+    },
+    "mermaidImageExportTool": {
+      "copyMermaid": "Mermaid kodunu kopyala",
+      "scale": "Ölçek",
+      "padding": "Kenar boşluğu",
+      "background": "Arka plan",
+      "watermark": "Filigran",
+      "mermaidCode": "Mermaid kodu",
+      "options": {
+        "png": "PNG",
+        "svg": "SVG"
+      }
+    },
+    "mermaidThemeBuilderTool": {
+      "addMermaidCodeToPreviewTheThemedDiagram": "Tema uygulanmış diyagramı önizlemek için Mermaid kodu ekleyin.",
+      "curve": "Eğri türü",
+      "fontFamily": "Yazı tipi",
+      "primaryColor": "Ana renk",
+      "primaryTextColor": "Ana metin rengi",
+      "borderColor": "Kenarlık rengi",
+      "lineColor": "Çizgi rengi",
+      "tertiaryColor": "Üçüncül renk",
+      "background": "Arka plan",
+      "nodeSpacing": "Düğüm aralığı",
+      "rankSpacing": "Katman aralığı",
+      "padding": "Kenar boşluğu",
+      "mermaidSource": "Mermaid kaynak kodu",
+      "options": {
+        "base": "Temel",
+        "default": "Varsayılan",
+        "dark": "Koyu",
+        "forest": "Orman",
+        "neutral": "Nötr",
+        "basis": "Basis",
+        "linear": "Doğrusal",
+        "step": "Basamaklı",
+        "monotone": "Monoton"
+      }
+    },
+    "numberBaseTool": {
+      "inputBase": "Girdi tabanı",
+      "value": "Değer",
+      "options": {
+        "binary": "İkilik",
+        "octal": "Sekizlik",
+        "decimal": "Onluk",
+        "hex": "Onaltılık"
+      }
+    },
+    "passwordGeneratorTool": {
+      "generateAgain": "yeniden oluştur",
+      "count": "Adet",
+      "length": "Uzunluk",
+      "uppercaseLetters": "Büyük harfler",
+      "lowercaseLetters": "Küçük harfler",
+      "numbers": "Rakamlar",
+      "symbols": "Semboller",
+      "excludeAmbiguousCharacters": "Birbirine karışabilecek karakterleri dışarıda bırak"
+    },
+    "queryStringTool": {
+      "queryString": "Query string",
+      "rebuilt": "Yeniden oluşturulan query string",
+      "parsed": "Ayrıştırılan değerler"
+    },
+    "regexEscapeTool": {
+      "mode": "İşlem",
+      "input": "Girdi",
+      "options": {
+        "escape": "Escape et",
+        "unescape": "Escape'i kaldır"
+      }
+    },
+    "sqlToMermaidErTool": {
+      "showSqlFieldTypes": "SQL alan türlerini göster",
+      "sqlSchema": "SQL şeması"
+    },
+    "secretGeneratorTool": {
+      "generateAgain": "yeniden oluştur",
+      "mode": "Tür",
+      "count": "Adet",
+      "length": "Uzunluk",
+      "options": {
+        "uuid": "UUID",
+        "hexToken": "Hex token",
+        "base64UrlToken": "Base64Url token"
+      }
+    },
+    "slugGeneratorTool": {
+      "sourceText": "Kaynak metin"
+    },
+    "stringListField": {
+      "removeEntry": "Kaydı kaldır",
+      "noEntriesYet": "Henüz kayıt yok."
+    },
+    "systemdServiceGeneratorTool": {
+      "serviceName": "Servis adı",
+      "description": "Açıklama",
+      "user": "Kullanıcı",
+      "group": "Grup",
+      "workingDirectory": "Çalışma dizini",
+      "restartPolicy": "Yeniden başlatma politikası",
+      "execStartCommand": "ExecStart komutu",
+      "environmentVariables": "Ortam değişkenleri"
+    },
+    "textSorterTool": {
+      "lines": "Satırlar",
+      "removeDuplicates": "Yinelenenleri kaldır",
+      "reverseOrder": "Sırayı tersine çevir",
+      "caseSensitiveSort": "Büyük/küçük harfe duyarlı sırala"
+    },
+    "timestampConverterTool": {
+      "useCurrentUnixTime": "şu anki Unix zamanını kullan",
+      "timestampOrDate": "Zaman damgası veya tarih"
+    },
+    "urlEncoderTool": {
+      "mode": "İşlem",
+      "input": "Girdi",
+      "options": {
+        "encode": "Kodla",
+        "decode": "Çöz"
+      }
+    },
+    "utilityResultActions": {
+      "copyResult": "sonucu kopyala"
+    },
+    "webServerConfigGeneratorBase": {
+      "hostnamesSiteEntries": "Host adları / siteler",
+      "addHost": "host ekle",
+      "enableTlsHttps": "TLS / HTTPS kullan",
+      "redirectWwwToPrimaryDomain": "www adresini ana alan adına yönlendir",
+      "enableCompression": "Sıkıştırma kullan",
+      "addBasicSecurityHeaders": "Temel güvenlik header'larını ekle",
+      "enableHsts": "HSTS kullan",
+      "protectWithBasicAuth": "Basic auth ile koru",
+      "cacheStaticAssets": "Statik dosyaları önbelleğe al",
+      "enableSpaFallback": "SPA fallback kullan",
+      "forwardClientIpHeaders": "İstemci IP header'larını ilet",
+      "extraHeaders": "Ek header'lar",
+      "xRobotsTag": "X-Robots-Tag",
+      "noindex": "noindex",
+      "trustedProxyIpsCidrs": "Güvenilen proxy IP'leri / CIDR'lar",
+      "addProxy": "proxy ekle",
+      "siteMode": "Site modu",
+      "tlsMode": "TLS modu",
+      "letsEncryptEmail": "Let's Encrypt e-posta adresi",
+      "certificatePath": "Sertifika yolu",
+      "keyPath": "Özel anahtar yolu",
+      "accessLogPath": "Erişim log dosyası",
+      "errorLogPath": "Hata log dosyası",
+      "rootPath": "Kök dizin",
+      "upstreamHost": "Upstream host",
+      "upstreamPort": "Upstream port",
+      "forwardedIpHeader": "İstemci IP header'ı",
+      "basicAuthUser": "Basic auth kullanıcısı",
+      "passwordHashPlaceholder": "Parola hash'i / yer tutucu",
+      "options": {
+        "reverseProxy": "Reverse proxy",
+        "staticSite": "Statik site",
+        "manualCertificatePaths": "Manuel sertifika yolları"
+      }
+    },
+    "wordStatsTool": {
+      "textInput": "Metin",
+      "mostCommonWords": "En sık geçen kelimeler",
+      "addMoreTextToSeeCommonWords": "Sık geçen kelimeleri görmek için biraz daha metin ekleyin."
+    }
+  },
+  "views": {
+    "aboutView": {
+      "thisIsAnAboutPage": "Burası hakkında sayfası."
+    },
+    "conversionToolView": {
+      "pasteYourSourceContentHere": "Kaynak içeriği buraya yapıştırın…",
+      "convertedResultWithPreviewAndQuickActions": "Dönüştürme sonucunu önizleyin, hızlı işlemlerle devam edin."
+    },
+    "homeView": {
+      "apiDocs": "API belgeleri",
+      "explore": "keşfet",
+      "openTools": "araçları aç",
+      "pastefy": "Pastefy",
+      "explorePublicPastes": "Herkese açık paste'leri keşfet",
+      "richFileViews": "Her biçime özel görünüm",
+      "convert": "Dönüştürme",
+      "formatTransforms": "Biçim dönüşümleri",
+      "utilities": "Yardımcı araçlar",
+      "smallDevHelpers": "Geliştiriciler için küçük kolaylıklar",
+      "tools": "Araçlar",
+      "previewConvertAndInspect": "Önizleyin, dönüştürün, inceleyin",
+      "richFileViewsDescription": "JSON, YAML, Markdown, HTML, log'lar, yapılandırma dosyaları, diyagramlar ve daha fazlası.",
+      "formatTransformsDescription": "JSON, YAML, CSV, HTTP, cURL, env dosyaları ve diğer biçimler arasında geçiş yapın.",
+      "utilitiesDescription": "Hash oluşturma, JWT inceleme, cron ifadesi çözümleme, kelime sayma ve daha fazlası.",
+      "toolsDescription": "Pastefy araçlarını kullanmak için önce paste oluşturmanız gerekmez. Canlı önizlemeleri, biçim dönüştürücülerini ve yardımcı araçları açın; yalnızca hazır olduğunuzda paylaşın."
+    },
+    "markdownArticleView": {
+      "unlockArticle": "Makalenin kilidini aç",
+      "openRegularPasteView": "Paste'i normal görünümde aç",
+      "viewMultiPaste": "Çoklu paste'i görüntüle",
+      "viewPaste": "Paste'i görüntüle",
+      "thisArticleIsEncrypted": "Bu makale şifreli",
+      "articleView": "Makale görünümü",
+      "untitled": "Başlıksız makale",
+      "markdownOnly": "Makale görünümü yalnızca Markdown paste'lerinde kullanılabilir."
+    },
+    "previewPresentationView": {
+      "unlockPreview": "Önizlemenin kilidini aç",
+      "openRegularPasteView": "Paste'i normal görünümde aç",
+      "rawFile": "Ham dosya",
+      "viewCode": "Kodu görüntüle",
+      "thisPreviewIsEncrypted": "Bu önizleme şifreli",
+      "presentationView": "Sunum görünümü"
+    },
+    "previewToolView": {
+      "startTypingToSeeThePreview": "Önizlemeyi görmek için yazmaya başlayın…"
+    },
+    "publicUserView": {
+      "searchThisUser": "Kullanıcının paste'lerinde ara",
+      "seeAllPastesInAdmin": "Tüm paste'lerini yönetim panelinde görüntüle",
+      "publicPastes": "Herkese açık paste'ler"
+    },
+    "readerShareModesView": {
+      "openPaste": "Paste'i aç",
+      "thisShareSheetIsEncrypted": "Bu paylaşım sayfası şifreli",
+      "readerShareModes": "Okuma ve paylaşım modları",
+      "options": {
+        "defaultPaste": "Varsayılan görünüm",
+        "rawFile": "Ham dosya",
+        "articleView": "Makale görünümü",
+        "presentationView": "Sunum görünümü"
+      },
+      "descriptions": {
+        "theFullPastefyPastePageWithCodeActionsMetadataAndSharingTools": "Kod, işlem düğmeleri, meta veriler ve paylaşım araçlarıyla eksiksiz Pastefy paste sayfası.",
+        "thePlainRawFileUrlForDirectDownloadsScriptsAndIntegrations": "Doğrudan indirme, script ve entegrasyonlar için ham dosya URL'si.",
+        "aReaderFriendlyLayoutForSharingMarkdownLikeaPolishedArticle": "Markdown içeriğini özenli bir makale gibi sunan, okunması kolay bir düzen.",
+        "aFocusedPreviewPageForTablesDiagramsMapsSvgsDiffsJsonHtmlAndTerminalReplays": "Tablolar, diyagramlar, haritalar, SVG'ler, diff'ler, JSON, HTML ve terminal kayıtları için sade bir önizleme sayfası.",
+        "aDirectArticleLinkToThisMarkdownFileInsideTheMultiPaste": "Çoklu paste içindeki bu Markdown dosyasının makale görünümüne doğrudan bağlantı.",
+        "aDirectPresentationLinkToThisPreviewableFileInsideTheMultiPaste": "Çoklu paste içindeki bu önizlenebilir dosyanın sunum görünümüne doğrudan bağlantı."
+      }
+    },
+    "tagView": {
+      "publicPastes": "Herkese açık paste'ler"
+    },
+    "toolCategoryView": {
+      "categorySummary": "Kategori özeti",
+      "previewTools": "Önizleme araçları",
+      "conversionTools": "Dönüştürücüler",
+      "utilityTools": "Yardımcı araçlar",
+      "helpersGeneratorsAndInspectorsInThisCategory": "Bu kategorideki oluşturucular, çözümleyiciler ve diğer pratik araçlar.",
+      "relatedCategories": "İlgili kategoriler",
+      "nearbyToolCategoriesThatFitSimilarWorkflows": "Benzer iş akışlarına uyan diğer araç kategorileri.",
+      "categoryNotFound": "Kategori bulunamadı",
+      "summaryDescription": "Paylaşıma hazır iş akışları ve daha sade bir keşif deneyimi için tasarlandı.",
+      "notFoundDescription": "Bu araç kategorisi yok ya da henüz herkese açık bir sayfası bulunmuyor."
+    },
+    "toolIndexView": {
+      "openPreviewTool": "önizleme aracını aç",
+      "searchToolsFormatsAndConverters": "Araç, biçim veya dönüştürücü ara…",
+      "pastefyTools": "Pastefy araçları",
+      "whatYouCanDoHere": "Burada neler yapabilirsiniz",
+      "previewStructuredFormatsWithDedicatedViewers": "Yapılandırılmış verileri her biçime özel görüntüleyicilerle önizleyin.",
+      "convertDataBetweenCommonDeveloperFormats": "Verileri geliştiricilerin sık kullandığı biçimler arasında dönüştürün.",
+      "pinnedTools": "Sabitlenmiş araçlar",
+      "browseByCategory": "Kategorilere göz atın",
+      "previewTools": "Önizleme araçları",
+      "conversions": "Dönüştürücüler",
+      "noConversionToolsMatchYourSearchYet": "Aramanıza uyan dönüştürücü henüz yok.",
+      "utilities": "Yardımcı araçlar",
+      "noUtilityToolsMatchYourSearchYet": "Aramanıza uyan yardımcı araç henüz yok.",
+      "descriptions": {
+        "usePastefyToolsToPreviewStructuredFilesConvertFormatsLikeJsonAndYamlAndCreateAPasteOnlyWhenYouAreReadyToShare": "Pastefy araçlarıyla yapılandırılmış dosyaları önizleyin, JSON ve YAML gibi biçimleri dönüştürün; paste'i yalnızca paylaşmaya hazır olduğunuzda oluşturun."
+      },
+      "createWhenReady": "Paste'i yalnızca çıktı paylaşıma hazır olduğunda oluşturun."
+    },
+    "adminPastes": {
+      "searchByTitleContentOrCreator": "Başlık, içerik veya kullanıcıya göre ara",
+      "clearUserFilter": "Kullanıcı filtresini temizle",
+      "moreFromUser": "Kullanıcının diğer paste'leri",
+      "noPastesMatchTheCurrentFilters": "Mevcut filtrelere uyan paste yok.",
+      "by": "oluşturan:",
+      "options": {
+        "allVisibilities": "Tüm görünürlükler",
+        "public": "Herkese açık",
+        "unlisted": "Liste dışı",
+        "private": "Gizli",
+        "newestFirst": "Önce en yeniler",
+        "oldestFirst": "Önce en eskiler"
+      }
+    },
+    "adminUsers": {
+      "searchByUsernameEmailOrProvider": "Kullanıcı adı, e-posta veya sağlayıcıya göre ara",
+      "grantAccess": "Erişim ver",
+      "makeAdmin": "Yönetici yap",
+      "setUser": "Kullanıcı yap",
+      "block": "Engelle",
+      "viewPastes": "Paste'lerini görüntüle",
+      "noUsersMatchTheCurrentFilters": "Mevcut filtrelere uyan kullanıcı yok.",
+      "provider": "Sağlayıcı:",
+      "options": {
+        "allRoles": "Tüm roller",
+        "admins": "Yöneticiler",
+        "users": "Kullanıcılar",
+        "awaitingAccess": "Erişim bekleyenler",
+        "blocked": "Engellenenler"
+      }
+    },
+    "loginViaApi": {
+      "loggingIn": "Giriş yapılıyor…"
+    },
+    "apiKeysPage": {
+      "apiDocs": "API belgeleri",
+      "addApiKey": "API anahtarı ekle",
+      "apiKeys": "API anahtarları",
+      "apiDocsTab": "API belgeleri",
+      "oAuth2Apps": "OAuth2 uygulamaları"
+    },
+    "asciinemaConnectView": {
+      "visitApiKeysPage": "API anahtarları sayfasına git",
+      "connectingYourAccountWithAsciicema": "Asciinema'yı Pastefy hesabınıza bağlayın.",
+      "createApiKey": "API anahtarı oluşturun",
+      "addApiKeyToAsciicemaConfig": "API anahtarını Asciinema yapılandırmasına ekleyin",
+      "bash": "bash"
+    },
+    "adminLayout": {
+      "admin": "Yönetim"
+    },
+    "searchPastes": {
+      "quickModal": "hızlı arama",
+      "clearFilters": "filtreleri temizle",
+      "searchTitlesContentOrEnterUsername": "Başlık ve içerikte ara ya da @kullanıcıadı yaz",
+      "markdownJsonLangTs": "markdown,json,lang-ts",
+      "findTheRightPasteFaster": "Aradığınız paste'i daha hızlı bulun",
+      "searchQuery": "Arama sorgusu",
+      "scope": "Kapsam",
+      "resultsPerPage": "Sayfa başına sonuç",
+      "pasteType": "Paste türü",
+      "encryption": "Şifreleme",
+      "folderState": "Klasör konumu",
+      "separateMultipleTagsWithCommas": "Birden fazla etiketi virgülle ayırın.",
+      "userMatch": "Eşleşen kullanıcı",
+      "noPublicUserMatched": "Eşleşen herkese açık kullanıcı yok: ",
+      "options": {
+        "public": "Herkese açık",
+        "mine": "Paste'lerim",
+        "starred": "Yıldızlılar",
+        "newestFirst": "Önce en yeniler",
+        "oldestFirst": "Önce en eskiler",
+        "titleAZ": "Başlık (A-Z)",
+        "titleZA": "Başlık (Z-A)",
+        "12PerPage": "Sayfa başına 12",
+        "24PerPage": "Sayfa başına 24",
+        "48PerPage": "Sayfa başına 48",
+        "allVisibilities": "Tüm görünürlükler",
+        "unlisted": "Liste dışı",
+        "private": "Gizli",
+        "allPasteTypes": "Tüm paste türleri",
+        "singlePastes": "Tekli paste'ler",
+        "multiPastes": "Çoklu paste'ler",
+        "allEncryptionStates": "Şifreli ve şifresiz",
+        "plainOnly": "Yalnızca şifresiz",
+        "encryptedOnly": "Yalnızca şifreli",
+        "allFolderStates": "Tüm konumlar",
+        "rootLevelOnly": "Yalnızca klasör dışındakiler",
+        "onlyInsideFolders": "Yalnızca klasör içindekiler"
+      },
+      "descriptions": {
+        "searchAllPublicPastes": "Herkese açık tüm paste'lerde arayın.",
+        "searchYourOwnPastes": "Kendi paste'lerinizde arayın.",
+        "searchYourStarredCollection": "Yıldızlı koleksiyonunuzda arayın."
+      }
+    },
+    "userHome": {
+      "descriptions": {
+        "openTheEditorAndStartaNewPasteRightAway": "Düzenleyiciyi açıp yeni bir paste'e hemen başlayın.",
+        "findSnippetsTitlesAndContentAcrossYourSavedWork": "Kayıtlı paste'lerinizdeki başlıkları, içerikleri ve kod parçacıklarını bulun.",
+        "previewConvertAndInspectContentWithoutPublishingIt": "İçeriği yayımlamadan önizleyin, dönüştürün ve inceleyin.",
+        "jumpIntoModerationUsersAndRecentPlatformActivity": "Moderasyona, kullanıcılara ve platformdaki son etkinliklere hızlıca ulaşın.",
+        "browsePublicPastesAndDiscoverWhatOthersAreSharing": "Herkese açık paste'lere göz atın, başkalarının neler paylaştığını görün."
+      }
+    }
+  },
+  "apiKeys": {
+    "deleteTitle": "API anahtarını sil",
+    "deleteConfirm": "Bu API anahtarını silmek istediğinizden emin misiniz?",
+    "loginRequiredSummary": "Giriş gerekli",
+    "loginRequiredDetail": "API anahtarlarınızı görmek için giriş yapmalısınız."
+  },
+  "catalog": {
+    "preview": {
+      "markdown-editor": {
+        "title": "Markdown düzenleyici ve makale önizlemesi",
+        "shortTitle": "Markdown",
+        "description": "Solda Markdown yazın, sağda makalenin son hâlini anında görün; yayımlayıp yayımlamamaya sonra karar verin."
+      },
+      "json-viewer": {
+        "title": "JSON görüntüleyici ve biçimlendirici",
+        "shortTitle": "JSON",
+        "description": "JSON yapılarını canlı düzenleyici ve gelişmiş JSON araçlarıyla yan yana inceleyin, biçimlendirin ve önizleyin."
+      },
+      "html-preview": {
+        "title": "HTML önizleme (sandbox)",
+        "shortTitle": "HTML",
+        "description": "HTML kod parçacıklarını yan yana görünümde hızla deneyin; paylaşmadan önce yerleşik sandbox'ta nasıl göründüklerine bakın."
+      },
+      "xml-viewer": {
+        "title": "XML görüntüleyici ve çözümleyici",
+        "shortTitle": "XML",
+        "description": "XML yükleyin, iç içe düğümleri inceleyin ve oluşan yapıyı doğrulayın. Yapılandırma ve belge dosyaları düşünülerek hazırlandı."
+      },
+      "yaml-viewer": {
+        "title": "YAML görüntüleyici ve ağaç gezgini",
+        "shortTitle": "YAML",
+        "description": "YAML'ı yapılandırılmış bir belge gibi gezin: daraltılabilir bölümler, canlı düzenleyici ve anında önizleme."
+      },
+      "csv-viewer": {
+        "title": "CSV tablo önizlemesi",
+        "shortTitle": "CSV",
+        "description": "CSV verilerini okunaklı bir tablo olarak önizleyin; kaynağı düzenlemek için önce paste oluşturmanız gerekmez."
+      },
+      "mermaid-live-editor": {
+        "title": "Mermaid diyagramları için canlı önizleme",
+        "shortTitle": "Mermaid",
+        "description": "Mermaid diyagramlarını düzenlerken sonucu anında görün; mimari ve akış şemalarınız paylaşıma daha çabuk hazır olsun."
+      },
+      "geojson-viewer": {
+        "title": "GeoJSON harita önizlemesi",
+        "shortTitle": "GeoJSON",
+        "description": "Ham GeoJSON'u yan tarafta düzenlerken mekânsal verileri doğrudan harita üzerinde önizleyin."
+      },
+      "svg-viewer": {
+        "title": "SVG görüntüleyici",
+        "shortTitle": "SVG",
+        "description": "SVG kod parçacıklarını sade, yan yana bir düzende deneyin; vektörel çıktıyı anında görün."
+      },
+      "diff-viewer": {
+        "title": "Diff görüntüleyici",
+        "shortTitle": "Diff",
+        "description": "Patch'leri ve kod değişikliklerini, hızlı bir kod inceleme aracı gibi çalışan diff önizleme sayfasında gözden geçirin."
+      },
+      "env-viewer": {
+        "title": ".env / yapılandırma görüntüleyici",
+        "shortTitle": "Yapılandırma",
+        "description": "Ortam değişkeni biçimindeki yapılandırma dosyalarını bu önizleme aracıyla inceleyin; uygulama ayarları ve deploy verileri için kullanışlıdır."
+      },
+      "terraform-viewer": {
+        "title": "Terraform / HCL önizlemesi",
+        "shortTitle": "Terraform",
+        "description": "Terraform ve HCL dosyalarını altyapıya özel bir önizlemeyle düzenleyin; kod parçacığı hazır olduğunda yayımlayın."
+      },
+      "log-viewer": {
+        "title": "Log görüntüleyici",
+        "shortTitle": "Log'lar",
+        "description": "Uygulama veya sunucu log'larını canlı görüntüleyiciye yapıştırın; paylaşılabilir bir paste oluşturmadan önce filtreleyip inceleyin."
+      },
+      "http-viewer": {
+        "title": "HTTP / cURL önizlemesi",
+        "shortTitle": "HTTP",
+        "description": "HTTP isteklerini veya cURL komutlarını yazın; yayımlamadan ya da paylaşmadan önce istek önizlemesinde inceleyin."
+      },
+      "github-actions-viewer": {
+        "title": "GitHub Actions iş akışı önizlemesi",
+        "shortTitle": "Actions",
+        "description": "İş akışı YAML'ını, siz düzenlerken işleri ve adımları öne çıkaran GitHub Actions önizlemesiyle inceleyin."
+      },
+      "ansible-viewer": {
+        "title": "Ansible playbook önizlemesi",
+        "shortTitle": "Ansible",
+        "description": "Ansible playbook'larını yan yana düzenleyicide yazın; görevleri, rolleri ve host'ları daha anlaşılır bir operasyon görünümünde önizleyin."
+      },
+      "prometheus-rules-viewer": {
+        "title": "Prometheus / uyarı kuralları önizlemesi",
+        "shortTitle": "Uyarılar",
+        "description": "İzleme kurallarını ve uyarı gruplarını, gözlemlenebilirlik yapılandırmaları ve uyarı tanımları için hazırlanmış bir sayfada önizleyin."
+      },
+      "regex-lab": {
+        "title": "Regex test aracı",
+        "shortTitle": "Regex",
+        "description": "Düzenli ifadeleri (regex) özel bir önizlemede deneyin, inceleyin ve paylaşın."
+      },
+      "terminal-cast-viewer": {
+        "title": "Terminal kaydı önizlemesi",
+        "shortTitle": "Terminal kaydı",
+        "description": "Kaydedilmiş terminal oturumlarını ve shell demolarını paste olarak yayımlamadan önce önizleyin."
+      },
+      "calendar-viewer": {
+        "title": "ICS takvim önizlemesi",
+        "shortTitle": "Takvim",
+        "description": "Takvim davetlerini ve etkinlik programlarını hızlı, okunaklı bir önizlemede inceleyin."
+      }
+    },
+    "conversion": {
+      "json-to-yaml": {
+        "title": "JSON'dan YAML'a dönüştürme",
+        "shortTitle": "JSON -> YAML",
+        "description": "API payload'larını veya yapılandırma nesnelerini, altyapı ve belgeleme işlerinde kullanabileceğiniz temiz bir YAML'a dönüştürün."
+      },
+      "yaml-to-json": {
+        "title": "YAML'dan JSON'a dönüştürme",
+        "shortTitle": "YAML -> JSON",
+        "description": "Deploy ve yapılandırma YAML'larını makinelerin kolayca işleyebileceği JSON'a çevirin."
+      },
+      "json-to-env": {
+        "title": "JSON'dan .env'e dönüştürme",
+        "shortTitle": "JSON -> .env",
+        "description": "JSON yapılandırmasını düzleştirip uygulamalar ve deploy'lar için ortam değişkenlerine dönüştürün."
+      },
+      "env-to-json": {
+        "title": ".env'den JSON'a dönüştürme",
+        "shortTitle": ".env -> JSON",
+        "description": "Ortam değişkenlerini API payload'ları, belgeler ya da hızlı bir inceleme için JSON'a dönüştürün."
+      },
+      "csv-to-json": {
+        "title": "CSV'den JSON'a dönüştürme",
+        "shortTitle": "CSV -> JSON",
+        "description": "Tablo biçimindeki CSV verilerini API'lere veya araçlara verebileceğiniz JSON dizilerine dönüştürün."
+      },
+      "json-to-csv": {
+        "title": "JSON'dan CSV'ye dönüştürme",
+        "shortTitle": "JSON -> CSV",
+        "description": "JSON dizilerini elektronik tablolar ve dışa aktarımlar için düz CSV çıktısına dönüştürün."
+      },
+      "http-to-curl": {
+        "title": "HTTP'den cURL'e dönüştürme",
+        "shortTitle": "HTTP -> cURL",
+        "description": "Ham HTTP istek dosyalarını terminalde çalıştırabileceğiniz cURL komutlarına çevirin."
+      },
+      "curl-to-http": {
+        "title": "cURL'den HTTP'ye dönüştürme",
+        "shortTitle": "cURL -> HTTP",
+        "description": "cURL komutlarını belgeler ve API araçları için temiz HTTP istek dosyalarına çevirin."
+      },
+      "yaml-to-env": {
+        "title": "YAML'dan .env'e dönüştürme",
+        "shortTitle": "YAML -> .env",
+        "description": "Basit YAML yapılandırmalarını düzleştirip deploy'da kullanabileceğiniz ortam değişkenlerine dönüştürün."
+      },
+      "env-to-yaml": {
+        "title": ".env'den YAML'a dönüştürme",
+        "shortTitle": ".env -> YAML",
+        "description": "Ortam değişkenlerini belgeler ve kolay okunur yapılandırma özetleri için YAML'a dönüştürün."
+      },
+      "csv-to-markdown": {
+        "title": "CSV'den Markdown tablosuna dönüştürme",
+        "shortTitle": "CSV -> Markdown",
+        "description": "CSV dışa aktarımlarını belgeler, README'ler ve issue'lar için Markdown tablolarına dönüştürün."
+      },
+      "json-to-markdown": {
+        "title": "JSON'dan Markdown tablosuna dönüştürme",
+        "shortTitle": "JSON -> Markdown",
+        "description": "JSON nesne dizilerini temiz Markdown tablolarına dönüştürün."
+      },
+      "http-to-json": {
+        "title": "HTTP'den JSON'a dönüştürme",
+        "shortTitle": "HTTP -> JSON",
+        "description": "Ham HTTP istek dosyalarını araçlarda kullanmak ya da incelemek için JSON nesnelerine çevirin."
+      },
+      "curl-to-json": {
+        "title": "cURL'den JSON'a dönüştürme",
+        "shortTitle": "cURL -> JSON",
+        "description": "cURL komutlarını sonraki işlem adımlarında kullanılacak JSON istek nesnelerine dönüştürün."
+      }
+    },
+    "utility": {
+      "data-to-mermaid": {
+        "title": "Veriden Mermaid grafikleri",
+        "shortTitle": "Mermaid grafikleri",
+        "description": "JSON, YAML veya CSV veri kümelerini alan eşleme ve özetleme desteğiyle Mermaid pasta, çubuk, çizgi, gruplu ve birleşik grafiklere dönüştürün."
+      },
+      "mermaid-theme-builder": {
+        "title": "Mermaid tema oluşturucu",
+        "shortTitle": "Tema oluşturucu",
+        "description": "Mermaid'in renklerini, yazı tiplerini, boşluklarını ve diyagram stilini ayarlayın; ardından tema yapılandırmasını diyagramla birlikte dışa aktarın."
+      },
+      "data-to-mermaid-er": {
+        "title": "Veriden Mermaid ER diyagramı",
+        "shortTitle": "Veri -> ER",
+        "description": "Şema benzeri JSON, YAML veya CSV veri yapılarından Mermaid ER diyagramları çıkarın."
+      },
+      "sql-to-mermaid-er": {
+        "title": "SQL'den Mermaid ER diyagramı",
+        "shortTitle": "SQL -> ER",
+        "description": "CREATE TABLE ifadelerini ayrıştırıp tabloları ve yabancı anahtarları gösteren Mermaid ER diyagramları oluşturun."
+      },
+      "infra-to-mermaid": {
+        "title": "Altyapıdan Mermaid diyagramı",
+        "shortTitle": "Altyapı -> Mermaid",
+        "description": "Compose, Kubernetes, Terraform ve GitHub Actions tanımlarını Mermaid mimari akış şemalarına dönüştürün."
+      },
+      "markdown-to-mermaid": {
+        "title": "Markdown'dan Mermaid zihin haritası / akış şeması",
+        "shortTitle": "Markdown -> Mermaid",
+        "description": "Markdown başlıklarını ve madde işaretli taslakları Mermaid zihin haritalarına ya da akış şemalarına dönüştürün."
+      },
+      "data-to-class-diagram": {
+        "title": "JSON / YAML'dan sınıf diyagramı",
+        "shortTitle": "Veri -> Sınıf",
+        "description": "İç içe yapılandırılmış veriden Mermaid sınıf diyagramı oluşturun; alanlar ve ilişkiler otomatik çıkarılır."
+      },
+      "mermaid-image-export": {
+        "title": "Mermaid görsel dışa aktarma aracı",
+        "shortTitle": "Mermaid dışa aktarma",
+        "description": "Mermaid diyagramlarını kenar boşluğu, ölçek, arka plan ve filigran seçenekleriyle PNG veya SVG olarak dışa aktarın."
+      },
+      "diff-lab": {
+        "title": "Metin karşılaştırma (diff)",
+        "shortTitle": "Diff",
+        "description": "İki metni karşılaştırın, diff çıktısını inceleyin ve unified patch olarak dışa aktarın."
+      },
+      "jwt-inspector": {
+        "title": "JWT çözümleyici",
+        "shortTitle": "JWT",
+        "description": "JWT'leri çözün, claim'leri inceleyin ve zaman damgalarını kontrol edin; token hiçbir yere gönderilmez."
+      },
+      "hash-generator": {
+        "title": "Hash oluşturucu",
+        "shortTitle": "Hash",
+        "description": "Metinler veya payload'lar için SHA hash'leri oluşturun, uzunluklarını tek bakışta karşılaştırın."
+      },
+      "secret-generator": {
+        "title": "Secret oluşturucu",
+        "shortTitle": "Secret",
+        "description": "Hızlı yerel testler ve kurulumlar için UUID, hex token ve Base64URL secret oluşturun."
+      },
+      "password-generator": {
+        "title": "Parola oluşturucu",
+        "shortTitle": "Parola",
+        "description": "Karakter kümelerini, uzunluğu ve adedi ayarlayarak parolalar oluşturun; birbirine karışabilecek karakterleri dışarıda bırakabilirsiniz."
+      },
+      "cron-explainer": {
+        "title": "Cron ifadesi çözümleyici",
+        "shortTitle": "Cron",
+        "description": "Cron ifadelerini alan alan çözümleyin; işin ne zaman çalışacağını anlaşılır biçimde görün."
+      },
+      "base64-lab": {
+        "title": "Base64 kodlama / çözme",
+        "shortTitle": "Base64",
+        "description": "Payload ve token işleriniz için Base64 ya da Base64URL metinlerini tarayıcınızda kodlayın veya çözün."
+      },
+      "url-encoder": {
+        "title": "URL kodlama / çözme",
+        "shortTitle": "URL kodlama",
+        "description": "URL bileşenlerini ve sorgu değerlerinin tamamını tarayıcıdan çıkmadan kodlayın veya çözün."
+      },
+      "timestamp-converter": {
+        "title": "Zaman damgası dönüştürücü",
+        "shortTitle": "Zaman damgası",
+        "description": "Hata ayıklarken veya belge yazarken Unix zaman damgaları, ISO tarihleri ve yerel saat arasında dönüşüm yapın."
+      },
+      "slug-generator": {
+        "title": "Slug oluşturucu",
+        "shortTitle": "Slug",
+        "description": "Düz metinden slug, snake_case ve URL dostu diğer biçimleri oluşturun."
+      },
+      "case-converter": {
+        "title": "Büyük/küçük harf dönüştürücü",
+        "shortTitle": "Büyük/küçük harf",
+        "description": "Metni küçük harf, büyük harf, başlık düzeni, camelCase, snake_case ve diğer biçimler arasında dönüştürün."
+      },
+      "query-string-parser": {
+        "title": "Query string ayrıştırıcı",
+        "shortTitle": "Query string",
+        "description": "Query string'leri yapılandırılmış veriye ayrıştırın ve temiz bir şekilde yeniden oluşturun."
+      },
+      "html-entity-tool": {
+        "title": "HTML entity kodlama / çözme",
+        "shortTitle": "HTML entity",
+        "description": "Şablonlar, belgeler ve yapıştırılan kod parçacıkları için HTML entity'lerini kodlayın veya çözün."
+      },
+      "json-string-tool": {
+        "title": "JSON string escape aracı",
+        "shortTitle": "JSON string",
+        "description": "Metni JSON string'lerinde kullanılacak şekilde escape edin ya da JSON string içeriğini düz metne geri çevirin."
+      },
+      "regex-escape-tool": {
+        "title": "Regex escape aracı",
+        "shortTitle": "Regex escape",
+        "description": "Düz metni regex desenlerinde kullanmak için escape edin ya da regex'e özgü karakterlerdeki escape'i kaldırın."
+      },
+      "color-converter": {
+        "title": "Renk dönüştürücü",
+        "shortTitle": "Renk",
+        "description": "Renkleri HEX, RGB ve HSL arasında dönüştürün; sonucu canlı renk örneğinde görün."
+      },
+      "number-base-converter": {
+        "title": "Sayı tabanı dönüştürücü",
+        "shortTitle": "Sayı tabanları",
+        "description": "Değerleri ikilik, sekizlik, onluk ve onaltılık tabanlar arasında dönüştürün."
+      },
+      "text-sorter": {
+        "title": "Satır sıralama ve yinelenenleri kaldırma",
+        "shortTitle": "Sıralama",
+        "description": "Satır satır yazılmış listeleri sıralayın, yinelenenleri kaldırın ve sırayı hızla tersine çevirin."
+      },
+      "lorem-ipsum-generator": {
+        "title": "Lorem Ipsum oluşturucu",
+        "shortTitle": "Lorem Ipsum",
+        "description": "Arayüz ve içerik taslakları için yer tutucu kelime, cümle veya paragraf oluşturun."
+      },
+      "uuid-inspector": {
+        "title": "UUID çözümleyici",
+        "shortTitle": "UUID",
+        "description": "UUID'leri doğrulayın; sürüm, varyant ve nil durumlarını inceleyin."
+      },
+      "word-stats": {
+        "title": "Kelime / satır / karakter sayacı",
+        "shortTitle": "Kelime sayacı",
+        "description": "Kelime, satır, karakter ve paragraf sayısını, okuma süresini ve diğer faydalı metin ölçümlerini görün."
+      },
+      "nginx-log-inspector": {
+        "title": "NGINX log çözümleyici",
+        "shortTitle": "NGINX log'ları",
+        "description": "Standart biçimdeki NGINX erişim log'larını ayrıştırın, durum kodlarını ve en çok istenen yolları inceleyin, istek verilerini yapılandırılmış biçimde dışa aktarın."
+      },
+      "apache-log-inspector": {
+        "title": "Apache log çözümleyici",
+        "shortTitle": "Apache log'ları",
+        "description": "Apache erişim log'larını ayrıştırılmış istekler, durum grupları, yol özetleri ve hızlı filtrelemeyle inceleyin."
+      },
+      "caddy-config-generator": {
+        "title": "Görsel Caddyfile oluşturucu",
+        "shortTitle": "Caddyfile",
+        "description": "Statik siteler veya reverse proxy'ler için canlı ortama uygun Caddy yapılandırmaları hazırlayın; varsayılanlar deploy'a hazır gelir."
+      },
+      "nginx-config-generator": {
+        "title": "Görsel NGINX yapılandırma oluşturucu",
+        "shortTitle": "NGINX yapılandırması",
+        "description": "Reverse proxy ve statik site deploy'ları için yaygın canlı ortam ayarlarını içeren NGINX virtual host yapılandırmaları oluşturun."
+      },
+      "apache-config-generator": {
+        "title": "Görsel Apache yapılandırma oluşturucu",
+        "shortTitle": "Apache yapılandırması",
+        "description": "HTTPS yer tutucuları, proxy, statik barındırma, log kaydı ve önbellek seçenekleriyle Apache VirtualHost yapılandırmaları oluşturun."
+      },
+      "dockerfile-generator": {
+        "title": "Görsel Dockerfile oluşturucu",
+        "shortTitle": "Dockerfile",
+        "description": "Node, Bun, Java JAR, Python veya statik dosyalar için deploy'a uygun varsayılanlarla Dockerfile'lar oluşturun."
+      },
+      "jar-start-script-generator": {
+        "title": "Görsel JAR başlatma script'i oluşturucu",
+        "shortTitle": "JAR başlatma",
+        "description": "Java JAR uygulamaları için JVM argümanları, log ayarları ve uygulama parametreleriyle start.sh veya start.bat başlatma script'leri oluşturun."
+      },
+      "systemd-service-generator": {
+        "title": "Systemd servis dosyası oluşturucu",
+        "shortTitle": "systemd",
+        "description": "Uygulamalar ve servisler için yeniden başlatma politikası, ortam değişkenleri ve çalışma dizini ayarlarını içeren systemd unit dosyaları oluşturun."
+      },
+      "compose-stack-generator": {
+        "title": "Docker Compose web stack oluşturucu",
+        "shortTitle": "Compose stack",
+        "description": "Yerel ortam veya sunucu deploy'u için uygulama, proxy, Postgres ve Redis servislerinden oluşan basit bir web stack'i oluşturun."
+      }
+    },
+    "category": {
+      "docs": {
+        "title": "Belgeleme araçları",
+        "eyebrow": "belgeleme",
+        "description": "Markdown makaleleri, diff'ler ve paylaşılabilir belgeler için araçlar.",
+        "seoTitle": "Pastefy belgeleme araçları",
+        "seoDescription": "Markdown makaleleri, diff'ler ve geliştirici belgeleri için okunaklı paylaşım modları sunan Pastefy belgeleme araçlarını keşfedin."
+      },
+      "data": {
+        "title": "Veri araçları",
+        "eyebrow": "yapılandırılmış veri",
+        "description": "JSON, YAML, XML, CSV ve diğer yapılandırılmış biçimleri zengin önizlemelerle inceleyin.",
+        "seoTitle": "Pastefy veri araçları",
+        "seoDescription": "Pastefy veri araçlarıyla JSON, YAML, XML, CSV ve diğer yapılandırılmış veri biçimlerini inceleyin ve önizleyin."
+      },
+      "visual": {
+        "title": "Görsel araçlar",
+        "eyebrow": "görsel önizleme",
+        "description": "HTML, SVG, Mermaid ve mekânsal veri biçimlerini düzenlerken sonucu görsel olarak önizleyin.",
+        "seoTitle": "Pastefy görsel önizleme araçları",
+        "seoDescription": "Pastefy görsel araçlarıyla HTML, SVG, Mermaid diyagramları, GeoJSON haritaları ve diğer görsel biçimleri önizleyin."
+      },
+      "mermaid": {
+        "title": "Mermaid araçları",
+        "eyebrow": "MERMAID",
+        "description": "Mermaid düzenleyicilerini, tema oluşturucuları, dışa aktarma araçlarını ve diyagram oluşturucuları tek yerde bulun.",
+        "seoTitle": "Pastefy Mermaid araçları",
+        "seoDescription": "Pastefy Mermaid araçlarıyla diyagram düzenleyin, tema hazırlayın, görsel olarak dışa aktarın; Mermaid grafikleri, ER ve sınıf diyagramları ile altyapı şemaları oluşturun."
+      },
+      "api": {
+        "title": "API araçları",
+        "eyebrow": "API iş akışı",
+        "description": "HTTP istekleri, payload'lar ve API'lerle ilgili diğer içerikler için amaca özel araçlar.",
+        "seoTitle": "Pastefy API araçları",
+        "seoDescription": "Pastefy API araçlarıyla HTTP isteklerini, payload biçimlerini ve API odaklı kod parçacıklarını paylaşmadan önce inceleyin."
+      },
+      "infra": {
+        "title": "Altyapı araçları",
+        "eyebrow": "altyapı",
+        "description": "Terraform, yapılandırma dosyaları ve altyapı odaklı kod parçacıklarını daha sade bir çalışma alanında önizleyin.",
+        "seoTitle": "Pastefy altyapı araçları",
+        "seoDescription": "Terraform, .env dosyaları, yapılandırmalar ve altyapı odaklı iş akışları için Pastefy altyapı araçları."
+      },
+      "operations": {
+        "title": "Operasyon araçları",
+        "eyebrow": "operasyon",
+        "description": "Log'ları, uyarı kurallarını ve canlı ortamdaki operasyonel verileri, kurulum sonrası günlük işler için tasarlanmış araçlarla inceleyin.",
+        "seoTitle": "Pastefy operasyon araçları",
+        "seoDescription": "Pastefy operasyon araçlarıyla log'ları, uyarı kurallarını, canlı ortama ait operasyonel içerikleri ve tanılama verilerini inceleyin."
+      },
+      "server": {
+        "title": "Sunucu yapılandırma araçları",
+        "eyebrow": "sunucu yapılandırması",
+        "description": "Sık ihtiyaç duyulan seçeneklerle deploy'a hazır Caddy, NGINX ve Apache site yapılandırmaları oluşturun.",
+        "seoTitle": "Pastefy sunucu yapılandırma araçları",
+        "seoDescription": "Pastefy sunucu yapılandırma araçlarıyla statik siteler ve reverse proxy'ler için Caddy, NGINX ve Apache yapılandırmaları oluşturun."
+      },
+      "deploy": {
+        "title": "Deploy araçları",
+        "eyebrow": "deploy",
+        "description": "Yaygın deploy iş akışları için Dockerfile'lar, Compose stack'leri, başlatma script'leri ve systemd unit dosyaları oluşturun.",
+        "seoTitle": "Pastefy deploy araçları",
+        "seoDescription": "Pastefy deploy araçlarıyla Dockerfile'lar, Compose dosyaları, başlatma script'leri ve systemd servisleri oluşturun."
+      },
+      "automation": {
+        "title": "Otomasyon araçları",
+        "eyebrow": "otomasyon",
+        "description": "İş akışları, zamanlamalar, GitHub Actions ve diğer otomasyon içerikleriyle çalışın.",
+        "seoTitle": "Pastefy otomasyon araçları",
+        "seoDescription": "Cron zamanlamaları, GitHub Actions, Ansible ve otomasyon odaklı geliştirici iş akışları için Pastefy otomasyon araçları."
+      },
+      "security": {
+        "title": "Güvenlik araçları",
+        "eyebrow": "güvenlik",
+        "description": "Token'ları inceleyin, secret oluşturun ve hassas metinlerle doğrudan tarayıcınızda çalışın.",
+        "seoTitle": "Pastefy güvenlik araçları",
+        "seoDescription": "Pastefy güvenlik araçlarıyla JWT'leri inceleyin, parola ve secret oluşturun, hassas verileri tarayıcınızdan çıkarmadan işleyin."
+      },
+      "terminal": {
+        "title": "Terminal araçları",
+        "eyebrow": "terminal",
+        "description": "Terminal oturumlarını ve terminal çıktısı biçimindeki içerikleri daha temiz bir görünümle önizleyin.",
+        "seoTitle": "Pastefy terminal araçları",
+        "seoDescription": "Pastefy terminal araçlarıyla terminal kayıtlarını ve terminal tarzı geliştirici içeriklerini paylaşmadan önce önizleyin."
+      },
+      "convert": {
+        "title": "Dönüştürücüler",
+        "eyebrow": "dönüştürme",
+        "description": "JSON, YAML, CSV, .env, HTTP ve cURL gibi geliştiricilerin sık kullandığı biçimler arasında dönüştürme yapın.",
+        "seoTitle": "Pastefy biçim dönüştürücüleri",
+        "seoDescription": "Pastefy dönüştürücüleriyle JSON, YAML, CSV, .env, HTTP, cURL ve geliştiricilerin sık kullandığı diğer biçimler arasında dönüştürme yapın."
+      },
+      "inspect": {
+        "title": "İnceleme araçları",
+        "eyebrow": "inceleme",
+        "description": "Metinleri, diff'leri, tanımlayıcıları ve yapılandırılmış girdileri hızla analiz edin, karşılaştırın ve inceleyin.",
+        "seoTitle": "Pastefy inceleme araçları",
+        "seoDescription": "Pastefy inceleme araçlarıyla diff'leri, UUID'leri, query string'leri, sayı tabanlarını ve metin ağırlıklı geliştirici verilerini analiz edin."
+      },
+      "generate": {
+        "title": "Oluşturucular",
+        "eyebrow": "oluşturma",
+        "description": "Slug, yer tutucu içerik, renk, değer ve geliştiricinin işine yarayacak diğer çıktıları oluşturun.",
+        "seoTitle": "Pastefy oluşturucu araçları",
+        "seoDescription": "Pastefy oluşturucu araçlarıyla slug, örnek içerik, renk, secret ve işinize yarayacak diğer geliştirici çıktılarını oluşturun."
+      },
+      "encode": {
+        "title": "Kodlama ve çözme araçları",
+        "eyebrow": "kodlama",
+        "description": "URL, Base64 ve HTML entity değerlerini kodlayıp çözün; JSON string ve regex içeriklerini escape edin.",
+        "seoTitle": "Pastefy kodlama ve çözme araçları",
+        "seoDescription": "Pastefy kodlama ve çözme araçlarıyla Base64 ve URL kodlaması yapın, HTML entity'lerini dönüştürün, JSON string'lerini ve regex desenlerini escape edin."
+      },
+      "time": {
+        "title": "Zaman araçları",
+        "eyebrow": "zaman",
+        "description": "Tarayıcıda çalışan hafif araçlarla zaman damgalarını dönüştürün, zamanlamaları kolayca anlamlandırın.",
+        "seoTitle": "Pastefy zaman araçları",
+        "seoDescription": "Pastefy zaman araçlarıyla zaman damgalarını dönüştürün ve zamanlama verilerini tarayıcıdaki sade bir çalışma alanında inceleyin."
+      },
+      "visualize": {
+        "title": "Görselleştirme araçları",
+        "eyebrow": "görselleştirme",
+        "description": "Verilerinizi diyagramlara, grafiklere, sınıf görünümlerine, ER modellerine ve Mermaid çıktılarına dönüştürün.",
+        "seoTitle": "Pastefy görselleştirme araçları",
+        "seoDescription": "Pastefy görselleştirme araçlarıyla SQL, JSON, YAML, CSV, Markdown ve altyapı dosyalarını Mermaid diyagramlarına ve grafiklerine dönüştürün."
+      }
+    },
+    "labels": {
+      "docs": "Belgeleme",
+      "data": "Veri",
+      "visual": "Görsel",
+      "infra": "Altyapı",
+      "operations": "Operasyon",
+      "aPI": "API",
+      "automation": "Otomasyon",
+      "security": "Güvenlik",
+      "terminal": "Terminal",
+      "convert": "Dönüştürme",
+      "visualize": "Görselleştirme",
+      "inspect": "İnceleme",
+      "generate": "Oluşturma",
+      "encode": "Kodlama",
+      "time": "Zaman",
+      "server": "Sunucu",
+      "deploy": "Deploy"
+    }
+  }
+}

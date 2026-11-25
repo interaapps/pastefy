@@ -18,6 +18,7 @@ import saSVG from 'ia-flag-icons/states/SA.svg'
 import ilSVG from 'ia-flag-icons/states/IL.svg'
 import hrSVG from 'ia-flag-icons/states/HR.svg'
 import krdSVG from 'ia-flag-icons/states/KRD.svg'
+import trSVG from 'ia-flag-icons/states/TR.svg'
 
 export const supportedLocales = [
   'en',
@@ -37,6 +38,7 @@ export const supportedLocales = [
   'ja',
   'kmr',
   'hr',
+  'tr',
 ] as const
 
 export type SupportedLocale = (typeof supportedLocales)[number]
@@ -61,6 +63,7 @@ export const languageOptions: Array<{ value: LanguagePreference; label: string; 
   { value: 'he', label: 'עברית', icon: ilSVG },
   { value: 'ja', label: '日本語', icon: jpSVG },
   { value: 'hr', label: 'Hrvatski', icon: hrSVG },
+  { value: 'tr', label: 'Türkçe', icon: trSVG },
 ]
 
 const localeAliases: Record<string, SupportedLocale> = {
@@ -87,6 +90,7 @@ const localeAliases: Record<string, SupportedLocale> = {
   ja: 'ja',
   hr: 'hr',
   kmr: 'kmr',
+  tr: 'tr',
 }
 
 const localeLoaders: Partial<Record<SupportedLocale, () => Promise<{ default: any }>>> = {
@@ -106,6 +110,7 @@ const localeLoaders: Partial<Record<SupportedLocale, () => Promise<{ default: an
   ja: () => import('@/locales/ja.json'),
   kmr: () => import('@/locales/kmr.json'),
   hr: () => import('@/locales/hr.json'),
+  tr: () => import('@/locales/tr.json'),
 }
 
 const loadedLocales = new Set<SupportedLocale>(['en'])
