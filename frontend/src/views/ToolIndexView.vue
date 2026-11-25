@@ -8,6 +8,7 @@ import ToolCard from '@/components/tools/ToolCard.vue'
 import { useSEO } from '@/composables/seo.ts'
 import { usePinnedTools } from '@/composables/pinned-tools.ts'
 import {
+  categorySlugByName,
   conversionCatalogEntries,
   getCategoryCount,
   previewCatalogEntries,
@@ -39,33 +40,41 @@ const localizedUtilityCatalogEntries = computed(() =>
   utilityCatalogEntries.map((tool) => localizeTool('utility', tool, t)),
 )
 
-const normalizedSearch = computed(() => search.value.trim().toLowerCase())
+// "İ".toLowerCase() yields "i" + U+0307; drop the combining dot so "İstek" matches "istek",
+// while "API" still lowercases to "api" regardless of UI language.
+const normalizeForSearch = (value: string) => value.toLowerCase().replace(/\u0307/g, '')
+
+const normalizedSearch = computed(() => normalizeForSearch(search.value.trim()))
 
 const matchesSearch = (
   entry: { title?: string; shortTitle?: string; description: string; keywords: string[] },
 ) => {
   if (!normalizedSearch.value) return true
 
-  return [
-    entry.title || '',
-    entry.shortTitle || '',
-    entry.description,
-    ...entry.keywords,
-  ]
-    .join(' ')
-    .toLowerCase()
-    .includes(normalizedSearch.value)
+  return normalizeForSearch(
+    [entry.title || '', entry.shortTitle || '', entry.description, ...entry.keywords].join(' '),
+  ).includes(normalizedSearch.value)
 }
 
 const groupedTools = computed(() => {
-  return Object.entries(
-    localizedPreviewTools.value.reduce<Record<string, typeof previewTools>>((groups, tool) => {
-      if (!matchesSearch(tool)) return groups
-      groups[tool.category] ||= []
-      groups[tool.category].push(tool)
-      return groups
-    }, {}),
-  ).filter(([, tools]) => tools.length > 0)
+  const groups = new Map<string, { slug: string; tools: typeof previewTools }>()
+
+  localizedPreviewTools.value.forEach((tool, index) => {
+    if (!matchesSearch(tool)) return
+    const englishCategory = previewTools[index].category
+    const group = groups.get(tool.category) ?? {
+      slug:
+        categorySlugByName[englishCategory as keyof typeof categorySlugByName] ??
+        englishCategory.toLowerCase(),
+      tools: [],
+    }
+    group.tools.push(tool)
+    groups.set(tool.category, group)
+  })
+
+  return [...groups.entries()]
+    .filter(([, group]) => group.tools.length > 0)
+    .map(([category, group]) => [category, group.tools, group.slug] as const)
 })
 
 const filteredPreviewTools = computed(() =>
@@ -83,9 +92,9 @@ const categoryLinks = computed(() =>
     .map((category) => localizeCategory(category, t))
     .filter((category) => {
       if (!normalizedSearch.value) return true
-      return `${category.title} ${category.description} ${category.eyebrow}`
-        .toLowerCase()
-        .includes(normalizedSearch.value)
+      return normalizeForSearch(
+        `${category.title} ${category.description} ${category.eyebrow}`,
+      ).includes(normalizedSearch.value)
     }),
 )
 const pinnedTools = computed(() =>
@@ -231,7 +240,7 @@ const pinnedTools = computed(() =>
     </section>
 
     <section
-      v-for="[category, tools] of groupedTools"
+      v-for="[category, tools, categorySlug] of groupedTools"
       :key="category"
       class="flex flex-col gap-4"
     >
@@ -251,7 +260,7 @@ const pinnedTools = computed(() =>
 
       <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <router-link
-          :to="{ name: 'tool-category', params: { category: category.toLowerCase() } }"
+          :to="{ name: 'tool-category', params: { category: categorySlug } }"
           class="md:col-span-2 xl:col-span-3 inline-flex items-center gap-2 text-sm text-neutral-500 transition-colors hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200"
         >
           Browse {{ category.toLowerCase() }} category page
