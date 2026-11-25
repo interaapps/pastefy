@@ -53,7 +53,8 @@
     "explore": "探索",
     "search": "搜索",
     "stars": "收藏",
-    "apiKeys": "API 密钥"
+    "apiKeys": "API 密钥",
+    "tools": "工具"
   },
   "auth": {
     "login": "登录",

@@ -53,7 +53,8 @@
     "explore": "Jelajahi",
     "search": "Cari",
     "stars": "Favorit",
-    "apiKeys": "Kunci API"
+    "apiKeys": "Kunci API",
+    "tools": "Tools"
   },
   "auth": {
     "login": "masuk",

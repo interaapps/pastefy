@@ -53,7 +53,8 @@
     "explore": "สำรวจ",
     "search": "ค้นหา",
     "stars": "รายการโปรด",
-    "apiKeys": "คีย์ API"
+    "apiKeys": "คีย์ API",
+    "tools": "เครื่องมือ"
   },
   "auth": {
     "login": "เข้าสู่ระบบ",

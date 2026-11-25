@@ -53,7 +53,8 @@
     "explore": "Populer",
     "search": "Lêgerîn",
     "stars": "Stêrk",
-    "apiKeys": "Kilîdên API"
+    "apiKeys": "Kilîdên API",
+    "tools": "Tools"
   },
   "auth": {
     "login": "têketin",

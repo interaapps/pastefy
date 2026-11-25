@@ -25,7 +25,10 @@ const appStore = useAppStore()
     @shortkey="appStore.searchShown = true"
   >
     <div class="flex w-full flex-col gap-3 pt-[3.5rem]">
-      <nav class="flex w-full gap-2">
+      <nav
+        class="grid w-full gap-2"
+        :class="appInfo.appInfo?.public_pastes_enabled ? 'grid-cols-2' : 'grid-cols-3'"
+      >
         <Button
           as="router-link"
           :to="{ name: 'home-page' }"
@@ -45,6 +48,17 @@ const appStore = useAppStore()
           size="small"
           icon="ti ti-world text-lg"
           :label="$t('nav.explore').toLowerCase()"
+          severity="contrast"
+          outlined
+          fluid
+        />
+        <Button
+          as="router-link"
+          :to="{ name: 'tool-home' }"
+          class="border-neutral-400 bg-gradient-to-b from-[transparent] to-neutral-100 dark:border-neutral-600 dark:to-neutral-900"
+          size="small"
+          icon="ti ti-tool text-lg"
+          :label="$t('nav.tools').toLowerCase()"
           severity="contrast"
           outlined
           fluid
@@ -84,9 +98,9 @@ const appStore = useAppStore()
             severity="contrast"
             :aria-label="$t('components.sidebar.sourceCode')"
           />
-          <template v-if="appInfo">
+          <template v-if="appInfo.appInfo?.custom_footer">
             <Button
-              v-for="(link, label) of appInfo?.appInfo?.custom_footer || {}"
+              v-for="(link, label) of appInfo.appInfo.custom_footer"
               :label="label"
               :key="label"
               as="a"
